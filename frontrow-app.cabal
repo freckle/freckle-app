@@ -4,10 +4,12 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d9ea556491e65a2b811548a75f8c4d33ae2c1e936552f7849ce4471bff2d0797
+-- hash: bf7756e15b989960af1af84373d6db37a5bad903c45bdcc0cedfad4db843f65b
 
 name:           frontrow-app
-version:        0.0.1.0
+version:        0.0.0.1
+license:        MIT
+license-file:   LICENSE
 build-type:     Simple
 
 library
