@@ -22,7 +22,6 @@ import Control.Monad.Random (MonadRandom(..))
 import Control.Monad.Reader
 import Control.Monad.Trans.Control
 import Data.Pool as X
-import Database.Persist.Sql as X (SqlBackend, SqlPersistT)
 import FrontRow.App.Database as X
 import LoadEnv
 import Test.Hspec as X
@@ -76,13 +75,13 @@ instance Example (AppExample app a) where
 -- given function to load the rest of the application. Examples within this spec
 -- can use 'runAppTest', and 'runDB'.
 --
-withApp :: (Pool SqlBackend -> IO app) -> SpecWith app -> Spec
+withApp :: (SqlPool -> IO app) -> SpecWith app -> Spec
 withApp load = beforeAll (loadEnvTest *> loadPool) . beforeWith load
 
 loadEnvTest :: IO ()
 loadEnvTest = loadEnvFrom ".env.test" >> loadEnv
 
-loadPool :: IO (Pool SqlBackend)
+loadPool :: IO SqlPool
 loadPool = makePostgresPool
 
 -- | Run an action with the test @App@

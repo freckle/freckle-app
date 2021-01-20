@@ -64,7 +64,7 @@
 --
 -- == Database
 --
--- Adding Database access requires an instance of @'HasDbPool'@ on your @App@
+-- Adding Database access requires an instance of @'HasSqlPool'@ on your @App@
 -- type. Most often, this will be easiest if you indeed separate a @Config@
 -- attribute:
 --
@@ -84,7 +84,7 @@
 --
 -- > data App = App
 -- >   { appConfig :: Config
--- >   , appDbPool :: Pool SqlBackend
+-- >   , appSqlPool :: SqlPool
 -- >   }
 -- >
 -- > instance HasLogging App where
@@ -98,11 +98,11 @@
 -- > loadApp :: IO App
 -- > loadApp = do
 -- >   appConfig{..} <- loadConfig
--- >   appDbPool <- makePostgresPool configDbPoolSize
+-- >   appSqlPool <- makePostgresPool configDbPoolSize
 -- >   pure App{..}
 -- >
--- > instance HasDbPool App where
--- >   getDbPool = appDbPool
+-- > instance HasSqlPool App where
+-- >   getSqlPool = appSqlPool
 --
 -- /Note/: the actual database connection parameters (host, user, etc) are
 -- (currently) parsed from conventional environment variables by the underlying
@@ -152,7 +152,7 @@
 -- > withApp :: SpecWith App -> Spec
 -- > withApp = before $ do
 -- >   app <- loadApp
--- >   runSqlPool truncateTables $ appDbPool app
+-- >   runSqlPool truncateTables $ appSqlPool app
 -- >   pure app
 --
 -- And now you can write specs that also use the database:

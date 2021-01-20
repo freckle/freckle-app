@@ -5,8 +5,10 @@
 
 -- | Database access for your @App@
 module FrontRow.App.Database
-  ( HasDbPool(..)
-  , HasAnalyticsDbPool(..)
+  (
+  -- * Abstract over access to a sql database
+    HasSqlPool(..)
+  , SqlPool
   , makePostgresPool
   , makePostgresPoolWith
   , runDB
@@ -36,34 +38,29 @@ import Database.PostgreSQL.Simple (connectPostgreSQL)
 import qualified FrontRow.App.Env as Env
 import System.Process (readProcess)
 
-class HasDbPool app where
-  getDbPool :: app -> Pool SqlBackend
+type SqlPool = Pool SqlBackend
 
-instance HasDbPool (Pool SqlBackend) where
-  getDbPool = id
+class HasSqlPool app where
+  getSqlPool :: app -> SqlPool
 
-class HasAnalyticsDbPool app where
-  getAnalyticsDbPool :: app -> Pool SqlBackend
+instance HasSqlPool SqlPool where
+  getSqlPool = id
 
-instance HasAnalyticsDbPool (Pool SqlBackend) where
-  getAnalyticsDbPool = id
-
-makePostgresPool :: IO (Pool SqlBackend)
+makePostgresPool :: IO SqlPool
 makePostgresPool = do
   postgresPasswordSource <- Env.parse envPostgresPasswordSource
   conf <- Env.parse (envParseDatabaseConf postgresPasswordSource)
   makePostgresPoolWith conf
 
 runDB
-  :: (HasDbPool app, MonadUnliftIO m, MonadReader app m)
+  :: (HasSqlPool app, MonadUnliftIO m, MonadReader app m)
   => SqlPersistT m a
   -> m a
 runDB action = do
-  pool <- asks getDbPool
+  pool <- asks getSqlPool
   runSqlPool action pool
 
-data PostgresConnectionConf
-  = PostgresConnectionConf
+data PostgresConnectionConf = PostgresConnectionConf
   { pccHost :: String
   , pccPort :: Int
   , pccUser :: String
@@ -111,12 +108,12 @@ envParseDatabaseConf source = do
     , pccPoolSize = poolSize
     }
 
-data AuroraIamToken
-  = AuroraIamToken
+data AuroraIamToken = AuroraIamToken
   { aitToken :: String
   , aitCreatedAt :: UTCTime
   , aitPostgresConnectionConf :: PostgresConnectionConf
-  } deriving stock (Show, Eq)
+  }
+  deriving stock (Show, Eq)
 
 createAuroraIamToken :: PostgresConnectionConf -> IO AuroraIamToken
 createAuroraIamToken aitPostgresConnectionConf@PostgresConnectionConf {..} = do
@@ -172,7 +169,7 @@ refreshIamToken conf tokenIORef = do
 --   let tenMinutesInSeconds = 60 * 15
 --   pure $ now `diffUTCTime` aitCreatedAt > tenMinutesInSeconds
 
-makePostgresPoolWith :: PostgresConnectionConf -> IO (Pool SqlBackend)
+makePostgresPoolWith :: PostgresConnectionConf -> IO SqlPool
 makePostgresPoolWith conf@PostgresConnectionConf {..} = case pccPassword of
   PostgresPasswordIamAuth -> makePostgresPoolWithIamAuth conf
   PostgresPasswordStatic password -> runNoLoggingT $ createPostgresqlPool
@@ -180,7 +177,7 @@ makePostgresPoolWith conf@PostgresConnectionConf {..} = case pccPassword of
     pccPoolSize
 
 -- | Creates a PostgreSQL pool using IAM auth for the password.
-makePostgresPoolWithIamAuth :: PostgresConnectionConf -> IO (Pool SqlBackend)
+makePostgresPoolWithIamAuth :: PostgresConnectionConf -> IO SqlPool
 makePostgresPoolWithIamAuth conf@PostgresConnectionConf {..} = do
   tokenIORef <- spawnIamTokenRefreshThread conf
   runNoLoggingT $ createSqlPool (mkConn tokenIORef) pccPoolSize
