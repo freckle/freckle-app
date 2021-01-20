@@ -1,0 +1,105 @@
+---
+name: frontrow-app
+version: 0.0.1.0
+
+dependencies:
+  - base
+
+default-extensions:
+  - BangPatterns
+  - DataKinds
+  - DeriveAnyClass
+  - DeriveFoldable
+  - DeriveFunctor
+  - DeriveGeneric
+  - DeriveLift
+  - DeriveTraversable
+  - DerivingStrategies
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - LambdaCase
+  - MultiParamTypeClasses
+  - NoImplicitPrelude
+  - NoMonomorphismRestriction
+  - OverloadedStrings
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TypeApplications
+  - TypeFamilies
+
+library:
+  source-dirs: library
+  dependencies:
+    - Glob
+    - MonadRandom
+    - aeson
+    - ansi-terminal
+    - bytestring
+    - case-insensitive
+    - data-default
+    - datadog
+    - doctest
+    - errors
+    - exceptions
+    - fast-logger
+    - filepath
+    - hspec
+    - hspec-core
+    - hspec-expectations-lifted
+    - hspec-junit-formatter
+    - http-types
+    - immortal
+    - iproute
+    - lens
+    - load-env
+    - monad-control
+    - monad-logger
+    - mtl
+    - network
+    - persistent
+    - persistent-postgresql
+    - postgresql-simple
+    - primitive
+    - process
+    - resource-pool
+    - rio
+    - text
+    - time
+    - transformers
+    - transformers-base
+    - unliftio
+    - unliftio-core
+    - wai
+    - wai-extra
+    - yaml
+    - yesod-core
+    - yesod
+
+tests:
+  spec:
+    main: Main.hs
+    source-dirs: tests
+    ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
+    dependencies:
+      - bytestring
+      - directory
+      - frontrow-app
+      - hspec
+      - http-types
+      - process
+      - temporary
+      - text
+      - time
+      - wai
+      - wai-extra
+
+  doctest:
+    main: Main.hs
+    source-dirs: doctest
+    dependencies:
+      - frontrow-app
+      - text

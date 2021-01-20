@@ -1,0 +1,123 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: d9ea556491e65a2b811548a75f8c4d33ae2c1e936552f7849ce4471bff2d0797
+
+name:           frontrow-app
+version:        0.0.1.0
+build-type:     Simple
+
+library
+  exposed-modules:
+      FrontRow.App
+      FrontRow.App.Database
+      FrontRow.App.Datadog
+      FrontRow.App.Env
+      FrontRow.App.Env.Internal
+      FrontRow.App.Ghci
+      FrontRow.App.GlobalCache
+      FrontRow.App.Logging
+      FrontRow.App.RIO
+      FrontRow.App.Test
+      FrontRow.App.Test.DocTest
+      FrontRow.App.Test.Hspec.Runner
+      FrontRow.App.Version
+      FrontRow.App.Wai
+      FrontRow.App.Yesod
+  other-modules:
+      Paths_frontrow_app
+  hs-source-dirs:
+      library
+  default-extensions: BangPatterns DataKinds DeriveAnyClass DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NoMonomorphismRestriction OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TypeApplications TypeFamilies
+  build-depends:
+      Glob
+    , MonadRandom
+    , aeson
+    , ansi-terminal
+    , base
+    , bytestring
+    , case-insensitive
+    , data-default
+    , datadog
+    , doctest
+    , errors
+    , exceptions
+    , fast-logger
+    , filepath
+    , hspec
+    , hspec-core
+    , hspec-expectations-lifted
+    , hspec-junit-formatter
+    , http-types
+    , immortal
+    , iproute
+    , lens
+    , load-env
+    , monad-control
+    , monad-logger
+    , mtl
+    , network
+    , persistent
+    , persistent-postgresql
+    , postgresql-simple
+    , primitive
+    , process
+    , resource-pool
+    , rio
+    , text
+    , time
+    , transformers
+    , transformers-base
+    , unliftio
+    , unliftio-core
+    , wai
+    , wai-extra
+    , yaml
+    , yesod
+    , yesod-core
+  default-language: Haskell2010
+
+test-suite doctest
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Paths_frontrow_app
+  hs-source-dirs:
+      doctest
+  default-extensions: BangPatterns DataKinds DeriveAnyClass DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NoMonomorphismRestriction OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TypeApplications TypeFamilies
+  build-depends:
+      base
+    , frontrow-app
+    , text
+  default-language: Haskell2010
+
+test-suite spec
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      FrontRow.App.Env.InternalSpec
+      FrontRow.App.VersionSpec
+      FrontRow.App.WaiSpec
+      Spec
+      Paths_frontrow_app
+  hs-source-dirs:
+      tests
+  default-extensions: BangPatterns DataKinds DeriveAnyClass DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NoMonomorphismRestriction OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TypeApplications TypeFamilies
+  ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
+  build-depends:
+      base
+    , bytestring
+    , directory
+    , frontrow-app
+    , hspec
+    , http-types
+    , process
+    , temporary
+    , text
+    , time
+    , wai
+    , wai-extra
+  default-language: Haskell2010
