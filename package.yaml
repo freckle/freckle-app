@@ -40,6 +40,7 @@ library:
     - ansi-terminal
     - bytestring
     - case-insensitive
+    - conduit
     - data-default
     - datadog
     - doctest
@@ -51,6 +52,8 @@ library:
     - hspec-core
     - hspec-expectations-lifted
     - hspec-junit-formatter
+    - http-conduit
+    - http-link-header
     - http-types
     - immortal
     - iproute
@@ -66,6 +69,7 @@ library:
     - primitive
     - process
     - resource-pool
+    - retry
     - rio
     - text
     - time
