@@ -51,6 +51,8 @@ import Data.Bifunctor (first)
 import qualified Data.ByteString as BS
 import Data.ByteString.Lazy (ByteString)
 import qualified Data.ByteString.Lazy.Char8 as BSL8
+import Data.List.NonEmpty (NonEmpty(..))
+import qualified Data.List.NonEmpty as NE
 import FrontRow.App.Http.Paginate
 import FrontRow.App.Http.Retry
 import Network.HTTP.Simple hiding (httpLbs)
@@ -58,35 +60,41 @@ import Network.HTTP.Types.Header (hAccept, hAuthorization)
 import Network.HTTP.Types.Status (Status, statusCode)
 import UnliftIO.Exception (Exception(..), throwIO)
 
-data HttpDecodeError = HttpDecodeError
+data HttpDecodeError e = HttpDecodeError
   { hdeBody :: ByteString
-  , hdeErrors :: String
+  , hdeErrors :: NonEmpty e
   }
   deriving stock (Eq, Show)
 
-instance Exception HttpDecodeError where
+instance Exception e => Exception (HttpDecodeError e) where
   displayException HttpDecodeError {..} =
-    "Error decoding HTTP Response:"
-      <> "\nRaw body: "
-      <> BSL8.unpack hdeBody
-      <> "\nErrors: "
-      <> hdeErrors
+    unlines
+      $ ["Error decoding HTTP Response:", "Raw body:", BSL8.unpack hdeBody]
+      <> fromErrors hdeErrors
+   where
+    fromErrors = \case
+      err :| [] -> ["Error:", displayException err]
+      errs -> "Errors:" : map (bullet . displayException) (NE.toList errs)
+    bullet = (" • " <>)
 
 -- | Request and decode a response as JSON
 httpJson
   :: (MonadIO m, FromJSON a)
   => Request
-  -> m (Response (Either HttpDecodeError a))
-httpJson = httpDecode decode . addAcceptHeader "application/json"
-  where decode body = first (HttpDecodeError body) $ Aeson.eitherDecode body
+  -> m (Response (Either (HttpDecodeError String) a))
+httpJson = httpDecode (first pure . Aeson.eitherDecode)
+  . addAcceptHeader "application/json"
 
 -- | Request and decode a response
 httpDecode
   :: MonadIO m
-  => (ByteString -> Either e a)
+  => (ByteString -> Either (NonEmpty e) a)
   -> Request
-  -> m (Response (Either e a))
-httpDecode decode = fmap (fmap decode) . httpLbs
+  -> m (Response (Either (HttpDecodeError e) a))
+httpDecode decode req = do
+  resp <- httpLbs req
+  let body = getResponseBody resp
+  pure $ first (HttpDecodeError body) . decode <$> resp
 
 -- | Request a lazy 'ByteString', handling 429 retries
 httpLbs :: MonadIO m => Request -> m (Response ByteString)
