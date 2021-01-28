@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bf7756e15b989960af1af84373d6db37a5bad903c45bdcc0cedfad4db843f65b
+-- hash: 7591c8a06bf639fed74308473a150d813e15ae80d15774e0bc69e304a630e6a1
 
 name:           frontrow-app
 version:        0.0.0.1
@@ -21,6 +21,9 @@ library
       FrontRow.App.Env.Internal
       FrontRow.App.Ghci
       FrontRow.App.GlobalCache
+      FrontRow.App.Http
+      FrontRow.App.Http.Paginate
+      FrontRow.App.Http.Retry
       FrontRow.App.Logging
       FrontRow.App.RIO
       FrontRow.App.Test
@@ -42,6 +45,7 @@ library
     , base
     , bytestring
     , case-insensitive
+    , conduit
     , data-default
     , datadog
     , doctest
@@ -53,6 +57,8 @@ library
     , hspec-core
     , hspec-expectations-lifted
     , hspec-junit-formatter
+    , http-conduit
+    , http-link-header
     , http-types
     , immortal
     , iproute
@@ -68,6 +74,7 @@ library
     , primitive
     , process
     , resource-pool
+    , retry
     , rio
     , text
     , time
