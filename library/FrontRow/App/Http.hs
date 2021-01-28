@@ -1,4 +1,4 @@
--- | Centralized module for making HTTP from the backend
+-- | Centralized module for making HTTP requests from the backend
 --
 -- These functions:
 --
