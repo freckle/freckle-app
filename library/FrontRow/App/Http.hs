@@ -7,6 +7,50 @@
 -- - Handle 429-@Retry-In@ for you
 -- - Capture decoding failures with 'Either' values as the 'Response' body
 --
+-- == Examples
+--
+-- Make request, retry on 429s, and parse the body as JSON.
+--
+-- @
+-- -- Throws, but only on a complete failure to perform the request
+-- resp <- 'httpJson' $ 'parseRequest' "https://example.com"
+--
+-- -- Safe access
+-- 'getResponseBody' resp :: Either ('HttpDecodeError' String) a
+--
+-- -- Unsafe access (throws on Left)
+-- 'getResponseBodyUnsafe' resp :: m a
+-- @
+--
+-- 'httpLbs' can be used to get a raw response (without risk of decoding
+-- errors), and 'httpDecode' can be used to supply your own decoding function
+-- (e.g. for CSV).
+--
+-- Interact with a paginated endpoint that uses @Link@, combining all the pages
+-- monoidally (e.g. concat) and throwing on any decoding errors.
+--
+-- @
+-- 'httpPaginated' 'httpJson' 'getResponseBodyUnsafe' $ 'parseRequest_' "https://..."
+-- @
+--
+-- Decoding errors can be handled differently by adjusting what 'Monoid' you
+-- convert each page's response into:
+--
+-- @
+-- 'httpPaginated' 'httpJson' fromResponseLenient $ 'parseRequest_' "https://..."
+--
+-- fromResponseLenient
+--   :: MonadLogger m
+--   => Response (Either e [MyJsonThing])
+--   -> m [MyJsonThing]
+-- fromResponseLenient r = case getResponseBody r of
+--      Left _ -> [] <$ logWarn "..."
+--      Right a -> pure a
+-- @
+--
+-- See "FrontRow.Http.App.Paginate" to process requested pages in a streaming
+-- fashion, or perform pagination based on somethign other than @Link@.
+--
 module FrontRow.App.Http
   ( httpJson
   , HttpDecodeError(..)

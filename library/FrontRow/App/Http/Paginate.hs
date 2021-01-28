@@ -1,3 +1,57 @@
+-- | Streaming interface for paginated HTTP APIs
+--
+-- == Examples
+--
+-- Take an action on each page as it is requested:
+--
+-- @
+-- let req = parseRequest_ "https://..."
+--
+-- runConduit
+--   $ sourcePaginated httpJson req
+--   .| mapM_C onEachPage
+--
+-- onEachPage :: Response (Either HttpDecodeError [MyJsonThing]) -> m ()
+-- onEachPage = undefined
+-- @
+--
+-- Take and action /and/ collect:
+--
+-- @
+-- allPages <- runConduit
+--   $ 'sourcePaginated' httpJson req
+--   .| iterM onEachPage
+--   .| sinkList
+-- @
+--
+-- For APIs that do pagination not via @Link@, you can use 'sourcePaginatedBy'
+--
+-- @
+-- data Page a = Page
+--   { pData :: [a]
+--   , pNext :: Int
+--   }
+--
+-- instance FromJSON a => FromJSON (Item a) where
+--   parseJSON = withObject "Page" $ \o -> Page
+--     <$> o .: "data"
+--     <*> o .: "next"
+--
+-- runConduit
+--   $ 'sourcePaginatedBy' nextPage httpJson req
+--   .| mapMC (fmap pData . 'getResponseBodyUnsafe')
+--   .| foldC
+--
+-- nextPage
+--   :: Request
+--   -> Response (Either ('HttpDecodeError' String) (Page a))
+--   -> Maybe Request
+-- nextPage req resp = do
+--   body <- hush $ getResponseBody resp
+--   let next = C8.pack $ show $ pNext body
+--   pure $ addToRequestQueryString [("next", Just next)] req
+-- @
+--
 module FrontRow.App.Http.Paginate
   ( sourcePaginated
   , sourcePaginatedBy
@@ -15,13 +69,6 @@ import Network.HTTP.Link hiding (linkHeader)
 import Network.HTTP.Simple
 
 -- | Stream pages of a paginated response, using @Link@ to find next pages
---
--- @
--- allPages <- runConduit
---   $ sourcePaginated httpJson req
---   .| iterM onEachPage
---   .| sinkList
--- @
 --
 sourcePaginated
   :: MonadIO m
