@@ -70,6 +70,7 @@ module FrontRow.App.Http
   , addBearerAuthorizationHeader
   , addToRequestQueryString
   , setRequestBasicAuth
+  , setRequestPath
 
   -- * Response accessors
   , Response
