@@ -78,11 +78,13 @@ module FrontRow.App.Http
   , getResponseBody
 
   -- ** Unsafe access
+  , HttpStatusError(..)
   , getResponseBodyUnsafe
 
   -- * "Network.HTTP.Types" re-exports
   , Status
   , statusCode
+  , statusIsSuccessful
   ) where
 
 import Prelude
@@ -93,15 +95,18 @@ import Data.Aeson (FromJSON)
 import qualified Data.Aeson as Aeson
 import Data.Bifunctor (first)
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BS8
 import Data.ByteString.Lazy (ByteString)
 import qualified Data.ByteString.Lazy.Char8 as BSL8
 import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.List.NonEmpty as NE
+import Data.Typeable (Typeable)
 import FrontRow.App.Http.Paginate
 import FrontRow.App.Http.Retry
 import Network.HTTP.Simple hiding (httpLbs)
 import Network.HTTP.Types.Header (hAccept, hAuthorization)
-import Network.HTTP.Types.Status (Status, statusCode)
+import Network.HTTP.Types.Status
+  (Status, statusCode, statusIsSuccessful, statusMessage)
 import UnliftIO.Exception (Exception(..), throwIO)
 
 data HttpDecodeError = HttpDecodeError
@@ -168,7 +173,38 @@ addAcceptHeader = addRequestHeader hAccept
 addBearerAuthorizationHeader :: BS.ByteString -> Request -> Request
 addBearerAuthorizationHeader = addRequestHeader hAuthorization . ("Bearer " <>)
 
--- | Read an 'Either' response body, throwing any 'Left' as an exception
+-- | Error thrown by 'getResponseBodyUnsafe' for unsuccessful status codes
+data HttpStatusError e a = HttpStatusError
+  { hseStatus :: Status
+  , hseResponse :: Response (Either e a)
+  }
+  deriving stock Show
+
+instance (Exception e, Typeable a, Show a) => Exception (HttpStatusError e a) where
+  displayException HttpStatusError {..} = unlines
+    [ "Received unsuccessful HTTP Status:"
+    , "Status: " <> show (statusCode hseStatus) <> " " <> BS8.unpack
+      (statusMessage hseStatus)
+    , case getResponseBody hseResponse of
+      Left e -> "Response body did not parse: " <> displayException e
+      Right a -> "Response body: " <> show a
+    ]
+
+-- | Read a @'Response' ('Either' e a)@, throwing on errors
+--
+-- - Throws 'HttpStatusError' if response statuses wasn't successful
+-- - Throws the @e@ itself if the body is 'Left', which is typically an
+--   'HttpDecodeError'
+--
+-- To avoid either of these behaviors, use 'getResponseStatus',
+-- 'statusIsSuccessful', and 'getResponseBody' directly.
+--
 getResponseBodyUnsafe
-  :: (MonadIO m, Exception e) => Response (Either e a) -> m a
-getResponseBodyUnsafe = either throwIO pure . getResponseBody
+  :: (MonadIO m, Exception e, Typeable a, Show a)
+  => Response (Either e a)
+  -> m a
+getResponseBodyUnsafe resp
+  | statusIsSuccessful status = either throwIO pure (getResponseBody resp)
+  | otherwise = throwIO
+  $ HttpStatusError { hseStatus = status, hseResponse = resp }
+  where status = getResponseStatus resp
