@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7591c8a06bf639fed74308473a150d813e15ae80d15774e0bc69e304a630e6a1
+-- hash: a0840f7306cdbbd00579306471f9172ae638ac35cca15a657b3b47f34da8af74
 
 name:           frontrow-app
 version:        0.0.0.1
@@ -108,6 +108,7 @@ test-suite spec
   main-is: Main.hs
   other-modules:
       FrontRow.App.Env.InternalSpec
+      FrontRow.App.HttpSpec
       FrontRow.App.VersionSpec
       FrontRow.App.WaiSpec
       Spec
@@ -117,12 +118,15 @@ test-suite spec
   default-extensions: BangPatterns DataKinds DeriveAnyClass DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NoMonomorphismRestriction OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TypeApplications TypeFamilies
   ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
   build-depends:
-      base
+      aeson
+    , base
     , bytestring
     , directory
     , frontrow-app
     , hspec
     , http-types
+    , lens
+    , lens-aeson
     , process
     , temporary
     , text
