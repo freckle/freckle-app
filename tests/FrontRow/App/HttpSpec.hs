@@ -4,11 +4,10 @@ module FrontRow.App.HttpSpec
 
 import Prelude
 
-import Control.Lens ((^?))
+import Control.Lens (to, (^?), _Left, _Right)
 import Data.Aeson
 import Data.Aeson.Lens
-import Data.Either (isLeft)
-import Data.Text (Text)
+import qualified Data.List.NonEmpty as NE
 import FrontRow.App.Http
 import Network.HTTP.Types.Status (status200)
 import Test.Hspec
@@ -21,16 +20,24 @@ spec = do
         $ parseRequest_ "https://www.stackage.org/lts-17.10"
 
       getResponseStatus resp `shouldBe` status200
-      body <- getResponseBodyUnsafe resp
-      body ^? key "snapshot" . key "ghc" . _String `shouldBe` Just "8.10.4"
+      getResponseBody resp
+        ^? _Right
+        . key "snapshot"
+        . key "ghc"
+        . _String
+        `shouldBe` Just "8.10.4"
 
     it "places JSON parse errors in a Left body" $ do
-      resp <- httpJson @_ @UnexpectedBody
+      resp <- httpJson @_ @[()]
         $ parseRequest_ "https://www.stackage.org/lts-17.10"
 
-      getResponseStatus resp `shouldBe` status200
-      getResponseBody resp `shouldSatisfy` isLeft
+      let
+        expectedErrorMessage
+          = "Error in $: parsing [] failed, expected Array, but encountered Object"
 
-newtype UnexpectedBody = UnexpectedBody [Text]
-  deriving stock (Eq, Show)
-  deriving newtype FromJSON
+      getResponseStatus resp `shouldBe` status200
+      getResponseBody resp
+        ^? _Left
+        . to hdeErrors
+        . to NE.toList
+        `shouldBe` Just [expectedErrorMessage]
