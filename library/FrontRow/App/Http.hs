@@ -16,7 +16,7 @@
 -- resp <- 'httpJson' $ 'parseRequest_' "https://example.com"
 --
 -- -- Safe access
--- 'getResponseBody' resp :: Either ('HttpDecodeError' String) a
+-- 'getResponseBody' resp :: Either 'HttpDecodeError' a
 --
 -- -- Unsafe access (throws on Left)
 -- 'getResponseBodyUnsafe' resp :: m a
@@ -104,37 +104,37 @@ import Network.HTTP.Types.Header (hAccept, hAuthorization)
 import Network.HTTP.Types.Status (Status, statusCode)
 import UnliftIO.Exception (Exception(..), throwIO)
 
-data HttpDecodeError e = HttpDecodeError
+data HttpDecodeError = HttpDecodeError
   { hdeBody :: ByteString
-  , hdeErrors :: NonEmpty e
+  , hdeErrors :: NonEmpty String
   }
   deriving stock (Eq, Show)
 
-instance Exception e => Exception (HttpDecodeError e) where
+instance Exception HttpDecodeError where
   displayException HttpDecodeError {..} =
     unlines
       $ ["Error decoding HTTP Response:", "Raw body:", BSL8.unpack hdeBody]
       <> fromErrors hdeErrors
    where
     fromErrors = \case
-      err :| [] -> ["Error:", displayException err]
-      errs -> "Errors:" : map (bullet . displayException) (NE.toList errs)
+      err :| [] -> ["Error:", err]
+      errs -> "Errors:" : map bullet (NE.toList errs)
     bullet = (" • " <>)
 
 -- | Request and decode a response as JSON
 httpJson
   :: (MonadIO m, FromJSON a)
   => Request
-  -> m (Response (Either (HttpDecodeError String) a))
+  -> m (Response (Either HttpDecodeError a))
 httpJson = httpDecode (first pure . Aeson.eitherDecode)
   . addAcceptHeader "application/json"
 
 -- | Request and decode a response
 httpDecode
   :: MonadIO m
-  => (ByteString -> Either (NonEmpty e) a)
+  => (ByteString -> Either (NonEmpty String) a)
   -> Request
-  -> m (Response (Either (HttpDecodeError e) a))
+  -> m (Response (Either HttpDecodeError a))
 httpDecode decode req = do
   resp <- httpLbs req
   let body = getResponseBody resp
