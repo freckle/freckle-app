@@ -13,7 +13,7 @@
 --
 -- @
 -- -- Throws, but only on a complete failure to perform the request
--- resp <- 'httpJson' $ 'parseRequest' "https://example.com"
+-- resp <- 'httpJson' $ 'parseRequest_' "https://example.com"
 --
 -- -- Safe access
 -- 'getResponseBody' resp :: Either ('HttpDecodeError' String) a
@@ -83,8 +83,7 @@ module FrontRow.App.Http
   -- * "Network.HTTP.Types" re-exports
   , Status
   , statusCode
-  )
-where
+  ) where
 
 import Prelude
 
