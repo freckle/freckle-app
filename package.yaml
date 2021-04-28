@@ -89,11 +89,14 @@ tests:
     source-dirs: tests
     ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
     dependencies:
+      - aeson
       - bytestring
       - directory
       - frontrow-app
       - hspec
       - http-types
+      - lens
+      - lens-aeson
       - process
       - temporary
       - text
