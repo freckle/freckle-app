@@ -4,7 +4,7 @@ module FrontRow.App.HttpSpec
 
 import Prelude
 
-import Control.Lens (to, (^?), _Left, _Right)
+import Control.Lens (_Left, _Right, to, (^?))
 import Data.Aeson
 import Data.Aeson.Lens
 import Data.Either (isLeft)
