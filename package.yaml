@@ -52,6 +52,7 @@ library:
     - hspec-core
     - hspec-expectations-lifted
     - hspec-junit-formatter
+    - http-client
     - http-conduit
     - http-link-header
     - http-types

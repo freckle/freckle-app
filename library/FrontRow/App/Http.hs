@@ -81,9 +81,37 @@ module FrontRow.App.Http
   -- ** Unsafe access
   , getResponseBodyUnsafe
 
+  -- * Exceptions
+  , HttpException(..)
+
+  -- **
+  -- | Predicates useful for handling 'HttpException's
+  --
+  -- For example, given a function 'guarded', which returns 'Just' a given value
+  -- when a predicate holds for it (otherwise 'Nothing'), you can add
+  -- error-handling specific to exceptions caused by 4XX responses:
+  --
+  -- @
+  -- 'handleJust' (guarded 'httpExceptionIsClientError') handle4XXError $ do
+  --   resp <- 'httpJson' $ 'setRequestCheckStatus' $ parseRequest_ "http://..."
+  --   body <- 'getResponseBodyUnsafe' resp
+  --
+  --   -- ...
+  -- @
+  --
+  , httpExceptionIsInformational
+  , httpExceptionIsRedirection
+  , httpExceptionIsClientError
+  , httpExceptionIsServerError
+
   -- * "Network.HTTP.Types" re-exports
   , Status
   , statusCode
+  , statusIsInformational
+  , statusIsSuccessful
+  , statusIsRedirection
+  , statusIsClientError
+  , statusIsServerError
   ) where
 
 import Prelude
@@ -100,9 +128,19 @@ import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.List.NonEmpty as NE
 import FrontRow.App.Http.Paginate
 import FrontRow.App.Http.Retry
+import Network.HTTP.Client (HttpExceptionContent(..))
 import Network.HTTP.Simple hiding (httpLbs)
 import Network.HTTP.Types.Header (hAccept, hAuthorization)
-import Network.HTTP.Types.Status (Status, statusCode)
+import Network.HTTP.Types.Status
+  ( Status
+  , statusCode
+  , statusIsClientError
+  , statusIsInformational
+  , statusIsRedirection
+  , statusIsServerError
+  , statusIsSuccessful
+  , statusIsSuccessful
+  )
 import UnliftIO.Exception (Exception(..), throwIO)
 
 data HttpDecodeError = HttpDecodeError
@@ -178,3 +216,21 @@ addBearerAuthorizationHeader = addRequestHeader hAuthorization . ("Bearer " <>)
 getResponseBodyUnsafe
   :: (MonadIO m, Exception e) => Response (Either e a) -> m a
 getResponseBodyUnsafe = either throwIO pure . getResponseBody
+
+httpExceptionIsInformational :: HttpException -> Bool
+httpExceptionIsInformational = filterStatusException statusIsInformational
+
+httpExceptionIsRedirection :: HttpException -> Bool
+httpExceptionIsRedirection = filterStatusException statusIsRedirection
+
+httpExceptionIsClientError :: HttpException -> Bool
+httpExceptionIsClientError = filterStatusException statusIsClientError
+
+httpExceptionIsServerError :: HttpException -> Bool
+httpExceptionIsServerError = filterStatusException statusIsServerError
+
+filterStatusException :: (Status -> Bool) -> HttpException -> Bool
+filterStatusException predicate = \case
+  HttpExceptionRequest _ (StatusCodeException resp _) ->
+    predicate $ getResponseStatus resp
+  _ -> False
