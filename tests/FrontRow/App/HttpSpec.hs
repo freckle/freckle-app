@@ -7,10 +7,9 @@ import Prelude
 import Control.Lens (_Left, _Right, to, (^?))
 import Data.Aeson
 import Data.Aeson.Lens
-import Data.Either (isLeft)
 import qualified Data.List.NonEmpty as NE
 import FrontRow.App.Http
-import Network.HTTP.Types.Status (status200, status404)
+import Network.HTTP.Types.Status (status200)
 import Test.Hspec
 
 spec :: Spec
@@ -42,16 +41,3 @@ spec = do
         . to hdeErrors
         . to NE.toList
         `shouldBe` Just [expectedErrorMessage]
-
-  describe "getResponseBodyUnsafe" $ do
-    it "throws HttpStatusError for non-2XX" $ do
-      resp <- httpJson @_ @Value
-        $ parseRequest_ "https://example.com/i/dont/exist"
-
-      let
-        expectedStatusError :: Selector (HttpStatusError HttpDecodeError Value)
-        expectedStatusError HttpStatusError {..} =
-          hseStatus == status404 && isLeft (getResponseBody hseResponse)
-
-      getResponseStatus resp `shouldBe` status404
-      getResponseBodyUnsafe resp `shouldThrow` expectedStatusError
