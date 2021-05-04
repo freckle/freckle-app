@@ -70,6 +70,7 @@ module FrontRow.App.Http
   , addBearerAuthorizationHeader
   , addToRequestQueryString
   , setRequestBasicAuth
+  , setRequestCheckStatus
   , setRequestPath
 
   -- * Response accessors
@@ -169,6 +170,11 @@ addBearerAuthorizationHeader :: BS.ByteString -> Request -> Request
 addBearerAuthorizationHeader = addRequestHeader hAuthorization . ("Bearer " <>)
 
 -- | Read an 'Either' response body, throwing any 'Left' as an exception
+--
+-- If you plan to use this function, and haven't built your decoding to handle
+-- error response bodies too, you'll want to use 'setRequestCheckStatus' so that
+-- you see status-code exceptions before 'HttpDecodeError's.
+--
 getResponseBodyUnsafe
   :: (MonadIO m, Exception e) => Response (Either e a) -> m a
 getResponseBodyUnsafe = either throwIO pure . getResponseBody
