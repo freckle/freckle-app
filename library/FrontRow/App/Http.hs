@@ -139,7 +139,6 @@ import Network.HTTP.Types.Status
   , statusIsRedirection
   , statusIsServerError
   , statusIsSuccessful
-  , statusIsSuccessful
   )
 import UnliftIO.Exception (Exception(..), throwIO)
 
