@@ -29,6 +29,7 @@ import Control.Monad.Logger (runNoLoggingT)
 import Control.Monad.Reader
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS8
+import Data.Foldable (for_)
 import Data.IORef
 import Data.Pool
 import qualified Data.Text as T
@@ -64,7 +65,7 @@ runDB action = do
   mTimeoutSeconds <- asks getStatementTimeoutSeconds
 
   flip runSqlPool pool $ do
-    forM_ mTimeoutSeconds $ \timeoutSeconds ->
+    for_ mTimeoutSeconds $ \timeoutSeconds ->
       let timeoutMilliseconds = timeoutSeconds * 1000
       in [executeQQ| SET statement_timeout = #{timeoutMilliseconds} |]
     action
