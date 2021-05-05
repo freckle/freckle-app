@@ -42,13 +42,17 @@ import System.Process (readProcess)
 
 type SqlPool = Pool SqlBackend
 
+newtype Seconds = Seconds { getSeconds :: Int }
+  deriving stock (Show, Read)
+  deriving newtype (Eq, Num)
+
 class HasSqlPool app where
   getSqlPool :: app -> SqlPool
-  getStatementTimeoutSeconds :: app -> Maybe Int
+  getStatementTimeout :: app -> Maybe Seconds
 
 instance HasSqlPool SqlPool where
   getSqlPool = id
-  getStatementTimeoutSeconds = const Nothing
+  getStatementTimeout = const Nothing
 
 makePostgresPool :: IO SqlPool
 makePostgresPool = do
@@ -62,12 +66,12 @@ runDB
   -> m a
 runDB action = do
   pool <- asks getSqlPool
-  mTimeoutSeconds <- asks getStatementTimeoutSeconds
+  mTimeout <- asks getStatementTimeout
 
   flip runSqlPool pool $ do
-    for_ mTimeoutSeconds $ \timeoutSeconds ->
-      let timeoutMilliseconds = timeoutSeconds * 1000
-      in [executeQQ| SET statement_timeout = #{timeoutMilliseconds} |]
+    for_ mTimeout $ \timeout ->
+      let timeoutMillis = getSeconds timeout * 1000
+      in [executeQQ| SET statement_timeout = #{timeoutMillis} |]
     action
 
 data PostgresConnectionConf = PostgresConnectionConf
