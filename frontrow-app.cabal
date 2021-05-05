@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d6875747d95fac7a82216a330e50fa84523504c4b6b0730f4024d76845c572c0
+-- hash: aa6b4d9f0b72f69f9d9e3ee34410c4a8a047232613e0368acba9684722667bc9
 
 name:           frontrow-app
 version:        0.0.0.1
@@ -29,6 +29,7 @@ library
       FrontRow.App.Test
       FrontRow.App.Test.DocTest
       FrontRow.App.Test.Hspec.Runner
+      FrontRow.App.Time
       FrontRow.App.Version
       FrontRow.App.Wai
       FrontRow.App.Yesod

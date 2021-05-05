@@ -39,13 +39,10 @@ import Database.Persist.Postgresql
 import Database.Persist.Sql.Raw.QQ (executeQQ)
 import Database.PostgreSQL.Simple (connectPostgreSQL)
 import qualified FrontRow.App.Env as Env
+import FrontRow.App.Time (Seconds(..))
 import System.Process (readProcess)
 
 type SqlPool = Pool SqlBackend
-
-newtype Seconds = Seconds { unSeconds :: Int }
-  deriving stock (Show, Read)
-  deriving newtype (Eq, Num)
 
 class HasSqlPool app where
   getSqlPool :: app -> SqlPool
