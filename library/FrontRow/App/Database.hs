@@ -1,6 +1,7 @@
 {-# LANGUAGE ApplicativeDo #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE StrictData #-}
 
 -- | Database access for your @App@
@@ -17,8 +18,7 @@ module FrontRow.App.Database
   , PostgresPassword(..)
   , envParseDatabaseConf
   , envPostgresPasswordSource
-  )
-where
+  ) where
 
 import Prelude
 
@@ -34,6 +34,7 @@ import Data.Pool
 import qualified Data.Text as T
 import Data.Time (UTCTime, getCurrentTime)
 import Database.Persist.Postgresql
+import Database.Persist.Sql.Raw.QQ (executeQQ)
 import Database.PostgreSQL.Simple (connectPostgreSQL)
 import qualified FrontRow.App.Env as Env
 import System.Process (readProcess)
@@ -42,9 +43,11 @@ type SqlPool = Pool SqlBackend
 
 class HasSqlPool app where
   getSqlPool :: app -> SqlPool
+  getStatementTimeoutSeconds :: app -> Maybe Int
 
 instance HasSqlPool SqlPool where
   getSqlPool = id
+  getStatementTimeoutSeconds = const Nothing
 
 makePostgresPool :: IO SqlPool
 makePostgresPool = do
@@ -58,7 +61,13 @@ runDB
   -> m a
 runDB action = do
   pool <- asks getSqlPool
-  runSqlPool action pool
+  mTimeoutSeconds <- asks getStatementTimeoutSeconds
+
+  flip runSqlPool pool $ do
+    forM_ mTimeoutSeconds $ \timeoutSeconds ->
+      let timeoutMilliseconds = timeoutSeconds * 1000
+      in [executeQQ| SET statement_timeout = #{timeoutMilliseconds} |]
+    action
 
 data PostgresConnectionConf = PostgresConnectionConf
   { pccHost :: String

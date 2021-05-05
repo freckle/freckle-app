@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a0840f7306cdbbd00579306471f9172ae638ac35cca15a657b3b47f34da8af74
+-- hash: d6875747d95fac7a82216a330e50fa84523504c4b6b0730f4024d76845c572c0
 
 name:           frontrow-app
 version:        0.0.0.1
@@ -70,6 +70,7 @@ library
     , network
     , persistent
     , persistent-postgresql
+    , persistent-qq
     , postgresql-simple
     , primitive
     , process
