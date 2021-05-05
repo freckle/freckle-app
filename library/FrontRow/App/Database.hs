@@ -10,6 +10,7 @@ module FrontRow.App.Database
   -- * Abstract over access to a sql database
     HasSqlPool(..)
   , SqlPool
+  , Seconds(..)
   , makePostgresPool
   , makePostgresPoolWith
   , runDB
@@ -42,7 +43,7 @@ import System.Process (readProcess)
 
 type SqlPool = Pool SqlBackend
 
-newtype Seconds = Seconds { getSeconds :: Int }
+newtype Seconds = Seconds { unSeconds :: Int }
   deriving stock (Show, Read)
   deriving newtype (Eq, Num)
 
@@ -70,7 +71,7 @@ runDB action = do
 
   flip runSqlPool pool $ do
     for_ mTimeout $ \timeout ->
-      let timeoutMillis = getSeconds timeout * 1000
+      let timeoutMillis = unSeconds timeout * 1000
       in [executeQQ| SET statement_timeout = #{timeoutMillis} |]
     action
 
