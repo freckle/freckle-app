@@ -23,6 +23,7 @@ module FrontRow.App.Database
 
 import Prelude
 
+import Control.Applicative (optional)
 import Control.Concurrent
 import qualified Control.Immortal as Immortal
 import Control.Monad.IO.Unlift (MonadUnliftIO)
@@ -105,7 +106,8 @@ envParseDatabaseConf source = do
   database <- Env.var Env.str "PGDATABASE" Env.nonEmpty
   port <- Env.var Env.auto "PGPORT" Env.nonEmpty
   poolSize <- Env.var Env.auto "PGPOOLSIZE" $ Env.def 1
-  statementTimeout <- Env.var Env.auto "PGSTATEMENTTIMEOUT" $ Env.def Nothing
+  statementTimeout <- optional
+    $ Env.var Env.auto "PGSTATEMENTTIMEOUT" Env.nonEmpty
   pure PostgresConnectionConf
     { pccHost = host
     , pccPort = port
