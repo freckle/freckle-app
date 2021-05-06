@@ -65,7 +65,6 @@ library:
     - network
     - persistent
     - persistent-postgresql
-    - persistent-qq
     - postgresql-simple
     - primitive
     - process

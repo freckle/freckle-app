@@ -36,8 +36,9 @@ import Data.Pool
 import qualified Data.Text as T
 import Data.Time (UTCTime, getCurrentTime)
 import Database.Persist.Postgresql
-import Database.Persist.Sql.Raw.QQ (executeQQ)
-import Database.PostgreSQL.Simple (connectPostgreSQL)
+import Database.PostgreSQL.Simple
+  (Connection, Only(..), connectPostgreSQL, execute)
+import Database.PostgreSQL.Simple.SqlQQ (sql)
 import qualified FrontRow.App.Env as Env
 import FrontRow.App.Time (Seconds(..))
 import System.Process (readProcess)
@@ -64,13 +65,7 @@ runDB
   -> m a
 runDB action = do
   pool <- asks getSqlPool
-  mTimeout <- asks getStatementTimeout
-
-  flip runSqlPool pool $ do
-    for_ mTimeout $ \timeout ->
-      let timeoutMillis = unSeconds timeout * 1000
-      in [executeQQ| SET statement_timeout = #{timeoutMillis} |]
-    action
+  runSqlPool action pool
 
 data PostgresConnectionConf = PostgresConnectionConf
   { pccHost :: String
@@ -79,6 +74,7 @@ data PostgresConnectionConf = PostgresConnectionConf
   , pccPassword :: PostgresPassword
   , pccDatabase :: String
   , pccPoolSize :: Int
+  , pccStatementTimeout :: Maybe Seconds
   }
   deriving stock (Show, Eq)
 
@@ -111,6 +107,7 @@ envParseDatabaseConf source = do
   database <- Env.var Env.str "PGDATABASE" Env.nonEmpty
   port <- Env.var Env.auto "PGPORT" Env.nonEmpty
   poolSize <- Env.var Env.auto "PGPOOLSIZE" $ Env.def 1
+  statementTimeout <- Env.var Env.auto "PGSTATEMENTTIMEOUT" $ Env.def Nothing
   pure PostgresConnectionConf
     { pccHost = host
     , pccPort = port
@@ -118,6 +115,7 @@ envParseDatabaseConf source = do
     , pccPassword = password
     , pccDatabase = database
     , pccPoolSize = poolSize
+    , pccStatementTimeout = statementTimeout
     }
 
 data AuroraIamToken = AuroraIamToken
@@ -181,12 +179,20 @@ refreshIamToken conf tokenIORef = do
 --   let tenMinutesInSeconds = 60 * 15
 --   pure $ now `diffUTCTime` aitCreatedAt > tenMinutesInSeconds
 
+setTimeout :: PostgresConnectionConf -> Connection -> IO ()
+setTimeout PostgresConnectionConf {..} conn =
+  for_ pccStatementTimeout $ \timeout ->
+    let timeoutMillis = unSeconds timeout * 1000
+    in execute conn [sql| SET statement_timeout = ? |] (Only timeoutMillis)
+
 makePostgresPoolWith :: PostgresConnectionConf -> IO SqlPool
 makePostgresPoolWith conf@PostgresConnectionConf {..} = case pccPassword of
   PostgresPasswordIamAuth -> makePostgresPoolWithIamAuth conf
-  PostgresPasswordStatic password -> runNoLoggingT $ createPostgresqlPool
-    (postgresConnectionString conf password)
-    pccPoolSize
+  PostgresPasswordStatic password ->
+    runNoLoggingT $ createPostgresqlPoolModified
+      (setTimeout conf)
+      (postgresConnectionString conf password)
+      pccPoolSize
 
 -- | Creates a PostgreSQL pool using IAM auth for the password.
 makePostgresPoolWithIamAuth :: PostgresConnectionConf -> IO SqlPool
@@ -200,7 +206,9 @@ makePostgresPoolWithIamAuth conf@PostgresConnectionConf {..} = do
   mkConn tokenIORef logFunc = do
     token <- readIORef tokenIORef
     let connStr = postgresConnectionString conf (aitToken token)
-    connectPostgreSQL connStr >>= openSimpleConn logFunc
+    conn <- connectPostgreSQL connStr
+    setTimeout conf conn
+    openSimpleConn logFunc conn
 
 postgresConnectionString :: PostgresConnectionConf -> String -> ByteString
 postgresConnectionString PostgresConnectionConf {..} password =
