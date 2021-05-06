@@ -181,7 +181,7 @@ httpDecode decode req = do
 
 -- | Request a lazy 'ByteString', handling 429 retries
 httpLbs :: MonadIO m => Request -> m (Response ByteString)
-httpLbs = rateLimited httpLBS . setRequestIgnoreStatus
+httpLbs = rateLimited httpLBS
 
 -- | Request all pages of a paginated endpoint into a big list
 --
