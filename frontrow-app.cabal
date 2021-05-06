@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e421d2d191171413d345575f00769fbfc0c9342b87bbbbbee772e87ceec54c75
+-- hash: e9d517c41cc7d9ff2f36feb6721d9dcbfaec9dd5eebd5ccc48a0baf465f1abb3
 
 name:           frontrow-app
 version:        0.0.0.1
@@ -58,6 +58,7 @@ library
     , hspec-core
     , hspec-expectations-lifted
     , hspec-junit-formatter
+    , http-client
     , http-conduit
     , http-link-header
     , http-types
