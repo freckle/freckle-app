@@ -47,11 +47,9 @@ type SqlPool = Pool SqlBackend
 
 class HasSqlPool app where
   getSqlPool :: app -> SqlPool
-  getStatementTimeout :: app -> Maybe Seconds
 
 instance HasSqlPool SqlPool where
   getSqlPool = id
-  getStatementTimeout = const Nothing
 
 makePostgresPool :: IO SqlPool
 makePostgresPool = do
