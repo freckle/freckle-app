@@ -30,7 +30,6 @@ import Control.Monad.Logger (runNoLoggingT)
 import Control.Monad.Reader
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS8
-import Data.Foldable (for_)
 import Data.IORef
 import Data.Pool
 import qualified Data.Text as T
@@ -72,7 +71,7 @@ data PostgresConnectionConf = PostgresConnectionConf
   , pccPassword :: PostgresPassword
   , pccDatabase :: String
   , pccPoolSize :: Int
-  , pccStatementTimeout :: Maybe Seconds
+  , pccStatementTimeout :: Seconds
   }
   deriving stock (Show, Eq)
 
@@ -105,7 +104,7 @@ envParseDatabaseConf source = do
   database <- Env.var Env.str "PGDATABASE" Env.nonEmpty
   port <- Env.var Env.auto "PGPORT" Env.nonEmpty
   poolSize <- Env.var Env.auto "PGPOOLSIZE" $ Env.def 1
-  statementTimeout <- Env.var Env.auto "PGSTATEMENTTIMEOUT" $ Env.def Nothing
+  statementTimeout <- Env.var Env.auto "PGSTATEMENTTIMEOUT" $ Env.def 120
   pure PostgresConnectionConf
     { pccHost = host
     , pccPort = port
@@ -179,9 +178,8 @@ refreshIamToken conf tokenIORef = do
 
 setTimeout :: PostgresConnectionConf -> Connection -> IO ()
 setTimeout PostgresConnectionConf {..} conn =
-  for_ pccStatementTimeout $ \timeout ->
-    let timeoutMillis = unSeconds timeout * 1000
-    in execute conn [sql| SET statement_timeout = ? |] (Only timeoutMillis)
+  let timeoutMillis = unSeconds pccStatementTimeout * 1000
+  in void $ execute conn [sql| SET statement_timeout = ? |] (Only timeoutMillis)
 
 makePostgresPoolWith :: PostgresConnectionConf -> IO SqlPool
 makePostgresPoolWith conf@PostgresConnectionConf {..} = case pccPassword of
