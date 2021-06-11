@@ -56,6 +56,7 @@ module FrontRow.App.Http
   , HttpDecodeError(..)
   , httpDecode
   , httpLbs
+  , httpNoBody
   , httpPaginated
   , sourcePaginated
 
@@ -130,7 +131,8 @@ import qualified Data.List.NonEmpty as NE
 import FrontRow.App.Http.Paginate
 import FrontRow.App.Http.Retry
 import Network.HTTP.Conduit (HttpExceptionContent(..))
-import Network.HTTP.Simple hiding (httpLbs)
+import Network.HTTP.Simple hiding (httpLbs, httpNoBody)
+import qualified Network.HTTP.Simple as HTTP
 import Network.HTTP.Types.Header (hAccept, hAuthorization)
 import Network.HTTP.Types.Status
   ( Status
@@ -182,6 +184,10 @@ httpDecode decode req = do
 -- | Request a lazy 'ByteString', handling 429 retries
 httpLbs :: MonadIO m => Request -> m (Response ByteString)
 httpLbs = rateLimited httpLBS
+
+-- | Make a Request ignoring the response, but handling 429 retries
+httpNoBody :: MonadIO m => Request -> m (Response ())
+httpNoBody = rateLimited HTTP.httpNoBody
 
 -- | Request all pages of a paginated endpoint into a big list
 --
