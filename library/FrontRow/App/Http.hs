@@ -70,6 +70,7 @@ module FrontRow.App.Http
   , addBearerAuthorizationHeader
   , addToRequestQueryString
   , setRequestBasicAuth
+  , setRequestBodyJSON
   , setRequestCheckStatus
   , setRequestPath
 
