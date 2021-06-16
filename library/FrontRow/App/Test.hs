@@ -22,6 +22,7 @@ import Control.Monad.Random (MonadRandom(..))
 import Control.Monad.Reader
 import Control.Monad.Trans.Control
 import Data.Pool as X
+import Database.Persist.Sql (SqlPersistT, runSqlPool)
 import FrontRow.App.Database as X
 import LoadEnv
 import Test.Hspec as X
@@ -83,9 +84,9 @@ withApp load = beforeAll (loadEnvTest *> load)
 -- truncate tables.
 --
 withAppSql
-  :: HasSqlPool app => (SqlPool -> IO app) -> IO app -> SpecWith app -> Spec
-withAppSql f load =
-  beforeAll (loadEnvTest *> load) . beforeWith (f . getSqlPool)
+  :: HasSqlPool app => SqlPersistT IO a -> IO app -> SpecWith app -> Spec
+withAppSql f load = beforeAll (loadEnvTest *> load) . beforeWith setup
+  where setup app = app <$ runSqlPool f (getSqlPool app)
 
 loadEnvTest :: IO ()
 loadEnvTest = loadEnvFrom ".env.test" >> loadEnv
