@@ -6,10 +6,10 @@
 module FrontRow.App.Test
   ( AppExample
   , withApp
+  , withAppSql
   , runAppTest
   , module X
-  )
-where
+  ) where
 
 import Prelude
 
@@ -22,6 +22,7 @@ import Control.Monad.Random (MonadRandom(..))
 import Control.Monad.Reader
 import Control.Monad.Trans.Control
 import Data.Pool as X
+import Database.Persist.Sql (SqlPersistT, runSqlPool)
 import FrontRow.App.Database as X
 import LoadEnv
 import Test.Hspec as X
@@ -68,21 +69,27 @@ instance Example (AppExample app a) where
 --
 -- @
 -- spec :: Spec
--- spec = withApp loadApp $ do
+-- spec = 'withApp' loadApp $ do
 -- @
 --
--- Reads @.env.test@, then @.env@, loads a DB 'Pool' and passes that to the
--- given function to load the rest of the application. Examples within this spec
--- can use 'runAppTest', and 'runDB'.
+-- Reads @.env.test@, then @.env@, then loads the application. Examples within
+-- this spec can use 'runAppTest' (and 'runDB', if the app 'HasSqlPool').
 --
-withApp :: (SqlPool -> IO app) -> SpecWith app -> Spec
-withApp load = beforeAll (loadEnvTest *> loadPool) . beforeWith load
+withApp :: IO app -> SpecWith app -> Spec
+withApp load = beforeAll (loadEnvTest *> load)
+
+-- | 'withApp', with custom DB 'Pool' initialization
+--
+-- Runs the given function on the pool before every spec item. For example, to
+-- truncate tables.
+--
+withAppSql
+  :: HasSqlPool app => SqlPersistT IO a -> IO app -> SpecWith app -> Spec
+withAppSql f load = beforeAll (loadEnvTest *> load) . beforeWith setup
+  where setup app = app <$ runSqlPool f (getSqlPool app)
 
 loadEnvTest :: IO ()
 loadEnvTest = loadEnvFrom ".env.test" >> loadEnv
-
-loadPool :: IO SqlPool
-loadPool = makePostgresPool
 
 -- | Run an action with the test @App@
 --
