@@ -1,22 +1,25 @@
-resolver: lts-16.29
+resolver: lts-18.0
 
 ghc-options:
-  "$locals": -fwrite-ide-info
+  "$locals": >-
+    -fwrite-ide-info
     -Weverything
-    -Wno-missing-exported-signatures
-    -Wno-missed-specialisations
     -Wno-all-missed-specialisations
-    -Wno-unsafe
-    -Wno-safe
-    -Wno-missing-local-signatures
-    -Wno-monomorphism-restriction
-    -Wno-missing-import-lists
-    -Wno-missing-export-lists
-    -Wno-incomplete-uni-patterns
-    -Wno-partial-fields
-    -Wno-implicit-prelude
     -Wno-deriving-typeable
+    -Wno-implicit-prelude
+    -Wno-incomplete-uni-patterns
+    -Wno-missed-specialisations
+    -Wno-missing-export-lists
+    -Wno-missing-exported-signatures
+    -Wno-missing-import-lists
+    -Wno-missing-local-signatures
     -Wno-missing-monadfail-instances
+    -Wno-missing-safe-haskell-mode
+    -Wno-monomorphism-restriction
+    -Wno-partial-fields
+    -Wno-prepositive-qualified-module
+    -Wno-safe
+    -Wno-unsafe
 
 extra-deps:
   - git: https://github.com/freckle/hspec-junit-formatter
