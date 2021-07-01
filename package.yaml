@@ -64,6 +64,7 @@ library:
     - monad-logger
     - mtl
     - network
+    - network-uri
     - persistent
     - persistent-postgresql
     - postgresql-simple
@@ -110,4 +111,3 @@ tests:
     source-dirs: doctest
     dependencies:
       - frontrow-app
-      - text
