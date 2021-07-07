@@ -1,5 +1,9 @@
 resolver: lts-18.0
 
+extra-deps:
+  # Remove this with the next LTS bump
+  - hspec-junit-formatter-1.0.0.5@sha256:bef98ad379c5288e9ddab836e27bc009df64dc4f8fc5bd9c56dc1f19f2061da7,1869
+
 ghc-options:
   "$locals": >-
     -fwrite-ide-info
@@ -20,7 +24,3 @@ ghc-options:
     -Wno-prepositive-qualified-module
     -Wno-safe
     -Wno-unsafe
-
-extra-deps:
-  - git: https://github.com/freckle/hspec-junit-formatter
-    commit: 334e654d3ea7e7214706c1d39df292cbf1a46ac5

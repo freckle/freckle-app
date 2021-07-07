@@ -5,16 +5,12 @@
 
 packages:
 - completed:
-    name: hspec-junit-formatter
-    version: 0.0.0.0
-    git: https://github.com/freckle/hspec-junit-formatter
+    hackage: hspec-junit-formatter-1.0.0.5@sha256:bef98ad379c5288e9ddab836e27bc009df64dc4f8fc5bd9c56dc1f19f2061da7,1869
     pantry-tree:
-      size: 678
-      sha256: 3b2202ef0bfdf38a109e500aa9e13c070dfe962f1226a488e4dc74f8e1297391
-    commit: 334e654d3ea7e7214706c1d39df292cbf1a46ac5
+      size: 510
+      sha256: fcca7501eea16d5840461cbcc98d9f80aaa2a798ee22ba090ba3c4cff492d0dd
   original:
-    git: https://github.com/freckle/hspec-junit-formatter
-    commit: 334e654d3ea7e7214706c1d39df292cbf1a46ac5
+    hackage: hspec-junit-formatter-1.0.0.5@sha256:bef98ad379c5288e9ddab836e27bc009df64dc4f8fc5bd9c56dc1f19f2061da7,1869
 snapshots:
 - completed:
     size: 585393
