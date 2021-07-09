@@ -119,7 +119,7 @@ module FrontRow.App.Http
 
 import Prelude
 
-import Conduit ((.|), foldC, mapMC, runConduit)
+import Conduit (foldC, mapMC, runConduit, (.|))
 import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson (FromJSON)
 import qualified Data.Aeson as Aeson
