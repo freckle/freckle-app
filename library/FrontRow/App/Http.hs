@@ -72,9 +72,9 @@ module FrontRow.App.Http
   , addToRequestQueryString
   , setRequestBasicAuth
   , setRequestBodyJSON
+  , setRequestBodyURLEncoded
   , setRequestCheckStatus
   , setRequestPath
-  , setRequestBodyURLEncoded
 
   -- * Response accessors
   , Response
