@@ -5,7 +5,7 @@ where
 
 import Prelude
 
-import FrontRow.App.Test.DocTest
+import Freckle.App.Test.DocTest
 
 main :: IO ()
 main = doctest "library/"

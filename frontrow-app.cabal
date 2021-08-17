@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: adf07217e7945713311b5df77caf52321914db12ee9429e2d0372a4d2de36619
+-- hash: 2d1593d97f6744e11ba1fd433bb2de01810b657b7c17b6744f7163de86922aa3
 
 name:           frontrow-app
 version:        0.0.0.1
@@ -14,25 +14,25 @@ build-type:     Simple
 
 library
   exposed-modules:
-      FrontRow.App
-      FrontRow.App.Database
-      FrontRow.App.Datadog
-      FrontRow.App.Env
-      FrontRow.App.Env.Internal
-      FrontRow.App.Ghci
-      FrontRow.App.GlobalCache
-      FrontRow.App.Http
-      FrontRow.App.Http.Paginate
-      FrontRow.App.Http.Retry
-      FrontRow.App.Logging
-      FrontRow.App.RIO
-      FrontRow.App.Test
-      FrontRow.App.Test.DocTest
-      FrontRow.App.Test.Hspec.Runner
-      FrontRow.App.Time
-      FrontRow.App.Version
-      FrontRow.App.Wai
-      FrontRow.App.Yesod
+      Freckle.App
+      Freckle.App.Database
+      Freckle.App.Datadog
+      Freckle.App.Env
+      Freckle.App.Env.Internal
+      Freckle.App.Ghci
+      Freckle.App.GlobalCache
+      Freckle.App.Http
+      Freckle.App.Http.Paginate
+      Freckle.App.Http.Retry
+      Freckle.App.Logging
+      Freckle.App.RIO
+      Freckle.App.Test
+      Freckle.App.Test.DocTest
+      Freckle.App.Test.Hspec.Runner
+      Freckle.App.Time
+      Freckle.App.Version
+      Freckle.App.Wai
+      Freckle.App.Yesod
       Network.HTTP.Link.Compat
   other-modules:
       Paths_frontrow_app
@@ -158,10 +158,10 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Main.hs
   other-modules:
-      FrontRow.App.Env.InternalSpec
-      FrontRow.App.HttpSpec
-      FrontRow.App.VersionSpec
-      FrontRow.App.WaiSpec
+      Freckle.App.Env.InternalSpec
+      Freckle.App.HttpSpec
+      Freckle.App.VersionSpec
+      Freckle.App.WaiSpec
       Spec
       Paths_frontrow_app
   hs-source-dirs:
