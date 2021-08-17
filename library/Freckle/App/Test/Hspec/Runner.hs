@@ -15,8 +15,8 @@ import Control.Monad.Trans.Maybe (MaybeT(MaybeT), runMaybeT)
 import Data.List (isInfixOf)
 import Data.Maybe (fromMaybe, isJust)
 import System.Environment (getArgs, lookupEnv)
-import Test.Hspec (Spec)
 import Test.HSpec.JUnit (runJUnitSpec)
+import Test.Hspec (Spec)
 import Test.Hspec.Runner
   ( Config
   , Path
