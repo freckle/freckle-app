@@ -10,4 +10,4 @@ import qualified Spec
 import Test.Hspec
 
 main :: IO ()
-main = "frontrow-app" `runParConfig` parallel Spec.spec
+main = "freckle-app" `runParConfig` parallel Spec.spec

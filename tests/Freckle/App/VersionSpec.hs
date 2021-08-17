@@ -50,7 +50,7 @@ spec = do
           }
 
 inTemporaryDirectory :: (FilePath -> IO a) -> IO a
-inTemporaryDirectory f = withSystemTempDirectory "frontrow-app-tests"
+inTemporaryDirectory f = withSystemTempDirectory "freckle-app-tests"
   $ \tmp -> withCurrentDirectory tmp $ f tmp
 
 parseTimeUnsafe :: String -> String -> UTCTime

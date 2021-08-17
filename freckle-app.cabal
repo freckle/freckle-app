@@ -3,10 +3,8 @@ cabal-version: 1.12
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: 341d98357693276737fbcaa2cf12f6342f492fec8ab1c6ba0bf198e466109a47
 
-name:           frontrow-app
+name:           freckle-app
 version:        1.0.0.0
 license:        MIT
 license-file:   LICENSE
@@ -35,7 +33,7 @@ library
       Freckle.App.Yesod
       Network.HTTP.Link.Compat
   other-modules:
-      Paths_frontrow_app
+      Paths_freckle_app
   hs-source-dirs:
       library
   default-extensions:
@@ -121,7 +119,7 @@ test-suite doctest
   type: exitcode-stdio-1.0
   main-is: Main.hs
   other-modules:
-      Paths_frontrow_app
+      Paths_freckle_app
   hs-source-dirs:
       doctest
   default-extensions:
@@ -151,7 +149,7 @@ test-suite doctest
       TypeFamilies
   build-depends:
       base
-    , frontrow-app
+    , freckle-app
   default-language: Haskell2010
 
 test-suite spec
@@ -163,7 +161,7 @@ test-suite spec
       Freckle.App.VersionSpec
       Freckle.App.WaiSpec
       Spec
-      Paths_frontrow_app
+      Paths_freckle_app
   hs-source-dirs:
       tests
   default-extensions:
@@ -197,7 +195,7 @@ test-suite spec
     , base
     , bytestring
     , directory
-    , frontrow-app
+    , freckle-app
     , hspec
     , http-types
     , lens

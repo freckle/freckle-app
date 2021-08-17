@@ -1,5 +1,5 @@
 ---
-name: frontrow-app
+name: freckle-app
 version: 1.0.0.0
 
 dependencies:
@@ -94,7 +94,7 @@ tests:
       - aeson
       - bytestring
       - directory
-      - frontrow-app
+      - freckle-app
       - hspec
       - http-types
       - lens
@@ -110,4 +110,4 @@ tests:
     main: Main.hs
     source-dirs: doctest
     dependencies:
-      - frontrow-app
+      - freckle-app
