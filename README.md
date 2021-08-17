@@ -1,6 +1,6 @@
-# frontrow-app
+# freckle-app
 
-Haskell application toolkit used by Freckle (formerly Front Row).
+Haskell application toolkit used at Freckle.
 
 ---
 

@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # FrontRow.App.Version tests create commits
+      # Freckle.App.Version tests create commits
       - name: git config
         run: |
           actor=${{ github.actor }}

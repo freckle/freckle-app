@@ -1,0 +1,209 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           freckle-app
+version:        1.0.0.0
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+
+library
+  exposed-modules:
+      Freckle.App
+      Freckle.App.Database
+      Freckle.App.Datadog
+      Freckle.App.Env
+      Freckle.App.Env.Internal
+      Freckle.App.Ghci
+      Freckle.App.GlobalCache
+      Freckle.App.Http
+      Freckle.App.Http.Paginate
+      Freckle.App.Http.Retry
+      Freckle.App.Logging
+      Freckle.App.RIO
+      Freckle.App.Test
+      Freckle.App.Test.DocTest
+      Freckle.App.Test.Hspec.Runner
+      Freckle.App.Time
+      Freckle.App.Version
+      Freckle.App.Wai
+      Freckle.App.Yesod
+      Network.HTTP.Link.Compat
+  other-modules:
+      Paths_freckle_app
+  hs-source-dirs:
+      library
+  default-extensions:
+      BangPatterns
+      DataKinds
+      DeriveAnyClass
+      DeriveFoldable
+      DeriveFunctor
+      DeriveGeneric
+      DeriveLift
+      DeriveTraversable
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      NoImplicitPrelude
+      NoMonomorphismRestriction
+      OverloadedStrings
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      StandaloneDeriving
+      TypeApplications
+      TypeFamilies
+  build-depends:
+      Glob
+    , MonadRandom
+    , aeson
+    , ansi-terminal
+    , base
+    , bytestring
+    , case-insensitive
+    , conduit
+    , data-default
+    , datadog
+    , doctest
+    , errors
+    , exceptions
+    , fast-logger
+    , filepath
+    , hspec
+    , hspec-core
+    , hspec-expectations-lifted
+    , hspec-junit-formatter
+    , http-client
+    , http-conduit
+    , http-link-header
+    , http-types
+    , immortal
+    , iproute
+    , lens
+    , load-env
+    , monad-control
+    , monad-logger
+    , mtl
+    , network
+    , network-uri
+    , persistent
+    , persistent-postgresql
+    , postgresql-simple
+    , primitive
+    , process
+    , resource-pool
+    , retry
+    , rio
+    , text
+    , time
+    , transformers
+    , transformers-base
+    , unliftio
+    , unliftio-core
+    , wai
+    , wai-extra
+    , yaml
+    , yesod
+    , yesod-core
+  default-language: Haskell2010
+
+test-suite doctest
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Paths_freckle_app
+  hs-source-dirs:
+      doctest
+  default-extensions:
+      BangPatterns
+      DataKinds
+      DeriveAnyClass
+      DeriveFoldable
+      DeriveFunctor
+      DeriveGeneric
+      DeriveLift
+      DeriveTraversable
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      NoImplicitPrelude
+      NoMonomorphismRestriction
+      OverloadedStrings
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      StandaloneDeriving
+      TypeApplications
+      TypeFamilies
+  build-depends:
+      base
+    , freckle-app
+  default-language: Haskell2010
+
+test-suite spec
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Freckle.App.Env.InternalSpec
+      Freckle.App.HttpSpec
+      Freckle.App.VersionSpec
+      Freckle.App.WaiSpec
+      Spec
+      Paths_freckle_app
+  hs-source-dirs:
+      tests
+  default-extensions:
+      BangPatterns
+      DataKinds
+      DeriveAnyClass
+      DeriveFoldable
+      DeriveFunctor
+      DeriveGeneric
+      DeriveLift
+      DeriveTraversable
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      NoImplicitPrelude
+      NoMonomorphismRestriction
+      OverloadedStrings
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      StandaloneDeriving
+      TypeApplications
+      TypeFamilies
+  ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
+  build-depends:
+      aeson
+    , base
+    , bytestring
+    , directory
+    , freckle-app
+    , hspec
+    , http-types
+    , lens
+    , lens-aeson
+    , process
+    , temporary
+    , text
+    , time
+    , wai
+    , wai-extra
+  default-language: Haskell2010

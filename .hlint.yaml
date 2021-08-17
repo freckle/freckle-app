@@ -14,10 +14,10 @@
 # We test identities in InternalSpec, so we can't have HLint yelling about them
 - ignore:
     name: "Alternative law, left identity"
-    within: FrontRow.App.Env.InternalSpec
+    within: Freckle.App.Env.InternalSpec
 - ignore:
     name: "Alternative law, right identity"
-    within: FrontRow.App.Env.InternalSpec
+    within: Freckle.App.Env.InternalSpec
 
 # Custom Warnings
 - warn: {lhs: mapM, rhs: traverse}
