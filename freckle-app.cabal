@@ -6,9 +6,19 @@ cabal-version: 1.12
 
 name:           freckle-app
 version:        1.0.0.0
+synopsis:       Haskell application toolkit used at Freckle
+description:    Please see README.md
+category:       Utils
+homepage:       https://github.com/freckle/freckle-app#readme
+bug-reports:    https://github.com/freckle/freckle-app/issues
+maintainer:     Freckle Education
 license:        MIT
 license-file:   LICENSE
 build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/freckle/freckle-app
 
 library
   exposed-modules:
