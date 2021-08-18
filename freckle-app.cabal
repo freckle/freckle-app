@@ -199,7 +199,7 @@ test-suite spec
       StandaloneDeriving
       TypeApplications
       TypeFamilies
-  ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
+  ghc-options: -threaded -rtsopts "-with-rtsopts=-N"
   build-depends:
       aeson
     , base <5
