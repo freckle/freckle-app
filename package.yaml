@@ -1,9 +1,18 @@
 ---
 name: freckle-app
 version: 1.0.0.0
+maintainer: Freckle Education
+category: Utils
+github: freckle/freckle-app
+synopsis: Haskell application toolkit used at Freckle
+description: Please see README.md
+
+extra-source-files:
+  - README.md
+  - CHANGELOG.md
 
 dependencies:
-  - base
+  - base < 5
 
 default-extensions:
   - BangPatterns
@@ -89,7 +98,7 @@ tests:
   spec:
     main: Main.hs
     source-dirs: tests
-    ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
+    ghc-options: -threaded -rtsopts "-with-rtsopts=-N"
     dependencies:
       - aeson
       - bytestring
