@@ -8,7 +8,7 @@ synopsis: Haskell application toolkit used at Freckle
 description: Please see README.md
 
 dependencies:
-  - base
+  - base < 5
 
 default-extensions:
   - BangPatterns

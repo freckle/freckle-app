@@ -76,7 +76,7 @@ library
     , MonadRandom
     , aeson
     , ansi-terminal
-    , base
+    , base <5
     , bytestring
     , case-insensitive
     , conduit
@@ -158,7 +158,7 @@ test-suite doctest
       TypeApplications
       TypeFamilies
   build-depends:
-      base
+      base <5
     , freckle-app
   default-language: Haskell2010
 
@@ -202,7 +202,7 @@ test-suite spec
   ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
   build-depends:
       aeson
-    , base
+    , base <5
     , bytestring
     , directory
     , freckle-app
