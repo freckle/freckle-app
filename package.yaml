@@ -8,8 +8,8 @@ synopsis: Haskell application toolkit used at Freckle
 description: Please see README.md
 
 extra-source-files:
-- README.md
-- CHANGELOG.md
+  - README.md
+  - CHANGELOG.md
 
 dependencies:
   - base < 5
