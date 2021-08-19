@@ -260,16 +260,11 @@ test-suite spec
       aeson
     , base <5
     , bytestring
-    , directory
     , freckle-app
     , hspec
     , http-types
     , lens
     , lens-aeson
-    , process
-    , temporary
-    , text
-    , time
     , wai
     , wai-extra
   default-language: Haskell2010
