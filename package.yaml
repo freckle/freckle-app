@@ -12,7 +12,7 @@ extra-source-files:
   - CHANGELOG.md
 
 flags:
-  git:
+  test-git:
     description: Run tests that run git commands
     manual: true
     default: true
@@ -138,7 +138,7 @@ tests:
       - process
       - text
     when:
-      - condition: flag(git)
+      - condition: flag(test-git)
         then:
           buildable: true
         else:

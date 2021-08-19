@@ -23,7 +23,7 @@ source-repository head
   type: git
   location: https://github.com/freckle/freckle-app
 
-flag git
+flag test-git
   description: Run tests that run git commands
   manual: True
   default: True
@@ -213,7 +213,7 @@ test-suite gittest
     , temporary
     , text
     , time
-  if flag(git)
+  if flag(test-git)
     buildable: True
   else
     buildable: False
