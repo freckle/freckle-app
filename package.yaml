@@ -11,6 +11,12 @@ extra-source-files:
   - README.md
   - CHANGELOG.md
 
+flags:
+  test-git:
+    description: Run tests that run git commands
+    manual: true
+    default: true
+
 dependencies:
   - base < 5
 
@@ -102,16 +108,11 @@ tests:
     dependencies:
       - aeson
       - bytestring
-      - directory
       - freckle-app
       - hspec
       - http-types
       - lens
       - lens-aeson
-      - process
-      - temporary
-      - text
-      - time
       - wai
       - wai-extra
 
@@ -120,3 +121,20 @@ tests:
     source-dirs: doctest
     dependencies:
       - freckle-app
+  gittest:
+    main: Main.hs
+    source-dirs: gittest
+    dependencies:
+      - freckle-app
+      - directory
+      - hspec
+      - temporary
+      - time
+      - process
+      - text
+    when:
+      - condition: flag(test-git)
+        then:
+          buildable: true
+        else:
+          buildable: false
