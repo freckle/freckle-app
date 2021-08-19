@@ -11,6 +11,12 @@ extra-source-files:
   - README.md
   - CHANGELOG.md
 
+flags:
+  git:
+    description: Run tests that run git commands
+    manual: true
+    default: true
+
 dependencies:
   - base < 5
 
@@ -120,3 +126,20 @@ tests:
     source-dirs: doctest
     dependencies:
       - freckle-app
+  gittest:
+    main: Main.hs
+    source-dirs: gittest
+    dependencies:
+      - freckle-app
+      - directory
+      - hspec
+      - temporary
+      - time
+      - process
+      - text
+    when:
+      - condition: flag(git)
+        then:
+          buildable: true
+        else:
+          buildable: false
