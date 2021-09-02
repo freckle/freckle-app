@@ -10,6 +10,7 @@ description: Please see README.md
 extra-source-files:
   - README.md
   - CHANGELOG.md
+  - package.yaml
 
 flags:
   test-git:
