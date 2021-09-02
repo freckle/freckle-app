@@ -18,6 +18,7 @@ build-type:     Simple
 extra-source-files:
     README.md
     CHANGELOG.md
+    package.yaml
 
 source-repository head
   type: git
