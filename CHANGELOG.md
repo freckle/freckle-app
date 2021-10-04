@@ -1,3 +1,11 @@
+## [*Unreleased*](https://github.com/freckle/freckle-app/compare/v1.0.0.3...main)
+
+- Support seconds or milliseconds in `PGSTATEMENTTIMEOUT`
+
+  NOTE: We consider this a non-breaking change because the environment variable
+  interface is backwards-compatible. By normal Haskell rules, it would be major
+  since it's changing the type of something exported.
+
 ## [v1.0.0.3](https://github.com/freckle/freckle-app/compare/v1.0.0.2...v1.0.0.3)
 
 - Add `package.yaml` to `extra-source-files`.
