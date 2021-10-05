@@ -1,18 +1,21 @@
+{-# LANGUAGE TupleSections #-}
+
 -- | Integration of "Freckle.App" tooling with "Network.Wai"
 module Freckle.App.Wai
   ( RouteName(..)
   , TraceId(..)
   , makeLoggingMiddleware
+  , makeRequestMetricsMiddleware
   , noCacheMiddleware
   , corsMiddleware
-  )
-where
+  ) where
 
 import Prelude
 
 import Control.Applicative ((<|>))
 import Control.Monad (guard)
 import Control.Monad.Logger (LogLevel(..))
+import Control.Monad.Reader (runReaderT)
 import Data.Aeson
 import Data.Bifunctor (first)
 import Data.ByteString (ByteString)
@@ -23,10 +26,13 @@ import qualified Data.ByteString.Lazy as BSL
 import qualified Data.CaseInsensitive as CI
 import Data.Default (def)
 import Data.IP (fromHostAddress, fromHostAddress6)
-import Data.Maybe (fromMaybe)
-import Data.Text (Text)
+import Data.Maybe (fromMaybe, maybeToList)
+import Data.Text (Text, pack)
 import Data.Text.Encoding (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
+import Data.Time (getCurrentTime)
+import Freckle.App.Datadog (HasDogStatsClient, HasDogStatsTags)
+import qualified Freckle.App.Datadog as Datadog
 import Freckle.App.Logging
 import Network.HTTP.Types (QueryItem, ResponseHeaders)
 import Network.HTTP.Types.Status (Status, status200, statusCode)
@@ -158,6 +164,26 @@ sockAddrToIp :: SockAddr -> ByteString
 sockAddrToIp (SockAddrInet _ h) = BS8.pack $ show $ fromHostAddress h
 sockAddrToIp (SockAddrInet6 _ _ h _) = BS8.pack $ show $ fromHostAddress6 h
 sockAddrToIp (SockAddrUnix _) = "<socket>"
+
+makeRequestMetricsMiddleware
+  :: (HasDogStatsClient env, HasDogStatsTags env)
+  => env
+  -> (Request -> Maybe RouteName)
+  -> Middleware
+makeRequestMetricsMiddleware env getRouteName app req sendResponse' = do
+  start <- getCurrentTime
+  app req $ \res -> do
+    flip runReaderT env $ do
+      Datadog.increment "requests" $ tags res
+      Datadog.histogramSinceMs "response_time_ms" (tags res) start
+    sendResponse' res
+ where
+  tags res =
+    maybeToList (("route", ) . unRouteName <$> getRouteName req)
+      <> [ ("method", decodeUtf8 $ requestMethod req)
+         , ("status", pack $ show $ statusCode $ responseStatus res)
+         ]
+
 
 noCacheMiddleware :: Middleware
 noCacheMiddleware = addHeaders [cacheControlHeader]

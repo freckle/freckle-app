@@ -8,6 +8,8 @@
 
 - Add `respondQueryCanceled` Yesod Middlewares
 
+- Add `makeRequestMetricsMiddleware`
+
 ## [v1.0.0.3](https://github.com/freckle/freckle-app/compare/v1.0.0.2...v1.0.0.3)
 
 - Add `package.yaml` to `extra-source-files`.
