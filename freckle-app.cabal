@@ -46,7 +46,6 @@ library
       Freckle.App.Test
       Freckle.App.Test.DocTest
       Freckle.App.Test.Hspec.Runner
-      Freckle.App.Time
       Freckle.App.Version
       Freckle.App.Wai
       Freckle.App.Yesod

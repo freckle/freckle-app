@@ -10,13 +10,14 @@ module Freckle.App.Database
   -- * Abstract over access to a sql database
     HasSqlPool(..)
   , SqlPool
-  , Seconds(..)
   , makePostgresPool
   , makePostgresPoolWith
   , runDB
   , PostgresConnectionConf(..)
   , PostgresPasswordSource(..)
   , PostgresPassword(..)
+  , PostgresStatementTimeout(..)
+  , postgresStatementTimeoutMilliseconds
   , envParseDatabaseConf
   , envPostgresPasswordSource
   ) where
@@ -30,6 +31,7 @@ import Control.Monad.Logger (runNoLoggingT)
 import Control.Monad.Reader
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS8
+import Data.Char (isDigit)
 import Data.IORef
 import Data.Pool
 import qualified Data.Text as T
@@ -39,7 +41,6 @@ import Database.PostgreSQL.Simple
   (Connection, Only(..), connectPostgreSQL, execute)
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import qualified Freckle.App.Env as Env
-import Freckle.App.Time (Seconds(..))
 import System.Process (readProcess)
 
 type SqlPool = Pool SqlBackend
@@ -71,7 +72,7 @@ data PostgresConnectionConf = PostgresConnectionConf
   , pccPassword :: PostgresPassword
   , pccDatabase :: String
   , pccPoolSize :: Int
-  , pccStatementTimeout :: Seconds
+  , pccStatementTimeout :: PostgresStatementTimeout
   }
   deriving stock (Show, Eq)
 
@@ -84,6 +85,42 @@ data PostgresPassword
   = PostgresPasswordIamAuth
   | PostgresPasswordStatic String
   deriving stock (Show, Eq)
+
+data PostgresStatementTimeout
+  = PostgresStatementTimeoutSeconds Int
+  | PostgresStatementTimeoutMilliseconds Int
+  deriving stock (Show, Eq)
+
+postgresStatementTimeoutMilliseconds :: PostgresStatementTimeout -> Int
+postgresStatementTimeoutMilliseconds = \case
+  PostgresStatementTimeoutSeconds s -> s * 1000
+  PostgresStatementTimeoutMilliseconds ms -> ms
+
+-- | Read @PGSTATEMENTTIMEOUT@ as seconds or milliseconds
+--
+-- >>> readPostgresStatementTimeout "10"
+-- Right (PostgresStatementTimeoutSeconds 10)
+--
+-- >>> readPostgresStatementTimeout "10s"
+-- Right (PostgresStatementTimeoutSeconds 10)
+--
+-- >>> readPostgresStatementTimeout "10ms"
+-- Right (PostgresStatementTimeoutMilliseconds 10)
+--
+-- >>> readPostgresStatementTimeout "20m"
+-- Left "..."
+--
+-- >>> readPostgresStatementTimeout "2m0"
+-- Left "..."
+--
+readPostgresStatementTimeout
+  :: String -> Either String PostgresStatementTimeout
+readPostgresStatementTimeout x = case span isDigit x of
+  ("", _) -> Left "must be {digits}(s|ms)"
+  (digits, "") -> Right $ PostgresStatementTimeoutSeconds $ read digits
+  (digits, "s") -> Right $ PostgresStatementTimeoutSeconds $ read digits
+  (digits, "ms") -> Right $ PostgresStatementTimeoutMilliseconds $ read digits
+  _ -> Left "must be {digits}(s|ms)"
 
 envPostgresPasswordSource :: Env.Parser PostgresPasswordSource
 envPostgresPasswordSource = do
@@ -104,7 +141,9 @@ envParseDatabaseConf source = do
   database <- Env.var Env.str "PGDATABASE" Env.nonEmpty
   port <- Env.var Env.auto "PGPORT" Env.nonEmpty
   poolSize <- Env.var Env.auto "PGPOOLSIZE" $ Env.def 1
-  statementTimeout <- Env.var Env.auto "PGSTATEMENTTIMEOUT" $ Env.def 120
+  statementTimeout <-
+    Env.var (Env.eitherReader readPostgresStatementTimeout) "PGSTATEMENTTIMEOUT"
+      $ Env.def (PostgresStatementTimeoutSeconds 120)
   pure PostgresConnectionConf
     { pccHost = host
     , pccPort = port
@@ -178,7 +217,7 @@ refreshIamToken conf tokenIORef = do
 
 setTimeout :: PostgresConnectionConf -> Connection -> IO ()
 setTimeout PostgresConnectionConf {..} conn =
-  let timeoutMillis = unSeconds pccStatementTimeout * 1000
+  let timeoutMillis = postgresStatementTimeoutMilliseconds pccStatementTimeout
   in void $ execute conn [sql| SET statement_timeout = ? |] (Only timeoutMillis)
 
 makePostgresPoolWith :: PostgresConnectionConf -> IO SqlPool
