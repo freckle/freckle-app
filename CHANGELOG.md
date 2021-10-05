@@ -6,7 +6,7 @@
   interface is backwards-compatible. By normal Haskell rules, it would be major
   since it's changing the type of something exported.
 
-- Add `catchQueryCanceled` Yesod Middlewares
+- Add `handleQueryCanceled` Yesod Middlewares
 
 ## [v1.0.0.3](https://github.com/freckle/freckle-app/compare/v1.0.0.2...v1.0.0.3)
 
