@@ -184,7 +184,6 @@ makeRequestMetricsMiddleware env getRouteName app req sendResponse' = do
          , ("status", pack $ show $ statusCode $ responseStatus res)
          ]
 
-
 noCacheMiddleware :: Middleware
 noCacheMiddleware = addHeaders [cacheControlHeader]
  where
