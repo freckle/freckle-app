@@ -4,8 +4,8 @@ module Freckle.App.Yesod
   , messageLoggerSource
 
   -- * Functions for use as 'yesodMiddleware'
-  , handleQueryCanceled
-  , handleQueryCanceledHeaders
+  , respondQueryCanceled
+  , respondQueryCanceledHeaders
   ) where
 
 import Prelude
@@ -65,23 +65,23 @@ messageLoggerSource app logger loc src level str =
         FormatTerminal ->
           formatTerminal (getLogDefaultANSI app) loc src level str
 
--- | Catch 'SqlError' for when queries are canceled due to timeout
+-- | Catch 'SqlError' when queries are canceled due to timeout and respond 503
 --
--- Logs, increments a metric, and responds with 503.
+-- Also logs and increments a metric.
 --
-handleQueryCanceled
+respondQueryCanceled
   :: (HasDogStatsClient site, HasDogStatsTags site)
   => HandlerFor site res
   -> HandlerFor site res
-handleQueryCanceled = handleQueryCanceledHeaders []
+respondQueryCanceled = respondQueryCanceledHeaders []
 
--- | 'handleQueryCanceledHeaders' but adding headers to the 503 response
-handleQueryCanceledHeaders
+-- | 'respondQueryCanceledHeaders' but adding headers to the 503 response
+respondQueryCanceledHeaders
   :: (HasDogStatsClient site, HasDogStatsTags site)
   => ResponseHeaders
   -> HandlerFor site res
   -> HandlerFor site res
-handleQueryCanceledHeaders headers = handleJust queryCanceled $ \ex -> do
+respondQueryCanceledHeaders headers = handleJust queryCanceled $ \ex -> do
   logErrorN $ pack $ show ex
   Datadog.increment "query_canceled" []
   sendWaiResponse $ W.responseLBS status503 headers "Query canceled"
