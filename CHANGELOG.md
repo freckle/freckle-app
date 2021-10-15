@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.0.3...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.0.4...main)
+
+None.
+
+## [v1.0.0.4](https://github.com/freckle/freckle-app/compare/v1.0.0.3...v1.0.0.4)
 
 - Support seconds or milliseconds in `PGSTATEMENTTIMEOUT`
 
