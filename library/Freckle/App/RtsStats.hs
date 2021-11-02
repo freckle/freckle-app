@@ -5,7 +5,8 @@ module Freckle.App.RtsStats
 
 import Prelude
 
-import Control.Monad (forever, void)
+import qualified Control.Immortal as Immortal
+import Control.Monad (void)
 import Control.Monad.IO.Unlift (MonadUnliftIO, liftIO)
 import Control.Monad.Reader (MonadReader)
 import Data.Foldable (traverse_)
@@ -15,7 +16,7 @@ import Freckle.App.Datadog (HasDogStatsClient, HasDogStatsTags)
 import qualified Freckle.App.Datadog as Datadog
 import qualified System.Metrics as Ekg
 import qualified System.Metrics.Distribution.Internal as Ekg
-import UnliftIO.Concurrent (forkIO, threadDelay)
+import UnliftIO.Concurrent (threadDelay)
 
 -- | Initialize a thread to poll RTS stats
 --
@@ -32,7 +33,7 @@ forkRtsStatPolling = do
   store <- liftIO Ekg.newStore
   liftIO $ Ekg.registerGcMetrics store
 
-  void $ forkIO $ forever $ do
+  void $ Immortal.create $ \_ -> do
     sample <- liftIO $ Ekg.sampleAll store
     traverse_ (uncurry flushEkgSample) $ HashMap.toList sample
 
