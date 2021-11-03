@@ -107,7 +107,7 @@ incrementGauge
      )
   => Gauge
   -> m ()
-incrementGauge = (`addGauge` 1)
+incrementGauge = addGauge 1
 
 -- | Add to gauge state and report its current value
 addGauge
@@ -116,14 +116,10 @@ addGauge
      , HasDogStatsClient env
      , HasDogStatsTags env
      )
-  => Gauge
-  -> Int64
+  => Int64
+  -> Gauge
   -> m ()
-addGauge Gauge {..} i = do
-  current <- liftIO $ do
-    EKG.add gaugeAtomic i
-    EKG.read gaugeAtomic
-  gauge gaugeName gaugeTags $ fromIntegral current
+addGauge i = withGauge (`EKG.add` i)
 
 -- | Decrement gauge state and report its current value
 decrementGauge
@@ -134,7 +130,7 @@ decrementGauge
      )
   => Gauge
   -> m ()
-decrementGauge = (`subtractGauge` 1)
+decrementGauge = subtractGauge 1
 
 -- | Subtract from gauge state and report its current value
 subtractGauge
@@ -143,12 +139,23 @@ subtractGauge
      , HasDogStatsClient env
      , HasDogStatsTags env
      )
-  => Gauge
-  -> Int64
+  => Int64
+  -> Gauge
   -> m ()
-subtractGauge Gauge {..} i = do
+subtractGauge i = withGauge (`EKG.subtract` i)
+
+withGauge
+  :: ( MonadUnliftIO m
+     , MonadReader env m
+     , HasDogStatsClient env
+     , HasDogStatsTags env
+     )
+  => (EKG.Gauge -> IO ())
+  -> Gauge
+  -> m ()
+withGauge f Gauge {..} = do
   current <- liftIO $ do
-    EKG.subtract gaugeAtomic i
+    f gaugeAtomic
     EKG.read gaugeAtomic
   gauge gaugeName gaugeTags $ fromIntegral current
 
