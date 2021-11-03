@@ -16,10 +16,18 @@ module Freckle.App.Datadog
   -- * Higher-level operations
   , increment
   , counter
-  , guage
+  , gauge
   , histogram
   , histogramSince
   , histogramSinceMs
+
+  -- ** Stateful Gauges
+  , Gauge
+  , newGauge
+  , incrementGauge
+  , decrementGauge
+  , addGauge
+  , subtractGauge
 
   -- * Reading settings at startup
   , DogStatsSettings(..)
@@ -27,8 +35,7 @@ module Freckle.App.Datadog
   , envParseDogStatsSettings
   , envParseDogStatsTags
   , mkStatsClient
-  )
-where
+  ) where
 
 import Prelude
 
@@ -36,11 +43,13 @@ import Control.Lens (set)
 import Control.Monad.IO.Unlift (MonadUnliftIO)
 import Control.Monad.Reader
 import Data.Foldable (for_)
+import Data.Int (Int64)
 import Data.Text (Text)
 import Data.Time (NominalDiffTime, UTCTime, diffUTCTime, getCurrentTime)
 import qualified Freckle.App.Env as Env
-import Network.StatsD.Datadog hiding (metric, name, tags)
+import Network.StatsD.Datadog hiding (Gauge, metric, name, tags)
 import qualified Network.StatsD.Datadog as Datadog
+import qualified System.Metrics.Gauge as EKG
 import Yesod.Core.Types (HandlerData, handlerEnv, rheSite)
 
 class HasDogStatsClient app where
@@ -76,9 +85,78 @@ counter
   -> [(Text, Text)]
   -> Int
   -> m ()
-counter name tags = sendAppMetricWithTags name tags Counter
+counter name tags = sendAppMetricWithTags name tags Datadog.Counter
 
-guage
+-- | A data type containing all reporting values for a gauge
+data Gauge = Gauge
+  { gaugeName :: Text
+  , gaugeTags :: [(Text, Text)]
+  , gaugeAtomic :: EKG.Gauge
+  }
+
+-- | Create a gauge holding in memory state
+newGauge :: (MonadIO m) => Text -> [(Text, Text)] -> m Gauge
+newGauge name tags = Gauge name tags <$> liftIO EKG.new
+
+-- | Increment gauge state and report its current value
+incrementGauge
+  :: ( MonadUnliftIO m
+     , MonadReader env m
+     , HasDogStatsClient env
+     , HasDogStatsTags env
+     )
+  => Gauge
+  -> m ()
+incrementGauge = (`addGauge` 1)
+
+-- | Add to gauge state and report its current value
+addGauge
+  :: ( MonadUnliftIO m
+     , MonadReader env m
+     , HasDogStatsClient env
+     , HasDogStatsTags env
+     )
+  => Gauge
+  -> Int64
+  -> m ()
+addGauge Gauge {..} i = do
+  current <- liftIO $ do
+    EKG.add gaugeAtomic i
+    EKG.read gaugeAtomic
+  gauge gaugeName gaugeTags $ fromIntegral current
+
+-- | Decrement gauge state and report its current value
+decrementGauge
+  :: ( MonadUnliftIO m
+     , MonadReader env m
+     , HasDogStatsClient env
+     , HasDogStatsTags env
+     )
+  => Gauge
+  -> m ()
+decrementGauge = (`subtractGauge` 1)
+
+-- | Subtract from gauge state and report its current value
+subtractGauge
+  :: ( MonadUnliftIO m
+     , MonadReader env m
+     , HasDogStatsClient env
+     , HasDogStatsTags env
+     )
+  => Gauge
+  -> Int64
+  -> m ()
+subtractGauge Gauge {..} i = do
+  current <- liftIO $ do
+    EKG.subtract gaugeAtomic i
+    EKG.read gaugeAtomic
+  gauge gaugeName gaugeTags $ fromIntegral current
+
+-- | Report the state of a gauge directly
+--
+-- This can be used by gauges where state is derived from other means.
+--
+gauge
   :: ( MonadUnliftIO m
      , MonadReader env m
      , HasDogStatsClient env
@@ -88,7 +166,7 @@ guage
   -> [(Text, Text)]
   -> Double
   -> m ()
-guage name tags = sendAppMetricWithTags name tags Gauge
+gauge name tags = sendAppMetricWithTags name tags Datadog.Gauge
 
 histogram
   :: ( MonadUnliftIO m
@@ -102,7 +180,7 @@ histogram
   -> n
   -> m ()
 histogram name tags metricValue =
-  sendAppMetricWithTags name tags Histogram metricValue
+  sendAppMetricWithTags name tags Datadog.Histogram metricValue
 
 histogramSince
   :: ( MonadUnliftIO m
@@ -149,7 +227,7 @@ histogramSinceBy
 histogramSinceBy f name tags time = do
   now <- liftIO getCurrentTime
   let delta = f $ now `diffUTCTime` time
-  sendAppMetricWithTags name tags Histogram delta
+  sendAppMetricWithTags name tags Datadog.Histogram delta
 
 sendAppMetricWithTags
   :: ( MonadUnliftIO m
