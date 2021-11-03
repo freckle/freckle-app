@@ -43,6 +43,7 @@ library
       Freckle.App.Http.Retry
       Freckle.App.Logging
       Freckle.App.RIO
+      Freckle.App.RtsStats
       Freckle.App.Test
       Freckle.App.Test.DocTest
       Freckle.App.Test.Hspec.Runner
@@ -91,6 +92,7 @@ library
     , data-default
     , datadog
     , doctest
+    , ekg-core
     , errors
     , exceptions
     , fast-logger
@@ -126,6 +128,7 @@ library
     , transformers-base
     , unliftio
     , unliftio-core
+    , unordered-containers
     , wai
     , wai-extra
     , yaml

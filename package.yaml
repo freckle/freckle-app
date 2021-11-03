@@ -60,6 +60,7 @@ library:
     - data-default
     - datadog
     - doctest
+    - ekg-core
     - errors
     - exceptions
     - fast-logger
@@ -95,6 +96,7 @@ library:
     - transformers-base
     - unliftio
     - unliftio-core
+    - unordered-containers
     - wai
     - wai-extra
     - yaml
