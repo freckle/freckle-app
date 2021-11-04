@@ -1,5 +1,5 @@
 -- | RTS statistics sent to Datadog
-module Freckle.App.RtsStats
+module Freckle.App.Datadog.Rts
   ( forkRtsStatPolling
   ) where
 
