@@ -21,7 +21,7 @@ import qualified System.Metrics.Gauge as EKG
 data Gauge = Gauge
   { name :: Text
   , tags :: [(Text, Text)]
-  , atomic :: EKG.Gauge
+  , ekgGauge :: EKG.Gauge
   }
 
 -- | Create a gauge holding in memory state
@@ -49,7 +49,7 @@ add
   => Int64
   -> Gauge
   -> m ()
-add i = withGauge (`EKG.add` i)
+add i = withEKGGauge (`EKG.add` i)
 
 -- | Decrement gauge state and report its current value
 decrement
@@ -72,9 +72,9 @@ subtract
   => Int64
   -> Gauge
   -> m ()
-subtract i = withGauge (`EKG.subtract` i)
+subtract i = withEKGGauge (`EKG.subtract` i)
 
-withGauge
+withEKGGauge
   :: ( MonadUnliftIO m
      , MonadReader env m
      , HasDogStatsClient env
@@ -83,8 +83,8 @@ withGauge
   => (EKG.Gauge -> IO ())
   -> Gauge
   -> m ()
-withGauge f Gauge {..} = do
+withEKGGauge f Gauge {..} = do
   current <- liftIO $ do
-    f atomic
-    EKG.read atomic
+    f ekgGauge
+    EKG.read ekgGauge
   gauge name tags $ fromIntegral current
