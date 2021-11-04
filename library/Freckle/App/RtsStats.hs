@@ -51,12 +51,12 @@ flushEkgSample
   -> m ()
 flushEkgSample name = \case
   Ekg.Counter n -> Datadog.counter name [] $ fromIntegral n
-  Ekg.Gauge n -> Datadog.guage name [] $ fromIntegral n
+  Ekg.Gauge n -> Datadog.gauge name [] $ fromIntegral n
   Ekg.Distribution d -> do
-    Datadog.guage (name <> "." <> "mean") [] $ Ekg.mean d
-    Datadog.guage (name <> "." <> "variance") [] $ Ekg.variance d
-    Datadog.guage (name <> "." <> "sum") [] $ Ekg.sum d
-    Datadog.guage (name <> "." <> "min") [] $ Ekg.min d
-    Datadog.guage (name <> "." <> "max") [] $ Ekg.max d
+    Datadog.gauge (name <> "." <> "mean") [] $ Ekg.mean d
+    Datadog.gauge (name <> "." <> "variance") [] $ Ekg.variance d
+    Datadog.gauge (name <> "." <> "sum") [] $ Ekg.sum d
+    Datadog.gauge (name <> "." <> "min") [] $ Ekg.min d
+    Datadog.gauge (name <> "." <> "max") [] $ Ekg.max d
     Datadog.counter (name <> "." <> "count") [] $ fromIntegral $ Ekg.count d
   Ekg.Label _ -> pure ()

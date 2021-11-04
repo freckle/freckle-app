@@ -16,7 +16,7 @@ module Freckle.App.Datadog
   -- * Higher-level operations
   , increment
   , counter
-  , guage
+  , gauge
   , histogram
   , histogramSince
   , histogramSinceMs
@@ -27,8 +27,10 @@ module Freckle.App.Datadog
   , envParseDogStatsSettings
   , envParseDogStatsTags
   , mkStatsClient
-  )
-where
+
+  -- * To be removed in next major bump
+  , guage
+  ) where
 
 import Prelude
 
@@ -78,6 +80,20 @@ counter
   -> m ()
 counter name tags = sendAppMetricWithTags name tags Counter
 
+gauge
+  :: ( MonadUnliftIO m
+     , MonadReader env m
+     , HasDogStatsClient env
+     , HasDogStatsTags env
+     )
+  => Text
+  -> [(Text, Text)]
+  -> Double
+  -> m ()
+gauge name tags = sendAppMetricWithTags name tags Gauge
+
+{-# DEPRECATED guage "Use gauge instead" #-}
+-- | Deprecated typo version of 'gauge'
 guage
   :: ( MonadUnliftIO m
      , MonadReader env m
@@ -88,7 +104,7 @@ guage
   -> [(Text, Text)]
   -> Double
   -> m ()
-guage name tags = sendAppMetricWithTags name tags Gauge
+guage = gauge
 
 histogram
   :: ( MonadUnliftIO m
