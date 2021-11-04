@@ -92,6 +92,7 @@ gauge
   -> m ()
 gauge name tags = sendAppMetricWithTags name tags Gauge
 
+{-# DEPRECATED guage "Use gauge instead" #-}
 -- | Deprecated typo version of 'gauge'
 guage
   :: ( MonadUnliftIO m
