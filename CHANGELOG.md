@@ -1,6 +1,11 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.0.4...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.1.0...main)
 
-None.
+- None.
+
+## [v1.0.1.0](https://github.com/freckle/freckle-app/compare/v1.0.1.0...v1.0.0.4)
+
+- Added `Freckle.App.Datadog.Gauge` for client side stateful gauges.
+- Added `Freckle.App.Datadog.Rts` for sending RTS statistics to DataDog.
 
 ## [v1.0.0.4](https://github.com/freckle/freckle-app/compare/v1.0.0.3...v1.0.0.4)
 
