@@ -25,7 +25,7 @@ data Gauge = Gauge
   }
 
 -- | Create a gauge holding in memory state
-new :: (MonadIO m) => Text -> [(Text, Text)] -> m Gauge
+new :: MonadIO m => Text -> [(Text, Text)] -> m Gauge
 new name tags = Gauge name tags <$> liftIO EKG.new
 
 -- | Increment gauge state and report its current value
