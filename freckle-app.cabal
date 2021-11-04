@@ -34,6 +34,7 @@ library
       Freckle.App
       Freckle.App.Database
       Freckle.App.Datadog
+      Freckle.App.Datadog.Gauge
       Freckle.App.Env
       Freckle.App.Env.Internal
       Freckle.App.Ghci
