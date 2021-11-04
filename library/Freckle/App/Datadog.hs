@@ -27,6 +27,9 @@ module Freckle.App.Datadog
   , envParseDogStatsSettings
   , envParseDogStatsTags
   , mkStatsClient
+
+  -- * To be removed in next major bump
+  , guage
   ) where
 
 import Prelude
@@ -88,6 +91,19 @@ gauge
   -> Double
   -> m ()
 gauge name tags = sendAppMetricWithTags name tags Gauge
+
+-- | Deprecated typo version of 'gauge'
+guage
+  :: ( MonadUnliftIO m
+     , MonadReader env m
+     , HasDogStatsClient env
+     , HasDogStatsTags env
+     )
+  => Text
+  -> [(Text, Text)]
+  -> Double
+  -> m ()
+guage = gauge
 
 histogram
   :: ( MonadUnliftIO m
