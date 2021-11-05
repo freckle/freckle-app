@@ -16,13 +16,13 @@ module Yesod.Routes.Flow.Generator
 
 import Prelude hiding (FilePath)
 
-import qualified Data.Char as C
-import qualified Data.List as L
 import Control.Arrow ((&&&), (***))
 import Control.Monad (guard)
+import qualified Data.Char as C
 import Data.Either (partitionEithers)
+import qualified Data.List as L
 import qualified Data.Map as Map
-import Data.Maybe (fromMaybe, mapMaybe, catMaybes)
+import Data.Maybe (catMaybes, fromMaybe, mapMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Filesystem (createTree, writeTextFile)
