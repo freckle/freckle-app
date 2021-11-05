@@ -52,6 +52,7 @@ library
       Freckle.App.Wai
       Freckle.App.Yesod
       Network.HTTP.Link.Compat
+      Yesod.Routes.Flow.Generator
   other-modules:
       Paths_freckle_app
   hs-source-dirs:
@@ -90,6 +91,7 @@ library
     , bytestring
     , case-insensitive
     , conduit
+    , containers
     , data-default
     , datadog
     , doctest
@@ -123,6 +125,8 @@ library
     , resource-pool
     , retry
     , rio
+    , system-fileio
+    , system-filepath >=0.4
     , text
     , time
     , transformers
@@ -231,6 +235,7 @@ test-suite spec
       Freckle.App.HttpSpec
       Freckle.App.WaiSpec
       Spec
+      Yesod.Routes.Flow.GeneratorSpec
       Paths_freckle_app
   hs-source-dirs:
       tests
@@ -264,11 +269,15 @@ test-suite spec
       aeson
     , base <5
     , bytestring
+    , containers
     , freckle-app
     , hspec
     , http-types
     , lens
     , lens-aeson
+    , shakespeare
+    , text
     , wai
     , wai-extra
+    , yesod-core >=1.4 && <2.0
   default-language: Haskell2010

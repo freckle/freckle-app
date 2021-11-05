@@ -2,6 +2,11 @@
 
 - None.
 
+## [v1.0.2.0](https://github.com/freckle/freckle-app/compare/v1.0.1.0...v1.0.2.0)
+
+- Add `Yesod.Routes.Flow.Generator` for the generation of flow URL code from
+  Yesod routes.
+
 ## [v1.0.1.0](https://github.com/freckle/freckle-app/compare/v1.0.0.4...v1.0.1.0)
 
 - Added `Freckle.App.Datadog.Gauge` for client side stateful gauges.

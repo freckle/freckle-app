@@ -1,6 +1,6 @@
 ---
 name: freckle-app
-version: 1.0.1.0
+version: 1.0.2.0
 maintainer: Freckle Education
 category: Utils
 github: freckle/freckle-app
@@ -57,6 +57,7 @@ library:
     - bytestring
     - case-insensitive
     - conduit
+    - containers
     - data-default
     - datadog
     - doctest
@@ -90,6 +91,8 @@ library:
     - resource-pool
     - retry
     - rio
+    - system-fileio
+    - system-filepath >= 0.4
     - text
     - time
     - transformers
@@ -111,13 +114,17 @@ tests:
     dependencies:
       - aeson
       - bytestring
+      - containers
       - freckle-app
       - hspec
       - http-types
       - lens
       - lens-aeson
+      - shakespeare
+      - text
       - wai
       - wai-extra
+      - yesod-core >= 1.4 && < 2.0
 
   doctest:
     main: Main.hs
