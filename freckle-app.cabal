@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.0.1.0
+version:        1.0.2.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -51,6 +51,7 @@ library
       Freckle.App.Version
       Freckle.App.Wai
       Freckle.App.Yesod
+      Freckle.App.Yesod.Routes
       Network.HTTP.Link.Compat
   other-modules:
       Paths_freckle_app
@@ -123,6 +124,7 @@ library
     , resource-pool
     , retry
     , rio
+    , template-haskell
     , text
     , time
     , transformers

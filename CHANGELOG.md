@@ -1,6 +1,10 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.1.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.0...main)
 
 - None.
+
+## [v1.0.2.0](https://github.com/freckle/freckle-app/compare/v1.0.1.0...v1.0.2.0)
+
+- Add 'Freckle.App.Yesod.Route' to allow printing route names.
 
 ## [v1.0.1.0](https://github.com/freckle/freckle-app/compare/v1.0.0.4...v1.0.1.0)
 
