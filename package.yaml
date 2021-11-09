@@ -90,6 +90,7 @@ library:
     - resource-pool
     - retry
     - rio
+    - template-haskell
     - text
     - time
     - transformers

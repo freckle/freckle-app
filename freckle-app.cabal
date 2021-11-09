@@ -51,6 +51,7 @@ library
       Freckle.App.Version
       Freckle.App.Wai
       Freckle.App.Yesod
+      Freckle.App.Yesod.Route
       Network.HTTP.Link.Compat
   other-modules:
       Paths_freckle_app
@@ -123,6 +124,7 @@ library
     , resource-pool
     , retry
     , rio
+    , template-haskell
     , text
     , time
     , transformers
