@@ -51,7 +51,7 @@ library
       Freckle.App.Version
       Freckle.App.Wai
       Freckle.App.Yesod
-      Freckle.App.Yesod.Route
+      Freckle.App.Yesod.Routes
       Network.HTTP.Link.Compat
   other-modules:
       Paths_freckle_app

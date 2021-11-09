@@ -1,4 +1,4 @@
-module Freckle.App.Yesod.Route
+module Freckle.App.Yesod.Routes
   ( mkRouteNameCaseExp
   ) where
 
