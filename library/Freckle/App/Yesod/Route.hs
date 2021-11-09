@@ -33,6 +33,7 @@ mkMatches (ResourceLeaf resource) = pure [mkLeafMatch resource]
 mkMatches (ResourceParent name _checkOverlap params children) = do
   caseVar <- TH.newName "a"
   let
+    -- by convention the final param in a route is the next route constructor
     paramVars =
       fmap (const TH.WildP) (filter isDynamic params) <> [TH.VarP caseVar]
   matches <- fold <$> traverse mkMatches children
