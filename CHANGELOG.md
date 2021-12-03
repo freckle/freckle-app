@@ -1,6 +1,10 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.1...main)
 
 - None.
+
+## [v1.0.2.1](https://github.com/freckle/freckle-app/compare/v1.0.2.0...v1.0.2.1)
+
+- Add `denyFrameEmbeddingMiddleware` for denying HTML frame embedding.
 
 ## [v1.0.2.0](https://github.com/freckle/freckle-app/compare/v1.0.1.0...v1.0.2.0)
 

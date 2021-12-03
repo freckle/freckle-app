@@ -1,14 +1,14 @@
 module Freckle.App.WaiSpec
   ( spec
-  )
-where
+  ) where
 
 import Prelude
 
 import Data.ByteString (ByteString)
 import Data.Function (on)
 import Data.List (deleteBy)
-import Freckle.App.Wai (corsMiddleware, noCacheMiddleware)
+import Freckle.App.Wai
+  (corsMiddleware, denyFrameEmbeddingMiddleware, noCacheMiddleware)
 import Network.HTTP.Types.Method (Method)
 import Network.HTTP.Types.Status (status200)
 import Network.Wai
@@ -83,6 +83,17 @@ spec = do
             "Access-Control-Expose-Headers"
             "Set-Cookie, Content-Disposition, Link, X-Foo"
             response
+
+  describe "denyFrameEmbeddingMiddleware" $ do
+    let
+      runTestSession :: Session a -> IO a
+      runTestSession f = runSession f $ denyFrameEmbeddingMiddleware app
+
+    it "adds an appropriate X-Frame-Options header" $ runTestSession $ do
+      response <- request defaultRequest
+
+      assertHeader "X-Frame-Options" "DENY" response
+      assertBody "Test" response
 
 app :: Application
 app _req respond = respond $ responseLBS status200 [] "Test"

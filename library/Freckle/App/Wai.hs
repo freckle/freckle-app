@@ -8,6 +8,7 @@ module Freckle.App.Wai
   , makeRequestMetricsMiddleware
   , noCacheMiddleware
   , corsMiddleware
+  , denyFrameEmbeddingMiddleware
   ) where
 
 import Prelude
@@ -199,6 +200,10 @@ corsMiddleware
 corsMiddleware validateOrigin extraExposedHeaders =
   handleOptions validateOrigin extraExposedHeaders
     . addCORSHeaders validateOrigin extraExposedHeaders
+
+-- | Middleware that adds header to deny all frame embedding
+denyFrameEmbeddingMiddleware :: Middleware
+denyFrameEmbeddingMiddleware = addHeaders [("X-Frame-Options", "DENY")]
 
 handleOptions :: (ByteString -> Bool) -> [ByteString] -> Middleware
 handleOptions validateOrigin extraExposedHeaders app req sendResponse =
