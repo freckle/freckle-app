@@ -3,8 +3,7 @@ module Freckle.App.Test.Hspec.Runner
   , runParConfig
   , runWith
   , makeParallelConfig
-  )
-where
+  ) where
 
 import Prelude
 
@@ -14,12 +13,15 @@ import Control.Monad (void)
 import Control.Monad.Trans.Maybe (MaybeT(MaybeT), runMaybeT)
 import Data.List (isInfixOf)
 import Data.Maybe (fromMaybe, isJust)
+import Data.Text (pack)
 import System.Environment (getArgs, lookupEnv)
-import Test.HSpec.JUnit (runJUnitSpec)
 import Test.Hspec (Spec)
+import Test.Hspec.JUnit
+  (configWithJUnit, defaultJUnitConfig, setJUnitConfigOutputFile)
 import Test.Hspec.Runner
   ( Config
   , Path
+  , Summary
   , configConcurrentJobs
   , configSkipPredicate
   , defaultConfig
@@ -64,6 +66,14 @@ runWith config name spec = do
     (spec `runJUnitSpec` ("/tmp/junit", filename)) . changeConfig
   hspec _ changeConfig = runSpec spec . changeConfig
   noConcurrency x = x { configConcurrentJobs = Just 1 }
+
+runJUnitSpec :: Spec -> (FilePath, String) -> Config -> IO Summary
+runJUnitSpec spec (path, name) config =
+  spec `runSpec` configWithJUnit junitConfig config
+ where
+  filePath = path <> "/" <> name <> "/test_results.xml"
+  junitConfig =
+    setJUnitConfigOutputFile filePath $ defaultJUnitConfig $ pack name
 
 makeParallelConfig :: Config -> IO Config
 makeParallelConfig config = do
