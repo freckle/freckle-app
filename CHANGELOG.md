@@ -1,6 +1,10 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.1...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.2...main)
 
 - None.
+
+## [v1.0.2.2](https://github.com/freckle/freckle-app/compare/v1.0.2.1...v1.0.2.2)
+
+- Target `hspec-junit-formatter-1.0.3.0` (use `1.1.0.0` in development)
 
 ## [v1.0.2.1](https://github.com/freckle/freckle-app/compare/v1.0.2.0...v1.0.2.1)
 
