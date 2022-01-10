@@ -11,14 +11,11 @@ module Freckle.App.Wai
   , denyFrameEmbeddingMiddleware
   ) where
 
-import Prelude
+import Freckle.App.Prelude
 
-import Control.Applicative ((<|>))
-import Control.Monad (guard)
 import Control.Monad.Logger (LogLevel(..))
 import Control.Monad.Reader (runReaderT)
 import Data.Aeson
-import Data.Bifunctor (first)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import Data.ByteString.Builder (toLazyByteString)
@@ -27,11 +24,9 @@ import qualified Data.ByteString.Lazy as BSL
 import qualified Data.CaseInsensitive as CI
 import Data.Default (def)
 import Data.IP (fromHostAddress, fromHostAddress6)
-import Data.Maybe (fromMaybe, maybeToList)
-import Data.Text (Text, pack)
+import Data.Text (pack)
 import Data.Text.Encoding (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
-import Data.Time (getCurrentTime)
 import Freckle.App.Datadog (HasDogStatsClient, HasDogStatsTags)
 import qualified Freckle.App.Datadog as Datadog
 import Freckle.App.Logging

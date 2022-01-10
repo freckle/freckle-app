@@ -1,6 +1,10 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.2...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.3...main)
 
 - None.
+
+## [v1.0.2.3](https://github.com/freckle/freckle-app/compare/v1.0.2.2...v1.0.2.3)
+
+- Add Freckle-specific prelude.
 
 ## [v1.0.2.2](https://github.com/freckle/freckle-app/compare/v1.0.2.1...v1.0.2.2)
 

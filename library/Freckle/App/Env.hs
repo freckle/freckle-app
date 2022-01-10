@@ -43,15 +43,13 @@ module Freckle.App.Env
   -- * Modifiers
   , def
   , nonEmpty
-  )
-where
+  ) where
 
-import Prelude
+import Freckle.App.Prelude
 
 import Control.Error.Util (note)
-import Data.Bifunctor (first, second)
 import Data.String
-import Data.Text (Text, pack, unpack)
+import Data.Text (pack, unpack)
 import qualified Data.Text as T
 import Data.Time
 import Freckle.App.Env.Internal

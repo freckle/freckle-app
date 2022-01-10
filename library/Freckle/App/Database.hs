@@ -22,11 +22,10 @@ module Freckle.App.Database
   , envPostgresPasswordSource
   ) where
 
-import Prelude
+import Freckle.App.Prelude
 
 import Control.Concurrent
 import qualified Control.Immortal as Immortal
-import Control.Monad.IO.Unlift (MonadUnliftIO)
 import Control.Monad.Logger (runNoLoggingT)
 import Control.Monad.Reader
 import Data.ByteString (ByteString)
@@ -35,12 +34,12 @@ import Data.Char (isDigit)
 import Data.IORef
 import Data.Pool
 import qualified Data.Text as T
-import Data.Time (UTCTime, getCurrentTime)
 import Database.Persist.Postgresql
 import Database.PostgreSQL.Simple
   (Connection, Only(..), connectPostgreSQL, execute)
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import qualified Freckle.App.Env as Env
+import qualified Prelude as Unsafe (read)
 import System.Process (readProcess)
 
 type SqlPool = Pool SqlBackend
@@ -117,9 +116,10 @@ readPostgresStatementTimeout
   :: String -> Either String PostgresStatementTimeout
 readPostgresStatementTimeout x = case span isDigit x of
   ("", _) -> Left "must be {digits}(s|ms)"
-  (digits, "") -> Right $ PostgresStatementTimeoutSeconds $ read digits
-  (digits, "s") -> Right $ PostgresStatementTimeoutSeconds $ read digits
-  (digits, "ms") -> Right $ PostgresStatementTimeoutMilliseconds $ read digits
+  (digits, "") -> Right $ PostgresStatementTimeoutSeconds $ Unsafe.read digits
+  (digits, "s") -> Right $ PostgresStatementTimeoutSeconds $ Unsafe.read digits
+  (digits, "ms") ->
+    Right $ PostgresStatementTimeoutMilliseconds $ Unsafe.read digits
   _ -> Left "must be {digits}(s|ms)"
 
 envPostgresPasswordSource :: Env.Parser PostgresPasswordSource

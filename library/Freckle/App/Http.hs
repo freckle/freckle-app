@@ -117,17 +117,14 @@ module Freckle.App.Http
   , statusIsServerError
   ) where
 
-import Prelude
+import Freckle.App.Prelude
 
 import Conduit (foldC, mapMC, runConduit, (.|))
-import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson (FromJSON)
 import qualified Data.Aeson as Aeson
-import Data.Bifunctor (first)
 import qualified Data.ByteString as BS
 import Data.ByteString.Lazy (ByteString)
 import qualified Data.ByteString.Lazy.Char8 as BSL8
-import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.List.NonEmpty as NE
 import Freckle.App.Http.Paginate
 import Freckle.App.Http.Retry
@@ -159,7 +156,7 @@ instance Exception HttpDecodeError where
       <> fromErrors hdeErrors
    where
     fromErrors = \case
-      err :| [] -> ["Error:", err]
+      err NE.:| [] -> ["Error:", err]
       errs -> "Errors:" : map bullet (NE.toList errs)
     bullet = (" • " <>)
 

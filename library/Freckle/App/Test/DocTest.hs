@@ -7,14 +7,12 @@ module Freckle.App.Test.DocTest
   -- * Lower-level, for site-specific use
   , findPackageFlags
   , findDocTestedFiles
-  )
-where
+  ) where
 
-import Prelude
+import Freckle.App.Prelude
 
 import Control.Monad (filterM)
 import Data.Aeson
-import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Data.Yaml (decodeFileThrow)
@@ -33,8 +31,7 @@ doctestWith flags dir = do
   DocTest.doctest $ packageFlags <> flags <> sourceFiles
 
 -- | Representation of only the information we need in a @package.yaml@
-data PackageYaml
-  = PackageYaml
+data PackageYaml = PackageYaml
   { defaultExtensions :: [String]
   , name :: String
   }

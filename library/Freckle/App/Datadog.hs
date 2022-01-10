@@ -32,14 +32,11 @@ module Freckle.App.Datadog
   , guage
   ) where
 
-import Prelude
+import Freckle.App.Prelude
 
 import Control.Lens (set)
-import Control.Monad.IO.Unlift (MonadUnliftIO)
 import Control.Monad.Reader
-import Data.Foldable (for_)
-import Data.Text (Text)
-import Data.Time (NominalDiffTime, UTCTime, diffUTCTime, getCurrentTime)
+import Data.Time (diffUTCTime)
 import qualified Freckle.App.Env as Env
 import Network.StatsD.Datadog hiding (metric, name, tags)
 import qualified Network.StatsD.Datadog as Datadog

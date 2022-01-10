@@ -8,9 +8,8 @@ module Freckle.App.Yesod
   , respondQueryCanceledHeaders
   ) where
 
-import Prelude
+import Freckle.App.Prelude
 
-import Control.Monad (guard, when)
 import Control.Monad.Logger
 import Data.Text (pack)
 import Database.PostgreSQL.Simple (SqlError(..))

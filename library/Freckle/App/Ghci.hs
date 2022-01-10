@@ -3,12 +3,10 @@ module Freckle.App.Ghci
   , runDB'
   , loadEnv
   , loadEnvTest
-  )
-where
+  ) where
 
-import Prelude
+import Freckle.App.Prelude
 
-import Control.Monad.Reader (ReaderT)
 import Database.Persist.Postgresql (runSqlPool)
 import Database.Persist.Sql (SqlBackend)
 import Freckle.App.Database (makePostgresPool)

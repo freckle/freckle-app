@@ -11,14 +11,11 @@ module Freckle.App.RIO
   ( toAppLogLevel
   , fromAppLogLevel
   , makeLogFunc
-  )
-where
+  ) where
 
-import Prelude
+import Freckle.App.Prelude
 
-import Control.Monad (when)
 import Control.Monad.Logger (Loc(..), LogLevel(..))
-import Data.Maybe (fromMaybe, listToMaybe)
 import Freckle.App.Logging
 import GHC.Exception (CallStack, SrcLoc(..), getCallStack)
 import qualified RIO

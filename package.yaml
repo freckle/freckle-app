@@ -1,6 +1,6 @@
 ---
 name: freckle-app
-version: 1.0.2.2
+version: 1.0.2.3
 maintainer: Freckle Education
 category: Utils
 github: freckle/freckle-app
@@ -57,6 +57,7 @@ library:
     - bytestring
     - case-insensitive
     - conduit
+    - containers
     - data-default
     - datadog
     - doctest
@@ -65,6 +66,7 @@ library:
     - exceptions
     - fast-logger
     - filepath
+    - hashable
     - hspec
     - hspec-core
     - hspec-expectations-lifted
@@ -90,6 +92,8 @@ library:
     - resource-pool
     - retry
     - rio
+    - safe
+    - semigroupoids
     - template-haskell
     - text
     - time
@@ -98,6 +102,7 @@ library:
     - unliftio
     - unliftio-core
     - unordered-containers
+    - vector
     - wai
     - wai-extra
     - yaml
