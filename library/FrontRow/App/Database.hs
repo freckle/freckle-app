@@ -127,6 +127,8 @@ createAuroraIamToken aitPostgresConnectionConf@PostgresConnectionConf {..} = do
   -- TODO: Consider recording how long creating an auth token takes
   -- somewhere, even if it is just in the logs, so we get an idea of how long
   -- it takes in prod.
+  print "generating token"
+  print pccHost
   aitToken <- T.unpack . T.strip . T.pack <$> readProcess
     "aws"
     [ "rds"
@@ -141,6 +143,8 @@ createAuroraIamToken aitPostgresConnectionConf@PostgresConnectionConf {..} = do
     , pccUser
     ]
     ""
+  print "generated token"
+  print aitToken
   aitCreatedAt <- getCurrentTime
   pure AuroraIamToken { .. }
 
