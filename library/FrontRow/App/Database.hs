@@ -135,8 +135,6 @@ createAuroraIamToken aitPostgresConnectionConf@PostgresConnectionConf {..} = do
     , pccHost
     , "--port"
     , show pccPort
-    , "--region"
-    , "us-east-1"
     , "--username"
     , pccUser
     ]
