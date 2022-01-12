@@ -5,15 +5,13 @@ module Freckle.App.Test.Hspec.Runner
   , makeParallelConfig
   ) where
 
-import Prelude
+import Freckle.App.Prelude
 
-import Control.Applicative ((<|>))
 import Control.Concurrent (getNumCapabilities, setNumCapabilities)
-import Control.Monad (void)
 import Control.Monad.Trans.Maybe (MaybeT(MaybeT), runMaybeT)
 import Data.List (isInfixOf)
-import Data.Maybe (fromMaybe, isJust)
 import Data.Text (pack)
+import qualified Prelude as Unsafe (read)
 import System.Environment (getArgs, lookupEnv)
 import Test.Hspec (Spec)
 import Test.Hspec.JUnit
@@ -86,7 +84,7 @@ makeParallelConfig config = do
   pure config { configConcurrentJobs = Just $ jobCores * 4 }
 
 lookupTestCapabilities :: IO (Maybe Int)
-lookupTestCapabilities = fmap read <$> lookupEnv "TEST_CAPABILITIES"
+lookupTestCapabilities = fmap Unsafe.read <$> lookupEnv "TEST_CAPABILITIES"
 
 lookupHostCapabilities :: IO (Maybe Int)
 lookupHostCapabilities = Just . reduceCapabilities <$> getNumCapabilities

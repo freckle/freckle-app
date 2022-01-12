@@ -48,13 +48,11 @@ module Freckle.App.GlobalCache
   , newGlobalCache
   , globallyCache
   , withGlobalCacheCleanup
-  )
-where
+  ) where
 
-import Prelude
+import Freckle.App.Prelude
 
 import Control.Concurrent.MVar (mkWeakMVar, modifyMVar_, newMVar)
-import Control.Monad (void)
 import Data.IORef
 
 newtype GlobalCache a = GlobalCache

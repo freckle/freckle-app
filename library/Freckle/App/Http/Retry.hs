@@ -4,13 +4,10 @@ module Freckle.App.Http.Retry
   , rateLimited'
   ) where
 
-import Prelude
+import Freckle.App.Prelude
 
-import Control.Monad (guard, unless, void)
-import Control.Monad.IO.Class (MonadIO)
 import Control.Retry
 import qualified Data.ByteString.Char8 as BS8
-import Data.Maybe (listToMaybe)
 import Network.HTTP.Client (Request(..))
 import Network.HTTP.Simple
 import Network.HTTP.Types.Status (status429)

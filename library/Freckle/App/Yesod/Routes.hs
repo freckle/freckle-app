@@ -2,9 +2,8 @@ module Freckle.App.Yesod.Routes
   ( mkRouteNameCaseExp
   ) where
 
-import Prelude
+import Freckle.App.Prelude
 
-import Data.Foldable (fold)
 import qualified Language.Haskell.TH as TH
 import Yesod.Routes.TH.Types
 

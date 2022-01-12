@@ -57,13 +57,10 @@ module Freckle.App.Http.Paginate
   , sourcePaginatedBy
   ) where
 
-import Prelude
+import Freckle.App.Prelude
 
 import Conduit
 import Control.Error.Util (hush)
-import Data.Foldable (traverse_)
-import Data.List (find)
-import Data.Maybe (listToMaybe)
 import Data.Text.Encoding (decodeUtf8)
 import Network.HTTP.Link.Compat hiding (linkHeader)
 import Network.HTTP.Simple

@@ -11,11 +11,10 @@ module Freckle.App.Test
   , module X
   ) where
 
-import Prelude
+import Freckle.App.Prelude
 
 import Control.Monad.Base
 import Control.Monad.Catch
-import Control.Monad.IO.Unlift
 import Control.Monad.Logger
 import Control.Monad.Primitive
 import Control.Monad.Random (MonadRandom(..))

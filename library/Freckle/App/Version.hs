@@ -8,22 +8,16 @@ module Freckle.App.Version
   ( AppVersion(..)
   , getAppVersion
   , tryGetAppVersion
-  )
-where
+  ) where
 
-import Prelude
+import Freckle.App.Prelude
 
-import Control.Applicative ((<|>))
 import Control.Error.Util (hoistEither, note)
-import Control.Monad.IO.Class (MonadIO(..))
-import Control.Monad.IO.Unlift (MonadUnliftIO)
 import Control.Monad.Trans.Except
-import Data.Bifunctor (first)
 import Data.Char (isSpace)
 import Data.List (dropWhileEnd)
-import Data.Text (Text, pack)
+import Data.Text (pack)
 import qualified Data.Text as T
-import Data.Time (UTCTime, getCurrentTime)
 import Data.Time.Format (defaultTimeLocale, parseTimeM)
 import System.Exit (ExitCode(..))
 import System.FilePath ((</>))

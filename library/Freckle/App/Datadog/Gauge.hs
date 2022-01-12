@@ -8,12 +8,8 @@ module Freckle.App.Datadog.Gauge
   , subtract
   ) where
 
-import Prelude hiding (subtract)
+import Freckle.App.Prelude hiding (subtract)
 
-import Control.Monad.IO.Unlift (MonadUnliftIO)
-import Control.Monad.Reader
-import Data.Int (Int64)
-import Data.Text (Text)
 import Freckle.App.Datadog (HasDogStatsClient, HasDogStatsTags, gauge)
 import qualified System.Metrics.Gauge as EKG
 

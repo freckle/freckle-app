@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.0.2.2
+version:        1.0.2.3
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -44,6 +44,7 @@ library
       Freckle.App.Http.Paginate
       Freckle.App.Http.Retry
       Freckle.App.Logging
+      Freckle.App.Prelude
       Freckle.App.RIO
       Freckle.App.Test
       Freckle.App.Test.DocTest
@@ -91,6 +92,7 @@ library
     , bytestring
     , case-insensitive
     , conduit
+    , containers
     , data-default
     , datadog
     , doctest
@@ -99,6 +101,7 @@ library
     , exceptions
     , fast-logger
     , filepath
+    , hashable
     , hspec
     , hspec-core
     , hspec-expectations-lifted
@@ -124,6 +127,8 @@ library
     , resource-pool
     , retry
     , rio
+    , safe
+    , semigroupoids
     , template-haskell
     , text
     , time
@@ -132,6 +137,7 @@ library
     , unliftio
     , unliftio-core
     , unordered-containers
+    , vector
     , wai
     , wai-extra
     , yaml

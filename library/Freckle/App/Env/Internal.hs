@@ -9,13 +9,11 @@ module Freckle.App.Env.Internal
   , Mod(..)
   , Var(..)
   , varParser
-  )
-where
+  ) where
 
-import Prelude
+import Freckle.App.Prelude
 
 import Control.Applicative
-import Data.Bifunctor (first)
 
 -- | Environment parsing errors
 data Error

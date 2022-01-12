@@ -3,15 +3,10 @@ module Freckle.App.Datadog.Rts
   ( forkRtsStatPolling
   ) where
 
-import Prelude
+import Freckle.App.Prelude
 
 import qualified Control.Immortal as Immortal
-import Control.Monad (void)
-import Control.Monad.IO.Unlift (MonadUnliftIO, liftIO)
-import Control.Monad.Reader (MonadReader)
-import Data.Foldable (traverse_)
 import qualified Data.HashMap.Strict as HashMap
-import Data.Text (Text)
 import Freckle.App.Datadog (HasDogStatsClient, HasDogStatsTags)
 import qualified Freckle.App.Datadog as Datadog
 import qualified System.Metrics as Ekg
