@@ -1,0 +1,61 @@
+Prelude:
+  where:
+    path:
+      matches: "library/Freckle/App/Prelude.hs"
+  body: |
+    :wave: Hi, I see you made a change to Prelude! If you're adding a new export
+    please keep the following guidelines in mind.
+
+    **Ubiquity**
+
+    We shouldn't be adding exports to the prelude that aren't commonly used
+    throughout our codebase, even if we feel they _might_ be more commonly used
+    in the future.
+
+    Good rationale:
+
+    > I'm adding `void` because we use it everywhere in our app code and tests
+
+    Bad rationale:
+
+    > I just found the `.:?-` combinator and think we might want to use it in `X`
+
+    **Compatibility**
+
+    We shouldn't add exports that conflict with other commonly-used functions.
+
+    For example, [`Data.Function (on)`][func-on] was intentionally excluded from
+    this prelude because it conflicts with [`Database.Esqueleto (on)`][esq-on]
+    which we often import.
+
+    **Idiomatic**
+
+    We'd like to keep the codebase accessible to Frecklers and, more broadly,
+    Haskellers. We're open to trying new things but, until they've been proven
+    out a bit, consistency is key!
+
+    This concept can be a little squishy but try to think along the lines of
+
+    > If I learned Haskell by contributing to the Freckle codebase, am I likely
+    > to be comfortable with the pattern(s) this export encourages?
+
+    and, as secondarily but also importantly,
+
+    > If I were a new Freckler with extensive Haskell knowledge, am I likely
+    > to be comfortable with the pattern(s) this export encourages?
+
+    **Layer and Library Agnostic**
+
+    We should export functions and types here that transcend app layers (e.g. REST
+    API or assets pipeline) and libraries (e.g. yesod).
+
+    Layer-specific super-commonly-used imports should be kept in a prelude
+    specific to that layer.
+
+    Library-specific super-commonly-used imports should, ideally, be (1)
+    upstreamed, (2) put in their own package somewhere or, if need be, (3)
+    housed somewhere near their usage. You may want to consider a `freckle-app`
+    module other than the prelude as a potential home for such imports.
+
+      [func-on]: https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Function.html#v:on
+      [esq-on]: https://hackage.haskell.org/package/esqueleto-3.5.3.0/docs/Database-Esqueleto.html#v:on

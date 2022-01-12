@@ -1,0 +1,12 @@
+name: Guidelines
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  checklist:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: freckle/commenter-action@main
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
