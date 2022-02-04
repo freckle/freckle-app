@@ -1,6 +1,10 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.5...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.6...main)
 
 - None.
+
+## [v1.0.2.5](https://github.com/freckle/freckle-app/compare/v1.0.2.5...v1.0.2.6)
+
+- Add a looser lower-bound on `containers`
 
 ## [v1.0.2.5](https://github.com/freckle/freckle-app/compare/v1.0.2.4...v1.0.2.5)
 

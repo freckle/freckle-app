@@ -1,6 +1,6 @@
 ---
 name: freckle-app
-version: 1.0.2.5
+version: 1.0.2.6
 maintainer: Freckle Education
 category: Utils
 github: freckle/freckle-app
@@ -57,7 +57,7 @@ library:
     - bytestring >= 0.10
     - case-insensitive
     - conduit
-    - containers
+    - containers >= 0.6
     - data-default
     - datadog
     - doctest

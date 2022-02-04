@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.0.2.5
+version:        1.0.2.6
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -92,7 +92,7 @@ library
     , bytestring >=0.10
     , case-insensitive
     , conduit
-    , containers
+    , containers >=0.6
     , data-default
     , datadog
     , doctest
