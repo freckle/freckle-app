@@ -1,6 +1,6 @@
 ---
 name: freckle-app
-version: 1.0.2.3
+version: 1.0.2.4
 maintainer: Freckle Education
 category: Utils
 github: freckle/freckle-app
@@ -19,7 +19,7 @@ flags:
     default: true
 
 dependencies:
-  - base < 5
+  - base >= 4 && < 5
 
 default-extensions:
   - BangPatterns

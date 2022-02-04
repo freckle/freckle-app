@@ -1,6 +1,10 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.3...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.4...main)
 
 - None.
+
+## [v1.0.2.4](https://github.com/freckle/freckle-app/compare/v1.0.2.3...v1.0.2.4)
+
+- Add a looser lower-bound on `base`
 
 ## [v1.0.2.3](https://github.com/freckle/freckle-app/compare/v1.0.2.2...v1.0.2.3)
 
