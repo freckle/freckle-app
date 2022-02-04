@@ -1,6 +1,11 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.4...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.5...main)
 
 - None.
+
+## [v1.0.2.5](https://github.com/freckle/freckle-app/compare/v1.0.2.4...v1.0.2.5)
+
+- Add a looser lower-bound on `bytestring`
+- Add a looser lower-bound on `template-haskell`
 
 ## [v1.0.2.4](https://github.com/freckle/freckle-app/compare/v1.0.2.3...v1.0.2.4)
 

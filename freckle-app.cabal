@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.0.2.4
+version:        1.0.2.5
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -89,7 +89,7 @@ library
     , aeson
     , ansi-terminal
     , base ==4.*
-    , bytestring
+    , bytestring >=0.10
     , case-insensitive
     , conduit
     , containers
@@ -129,7 +129,7 @@ library
     , rio
     , safe
     , semigroupoids
-    , template-haskell
+    , template-haskell >=2.16
     , text
     , time
     , transformers
@@ -271,7 +271,7 @@ test-suite spec
   build-depends:
       aeson
     , base ==4.*
-    , bytestring
+    , bytestring >=0.10
     , freckle-app
     , hspec
     , http-types
