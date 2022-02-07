@@ -26,12 +26,12 @@ packages:
   original:
     hackage: hspec-discover-2.9.3
 - completed:
-    hackage: hspec-junit-formatter-1.1.0.0@sha256:c2f453440fc526cfd8f880b67876ac64d6e0fa13c8e94722a86e7996882e8ed0,3825
+    hackage: hspec-junit-formatter-1.1.0.1@sha256:0365b3a5aa2e292604826c7cf99ace8b3248a369d8f5821edff9bc1031e16a5c,3853
     pantry-tree:
       size: 955
-      sha256: 23789fad1b4c65150a29c6071fa47df58b7a36b9b6af818bb481f98b34fe6811
+      sha256: 8220f330aacc9af1538624b03d2e01a5fcd9ba62c71401159a25cb731bde520e
   original:
-    hackage: hspec-junit-formatter-1.1.0.0
+    hackage: hspec-junit-formatter-1.1.0.1
 snapshots:
 - completed:
     size: 586296

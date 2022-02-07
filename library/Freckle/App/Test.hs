@@ -15,6 +15,7 @@ import Freckle.App.Prelude
 
 import Control.Monad.Base
 import Control.Monad.Catch
+import qualified Control.Monad.Fail as Fail
 import Control.Monad.Logger
 import Control.Monad.Primitive
 import Control.Monad.Random (MonadRandom(..))
@@ -42,8 +43,8 @@ newtype AppExample app a = AppExample (NoLoggingT (ReaderT app IO) a)
     , MonadReader app
     , MonadThrow
     , MonadUnliftIO
-    , MonadFail
     , MonadLogger
+    , Fail.MonadFail
     )
 
 instance MonadRandom (AppExample app) where

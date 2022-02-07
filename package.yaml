@@ -19,7 +19,7 @@ flags:
     default: true
 
 dependencies:
-  - base >= 4 && < 5
+  - base < 5
 
 default-extensions:
   - BangPatterns
@@ -54,10 +54,10 @@ library:
     - MonadRandom
     - aeson
     - ansi-terminal
-    - bytestring >= 0.10
+    - bytestring
     - case-insensitive
     - conduit
-    - containers >= 0.6
+    - containers
     - data-default
     - datadog
     - doctest
@@ -67,12 +67,12 @@ library:
     - fast-logger
     - filepath
     - hashable
-    - hspec
-    - hspec-core
+    - hspec >= 2.8.1
+    - hspec-core >= 2.8.1
     - hspec-expectations-lifted
-    - hspec-junit-formatter
+    - hspec-junit-formatter >= 1.1.0.1
     - http-client
-    - http-conduit
+    - http-conduit >= 2.3.5
     - http-link-header
     - http-types
     - immortal
@@ -80,7 +80,7 @@ library:
     - lens
     - load-env
     - monad-control
-    - monad-logger
+    - monad-logger >= 0.3.31
     - mtl
     - network
     - network-uri
@@ -90,11 +90,11 @@ library:
     - primitive
     - process
     - resource-pool
-    - retry
+    - retry >= 0.8.1.0
     - rio
     - safe
     - semigroupoids
-    - template-haskell >= 2.16
+    - template-haskell
     - text
     - time
     - transformers
@@ -116,7 +116,7 @@ tests:
     ghc-options: -threaded -rtsopts "-with-rtsopts=-N"
     dependencies:
       - aeson
-      - bytestring >= 0.10
+      - bytestring
       - freckle-app
       - hspec
       - http-types

@@ -159,7 +159,7 @@ readForwardedFor bs
 sockAddrToIp :: SockAddr -> ByteString
 sockAddrToIp (SockAddrInet _ h) = BS8.pack $ show $ fromHostAddress h
 sockAddrToIp (SockAddrInet6 _ _ h _) = BS8.pack $ show $ fromHostAddress6 h
-sockAddrToIp (SockAddrUnix _) = "<socket>"
+sockAddrToIp _ = "<socket>"
 
 makeRequestMetricsMiddleware
   :: (HasDogStatsClient env, HasDogStatsTags env)
