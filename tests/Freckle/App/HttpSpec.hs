@@ -32,12 +32,14 @@ spec = do
         $ parseRequest_ "https://www.stackage.org/lts-17.10"
 
       let
-        expectedErrorMessage
-          = "Error in $: parsing [] failed, expected Array, but encountered Object"
+        expectedErrorMessages =
+          [ "Error in $: expected [a], encountered Object"
+          , "Error in $: parsing [] failed, expected Array, but encountered Object"
+          ]
 
       getResponseStatus resp `shouldBe` status200
       getResponseBody resp
         ^? _Left
         . to hdeErrors
-        . to NE.toList
-        `shouldBe` Just [expectedErrorMessage]
+        . to NE.head
+        `shouldSatisfy` maybe False (`elem` expectedErrorMessages)

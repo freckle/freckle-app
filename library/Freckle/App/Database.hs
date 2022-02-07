@@ -35,6 +35,13 @@ import Data.IORef
 import Data.Pool
 import qualified Data.Text as T
 import Database.Persist.Postgresql
+  ( SqlBackend
+  , SqlPersistT
+  , createPostgresqlPoolModified
+  , createSqlPool
+  , openSimpleConn
+  , runSqlPool
+  )
 import Database.PostgreSQL.Simple
   (Connection, Only(..), connectPostgreSQL, execute)
 import Database.PostgreSQL.Simple.SqlQQ (sql)
