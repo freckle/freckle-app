@@ -1,8 +1,13 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.6...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.7...main)
 
 - None.
 
-## [v1.0.2.5](https://github.com/freckle/freckle-app/compare/v1.0.2.5...v1.0.2.6)
+## [v1.0.2.7](https://github.com/freckle/freckle-app/compare/v1.0.2.6...v1.0.2.7)
+
+- Remove explicit `--region` in IAM DB token call
+- Relax lower-bounds throughout
+
+## [v1.0.2.6](https://github.com/freckle/freckle-app/compare/v1.0.2.5...v1.0.2.6)
 
 - Add a looser lower-bound on `containers`
 
