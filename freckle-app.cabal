@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.0.2.7
+version:        1.0.2.8
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -86,7 +86,7 @@ library
   build-depends:
       Glob
     , MonadRandom
-    , aeson
+    , aeson <2.0
     , ansi-terminal
     , base <5
     , bytestring

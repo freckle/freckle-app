@@ -1,6 +1,10 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.7...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.8...main)
 
 - None.
+
+## [v1.0.2.8](https://github.com/freckle/freckle-app/compare/v1.0.2.7...v1.0.2.8)
+
+- Don't allow `aeson-2.0`
 
 ## [v1.0.2.7](https://github.com/freckle/freckle-app/compare/v1.0.2.6...v1.0.2.7)
 

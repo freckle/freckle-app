@@ -1,6 +1,6 @@
 ---
 name: freckle-app
-version: 1.0.2.7
+version: 1.0.2.8
 maintainer: Freckle Education
 category: Utils
 github: freckle/freckle-app
@@ -52,7 +52,7 @@ library:
   dependencies:
     - Glob
     - MonadRandom
-    - aeson
+    - aeson < 2.0
     - ansi-terminal
     - bytestring
     - case-insensitive
