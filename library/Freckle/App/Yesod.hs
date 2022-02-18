@@ -11,7 +11,6 @@ module Freckle.App.Yesod
 import Freckle.App.Prelude
 
 import Control.Monad.Logger
-import Data.Text (pack)
 import Database.PostgreSQL.Simple (SqlError(..))
 import Freckle.App.Datadog (HasDogStatsClient, HasDogStatsTags)
 import qualified Freckle.App.Datadog as Datadog

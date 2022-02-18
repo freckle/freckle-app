@@ -49,7 +49,6 @@ import Freckle.App.Prelude
 
 import Control.Error.Util (note)
 import Data.String
-import Data.Text (pack, unpack)
 import qualified Data.Text as T
 import Data.Time
 import Freckle.App.Env.Internal

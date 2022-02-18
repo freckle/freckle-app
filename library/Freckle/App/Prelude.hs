@@ -33,6 +33,10 @@ module Freckle.App.Prelude
 
   -- ** 'Text'
   , tshow
+  , pack
+  , unpack
+  , encodeUtf8
+  , decodeUtf8
 
   -- ** 'Maybe'
   , catMaybes
@@ -103,7 +107,7 @@ import Data.Int (Int64)
 import Data.List.NonEmpty (NonEmpty)
 import Data.Map.Strict (Map)
 import Data.Set (Set)
-import Data.Text (Text)
+import Data.Text (Text, pack, unpack)
 import Data.Time (NominalDiffTime, UTCTime, getCurrentTime)
 import Data.Vector (Vector)
 import GHC.Generics (Generic)
@@ -135,7 +139,7 @@ import Data.Either (partitionEithers)
 import Data.Foldable as Foldable hiding (foldl1, foldr1)
 import Data.Maybe
   (catMaybes, fromMaybe, isJust, isNothing, listToMaybe, mapMaybe, maybeToList)
-import qualified Data.Text as T
+import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Data.Traversable as Traversable
 
 infixl 4 <$$>
@@ -144,4 +148,4 @@ f <$$> as = (f <$>) <$> as
 
 -- | 'Show' as 'Text'
 tshow :: Show a => a -> Text
-tshow = T.pack . show
+tshow = pack . show

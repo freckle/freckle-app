@@ -10,7 +10,6 @@ import Freckle.App.Prelude
 import Control.Concurrent (getNumCapabilities, setNumCapabilities)
 import Control.Monad.Trans.Maybe (MaybeT(MaybeT), runMaybeT)
 import Data.List (isInfixOf)
-import Data.Text (pack)
 import qualified Prelude as Unsafe (read)
 import System.Environment (getArgs, lookupEnv)
 import Test.Hspec (Spec)

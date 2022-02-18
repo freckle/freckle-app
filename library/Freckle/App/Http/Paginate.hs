@@ -61,7 +61,6 @@ import Freckle.App.Prelude
 
 import Conduit
 import Control.Error.Util (hush)
-import Data.Text.Encoding (decodeUtf8)
 import Network.HTTP.Link.Compat hiding (linkHeader)
 import Network.HTTP.Simple
 

@@ -2,6 +2,10 @@
 
 - None.
 
+## [v1.0.2.9](https://github.com/freckle/freckle-app/compare/v1.0.2.8...v1.0.2.9)
+
+- Add some common textual encoding functions to prelude
+
 ## [v1.0.2.8](https://github.com/freckle/freckle-app/compare/v1.0.2.7...v1.0.2.8)
 
 - Don't allow `aeson-2.0`

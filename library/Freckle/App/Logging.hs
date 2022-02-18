@@ -33,7 +33,6 @@ import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BS8
 import qualified Data.ByteString.Lazy as BSL
-import Data.Text.Encoding (decodeUtf8)
 import qualified Freckle.App.Env as Env
 import System.Console.ANSI
   ( Color(Blue, Magenta, Red, Yellow)
