@@ -16,7 +16,6 @@ import Control.Error.Util (hoistEither, note)
 import Control.Monad.Trans.Except
 import Data.Char (isSpace)
 import Data.List (dropWhileEnd)
-import Data.Text (pack)
 import qualified Data.Text as T
 import Data.Time.Format (defaultTimeLocale, parseTimeM)
 import System.Exit (ExitCode(..))
