@@ -1,6 +1,26 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.8...main)
 
-- None.
+- Change functions for producing Route/TraceId to Tags
+
+  To maintain the same behavior, replace
+
+  ```hs
+  makeLoggingMiddleware app getRouteName getTraceId ...
+  ```
+
+  With
+
+  ```hs
+  makeLoggingMiddleware app getTags ...
+    where
+      getTags req = catMaybes
+        [ ("route", ) <$> getRouteName req
+        , ("trace_id", ) <$> getTraceId req
+        ]
+  ```
+
+  And similar for `makeRequestMetricsMiddleware`.
+
 
 ## [v1.0.2.9](https://github.com/freckle/freckle-app/compare/v1.0.2.8...v1.0.2.9)
 
