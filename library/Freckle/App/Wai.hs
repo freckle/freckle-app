@@ -1,10 +1,6 @@
-{-# LANGUAGE TupleSections #-}
-
 -- | Integration of "Freckle.App" tooling with "Network.Wai"
 module Freckle.App.Wai
-  ( RouteName(..)
-  , TraceId(..)
-  , makeLoggingMiddleware
+  ( makeLoggingMiddleware
   , makeRequestMetricsMiddleware
   , noCacheMiddleware
   , corsMiddleware
@@ -44,29 +40,18 @@ import Network.Wai.Middleware.RequestLogger
   )
 import System.Log.FastLogger (LoggerSet, toLogStr)
 
-newtype RouteName = RouteName
-  { unRouteName :: Text
-  }
-  deriving newtype ToJSON
-
-newtype TraceId = TraceId
-  { unTraceId :: Text
-  }
-  deriving newtype ToJSON
-
 makeLoggingMiddleware
   :: HasLogging app
   => app
-  -> (Request -> Maybe RouteName)
-  -> (Request -> Maybe TraceId)
+  -> (Request -> [(Text, Text)])
   -> LoggerSet
   -> IO Middleware
-makeLoggingMiddleware app getRouteName getTraceId ls = case getLogFormat app of
+makeLoggingMiddleware app getTags ls = case getLogFormat app of
   FormatJSON ->
     makeWith
       $ CustomOutputFormatWithDetails
       $ suppressByStatus (getLogLevel app)
-      $ jsonOutputFormatter getRouteName getTraceId
+      $ jsonOutputFormatter getTags
   FormatTerminal -> makeWith $ Detailed $ getLogDefaultANSI app
  where
   makeWith format =
@@ -81,26 +66,25 @@ suppressByStatus minLevel f date req status responseSize duration reqBody respon
   = ""
 
 jsonOutputFormatter
-  :: (Request -> Maybe RouteName)
-  -> (Request -> Maybe TraceId)
-  -> OutputFormatterWithDetails
-jsonOutputFormatter getRouteName getTraceId date req status responseSize duration _reqBody response
-  = toLogStr $ formatJsonNoLoc (statusLevel status) $ object
-    [ "time" .= decodeUtf8 date
-    , "method" .= decodeUtf8 (requestMethod req)
-    , "route" .= getRouteName req
-    , "path" .= decodeUtf8 (rawPathInfo req)
-    , "query_string" .= map queryItemToJSON (queryString req)
-    , "status" .= statusCode status
-    , "duration_ms" .= (duration * 1000)
-    , "request_size" .= requestBodyLengthToJSON (requestBodyLength req)
-    , "response_size" .= responseSize
-    , "response_body" .= do
-      guard $ statusCode status >= 400
-      Just $ maybeDecodeToValue $ toLazyByteString response
-    , "trace_id" .= getTraceId req
-    , "client_ip" .= (decodeUtf8 <$> clientIp)
-    ]
+  :: (Request -> [(Text, Text)]) -> OutputFormatterWithDetails
+jsonOutputFormatter getTags date req status responseSize duration _reqBody response
+  = toLogStr
+    $ formatJsonNoLoc (statusLevel status)
+    $ object
+    $ [ "time" .= decodeUtf8 date
+      , "method" .= decodeUtf8 (requestMethod req)
+      , "path" .= decodeUtf8 (rawPathInfo req)
+      , "query_string" .= map queryItemToJSON (queryString req)
+      , "status" .= statusCode status
+      , "duration_ms" .= (duration * 1000)
+      , "request_size" .= requestBodyLengthToJSON (requestBodyLength req)
+      , "response_size" .= responseSize
+      , "response_body" .= do
+        guard $ statusCode status >= 400
+        Just $ maybeDecodeToValue $ toLazyByteString response
+      , "client_ip" .= (decodeUtf8 <$> clientIp)
+      ]
+    <> map (uncurry (.=)) (getTags req)
   where clientIp = requestRealIp req <|> Just (sockAddrToIp $ remoteHost req)
 
 statusLevel :: Status -> LogLevel
@@ -163,9 +147,9 @@ sockAddrToIp _ = "<socket>"
 makeRequestMetricsMiddleware
   :: (HasDogStatsClient env, HasDogStatsTags env)
   => env
-  -> (Request -> Maybe RouteName)
+  -> (Request -> [(Text, Text)])
   -> Middleware
-makeRequestMetricsMiddleware env getRouteName app req sendResponse' = do
+makeRequestMetricsMiddleware env getTags app req sendResponse' = do
   start <- getCurrentTime
   app req $ \res -> do
     flip runReaderT env $ do
@@ -174,7 +158,7 @@ makeRequestMetricsMiddleware env getRouteName app req sendResponse' = do
     sendResponse' res
  where
   tags res =
-    maybeToList (("route", ) . unRouteName <$> getRouteName req)
+    getTags req
       <> [ ("method", decodeUtf8 $ requestMethod req)
          , ("status", pack $ show $ statusCode $ responseStatus res)
          ]
