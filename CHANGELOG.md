@@ -1,6 +1,7 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.8...main)
 
-- Change functions for producing Route/TraceId to Tags
+- Change `Wai` function arguments for producing `RouteName` and `TraceId` to
+  tags
 
   To maintain the same behavior, replace
 
