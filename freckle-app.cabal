@@ -1,4 +1,4 @@
-cabal-version: 1.12
+cabal-version: 1.18
 
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
@@ -16,9 +16,10 @@ license:        MIT
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
+    package.yaml
+extra-doc-files:
     README.md
     CHANGELOG.md
-    package.yaml
 
 source-repository head
   type: git
