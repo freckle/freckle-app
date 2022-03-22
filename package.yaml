@@ -7,9 +7,11 @@ github: freckle/freckle-app
 synopsis: Haskell application toolkit used at Freckle
 description: Please see README.md
 
-extra-source-files:
+extra-doc-files:
   - README.md
   - CHANGELOG.md
+
+extra-source-files:
   - package.yaml
 
 flags:
