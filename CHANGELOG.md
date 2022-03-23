@@ -22,7 +22,6 @@
 
   And similar for `makeRequestMetricsMiddleware`.
 
-
 ## [v1.0.2.9](https://github.com/freckle/freckle-app/compare/v1.0.2.8...v1.0.2.9)
 
 - Add some common textual encoding functions to prelude
