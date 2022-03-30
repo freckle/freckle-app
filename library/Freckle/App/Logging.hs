@@ -172,8 +172,12 @@ formatTerminal isANSI loc src level str = mconcat
  where
   labelEnd = fromIntegral $ fromEnum ']'
 
-  (levelStr : logStr) =
-    BS.split labelEnd . fromLogStr $ defaultLogStr loc src level $ toLogStr str
+  (levelStr, logStr) =
+    let formatted = fromLogStr $ defaultLogStr loc src level $ toLogStr str
+    in
+      case BS.split labelEnd formatted of
+        [] -> ("", [formatted])
+        (x : xs) -> (x, xs)
 
   esc x = if isANSI then BS8.pack $ setSGRCode [x] else ""
 
