@@ -54,7 +54,7 @@ library:
   dependencies:
     - Glob
     - MonadRandom
-    - aeson < 2.0
+    - aeson
     - ansi-terminal
     - bytestring
     - case-insensitive
