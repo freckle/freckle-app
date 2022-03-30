@@ -87,7 +87,7 @@ library
   build-depends:
       Glob
     , MonadRandom
-    , aeson <2.0
+    , aeson
     , ansi-terminal
     , base <5
     , bytestring
