@@ -5,26 +5,12 @@
 
 packages:
 - completed:
-    hackage: hspec-2.9.3@sha256:9b54d0c8ef8b3114aa39465a7b24658c987fbd6aab1479eafc00ee31da1be1de,1709
+    hackage: datadog-0.3.0.0@sha256:c36a0e2d7b1f1c24b0b405df8b0bf3a17f6512f1da02f8c444fbb64944b0114b,3439
     pantry-tree:
-      size: 583
-      sha256: c4dc568111385baea4bd240d87fecf8df1d74474cca79b05e7af6009a7155550
+      size: 1488
+      sha256: 6c3d2da0a57d62f41a753cb3e973162e1a62e7554c28cc5fc18ff85b252583f1
   original:
-    hackage: hspec-2.9.3
-- completed:
-    hackage: hspec-core-2.9.3@sha256:7ee9b50fa446eb05d8feb2314991fc836c914d5d2c3bda88e6dd272b38389325,6498
-    pantry-tree:
-      size: 5684
-      sha256: 5f05075378d26124143b2bff028325338ace9e6d5fbbc74b1671ff367aaabb6c
-  original:
-    hackage: hspec-core-2.9.3
-- completed:
-    hackage: hspec-discover-2.9.3@sha256:9546ec2f89cff3770f470866bc47fb4b197c1d3180a862ccb053533133b4f8ee,2165
-    pantry-tree:
-      size: 828
-      sha256: 5dca3f547fdb3f42d01eeb5bafd9d9b852d0cd6d8f5ed16b13fc257cff86285b
-  original:
-    hackage: hspec-discover-2.9.3
+    hackage: datadog-0.3.0.0
 - completed:
     hackage: hspec-junit-formatter-1.1.0.1@sha256:0365b3a5aa2e292604826c7cf99ace8b3248a369d8f5821edff9bc1031e16a5c,3853
     pantry-tree:
@@ -32,9 +18,20 @@ packages:
       sha256: 8220f330aacc9af1538624b03d2e01a5fcd9ba62c71401159a25cb731bde520e
   original:
     hackage: hspec-junit-formatter-1.1.0.1
+- completed:
+    size: 16090
+    url: https://github.com/freckle/ekg-core/archive/43aac16a0ac762b5997a62d0fbae96242d54fe14.tar.gz
+    name: ekg-core
+    version: 0.1.1.7
+    sha256: fd8b1730a845b1af692baf0801973940e08397ad24b832aaa45c0d2507a23f30
+    pantry-tree:
+      size: 1280
+      sha256: c2cc14649b56ed1e5ffcb9b81e8fd3458915514c0e27759cc84d7753d69653f2
+  original:
+    url: https://github.com/freckle/ekg-core/archive/43aac16a0ac762b5997a62d0fbae96242d54fe14.tar.gz
 snapshots:
 - completed:
-    size: 586296
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/18.yaml
-    sha256: 63539429076b7ebbab6daa7656cfb079393bf644971156dc349d7c0453694ac2
-  original: lts-18.18
+    size: 617355
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/19/1.yaml
+    sha256: cbd5e8593869445794924668479b5bd9f1738d075898623dceacc13b2576b6e3
+  original: lts-19.1
