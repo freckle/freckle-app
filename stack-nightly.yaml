@@ -1,0 +1,5 @@
+resolver: nightly-2022-03-30
+extra-deps:
+  - datadog-0.3.0.0
+  - github: freckle/ekg-core
+    commit: 43aac16a0ac762b5997a62d0fbae96242d54fe14

@@ -34,6 +34,26 @@ jobs:
         with:
           stack-yaml: ${{ matrix.stack-yaml }}
 
+  nightly:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Freckle.App.Version tests create commits
+      - name: git config
+        run: |
+          actor=${{ github.actor }}
+          git config --global user.email "$actor@users.noreply.github.com"
+          git config --global user.name "$actor"
+
+      - uses: actions/checkout@v2
+      - uses: freckle/stack-cache-action@v2
+        with:
+          stack-yaml: stack-nightly.yaml
+      - uses: freckle/stack-action@v3
+        with:
+          stack-yaml: stack-nightly.yaml
+          stack-arguments: --resolver nightly
+
   lint:
     runs-on: ubuntu-latest
     steps:
