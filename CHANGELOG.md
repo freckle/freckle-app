@@ -1,4 +1,10 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.8...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.10...main)
+
+- None
+
+## [v1.0.2.10](https://github.com/freckle/freckle-app/compare/v1.0.2.9...v1.0.2.10)
+
+- Support GHC 9.0 and 9.2
 
 - Change `Wai` function arguments for producing `RouteName` and `TraceId` to
   tags
