@@ -20,6 +20,7 @@ import qualified Data.ByteString.Lazy as BSL
 import qualified Data.CaseInsensitive as CI
 import Data.Default (def)
 import Data.IP (fromHostAddress, fromHostAddress6)
+import Data.String (fromString)
 import Data.Text.Encoding (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
 import Freckle.App.Datadog (HasDogStatsClient, HasDogStatsTags)
@@ -84,7 +85,7 @@ jsonOutputFormatter getTags date req status responseSize duration _reqBody respo
         Just $ maybeDecodeToValue $ toLazyByteString response
       , "client_ip" .= (decodeUtf8 <$> clientIp)
       ]
-    <> map (uncurry (.=)) (getTags req)
+    <> map (uncurry (.=) . first (fromString . unpack)) (getTags req)
   where clientIp = requestRealIp req <|> Just (sockAddrToIp $ remoteHost req)
 
 statusLevel :: Status -> LogLevel
