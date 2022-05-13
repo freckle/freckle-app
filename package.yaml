@@ -95,6 +95,7 @@ library:
     - retry >= 0.8.1.0
     - rio
     - safe
+    - scientist
     - semigroupoids
     - template-haskell
     - text

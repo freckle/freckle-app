@@ -29,6 +29,17 @@ packages:
       sha256: c2cc14649b56ed1e5ffcb9b81e8fd3458915514c0e27759cc84d7753d69653f2
   original:
     url: https://github.com/freckle/ekg-core/archive/43aac16a0ac762b5997a62d0fbae96242d54fe14.tar.gz
+- completed:
+    size: 12967
+    url: https://github.com/freckle/scientist-hs/archive/44d6e9bbf39a9de081db0f67cde6fd7b1a1ccb7e.tar.gz
+    name: scientist
+    version: 0.0.0.0
+    sha256: f8eba964372a780c38a41c33ffabf5f5bb44121a91bad530fe9418c2f3171d0a
+    pantry-tree:
+      size: 1925
+      sha256: 23302cc39826e7f084b6bac7532f4332b34e558aedcf63dc6832be01956caf15
+  original:
+    url: https://github.com/freckle/scientist-hs/archive/44d6e9bbf39a9de081db0f67cde6fd7b1a1ccb7e.tar.gz
 snapshots:
 - completed:
     size: 617355

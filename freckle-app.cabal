@@ -47,6 +47,7 @@ library
       Freckle.App.Logging
       Freckle.App.Prelude
       Freckle.App.RIO
+      Freckle.App.Scientist
       Freckle.App.Test
       Freckle.App.Test.DocTest
       Freckle.App.Test.Hspec.Runner
@@ -129,6 +130,7 @@ library
     , retry >=0.8.1.0
     , rio
     , safe
+    , scientist
     , semigroupoids
     , template-haskell
     , text
