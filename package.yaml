@@ -127,6 +127,7 @@ tests:
       - lens-aeson
       - monad-logger
       - mtl
+      - unliftio-core
       - wai
       - wai-extra
 

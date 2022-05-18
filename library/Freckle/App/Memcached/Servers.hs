@@ -23,7 +23,6 @@ import qualified Data.List.NonEmpty as NE
 import qualified Data.Text as T
 import qualified Database.Memcache.Client as Memcache
 import qualified Freckle.App.Env as Env
-import Network.Socket (HostName, ServiceName)
 import Network.URI (URI(..), URIAuth(..), parseAbsoluteURI)
 
 newtype MemcachedServers = MemcachedServers
@@ -64,14 +63,14 @@ readMemcachedServer s = do
   uri <- note ("Not a valid URI: " <> s) $ parseAbsoluteURI s
   note "Must begin memcached://" $ guard $ uriScheme uri == "memcached:"
 
-  pure $ case uriAuthority uri of
-    Nothing -> defaultMemcachedServer
-    Just auth -> MemcachedServer $ Memcache.ServerSpec
-      { Memcache.ssHost = fromEmpty defaultHost $ uriRegName auth
-      , Memcache.ssPort = fromPort $ fromEmpty defaultPort $ uriPort auth
-      , Memcache.ssAuth =
-        fromMaybe defaultAuth $ readAuthentication $ uriUserInfo auth
-      }
+  let mAuth = uriAuthority uri
+
+  pure
+    . MemcachedServer
+    . maybe id setHost mAuth
+    . maybe id setPort mAuth
+    . maybe id setAuth (readAuthentication . uriUserInfo =<< mAuth)
+    $ Memcache.def
 
 readAuthentication :: String -> Maybe Memcache.Authentication
 readAuthentication = go . pack
@@ -87,21 +86,28 @@ readAuthentication = go . pack
       , Memcache.password = encodeUtf8 p
       }
 
-defaultHost :: HostName
-defaultHost = Memcache.ssHost Memcache.def
+setHost :: URIAuth -> Memcache.ServerSpec -> Memcache.ServerSpec
+setHost auth ss = case uriRegName auth of
+  "" -> ss
+  rn -> ss { Memcache.ssHost = rn }
 
-defaultPort :: ServiceName
-defaultPort = Memcache.ssPort Memcache.def
+setPort :: URIAuth -> Memcache.ServerSpec -> Memcache.ServerSpec
+setPort auth ss = fromMaybe ss $ do
+  -- NB. in older versions of memcache, this field is a PortNumber, so we use
+  -- Read to get one from the URIAuth's string port value. In newer versions,
+  -- it's a ServiceName, which is just type String, so this readMay will
+  -- actually return the String as-is. This approach handles both cases without
+  -- CPP.
+  --
+  -- - https://hackage.haskell.org/package/memcache-0.2.0.1/docs/Database-Memcache-Client.html#t:ServerSpec
+  -- - https://hackage.haskell.org/package/memcache-0.3.0.1/docs/Database-Memcache-Client.html#t:ServerSpec
+  --
+  p <- case uriPort auth of
+    "" -> Nothing
+    (':' : p) -> readMay p
+    p -> readMay p
+  pure $ ss { Memcache.ssPort = p }
 
-defaultAuth :: Memcache.Authentication
-defaultAuth = Memcache.ssAuth Memcache.def
-
-fromPort :: String -> String
-fromPort = \case
-  (':' : p) -> p
-  p -> p
-
-fromEmpty :: String -> String -> String
-fromEmpty d s
-  | null s = d
-  | otherwise = s
+setAuth
+  :: Memcache.Authentication -> Memcache.ServerSpec -> Memcache.ServerSpec
+setAuth auth ss = ss { Memcache.ssAuth = auth }
