@@ -93,19 +93,10 @@ setHost auth ss = case uriRegName auth of
 
 setPort :: URIAuth -> Memcache.ServerSpec -> Memcache.ServerSpec
 setPort auth ss = fromMaybe ss $ do
-  -- NB. in older versions of memcache, this field is a PortNumber, so we use
-  -- Read to get one from the URIAuth's string port value. In newer versions,
-  -- it's a ServiceName, which is just type String, so this readMay will
-  -- actually return the String as-is. This approach handles both cases without
-  -- CPP.
-  --
-  -- - https://hackage.haskell.org/package/memcache-0.2.0.1/docs/Database-Memcache-Client.html#t:ServerSpec
-  -- - https://hackage.haskell.org/package/memcache-0.3.0.1/docs/Database-Memcache-Client.html#t:ServerSpec
-  --
   p <- case uriPort auth of
     "" -> Nothing
-    (':' : p) -> readMay p
-    p -> readMay p
+    (':' : p) -> Just p
+    p -> Just p
   pure $ ss { Memcache.ssPort = p }
 
 setAuth

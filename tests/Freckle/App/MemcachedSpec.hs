@@ -47,7 +47,7 @@ newtype TestAppT m a = TestAppT
     )
 
 -- We could derive this in newer versions of unliftio-core, but defining it by
--- handle supports a few resolvers back, without CPP. This is just a copy of the
+-- hand supports a few resolvers back, without CPP. This is just a copy of the
 -- ReaderT instance,
 --
 -- https://hackage.haskell.org/package/unliftio-core-0.2.0.1/docs/src/Control.Monad.IO.Unlift.html#line-64
