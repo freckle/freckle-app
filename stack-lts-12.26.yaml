@@ -4,6 +4,7 @@ extra-deps:
   - hspec-core-2.8.1
   - hspec-discover-2.8.1
   - hspec-junit-formatter-1.1.0.1
+  - memcache-0.2.0.1
 
   - http-conduit-2.3.5
   - monad-logger-0.3.31
@@ -12,3 +13,6 @@ extra-deps:
   - QuickCheck-2.13.2
   - random-1.1
   - splitmix-0.0.5
+
+  - github: freckle/scientist-hs
+    commit: 44d6e9bbf39a9de081db0f67cde6fd7b1a1ccb7e
