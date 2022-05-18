@@ -5,3 +5,7 @@ extra-deps:
   - hspec-core-2.9.3
   - hspec-discover-2.9.3
   - hspec-junit-formatter-1.1.0.1
+  - memcache-0.3.0.1
+
+  - github: freckle/scientist-hs
+    commit: 44d6e9bbf39a9de081db0f67cde6fd7b1a1ccb7e
