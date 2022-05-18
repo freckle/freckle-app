@@ -81,6 +81,7 @@ library:
     - iproute
     - lens
     - load-env
+    - memcache
     - monad-control
     - monad-logger >= 0.3.31
     - mtl
@@ -124,6 +125,8 @@ tests:
       - http-types
       - lens
       - lens-aeson
+      - monad-logger
+      - mtl
       - wai
       - wai-extra
 

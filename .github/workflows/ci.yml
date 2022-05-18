@@ -8,6 +8,14 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      memcached:
+        image: memcached:1.6.14
+        options: >-
+          --health-cmd "bash -c 'echo >/dev/tcp/127.0.0.1/11211'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     strategy:
       matrix:
@@ -35,6 +43,8 @@ jobs:
       - uses: freckle/stack-action@v3
         with:
           stack-yaml: ${{ matrix.stack-yaml }}
+        env:
+          MEMCACHED_SERVERS: memcached://memcached
 
   lint:
     runs-on: ubuntu-latest

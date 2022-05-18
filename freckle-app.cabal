@@ -45,17 +45,24 @@ library
       Freckle.App.Http.Paginate
       Freckle.App.Http.Retry
       Freckle.App.Logging
+      Freckle.App.Memcached
+      Freckle.App.Memcached.CacheKey
+      Freckle.App.Memcached.CacheTTL
+      Freckle.App.Memcached.Client
+      Freckle.App.Memcached.Servers
       Freckle.App.Prelude
       Freckle.App.RIO
       Freckle.App.Scientist
       Freckle.App.Test
       Freckle.App.Test.DocTest
       Freckle.App.Test.Hspec.Runner
+      Freckle.App.Test.Logging
       Freckle.App.Version
       Freckle.App.Wai
       Freckle.App.Yesod
       Freckle.App.Yesod.Routes
       Network.HTTP.Link.Compat
+      Yesod.Core.Lens
   other-modules:
       Paths_freckle_app
   hs-source-dirs:
@@ -116,6 +123,7 @@ library
     , iproute
     , lens
     , load-env
+    , memcache
     , monad-control
     , monad-logger >=0.3.31
     , mtl
@@ -239,6 +247,7 @@ test-suite spec
   other-modules:
       Freckle.App.Env.InternalSpec
       Freckle.App.HttpSpec
+      Freckle.App.MemcachedSpec
       Freckle.App.WaiSpec
       Spec
       Paths_freckle_app
@@ -279,6 +288,8 @@ test-suite spec
     , http-types
     , lens
     , lens-aeson
+    , monad-logger
+    , mtl
     , wai
     , wai-extra
   default-language: Haskell2010

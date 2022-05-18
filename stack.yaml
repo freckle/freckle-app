@@ -1,8 +1,8 @@
-resolver: lts-19.1
+resolver: lts-19.6
 
 extra-deps:
-  - datadog-0.3.0.0
-  - hspec-junit-formatter-1.1.0.1
+  - hspec-junit-formatter-1.1.0.2
+  - memcache-0.3.0.1
   - github: freckle/ekg-core
     commit: 43aac16a0ac762b5997a62d0fbae96242d54fe14
   - github: freckle/scientist-hs
