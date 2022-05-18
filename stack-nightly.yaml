@@ -1,5 +1,7 @@
 resolver: nightly-2022-03-30
 extra-deps:
-  - datadog-0.3.0.0
+  - memcache-0.3.0.1
   - github: freckle/ekg-core
     commit: 43aac16a0ac762b5997a62d0fbae96242d54fe14
+  - github: freckle/scientist-hs
+    commit: 44d6e9bbf39a9de081db0f67cde6fd7b1a1ccb7e
