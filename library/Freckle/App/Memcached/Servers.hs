@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 -- | Read a Memcached Servers value, to support ENV-based configuration
 --
 -- Format:
@@ -95,9 +97,17 @@ setPort :: URIAuth -> Memcache.ServerSpec -> Memcache.ServerSpec
 setPort auth ss = fromMaybe ss $ do
   p <- case uriPort auth of
     "" -> Nothing
-    (':' : p) -> Just p
-    p -> Just p
+    (':' : p) -> fromPort p
+    p -> fromPort p
   pure $ ss { Memcache.ssPort = p }
+ where
+#if MIN_VERSION_memcache(0,3,0)
+  -- ssPort is a ServiceName, which is a String
+  fromPort = Just
+#else
+  -- ssPort is a PortNumber, which we need to Read
+  fromPort = readMay
+#endif
 
 setAuth
   :: Memcache.Authentication -> Memcache.ServerSpec -> Memcache.ServerSpec
