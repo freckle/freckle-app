@@ -120,11 +120,13 @@ tests:
     dependencies:
       - aeson
       - bytestring
+      - errors
       - freckle-app
       - hspec
       - http-types
       - lens
       - lens-aeson
+      - memcache
       - monad-logger
       - mtl
       - unliftio-core

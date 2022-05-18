@@ -247,6 +247,7 @@ test-suite spec
   other-modules:
       Freckle.App.Env.InternalSpec
       Freckle.App.HttpSpec
+      Freckle.App.Memcached.ServersSpec
       Freckle.App.MemcachedSpec
       Freckle.App.WaiSpec
       Spec
@@ -283,11 +284,13 @@ test-suite spec
       aeson
     , base <5
     , bytestring
+    , errors
     , freckle-app
     , hspec
     , http-types
     , lens
     , lens-aeson
+    , memcache
     , monad-logger
     , mtl
     , unliftio-core
