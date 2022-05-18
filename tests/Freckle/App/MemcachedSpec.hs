@@ -4,6 +4,7 @@ module Freckle.App.MemcachedSpec
 
 import Freckle.App.Prelude
 
+import Control.Monad.IO.Unlift (MonadUnliftIO(..))
 import Control.Monad.Logger
 import Control.Monad.Reader
 import qualified Data.List.NonEmpty as NE
@@ -42,9 +43,18 @@ newtype TestAppT m a = TestAppT
     , Monad
     , MonadReader MemcachedClient
     , MonadIO
-    , MonadUnliftIO
     , MonadLogger
     )
+
+-- We could derive this in newer versions of unliftio-core, but defining it by
+-- handle supports a few resolvers back, without CPP. This is just a copy of the
+-- ReaderT instance,
+--
+-- https://hackage.haskell.org/package/unliftio-core-0.2.0.1/docs/src/Control.Monad.IO.Unlift.html#line-64
+--
+instance MonadUnliftIO m => MonadUnliftIO (TestAppT m) where
+  {-# INLINE withRunInIO #-}
+  withRunInIO inner = TestAppT $ withRunInIO $ \run -> inner (run . unTestAppT)
 
 runTestAppT :: MonadUnliftIO m => TestAppT m a -> m (a, [Text])
 runTestAppT f = do
