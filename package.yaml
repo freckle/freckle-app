@@ -132,6 +132,7 @@ tests:
     source-dirs: doctest
     dependencies:
       - freckle-app
+
   gittest:
     main: Main.hs
     source-dirs: gittest
