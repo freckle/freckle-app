@@ -1,10 +1,10 @@
 module Freckle.App.Memcached.Client
   ( MemcachedClient
   , newMemcachedClient
+  , memcachedClientDisabled
   , HasMemcachedClient(..)
   , get
   , set
-  , with
   ) where
 
 import Freckle.App.Prelude
@@ -18,9 +18,9 @@ import Freckle.App.Memcached.Servers
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
 
-newtype MemcachedClient = MemcachedClient
-  { unMemcachedClient :: Memcache.Client
-  }
+data MemcachedClient
+  = MemcachedClient Memcache.Client
+  | MemcachedClientDisabled
 
 class HasMemcachedClient env where
   memcachedClientL :: Lens' env MemcachedClient
@@ -36,15 +36,20 @@ newMemcachedClient urls =
   liftIO $ MemcachedClient <$> Memcache.newClient specs Memcache.def
   where specs = toServerSpecs urls
 
+memcachedClientDisabled :: MemcachedClient
+memcachedClientDisabled = MemcachedClientDisabled
+
 get
   :: (MonadIO m, MonadReader env m, HasMemcachedClient env)
   => CacheKey
   -> m (Maybe Value)
-get k = with $ \mc -> liftIO $ view _1 <$$> Memcache.get mc (fromCacheKey k)
+get k = with $ \case
+  MemcachedClient mc -> liftIO $ view _1 <$$> Memcache.get mc (fromCacheKey k)
+  MemcachedClientDisabled -> pure Nothing
 
 -- | Set a value to expire in the given seconds
 --
--- Pass @0@ to create a value that never expires.
+-- Pass @0@ to set a value that never expires.
 --
 set
   :: (MonadIO m, MonadReader env m, HasMemcachedClient env)
@@ -52,14 +57,16 @@ set
   -> Value
   -> CacheTTL
   -> m ()
-set k v expiration = with $ \mc -> do
-  void $ liftIO $ Memcache.set mc (fromCacheKey k) v 0 $ fromCacheTTL expiration
+set k v expiration = with $ \case
+  MemcachedClient mc ->
+    void $ liftIO $ Memcache.set mc (fromCacheKey k) v 0 $ fromCacheTTL
+      expiration
+  MemcachedClientDisabled -> pure ()
 
--- | Escape-hatch for usage not available through encapsulating functions
 with
   :: (MonadReader env m, HasMemcachedClient env)
-  => (Memcache.Client -> m a)
+  => (MemcachedClient -> m a)
   -> m a
 with f = do
   c <- view memcachedClientL
-  f $ unMemcachedClient c
+  f c
