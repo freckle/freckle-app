@@ -57,21 +57,21 @@ spec = do
   describe "caching" $ do
     it "caches the given action by key using Cachable" $ example $ do
       void $ runTestAppT $ do
-        let Right key = cacheKey "A"
+        key <- cacheKeyThrow "A"
 
         val <- caching key (cacheTTL 5) $ pure A
-        mbs <- Memcached.get =<< cacheKeyThrow "A"
+        mbs <- Memcached.get key
 
         liftIO $ val `shouldBe` A
         liftIO $ mbs `shouldBe` Just "A"
 
     it "logs, but doesn't fail, on deserialization errors" $ example $ do
       (_, msgs) <- runTestAppT $ do
-        let Right key = cacheKey "B"
+        key <- cacheKeyThrow "B"
 
         val0 <- caching key (cacheTTL 5) $ pure B -- set
         val1 <- caching key (cacheTTL 5) $ pure B -- get will fail
-        mbs <- Memcached.get =<< cacheKeyThrow "B"
+        mbs <- Memcached.get key
 
         liftIO $ val0 `shouldBe` B
         liftIO $ val1 `shouldBe` B
