@@ -8,14 +8,25 @@
 -- memcached://[user[:password]@]host][:port],...
 -- @
 --
+-- Usage with "Freckle.App.Env":
+--
+-- @
+-- -- Required
+-- Env.var (Env.eitherReader readMemcachedServers) "MEMCACHED_SERVERS" Env.nonEmpty
+--
+-- -- Default to localhost:11211
+-- Env.var (Env.eitherReader readMemcachedServers) "MEMCACHED_SERVERS" (Env.def defaultMemcachedServers)
+--
+-- -- Default to disabled
+-- Env.var (Env.eitherReader readMemcachedServers) "MEMCACHED_SERVERS" (Env.def emptyMemcachedServers)
+-- @
+--
 module Freckle.App.Memcached.Servers
   ( MemcachedServers(..)
   , defaultMemcachedServers
-  , envParseMemcacheServers
-  , toServerSpecs
-
-  -- * Exported for testing
+  , emptyMemcachedServers
   , readMemcachedServers
+  , toServerSpecs
   ) where
 
 import Freckle.App.Prelude
@@ -23,7 +34,6 @@ import Freckle.App.Prelude
 import Control.Error.Util (note)
 import qualified Data.Text as T
 import qualified Database.Memcache.Client as Memcache
-import qualified Freckle.App.Env as Env
 import Network.URI (URI(..), URIAuth(..), parseAbsoluteURI)
 
 newtype MemcachedServers = MemcachedServers
@@ -31,14 +41,10 @@ newtype MemcachedServers = MemcachedServers
   }
 
 defaultMemcachedServers :: MemcachedServers
-defaultMemcachedServers = MemcachedServers $ pure defaultMemcachedServer
+defaultMemcachedServers = MemcachedServers [defaultMemcachedServer]
 
--- | Parse @MEMCACHED_SERVERS@ for a 'MemcachedServers' value
-envParseMemcacheServers :: Env.Parser MemcachedServers
-envParseMemcacheServers = Env.var
-  (Env.eitherReader readMemcachedServers)
-  "MEMCACHED_SERVERS"
-  (Env.def defaultMemcachedServers)
+emptyMemcachedServers :: MemcachedServers
+emptyMemcachedServers = MemcachedServers []
 
 readMemcachedServers :: String -> Either String MemcachedServers
 readMemcachedServers =
