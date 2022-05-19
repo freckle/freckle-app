@@ -19,8 +19,10 @@ spec = do
       void (readMemcachedServers "http://") `shouldSatisfy` isLeft
       void (readMemcachedServers "memcached://") `shouldSatisfy` isRight
 
-    it "treats empty cavlues as default" $ example $ do
-      readServerSpecs "" `shouldBe` Just [Memcache.def]
+    it "treats an empty value as none" $ example $ do
+      readServerSpecs "" `shouldBe` Just []
+
+    it "treats an empty prefixed value as default" $ example $ do
       readServerSpecs "memcached://" `shouldBe` Just [Memcache.def]
 
     it "can set host" $ example $ do

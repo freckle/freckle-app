@@ -21,14 +21,13 @@ module Freckle.App.Memcached.Servers
 import Freckle.App.Prelude
 
 import Control.Error.Util (note)
-import qualified Data.List.NonEmpty as NE
 import qualified Data.Text as T
 import qualified Database.Memcache.Client as Memcache
 import qualified Freckle.App.Env as Env
 import Network.URI (URI(..), URIAuth(..), parseAbsoluteURI)
 
 newtype MemcachedServers = MemcachedServers
-  { unMemcachedServers :: NonEmpty MemcachedServer
+  { unMemcachedServers :: [MemcachedServer]
   }
 
 defaultMemcachedServers :: MemcachedServers
@@ -43,15 +42,15 @@ envParseMemcacheServers = Env.var
 
 readMemcachedServers :: String -> Either String MemcachedServers
 readMemcachedServers =
-  go . NE.nonEmpty . filter (not . T.null) . map T.strip . T.splitOn "," . pack
- where
-  go = \case
-    Nothing -> pure defaultMemcachedServers
-    Just urls ->
-      MemcachedServers <$> traverse (readMemcachedServer . unpack) urls
+  fmap MemcachedServers
+    . traverse (readMemcachedServer . unpack)
+    . filter (not . T.null)
+    . map T.strip
+    . T.splitOn ","
+    . pack
 
 toServerSpecs :: MemcachedServers -> [Memcache.ServerSpec]
-toServerSpecs = map unMemcachedServer . NE.toList . unMemcachedServers
+toServerSpecs = map unMemcachedServer . unMemcachedServers
 
 newtype MemcachedServer = MemcachedServer
   { unMemcachedServer :: Memcache.ServerSpec
