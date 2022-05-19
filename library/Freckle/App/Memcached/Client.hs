@@ -32,9 +32,9 @@ instance HasMemcachedClient site => HasMemcachedClient (HandlerData child site) 
   memcachedClientL = envL . siteL . memcachedClientL
 
 newMemcachedClient :: MonadIO m => MemcachedServers -> m MemcachedClient
-newMemcachedClient urls =
-  liftIO $ MemcachedClient <$> Memcache.newClient specs Memcache.def
-  where specs = toServerSpecs urls
+newMemcachedClient servers = case toServerSpecs servers of
+  [] -> pure memcachedClientDisabled
+  specs -> liftIO $ MemcachedClient <$> Memcache.newClient specs Memcache.def
 
 memcachedClientDisabled :: MemcachedClient
 memcachedClientDisabled = MemcachedClientDisabled
