@@ -12,7 +12,7 @@ import qualified Freckle.App.Env as Env
 import Freckle.App.Memcached
 import Freckle.App.Memcached.Client (MemcachedClient, newMemcachedClient)
 import qualified Freckle.App.Memcached.Client as Memcached
-import Freckle.App.Memcached.Servers (envParseMemcacheServers)
+import Freckle.App.Memcached.Servers
 import Freckle.App.Test.Logging
 import Test.Hspec
 
@@ -58,7 +58,10 @@ instance MonadUnliftIO m => MonadUnliftIO (TestAppT m) where
 
 runTestAppT :: MonadUnliftIO m => TestAppT m a -> m (a, [Text])
 runTestAppT f = do
-  servers <- liftIO $ Env.parse envParseMemcacheServers
+  servers <- liftIO $ Env.parse $ Env.var
+    (Env.eitherReader readMemcachedServers)
+    "MEMCACHED_SERVERS"
+    (Env.def defaultMemcachedServers)
   mc <- newMemcachedClient servers
   runCapturedLoggingT $ runReaderT (unTestAppT f) mc
 
