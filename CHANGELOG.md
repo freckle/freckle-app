@@ -1,4 +1,9 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.10...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.4.0...main)
+
+## [v1.0.4.0](https://github.com/freckle/freckle-app/compare/v1.0.3.0...v1.0.4.0)
+
+- Add `Freckle.App.Bugsnag` for Bugsnag logging in applications.
+- Increased default PG poolsize to 10.
 
 ## [v1.0.3.0](https://github.com/freckle/freckle-app/compare/v1.0.2.10...v1.0.3.0)
 
