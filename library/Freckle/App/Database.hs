@@ -147,7 +147,7 @@ envParseDatabaseConf source = do
   host <- Env.var Env.str "PGHOST" Env.nonEmpty
   database <- Env.var Env.str "PGDATABASE" Env.nonEmpty
   port <- Env.var Env.auto "PGPORT" Env.nonEmpty
-  poolSize <- Env.var Env.auto "PGPOOLSIZE" $ Env.def 1
+  poolSize <- Env.var Env.auto "PGPOOLSIZE" $ Env.def 10
   statementTimeout <-
     Env.var (Env.eitherReader readPostgresStatementTimeout) "PGSTATEMENTTIMEOUT"
       $ Env.def (PostgresStatementTimeoutSeconds 120)
