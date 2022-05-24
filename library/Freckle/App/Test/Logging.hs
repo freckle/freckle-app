@@ -20,13 +20,13 @@ runCapturedLoggingT f = do
   x <- async $ captureLog [] chan
   a <- runChanLoggingT chan $ f `finally` logInfoN doneMessage
   msgs <- wait x
-  pure (a, msgs)
+  pure (a, reverse msgs)
 
 captureLog :: MonadIO m => [Text] -> Chan (a, b, c, LogStr) -> m [Text]
 captureLog acc chan = do
   (_, _, _, str) <- liftIO $ readChan chan
   let txt = decodeUtf8 $ fromLogStr str
-  if txt == doneMessage then pure acc else captureLog (acc <> [txt]) chan
+  if txt == doneMessage then pure acc else captureLog (txt : acc) chan
 
 doneMessage :: Text
 doneMessage = "%DONE%"
