@@ -56,6 +56,7 @@ library:
     - MonadRandom
     - aeson
     - ansi-terminal
+    - bugsnag
     - bytestring
     - case-insensitive
     - conduit
@@ -129,6 +130,7 @@ tests:
       - memcache
       - monad-logger
       - mtl
+      - postgresql-simple
       - unliftio-core
       - wai
       - wai-extra
