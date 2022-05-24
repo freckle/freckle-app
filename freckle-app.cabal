@@ -33,6 +33,7 @@ flag test-git
 library
   exposed-modules:
       Freckle.App
+      Freckle.App.Bugsnag
       Freckle.App.Database
       Freckle.App.Datadog
       Freckle.App.Datadog.Gauge
@@ -98,6 +99,7 @@ library
     , aeson
     , ansi-terminal
     , base <5
+    , bugsnag
     , bytestring
     , case-insensitive
     , conduit
@@ -245,6 +247,7 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Main.hs
   other-modules:
+      Freckle.App.BugsnagSpec
       Freckle.App.Env.InternalSpec
       Freckle.App.HttpSpec
       Freckle.App.Memcached.ServersSpec
@@ -293,6 +296,7 @@ test-suite spec
     , memcache
     , monad-logger
     , mtl
+    , postgresql-simple
     , unliftio-core
     , wai
     , wai-extra

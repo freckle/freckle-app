@@ -1,5 +1,9 @@
 resolver: lts-12.26
 extra-deps:
+  - bugsnag-hs-0.2.0.8
+  - ua-parser-0.7.7.0
+  - bugsnag-1.0.0.1
+  - bugsnag-wai-1.0.0.1
   - hspec-2.8.1
   - hspec-core-2.8.1
   - hspec-discover-2.8.1
