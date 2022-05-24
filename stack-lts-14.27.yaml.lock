@@ -5,6 +5,20 @@
 
 packages:
 - completed:
+    hackage: bugsnag-1.0.0.1@sha256:a5b7afd9ff5bab322c1ce267ff0645afd7072071371462a0335f550609aa2546,4412
+    pantry-tree:
+      size: 1527
+      sha256: d76d9f0f1468a6ecf4bb7b7f5f74fc3819009a99d983dff7a8285cc27e1c34f1
+  original:
+    hackage: bugsnag-1.0.0.1
+- completed:
+    hackage: bugsnag-wai-1.0.0.1@sha256:6d9ed5cc2450bcb2150aec4825df1376d6930f9ed4e79b0e74d30379a226418a,3196
+    pantry-tree:
+      size: 454
+      sha256: c80a4c4e15eb2fd164fe430e4c1c420e62de42a1adaf415ac07befa8d0b36045
+  original:
+    hackage: bugsnag-wai-1.0.0.1
+- completed:
     hackage: hspec-2.8.1@sha256:56ad90d6eff8b046aea6dbf87dd2518dc1b0c171acdfec785d02b26bdbbb1438,1709
     pantry-tree:
       size: 583

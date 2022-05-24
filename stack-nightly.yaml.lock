@@ -38,7 +38,7 @@ packages:
     url: https://github.com/freckle/ekg-core/archive/43aac16a0ac762b5997a62d0fbae96242d54fe14.tar.gz
 snapshots:
 - completed:
-    size: 539378
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2022/3/30.yaml
-    sha256: 745431a4c5b78cc93d81e99b2253a1e0eacd4f94e00cf17dab7cc14e665332e3
-  original: nightly-2022-03-30
+    size: 588043
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2022/5/20.yaml
+    sha256: 7800e52de866bab899c118558f3a48e455f9f57fb3b3595e0002018fbea5ee58
+  original: nightly-2022-05-20
