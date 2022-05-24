@@ -28,6 +28,7 @@ import Control.Monad.Reader (runReaderT)
 import Data.Bugsnag
 import Data.Bugsnag.Settings
 import qualified Data.ByteString.Char8 as BS8
+import Data.List (isInfixOf)
 import Database.PostgreSQL.Simple (SqlError(..))
 import Database.PostgreSQL.Simple.Errors
 import qualified Freckle.App.Env as Env
@@ -141,8 +142,7 @@ asHttpException (InvalidUrlException url msg) = updateExceptions $ \ex -> ex
 -- Marking them as not in-project does this, with little downside.
 --
 maskErrorHelpers :: BeforeNotify
-maskErrorHelpers = setStackFramesInProjectByFile (`notElem` errorHelpers)
-  where errorHelpers = ["library/FrontRow/Core/Exceptions.hs"]
+maskErrorHelpers = setStackFramesInProjectByFile (`isInfixOf` "Exceptions")
 
 -- brittany-disable-next-binding
 
