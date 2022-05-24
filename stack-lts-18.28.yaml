@@ -1,6 +1,8 @@
 resolver: lts-18.28
 
 extra-deps:
+  - bugsnag-1.0.0.1
+  - bugsnag-wai-1.0.0.1
   - hspec-2.9.3
   - hspec-core-2.9.3
   - hspec-discover-2.9.3
