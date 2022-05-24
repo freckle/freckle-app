@@ -40,6 +40,13 @@ packages:
   original:
     hackage: memcache-0.2.0.1
 - completed:
+    hackage: scientist-0.0.0.0@sha256:058c629a6805668f3a16c386dbc5dd90c1ce55ff2c7cf5672f0410bdb873d04c,2999
+    pantry-tree:
+      size: 1061
+      sha256: 370ee941c6ce59486e5c27a1ce294e50ea47aa36a5bdd4f4eee0cd4834d8b763
+  original:
+    hackage: scientist-0.0.0.0
+- completed:
     hackage: http-conduit-2.3.5@sha256:5fe21d4112d986b67eceff49fc253e9f557ab94461a1a018ae952e02aca0ce0f,2936
     pantry-tree:
       size: 784
@@ -81,17 +88,6 @@ packages:
       sha256: b41d4f60cfabab8b02840906191013ee06fe2357371103a471c7cc55eda9e462
   original:
     hackage: splitmix-0.0.5
-- completed:
-    size: 12967
-    url: https://github.com/freckle/scientist-hs/archive/44d6e9bbf39a9de081db0f67cde6fd7b1a1ccb7e.tar.gz
-    name: scientist
-    version: 0.0.0.0
-    sha256: f8eba964372a780c38a41c33ffabf5f5bb44121a91bad530fe9418c2f3171d0a
-    pantry-tree:
-      size: 1925
-      sha256: 23302cc39826e7f084b6bac7532f4332b34e558aedcf63dc6832be01956caf15
-  original:
-    url: https://github.com/freckle/scientist-hs/archive/44d6e9bbf39a9de081db0f67cde6fd7b1a1ccb7e.tar.gz
 snapshots:
 - completed:
     size: 509471
