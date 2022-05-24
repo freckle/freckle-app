@@ -1,6 +1,11 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.10...main)
 
-- None
+## [v1.0.3.0](https://github.com/freckle/freckle-app/compare/v1.0.2.10...v1.0.3.0)
+
+- Add `Freckle.App.Memcache` for using memcached in Apps
+- Add `Freckle.App.Scientist` for using [scientist][] in Apps
+
+  [scientist]: https://github.com/freckle/scientist-hs#readme
 
 ## [v1.0.2.10](https://github.com/freckle/freckle-app/compare/v1.0.2.9...v1.0.2.10)
 
