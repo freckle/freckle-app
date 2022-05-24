@@ -1,7 +1,5 @@
-resolver: nightly-2022-03-30
+resolver: nightly-2022-05-23
 extra-deps:
-  - bugsnag-1.0.0.1
-  - bugsnag-wai-1.0.0.1
   - datadog-0.3.0.0
   - memcache-0.3.0.1
   - scientist-0.0.0.0
