@@ -40,16 +40,12 @@ packages:
   original:
     hackage: memcache-0.3.0.1
 - completed:
-    size: 12967
-    url: https://github.com/freckle/scientist-hs/archive/44d6e9bbf39a9de081db0f67cde6fd7b1a1ccb7e.tar.gz
-    name: scientist
-    version: 0.0.0.0
-    sha256: f8eba964372a780c38a41c33ffabf5f5bb44121a91bad530fe9418c2f3171d0a
+    hackage: scientist-0.0.0.0@sha256:058c629a6805668f3a16c386dbc5dd90c1ce55ff2c7cf5672f0410bdb873d04c,2999
     pantry-tree:
-      size: 1925
-      sha256: 23302cc39826e7f084b6bac7532f4332b34e558aedcf63dc6832be01956caf15
+      size: 1061
+      sha256: 370ee941c6ce59486e5c27a1ce294e50ea47aa36a5bdd4f4eee0cd4834d8b763
   original:
-    url: https://github.com/freckle/scientist-hs/archive/44d6e9bbf39a9de081db0f67cde6fd7b1a1ccb7e.tar.gz
+    hackage: scientist-0.0.0.0
 snapshots:
 - completed:
     size: 534126
