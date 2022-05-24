@@ -1,4 +1,4 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.2.10...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.4.0...main)
 
 ## [v1.0.4.0](https://github.com/freckle/freckle-app/compare/v1.0.3.0...v1.0.4.0)
 
