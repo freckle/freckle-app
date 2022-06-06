@@ -106,6 +106,7 @@ library
     , containers
     , data-default
     , datadog
+    , dlist
     , doctest
     , ekg-core
     , errors
@@ -294,7 +295,6 @@ test-suite spec
     , lens
     , lens-aeson
     , memcache
-    , monad-logger
     , mtl
     , postgresql-simple
     , unliftio-core

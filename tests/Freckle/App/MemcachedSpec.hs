@@ -5,7 +5,6 @@ module Freckle.App.MemcachedSpec
 import Freckle.App.Prelude
 
 import Control.Monad.IO.Unlift (MonadUnliftIO(..))
-import Control.Monad.Logger
 import Control.Monad.Reader
 import qualified Data.List.NonEmpty as NE
 import qualified Freckle.App.Env as Env
@@ -63,7 +62,9 @@ runTestAppT f = do
     "MEMCACHED_SERVERS"
     (Env.def defaultMemcachedServers)
   mc <- newMemcachedClient servers
-  runCapturedLoggingT $ runReaderT (unTestAppT f) mc
+  fmap (second $ map logLineToText) $ runCapturedLoggingT $ runReaderT
+    (unTestAppT f)
+    mc
 
 spec :: Spec
 spec = do

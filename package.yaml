@@ -63,6 +63,7 @@ library:
     - containers
     - data-default
     - datadog
+    - dlist
     - doctest
     - ekg-core
     - errors
@@ -128,7 +129,6 @@ tests:
       - lens
       - lens-aeson
       - memcache
-      - monad-logger
       - mtl
       - postgresql-simple
       - unliftio-core
