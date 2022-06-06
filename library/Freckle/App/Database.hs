@@ -22,8 +22,8 @@ module Freckle.App.Database
 
 import Freckle.App.Prelude
 
+import Blammo.Logging
 import qualified Control.Immortal as Immortal
-import Control.Monad.Logger
 import Control.Monad.Reader
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS8
@@ -46,6 +46,7 @@ import qualified Freckle.App.Env as Env
 import qualified Prelude as Unsafe (read)
 import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
+import UnliftIO.Exception (displayException)
 import UnliftIO.IORef
 
 type SqlPool = Pool SqlBackend
@@ -199,10 +200,10 @@ spawnIamTokenRefreshThread
   => PostgresConnectionConf
   -> m (IORef AuroraIamToken)
 spawnIamTokenRefreshThread conf = do
-  logInfoN "Spawning thread to refresh IAM auth token"
+  logInfo "Spawning thread to refresh IAM auth token"
   tokenIORef <- newIORef =<< createAuroraIamToken conf
   void $ Immortal.create $ \_ -> Immortal.onFinish onFinishCallback $ do
-    logDebugN "Refreshing IAM auth token"
+    logDebug "Refreshing IAM auth token"
     refreshIamToken conf tokenIORef
     threadDelay oneMinuteInMicroseconds
   pure tokenIORef
@@ -211,7 +212,9 @@ spawnIamTokenRefreshThread conf = do
 
   onFinishCallback = \case
     Left ex ->
-      logErrorN $ pack $ "Error refreshing IAM auth token: " <> show ex
+      logError
+        $ "Error refreshing IAM auth token"
+        :# ["exception" .= displayException ex]
     Right () -> pure ()
 
 refreshIamToken

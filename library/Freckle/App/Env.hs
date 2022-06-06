@@ -51,7 +51,7 @@ newtype On a = On a
 -- If the variable is present and non-empty in the environment, the active value
 -- is returned, otherwise the default is used.
 --
--- >>> import Control.Monad.Logger
+-- >>> import Blammo.Logging (LogLevel(..))
 --
 -- >>> flag (Off LevelInfo) (On LevelDebug) "DEBUG" mempty `parsePure` [("DEBUG", "1")]
 -- Right LevelDebug

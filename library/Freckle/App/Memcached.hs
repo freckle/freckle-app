@@ -23,7 +23,7 @@ module Freckle.App.Memcached
 
 import Freckle.App.Prelude
 
-import Control.Monad.Logger (MonadLogger, logErrorN)
+import Blammo.Logging
 import Data.Aeson
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Lazy as BSL
@@ -119,7 +119,10 @@ handleCachingError value action = handleAny $ \ex -> do
 
 logCachingError :: MonadLogger m => Text -> Text -> m ()
 logCachingError action message =
-  logErrorN $ "[Caching] error " <> action <> ": " <> message
+  logErrorNS "caching"
+    $ "Error "
+    <> action
+    :# ["action" .= action, "message" .= message]
 
 encodeStrict :: ToJSON a => a -> ByteString
 encodeStrict = BSL.toStrict . encode

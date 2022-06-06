@@ -4,7 +4,6 @@ module Freckle.App.MemcachedSpec
 
 import Freckle.App.Prelude
 
-import Control.Monad.IO.Unlift (MonadUnliftIO(..))
 import Control.Monad.Reader
 import qualified Data.List.NonEmpty as NE
 import qualified Freckle.App.Env as Env
@@ -12,8 +11,8 @@ import Freckle.App.Memcached
 import Freckle.App.Memcached.Client (MemcachedClient, newMemcachedClient)
 import qualified Freckle.App.Memcached.Client as Memcached
 import Freckle.App.Memcached.Servers
+import Freckle.App.Test
 import Freckle.App.Test.Logging
-import Test.Hspec
 
 data ExampleValue
   = A
@@ -33,38 +32,24 @@ instance Cachable ExampleValue where
     "C" -> Right C
     x -> Left $ "invalid: " <> show x
 
-newtype TestAppT m a = TestAppT
-  { unTestAppT :: ReaderT MemcachedClient (LoggingT m) a
-  }
-  deriving newtype
-    ( Functor
-    , Applicative
-    , Monad
-    , MonadReader MemcachedClient
-    , MonadIO
-    , MonadLogger
-    )
+runTestAppT :: MonadUnliftIO m => AppExample MemcachedClient a -> m (a, [Text])
+runTestAppT f = liftIO $ do
+  mc <- loadClient
+  -- NB. we could use `withApp` and not need to call this runner ourselves
+  -- within a plain-`IO` example -- except that we want to use
+  -- `runCapturedLoggingT` and assert on the logged messages. We should add
+  -- Blammo.Logging.Test to support this use-case.
+  fmap (second $ map logLineToText) $ runCapturedLoggingT $ runReaderT
+    (unAppExample f)
+    mc
 
--- We could derive this in newer versions of unliftio-core, but defining it by
--- hand supports a few resolvers back, without CPP. This is just a copy of the
--- ReaderT instance,
---
--- https://hackage.haskell.org/package/unliftio-core-0.2.0.1/docs/src/Control.Monad.IO.Unlift.html#line-64
---
-instance MonadUnliftIO m => MonadUnliftIO (TestAppT m) where
-  {-# INLINE withRunInIO #-}
-  withRunInIO inner = TestAppT $ withRunInIO $ \run -> inner (run . unTestAppT)
-
-runTestAppT :: MonadUnliftIO m => TestAppT m a -> m (a, [Text])
-runTestAppT f = do
-  servers <- liftIO $ Env.parse id $ Env.var
+loadClient :: IO MemcachedClient
+loadClient = do
+  servers <- Env.parse id $ Env.var
     (Env.eitherReader readMemcachedServers)
     "MEMCACHED_SERVERS"
     (Env.def defaultMemcachedServers)
-  mc <- newMemcachedClient servers
-  fmap (second $ map logLineToText) $ runCapturedLoggingT $ runReaderT
-    (unTestAppT f)
-    mc
+  newMemcachedClient servers
 
 spec :: Spec
 spec = do

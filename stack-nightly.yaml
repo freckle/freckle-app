@@ -1,7 +1,9 @@
 resolver: nightly-2022-06-06
 extra-deps:
+  - Blammo-1.0.0.1
+  - context-0.2.0.0
   - datadog-0.3.0.0
+  - ekg-core-0.1.1.7
   - memcache-0.3.0.1
+  - monad-logger-aeson-0.2.0.1
   - scientist-0.0.0.0
-  - github: freckle/ekg-core
-    commit: 43aac16a0ac762b5997a62d0fbae96242d54fe14
