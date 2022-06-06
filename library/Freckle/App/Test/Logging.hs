@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 module Freckle.App.Test.Logging
   ( MonadLogger
   , LoggingT
@@ -13,6 +15,10 @@ import Data.DList (DList)
 import qualified Data.DList as DList
 import UnliftIO.Async
 import UnliftIO.Exception (finally)
+
+#if !MIN_VERSION_monad_logger(0,3,32)
+type LogLine = (Loc, LogSource, LogLevel, LogStr)
+#endif
 
 -- | Run a 'LoggingT', capturing and returning any logged messages alongside
 --
