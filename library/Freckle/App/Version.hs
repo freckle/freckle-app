@@ -14,13 +14,14 @@ import Freckle.App.Prelude
 
 import Control.Error.Util (hoistEither, note)
 import Control.Monad.Trans.Except
+import qualified Data.ByteString.Lazy.Char8 as BSL8
 import Data.Char (isSpace)
 import Data.List (dropWhileEnd)
 import qualified Data.Text as T
 import Data.Time.Format (defaultTimeLocale, parseTimeM)
 import System.Exit (ExitCode(..))
 import System.FilePath ((</>))
-import System.Process (readProcessWithExitCode)
+import System.Process.Typed (proc, readProcess)
 import UnliftIO.Exception (tryIO)
 
 data AppVersion = AppVersion
@@ -81,12 +82,18 @@ readFileExceptT path = ExceptT $ liftIO $ first err <$> tryIO (readFile path)
 
 git :: MonadIO m => [String] -> ExceptT String m String
 git args = do
-  (ec, stdout, stderr) <- exceptIO $ readProcessWithExitCode "git" args []
+  (ec, stdout, stderr) <- exceptIO $ readProcess $ proc "git" args
 
   case ec of
-    ExitSuccess -> pure stdout
+    ExitSuccess -> pure $ BSL8.unpack stdout
     ExitFailure n ->
-      throwE $ "[" <> show n <> "] git " <> unwords args <> ": " <> stderr
+      throwE
+        $ "["
+        <> show n
+        <> "] git "
+        <> unwords args
+        <> ": "
+        <> BSL8.unpack stderr
 
 exceptIO :: MonadIO m => IO a -> ExceptT String m a
 exceptIO = withExceptT show . ExceptT . liftIO . tryIO

@@ -7,6 +7,7 @@ module Freckle.App.Ghci
 
 import Freckle.App.Prelude
 
+import Control.Monad.Logger (runNoLoggingT)
 import Database.Persist.Postgresql (runSqlPool)
 import Database.Persist.Sql (SqlBackend)
 import Freckle.App.Database (makePostgresPool)
@@ -19,7 +20,7 @@ runDB f = loadEnv *> runDB' f
 -- | Run a db action
 runDB' :: ReaderT SqlBackend IO b -> IO b
 runDB' f = do
-  pool <- makePostgresPool
+  pool <- runNoLoggingT makePostgresPool
   runSqlPool f pool
 
 loadEnvTest :: IO ()
