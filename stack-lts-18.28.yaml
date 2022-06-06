@@ -1,11 +1,14 @@
 resolver: lts-18.28
 
 extra-deps:
+  - Blammo-1.0.0.1
   - bugsnag-1.0.0.0
   - bugsnag-wai-1.0.0.0
+  - context-0.2.0.0
   - hspec-2.9.3
   - hspec-core-2.9.3
   - hspec-discover-2.9.3
   - hspec-junit-formatter-1.1.0.1
   - memcache-0.3.0.1
+  - monad-logger-aeson-0.2.0.1
   - scientist-0.0.0.0

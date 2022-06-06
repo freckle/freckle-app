@@ -10,19 +10,17 @@
 --
 -- > data App = App
 -- >   { appDryRun :: Bool
--- >   , appLogLevel :: LogLevel
+-- >   , appLogger :: Logger
 -- >   }
 --
 -- This type can be as complex or simple as you want. It might hold a separate
 -- @Config@ attribute or may keep everything as one level of properties. It
 -- could even hold an @'IORef'@ if you need mutable application state.
 --
--- The only requirements are some notion of a @'LogLevel'@:
+-- The only requirements are 'HasLogger':
 --
--- > instance HasLogging App where
--- >   getLogLevel = appLogLevel
--- >   getLogFormat _ = FormatTerminal
--- >   getLogLocation _ = LogStdout
+-- > instance HasLogger App where
+-- >   loggerL = lens appLogger $ \x y -> x { appLogger = y }
 --
 -- and a way to build a value:
 --
@@ -30,11 +28,12 @@
 --
 -- It's likely you'll want to use @"Freckle.App.Env"@ to load your @App@:
 --
+-- > import qualified Blammo.Logger.LogSettings.Env as LoggerEnv
 -- > import qualified Freckle.App.Env as Env
 -- >
 -- > loadApp = Env.parse id $ App
 -- >   <$> Env.switch "DRY_RUN" mempty
--- >   <*> Env.flag (Off LevelInfo) (On LevelDebug) "DEBUG" mempty
+-- >   <*> LoggerEnv.parser
 --
 -- Though not required, a type synonym can make things throughout your
 -- application a bit more readable:
@@ -49,7 +48,7 @@
 -- >   isDryRun <- asks appDryRun
 -- >
 -- >   if isDryRun
--- >     then $logWarn "Skipping due to dry-run"
+-- >     then logWarn "Skipping due to dry-run"
 -- >     else liftIO $ fireTheMissles
 --
 -- These actions can be (composed of course, or) invoked by a @main@ that
@@ -70,7 +69,7 @@
 --
 -- > data Config = Config
 -- >   { configDbPoolSize :: Int
--- >   , configLogLevel :: LogLevel
+-- >   , configLogSettings :: LogSettings
 -- >   }
 --
 -- So you can isolate Env-related concerns
@@ -78,19 +77,21 @@
 -- > loadConfig :: IO Config
 -- > loadConfig = Env.parse id $ Config
 -- >   <$> Env.var Env.auto "PGPOOLSIZE" (Env.def 1)
--- >   <*> Env.flag (Off LevelInfo) (On LevelDebug) "DEBUG" mempty
+-- >   <*> LoggerEnv.parser
 --
 -- from the runtime application state:
 --
 -- > data App = App
 -- >   { appConfig :: Config
+-- >   , appLogger :: Logger
 -- >   , appSqlPool :: SqlPool
 -- >   }
 -- >
--- > instance HasLogging App where
--- >   getLogLevel = configLogLevel . appConfig
--- >   getLogFormat _ = FormatTerminal
--- >   getLogLocation _ = LogStdout
+-- > instance HasLogger App where
+-- >   loggerL = appLogger $ \x y -> x { appLogger = y }
+-- >
+-- > instance HasSqlPool App where
+-- >   getSqlPool = appSqlPool
 --
 -- The @"Freckle.App.Database"@ module provides @'makePostgresPool'@ for
 -- building a Pool given this (limited) config data:
@@ -98,11 +99,9 @@
 -- > loadApp :: IO App
 -- > loadApp = do
 -- >   appConfig{..} <- loadConfig
--- >   appSqlPool <- makePostgresPool configDbPoolSize
+-- >   appLogger <- newLogger configLoggerSettings
+-- >   appSqlPool <- runLoggerLoggingT appLogger $ makePostgresPool configDbPoolSize
 -- >   pure App{..}
--- >
--- > instance HasSqlPool App where
--- >   getSqlPool = appSqlPool
 --
 -- /Note/: the actual database connection parameters (host, user, etc) are
 -- (currently) parsed from conventional environment variables by the underlying
@@ -145,15 +144,11 @@
 -- Second, we'll probably want a conventional @withApp@ function so that we can
 -- truncate tables as part of spec setup:
 --
--- > import Freckle.App (runApp)
 -- > import Freckle.App.Test hiding (withApp)
 -- > import Test.Hspec
 -- >
 -- > withApp :: SpecWith App -> Spec
--- > withApp = before $ do
--- >   app <- loadApp
--- >   runSqlPool truncateTables $ appSqlPool app
--- >   pure app
+-- > withApp = withAppSql truncateTables loadApp
 --
 -- And now you can write specs that also use the database:
 --
@@ -175,15 +170,14 @@ module Freckle.App
 
 import Prelude
 
-import Control.Monad.Logger as X
+import Blammo.Logging as X
 import Control.Monad.Reader as X
 import Freckle.App.Database as X
-import Freckle.App.Logging as X
 import System.IO (BufferMode(..), hSetBuffering, stderr, stdout)
 
-runApp :: HasLogging app => app -> ReaderT app (LoggingT IO) a -> IO a
+runApp :: HasLogger app => app -> ReaderT app (LoggingT IO) a -> IO a
 runApp app action = do
   -- Ensure output is streamed if in a Docker container
   hSetBuffering stdout LineBuffering
   hSetBuffering stderr LineBuffering
-  runAppLoggerT app $ runReaderT action app
+  runLoggerLoggingT app $ runReaderT action app

@@ -3,9 +3,7 @@
 
 -- | Datadog access for your @App@
 module Freckle.App.Datadog
-  (
-  -- * Reader environment interface
-    HasDogStatsClient(..)
+  ( HasDogStatsClient(..)
   , HasDogStatsTags(..)
   , StatsClient
   , Tag

@@ -52,16 +52,15 @@ default-extensions:
 library:
   source-dirs: library
   dependencies:
+    - Blammo
     - Glob
     - MonadRandom
     - aeson
-    - ansi-terminal
     - bugsnag
     - bytestring
     - case-insensitive
     - conduit
     - containers
-    - data-default
     - datadog
     - dlist
     - doctest
@@ -69,7 +68,6 @@ library:
     - envparse
     - errors
     - exceptions
-    - fast-logger
     - filepath
     - hashable
     - hspec >= 2.8.1
@@ -81,14 +79,12 @@ library:
     - http-link-header
     - http-types
     - immortal
-    - iproute
     - lens
     - load-env
     - memcache
     - monad-control
     - monad-logger >= 0.3.31
     - mtl
-    - network
     - network-uri
     - persistent
     - persistent-postgresql
@@ -96,7 +92,6 @@ library:
     - primitive
     - resource-pool
     - retry >= 0.8.1.0
-    - rio
     - safe
     - scientist
     - semigroupoids
@@ -107,13 +102,13 @@ library:
     - transformers-base
     - typed-process
     - unliftio
+    - unliftio-core
     - unordered-containers
     - vector
     - wai
     - wai-extra
     - yaml
     - yesod-core
-    - yesod
 
 tests:
   spec:
@@ -132,7 +127,6 @@ tests:
       - memcache
       - mtl
       - postgresql-simple
-      - unliftio-core
       - wai
       - wai-extra
 

@@ -5,6 +5,13 @@
 
 packages:
 - completed:
+    hackage: Blammo-1.0.0.1@sha256:ce27af720aa4981d8b16e50e72b9c644b9416e8f8e4682dbf4fe153624798b0a,3954
+    pantry-tree:
+      size: 1115
+      sha256: 99003622a24ce574316d3c359b6467b9fc36fe5b46d629c1d5ec2c77fd1c959c
+  original:
+    hackage: Blammo-1.0.0.1
+- completed:
     hackage: bugsnag-1.0.0.1@sha256:a5b7afd9ff5bab322c1ce267ff0645afd7072071371462a0335f550609aa2546,4412
     pantry-tree:
       size: 1527
@@ -18,6 +25,20 @@ packages:
       sha256: c80a4c4e15eb2fd164fe430e4c1c420e62de42a1adaf415ac07befa8d0b36045
   original:
     hackage: bugsnag-wai-1.0.0.1
+- completed:
+    hackage: context-0.2.0.0@sha256:6b643adb4a64fe521873d08df0497f71f88e18b9ecff4b68b4eef938e446cfc9,1886
+    pantry-tree:
+      size: 952
+      sha256: b041ec197787d7cef078a2de33a74853179821e3083882f22b6d185e5764d75e
+  original:
+    hackage: context-0.2.0.0
+- completed:
+    hackage: ekg-core-0.1.1.7@sha256:f4f97b11411f18b7fe6eb85542445684c69dcb6ee3aebf995ca3052dc8970016,2037
+    pantry-tree:
+      size: 1073
+      sha256: 251452bdfd5fc7c9150f75d5842b0c5b6d1f72e5bef6af37f8873f37872be4d2
+  original:
+    hackage: ekg-core-0.1.1.7
 - completed:
     hackage: hspec-junit-formatter-1.1.0.2@sha256:9c30765a224e00d44686e47372f77415e54433823588a4a9637163c2750a1f5f,3825
     pantry-tree:
@@ -33,23 +54,19 @@ packages:
   original:
     hackage: memcache-0.3.0.1
 - completed:
+    hackage: monad-logger-aeson-0.2.0.1@sha256:3ce33913e0f0f73cd272ce734abaae460bdbc48ad9c4d7192a912849060114b0,5156
+    pantry-tree:
+      size: 5103
+      sha256: f221efc9a29a358c63b571cc3fb8e86cdcab3ee6aa29c8d4395ca85adb8fe2af
+  original:
+    hackage: monad-logger-aeson-0.2.0.1
+- completed:
     hackage: scientist-0.0.0.0@sha256:058c629a6805668f3a16c386dbc5dd90c1ce55ff2c7cf5672f0410bdb873d04c,2999
     pantry-tree:
       size: 1061
       sha256: 370ee941c6ce59486e5c27a1ce294e50ea47aa36a5bdd4f4eee0cd4834d8b763
   original:
     hackage: scientist-0.0.0.0
-- completed:
-    size: 16090
-    url: https://github.com/freckle/ekg-core/archive/43aac16a0ac762b5997a62d0fbae96242d54fe14.tar.gz
-    name: ekg-core
-    version: 0.1.1.7
-    sha256: fd8b1730a845b1af692baf0801973940e08397ad24b832aaa45c0d2507a23f30
-    pantry-tree:
-      size: 1280
-      sha256: c2cc14649b56ed1e5ffcb9b81e8fd3458915514c0e27759cc84d7753d69653f2
-  original:
-    url: https://github.com/freckle/ekg-core/archive/43aac16a0ac762b5997a62d0fbae96242d54fe14.tar.gz
 snapshots:
 - completed:
     size: 618876
