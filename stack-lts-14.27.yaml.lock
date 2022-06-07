@@ -26,6 +26,13 @@ packages:
   original:
     hackage: bugsnag-wai-1.0.0.0
 - completed:
+    hackage: envparse-0.4.1@sha256:989902e6368532548f61de1fa245ad2b39176cddd8743b20071af519a709ce30,2842
+    pantry-tree:
+      size: 1180
+      sha256: 35044d67979fe2a5cff05cf8736a06a265592433cdd03e13a72908ceed892612
+  original:
+    hackage: envparse-0.4.1
+- completed:
     hackage: hspec-2.8.1@sha256:56ad90d6eff8b046aea6dbf87dd2518dc1b0c171acdfec785d02b26bdbbb1438,1709
     pantry-tree:
       size: 583
