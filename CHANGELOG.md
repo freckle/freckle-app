@@ -1,4 +1,36 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.0.4.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.1.0.0...main)
+
+## [v1.1.0.0](https://github.com/freckle/freckle-app/compare/v1.0.4.0...v1.1.0.0)
+
+- Require `MonadLoggerIO` in `makePostgresPool` (and so respect that logging
+  context from DB activities).
+
+  Previous behavior can be recovered by using `runNoLoggingT makePostgresPool`.
+
+- Re-implement `FronRow.App.Env` via external library, `envparse`
+
+  Some conversions will be required:
+
+  - `Reader a` should now be `Reader Error a`
+  - `Parser a` should now be `Parser Error a`
+  - `parse` should now be `parse id`
+  - `var x X nonEmpty` should now be `var (x <=< nonempty) X mempty`
+
+    Note that `(str <=< nonempty)` is redundant.
+
+  - `var (f <$> g) X m` should now be `f <$> var g X m`
+
+    Note that `def` will now need a value the same type as `g`, not `f`.
+
+  - `switch` and `flag` no longer accept `def` (the non-active value is an
+    implicit default; the previous behavior was kind of surprising and
+    ambiguous).
+
+  - `handleEither` has been removed. Users will have to parse a complete value
+    and then further validate/throw externally.
+
+  - Previously, we always behaved as if `keep` was applied. Add that explicitly
+    if you need that behavior.
 
 ## [v1.0.4.0](https://github.com/freckle/freckle-app/compare/v1.0.3.0...v1.0.4.0)
 
