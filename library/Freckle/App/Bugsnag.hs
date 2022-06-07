@@ -146,11 +146,11 @@ maskErrorHelpers = setStackFramesInProjectByFile (`isInfixOf` "Exceptions")
 
 -- brittany-disable-next-binding
 
-envParseBugsnagSettings :: Env.Parser Settings
+envParseBugsnagSettings :: Env.Parser Env.Error Settings
 envParseBugsnagSettings =
   build
-    <$> Env.var Env.str "BUGSNAG_API_KEY" Env.nonEmpty
-    <*> Env.var Env.str "BUGSNAG_RELEASE_STAGE" (Env.def "development")
+    <$> Env.var Env.nonempty "BUGSNAG_API_KEY" mempty
+    <*> Env.var Env.nonempty "BUGSNAG_RELEASE_STAGE" (Env.def "development")
  where
   build key stage = (defaultSettings key)
     { settings_releaseStage = stage

@@ -85,7 +85,7 @@ getLogBehaviors app = case getLogLocation app of
   LogStderr -> (BS8.hPutStr stderr, ) <$> hSupportsANSI stderr
   LogFile path -> pure (BS8.appendFile path, False)
 
-parseEnvLogLevel :: Env.Parser LogLevel
+parseEnvLogLevel :: Env.Parser Env.Error LogLevel
 parseEnvLogLevel = Env.var parse "LOG_LEVEL" $ Env.def LevelWarn
  where
   parse = Env.eitherReader $ \case
@@ -95,7 +95,7 @@ parseEnvLogLevel = Env.var parse "LOG_LEVEL" $ Env.def LevelWarn
     "info" -> Right LevelInfo
     level -> Left $ "unexpected log level: " <> level
 
-parseEnvLogFormat :: Env.Parser LogFormat
+parseEnvLogFormat :: Env.Parser Env.Error LogFormat
 parseEnvLogFormat = Env.var parse "LOG_FORMAT" $ Env.def FormatTerminal
  where
   parse = Env.eitherReader $ \case
@@ -103,7 +103,7 @@ parseEnvLogFormat = Env.var parse "LOG_FORMAT" $ Env.def FormatTerminal
     "terminal" -> Right FormatTerminal
     format -> Left $ "unexpected format: " <> format
 
-parseEnvLogLocation :: Env.Parser LogLocation
+parseEnvLogLocation :: Env.Parser Env.Error LogLocation
 parseEnvLogLocation = Env.var parse "LOG_LOCATION" $ Env.def LogStdout
  where
   parse = Env.eitherReader $ \case

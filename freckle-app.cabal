@@ -39,7 +39,6 @@ library
       Freckle.App.Datadog.Gauge
       Freckle.App.Datadog.Rts
       Freckle.App.Env
-      Freckle.App.Env.Internal
       Freckle.App.Ghci
       Freckle.App.GlobalCache
       Freckle.App.Http
@@ -109,6 +108,7 @@ library
     , dlist
     , doctest
     , ekg-core
+    , envparse
     , errors
     , exceptions
     , fast-logger
@@ -249,7 +249,6 @@ test-suite spec
   main-is: Main.hs
   other-modules:
       Freckle.App.BugsnagSpec
-      Freckle.App.Env.InternalSpec
       Freckle.App.HttpSpec
       Freckle.App.Memcached.ServersSpec
       Freckle.App.MemcachedSpec

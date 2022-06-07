@@ -66,6 +66,7 @@ library:
     - dlist
     - doctest
     - ekg-core
+    - envparse
     - errors
     - exceptions
     - fast-logger

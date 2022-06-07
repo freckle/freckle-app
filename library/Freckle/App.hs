@@ -32,9 +32,9 @@
 --
 -- > import qualified Freckle.App.Env as Env
 -- >
--- > loadApp = Env.parse $ App
+-- > loadApp = Env.parse id $ App
 -- >   <$> Env.switch "DRY_RUN" mempty
--- >   <*> Env.flag LevelInfo LevelDebug "DEBUG" mempty
+-- >   <*> Env.flag (Off LevelInfo) (On LevelDebug) "DEBUG" mempty
 --
 -- Though not required, a type synonym can make things throughout your
 -- application a bit more readable:
@@ -76,9 +76,9 @@
 -- So you can isolate Env-related concerns
 --
 -- > loadConfig :: IO Config
--- > loadConfig = Env.parse $ Config
+-- > loadConfig = Env.parse id $ Config
 -- >   <$> Env.var Env.auto "PGPOOLSIZE" (Env.def 1)
--- >   <*> Env.flag LevelInfo LevelDebug "DEBUG" mempty
+-- >   <*> Env.flag (Off LevelInfo) (On LevelDebug) "DEBUG" mempty
 --
 -- from the runtime application state:
 --
@@ -171,8 +171,7 @@
 module Freckle.App
   ( runApp
   , module X
-  )
-where
+  ) where
 
 import Prelude
 

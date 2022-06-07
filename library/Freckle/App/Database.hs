@@ -58,8 +58,9 @@ instance HasSqlPool SqlPool where
 
 makePostgresPool :: (MonadUnliftIO m, MonadLoggerIO m) => m SqlPool
 makePostgresPool = do
-  postgresPasswordSource <- liftIO $ Env.parse envPostgresPasswordSource
-  conf <- liftIO $ Env.parse (envParseDatabaseConf postgresPasswordSource)
+  conf <- liftIO $ do
+    postgresPasswordSource <- Env.parse id envPostgresPasswordSource
+    Env.parse id (envParseDatabaseConf postgresPasswordSource)
   makePostgresPoolWith conf
 
 runDB
@@ -128,24 +129,24 @@ readPostgresStatementTimeout x = case span isDigit x of
     Right $ PostgresStatementTimeoutMilliseconds $ Unsafe.read digits
   _ -> Left "must be {digits}(s|ms)"
 
-envPostgresPasswordSource :: Env.Parser PostgresPasswordSource
-envPostgresPasswordSource = do
-  useIam <- Env.switch "USE_RDS_IAM_AUTH" $ Env.def False
-  pure $ if useIam
-    then PostgresPasswordSourceIamAuth
-    else PostgresPasswordSourceEnv
+envPostgresPasswordSource :: Env.Parser Env.Error PostgresPasswordSource
+envPostgresPasswordSource = Env.flag
+  (Env.Off PostgresPasswordSourceEnv)
+  (Env.On PostgresPasswordSourceIamAuth)
+  "USE_RDS_IAM_AUTH"
+  mempty
 
 envParseDatabaseConf
-  :: PostgresPasswordSource -> Env.Parser PostgresConnectionConf
+  :: PostgresPasswordSource -> Env.Parser Env.Error PostgresConnectionConf
 envParseDatabaseConf source = do
-  user <- Env.var Env.str "PGUSER" Env.nonEmpty
+  user <- Env.var Env.nonempty "PGUSER" mempty
   password <- case source of
     PostgresPasswordSourceIamAuth -> pure PostgresPasswordIamAuth
     PostgresPasswordSourceEnv ->
-      PostgresPasswordStatic <$> Env.var Env.str "PGPASSWORD" Env.nonEmpty
-  host <- Env.var Env.str "PGHOST" Env.nonEmpty
-  database <- Env.var Env.str "PGDATABASE" Env.nonEmpty
-  port <- Env.var Env.auto "PGPORT" Env.nonEmpty
+      PostgresPasswordStatic <$> Env.var Env.nonempty "PGPASSWORD" mempty
+  host <- Env.var Env.nonempty "PGHOST" mempty
+  database <- Env.var Env.nonempty "PGDATABASE" mempty
+  port <- Env.var Env.auto "PGPORT" mempty
   poolSize <- Env.var Env.auto "PGPOOLSIZE" $ Env.def 10
   statementTimeout <-
     Env.var (Env.eitherReader readPostgresStatementTimeout) "PGSTATEMENTTIMEOUT"

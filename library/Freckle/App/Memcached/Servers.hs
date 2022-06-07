@@ -12,7 +12,7 @@
 --
 -- @
 -- -- Required
--- Env.var (Env.eitherReader readMemcachedServers) "MEMCACHED_SERVERS" Env.nonEmpty
+-- Env.var (Env.eitherReader readMemcachedServers <=< Env.nonempty) "MEMCACHED_SERVERS" mempty
 --
 -- -- Default to localhost:11211
 -- Env.var (Env.eitherReader readMemcachedServers) "MEMCACHED_SERVERS" (Env.def defaultMemcachedServers)
