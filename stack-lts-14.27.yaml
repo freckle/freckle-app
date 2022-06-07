@@ -3,6 +3,7 @@ extra-deps:
   - bugsnag-1.0.0.0
   - bugsnag-hs-0.2.0.8
   - bugsnag-wai-1.0.0.0
+  - envparse-0.4.1
   - hspec-2.8.1
   - hspec-core-2.8.1
   - hspec-discover-2.8.1
