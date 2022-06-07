@@ -11,14 +11,6 @@
 - ignore: {name: "Use join"}  # this often leads to cryptic code when do notation is easier to read
 - ignore: {name: "Redundant ^."}  # commonly broken by esqueleto
 
-# We test identities in InternalSpec, so we can't have HLint yelling about them
-- ignore:
-    name: "Alternative law, left identity"
-    within: Freckle.App.Env.InternalSpec
-- ignore:
-    name: "Alternative law, right identity"
-    within: Freckle.App.Env.InternalSpec
-
 # Custom Warnings
 - warn: {lhs: mapM, rhs: traverse}
 - warn: {lhs: mapM_, rhs: traverse_}

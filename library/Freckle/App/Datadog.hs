@@ -189,10 +189,10 @@ sendAppMetricWithTags name tags metricType metricValue = do
 
     send client ddMetric
 
-envParseDogStatsEnabled :: Env.Parser Bool
-envParseDogStatsEnabled = Env.switch "DOGSTATSD_ENABLED" $ Env.def False
+envParseDogStatsEnabled :: Env.Parser Env.Error Bool
+envParseDogStatsEnabled = Env.switch "DOGSTATSD_ENABLED" mempty
 
-envParseDogStatsSettings :: Env.Parser DogStatsSettings
+envParseDogStatsSettings :: Env.Parser Env.Error DogStatsSettings
 envParseDogStatsSettings = do
   dogStatsSettingsHost <- Env.var Env.str "DOGSTATSD_HOST" $ Env.def "127.0.0.1"
   dogStatsSettingsPort <- Env.var Env.auto "DOGSTATSD_PORT" $ Env.def 8125
@@ -204,6 +204,6 @@ envParseDogStatsSettings = do
     , dogStatsSettingsMaxDelay
     }
 
-envParseDogStatsTags :: Env.Parser [Tag]
+envParseDogStatsTags :: Env.Parser Env.Error [Tag]
 envParseDogStatsTags =
-  Env.var (map (uncurry tag) <$> Env.keyValues) "DOGSTATSD_TAGS" $ Env.def []
+  map (uncurry tag) <$> Env.var Env.keyValues "DOGSTATSD_TAGS" (Env.def [])

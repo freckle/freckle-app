@@ -57,7 +57,7 @@ instance MonadUnliftIO m => MonadUnliftIO (TestAppT m) where
 
 runTestAppT :: MonadUnliftIO m => TestAppT m a -> m (a, [Text])
 runTestAppT f = do
-  servers <- liftIO $ Env.parse $ Env.var
+  servers <- liftIO $ Env.parse id $ Env.var
     (Env.eitherReader readMemcachedServers)
     "MEMCACHED_SERVERS"
     (Env.def defaultMemcachedServers)
