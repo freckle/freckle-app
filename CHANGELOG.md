@@ -2,7 +2,7 @@
 
 ## [v1.0.4.0](https://github.com/freckle/freckle-app/compare/v1.0.4.0...v1.1.0.0)
 
-- Require `MonadLoggerIO` in `makePostgresPool` (and so respect that  logging
+- Require `MonadLoggerIO` in `makePostgresPool` (and so respect that logging
   context from DB activities).
 
   Previous behavior can be recovered by using `runNoLoggingT makePostgresPool`.
