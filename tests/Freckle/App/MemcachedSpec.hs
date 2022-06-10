@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
+
 module Freckle.App.MemcachedSpec
   ( spec
   ) where
