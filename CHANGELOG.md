@@ -1,4 +1,33 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.1.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.2.0.0...main)
+
+## [v1.2.0.0](https://github.com/freckle/freckle-app/compare/v1.1.0.0...v1.2.0.0)
+
+- Remove `Freckle.App.Logging`, integrate with [blammo][] instead.
+
+  This will require the following end-user changes:
+
+  - Remove `HasLogging` instance and add `HasLogger`
+
+    This will require storing a `Logger` on your runtime `App` type, instead of
+    a `LogLevel` (et al) in your static `AppSettings` type. (Or move to
+    `runSimpleLoggingT`.)
+
+  - Replace WAI middleware with [Blammo integration][blammo-wai]
+
+  - Replace Yesod functions with [Blammo integration][blammo-yesod]
+
+  And changes to environment variable values:
+
+  - If using `LOG_OUTPUT=std(out|err)`, use `LOG_DESTINATION=std(out|err)` (note
+    that `stdout` is the default)
+  - If using `LOG_OUTPUT=file`, use `LOG_DESTINATION=@fancy.log` (yes, that's
+    this option did)
+  - If using `LOG_FORMAT=terminal`, use `LOG_FORMAT=tty` (note that this is the
+    defualt)
+
+[blammo]: https://hackage.haskell.org/package/Blammo
+[blammo-wai]: https://github.com/freckle/blammo/#integration-with-wai
+[blammo-yesode]: https://github.com/freckle/blammo/#integration-with-yesod
 
 ## [v1.1.0.0](https://github.com/freckle/freckle-app/compare/v1.0.4.0...v1.1.0.0)
 
