@@ -4,6 +4,8 @@ module Freckle.App.Test.Logging
   ( MonadLogger
   , LoggingT
   , runCapturedLoggingT
+  , logLineToJSON
+  , logLineToByteString
   , logLineToText
   ) where
 
@@ -11,6 +13,9 @@ import Freckle.App.Prelude
 
 import Control.Concurrent.Chan
 import Control.Monad.Logger
+import Data.Aeson
+import Data.ByteString (ByteString)
+import qualified Data.ByteString.Lazy as BSL
 import Data.DList (DList)
 import qualified Data.DList as DList
 import UnliftIO.Async
@@ -42,5 +47,11 @@ captureLog acc chan = do
 doneMessage :: Text
 doneMessage = "%DONE%"
 
+logLineToJSON :: FromJSON a => LogLine -> Maybe a
+logLineToJSON = decode . BSL.fromStrict . logLineToByteString
+
+logLineToByteString :: LogLine -> ByteString
+logLineToByteString (_, _, _, str) = fromLogStr str
+
 logLineToText :: LogLine -> Text
-logLineToText (_, _, _, str) = decodeUtf8 $ fromLogStr str
+logLineToText = decodeUtf8 . logLineToByteString
