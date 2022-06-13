@@ -1,4 +1,21 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.2.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.2.0.1...main)
+
+## [v1.2.0.1](https://github.com/freckle/freckle-app/compare/v1.2.0.0...v1.2.0.1)
+
+- Use `Env.kept` with parsing that occurs in `makePostgresPool`
+
+  This ensure all `PG` variables are kept in the environment after parsing, to
+  again match pre-v1.1 behavior.
+
+  If you would prefer not to keep these variables, parse them yourself (e.g.
+  with `envParseDatabaseConf`) and use `makePostgresPoolWith`.
+
+- Add `Freckle.App.Env.kept` to re-define a `Parser` so that all variables are
+  kept after reading. Not doing this can break tests if you are re-parsing the
+  environment for each example.
+
+  Replace `Env.parse f` with `Env.parse f $ Env.kept` to recover how this module
+  behaved prior to v1.1.
 
 ## [v1.2.0.0](https://github.com/freckle/freckle-app/compare/v1.1.0.0...v1.2.0.0)
 
