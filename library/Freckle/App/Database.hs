@@ -60,8 +60,8 @@ instance HasSqlPool SqlPool where
 makePostgresPool :: (MonadUnliftIO m, MonadLoggerIO m) => m SqlPool
 makePostgresPool = do
   conf <- liftIO $ do
-    postgresPasswordSource <- Env.parse id envPostgresPasswordSource
-    Env.parse id (envParseDatabaseConf postgresPasswordSource)
+    postgresPasswordSource <- Env.parse id $ Env.kept envPostgresPasswordSource
+    Env.parse id $ Env.kept $ envParseDatabaseConf postgresPasswordSource
   makePostgresPoolWith conf
 
 runDB
