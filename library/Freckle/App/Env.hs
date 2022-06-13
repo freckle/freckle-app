@@ -27,6 +27,7 @@ module Freckle.App.Env
   , flag
 
   -- * Extensions
+  , kept
   , eitherReader
   , time
   , keyValues
@@ -39,6 +40,8 @@ import qualified Data.Text as T
 import Data.Time (defaultTimeLocale, parseTimeM)
 import Env hiding (flag)
 import qualified Env
+import Env.Internal.Free (hoistAlt)
+import Env.Internal.Parser (Parser(..), VarF(..))
 
 -- | Designates the value of a parameter when a flag is not provided.
 newtype Off a = Off a
@@ -72,6 +75,15 @@ newtype On a = On a
 --
 flag :: Off a -> On a -> String -> Mod Flag a -> Parser Error a
 flag (Off f) (On t) n m = Env.flag f t n m
+
+-- | Modify a 'Parser' so all variables are as if they used 'keep'
+--
+-- By default, read variables are removed from the environment. This is often
+-- problematic (e.g. in tests that repeatedly load an app and re-read the
+-- environment), and the security benefits are minor.
+--
+kept :: Parser e a -> Parser e a
+kept = Parser . hoistAlt (\v -> v { varfKeep = True }) . unParser
 
 -- | Create a 'Reader' from a simple parser function
 --
