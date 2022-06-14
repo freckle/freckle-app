@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 -- | Parse the shell environment for configuration
 --
 -- A minor extension of [envparse](https://hackage.haskell.org/package/envparse).
@@ -76,14 +78,26 @@ newtype On a = On a
 flag :: Off a -> On a -> String -> Mod Flag a -> Parser Error a
 flag (Off f) (On t) n m = Env.flag f t n m
 
--- | Modify a 'Parser' so all variables are as if they used 'keep'
+-- | Modify a 'Parser' so variables are never removed after reading
 --
--- By default, read variables are removed from the environment. This is often
--- problematic (e.g. in tests that repeatedly load an app and re-read the
--- environment), and the security benefits are minor.
+-- In @envparse-0.4@, read variables are removed from the environment. This is
+-- often problematic (e.g. in tests that repeatedly load an app and re-read the
+-- environment), and the security benefits are minor. This function will make
+-- them all behave as if @keep@ was used.
+--
+-- In @envparse-0.5@, the default is reversed and @sensitive@ can be used to
+-- explicitly unset read variables. This function will make them all behave as
+-- if @sensitive@ was /not/ used.
 --
 kept :: Parser e a -> Parser e a
-kept = Parser . hoistAlt (\v -> v { varfKeep = True }) . unParser
+kept = Parser . hoistAlt go . unParser
+ where
+  go v =
+#if MIN_VERSION_envparse(0,5,0)
+    v { varfSensitive = False }
+#else
+    v { varfKeep = True }
+#endif
 
 -- | Create a 'Reader' from a simple parser function
 --
