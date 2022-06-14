@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.2.0.1...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.2.0.2...main)
+
+## [v1.2.0.2](https://github.com/freckle/freckle-app/compare/v1.2.0.1...v1.2.0.2)
+
+- `Env.kept` compatibility with envparse-0.5
 
 ## [v1.2.0.1](https://github.com/freckle/freckle-app/compare/v1.2.0.0...v1.2.0.1)
 
