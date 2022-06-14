@@ -80,14 +80,14 @@ flag (Off f) (On t) n m = Env.flag f t n m
 
 -- | Modify a 'Parser' so variables are never removed after reading
 --
--- In @envparse-0.4@, read variables are removed from the environment. This is
--- often problematic (e.g. in tests that repeatedly load an app and re-read the
--- environment), and the security benefits are minor. This function will make
--- them all behave as if @keep@ was used.
+-- In @envparse-0.4@, read variables are removed from the environment by
+-- default. This is often problematic (e.g. in tests that repeatedly load an app
+-- and re-read the environment), and the security benefits are minor. This
+-- function will make them all behave as if @keep@ was used.
 --
 -- In @envparse-0.5@, the default is reversed and @sensitive@ can be used to
--- explicitly unset read variables. This function will make them all behave as
--- if @sensitive@ was /not/ used.
+-- explicitly unset read variables, and so this function will instead make them
+-- all behave as if @sensitive@ was /not/ used.
 --
 kept :: Parser e a -> Parser e a
 kept = Parser . hoistAlt go . unParser
