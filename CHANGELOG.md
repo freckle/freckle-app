@@ -1,4 +1,11 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.2.0.2...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.3.0.0...main)
+
+## [v1.3.0.0](https://github.com/freckle/freckle-app/compare/v1.2.0.2...v1.3.0.0)
+
+- Adjust `Freckle.App.Test` interface
+  - Remove `runAppTest`
+  - Add `appExample` for making a expectation concretely `AppExample`
+  - Add `expectationFailure`, and `pending(With)` helpers in `MonadIO`
 
 ## [v1.2.0.2](https://github.com/freckle/freckle-app/compare/v1.2.0.1...v1.2.0.2)
 
