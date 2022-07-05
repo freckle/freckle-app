@@ -4,7 +4,7 @@ module Freckle.App.MemcachedSpec
   ( spec
   ) where
 
-import Freckle.App.Prelude
+import Freckle.App.Test
 
 import Control.Lens ((^?!))
 import Control.Monad.Reader
@@ -16,7 +16,6 @@ import Freckle.App.Memcached
 import Freckle.App.Memcached.Client (MemcachedClient, newMemcachedClient)
 import qualified Freckle.App.Memcached.Client as Memcached
 import Freckle.App.Memcached.Servers
-import Freckle.App.Test
 import Freckle.App.Test.Logging
 
 data ExampleValue
@@ -37,14 +36,17 @@ instance Cachable ExampleValue where
     "C" -> Right C
     x -> Left $ "invalid: " <> show x
 
+-- |
+--
+-- NB. we could use 'withApp' and not need to call this runner ourselves within
+-- an @'it'-'example'@ -- except that we want to use 'runCapturedLoggingT' and
+-- assert on the logged messages. We should add "Blammo.Logging.Test" to support
+-- this use-case.
+--
 runTestAppT
   :: MonadUnliftIO m => AppExample MemcachedClient a -> m (a, [Maybe Value])
 runTestAppT f = liftIO $ do
   mc <- loadClient
-  -- NB. we could use `withApp` and not need to call this runner ourselves
-  -- within a plain-`IO` example -- except that we want to use
-  -- `runCapturedLoggingT` and assert on the logged messages. We should add
-  -- Blammo.Logging.Test to support this use-case.
   fmap (second $ map logLineToJSON) $ runCapturedLoggingT $ runReaderT
     (unAppExample f)
     mc

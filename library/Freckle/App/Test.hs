@@ -5,13 +5,34 @@
 
 module Freckle.App.Test
   ( AppExample(..)
+  , appExample
   , withApp
   , withAppSql
-  , runAppTest
+  , expectationFailure
+  , pending
+  , pendingWith
+
+  -- * Re-exports
   , module X
   ) where
 
-import Freckle.App.Prelude
+import Freckle.App.Prelude as X
+
+import Data.Pool as X
+import Freckle.App.Database as X
+import Test.Hspec as X
+  ( Expectation
+  , Spec
+  , beforeAll
+  , beforeWith
+  , context
+  , describe
+  , example
+  , fit
+  , it
+  , xit
+  )
+import Test.Hspec.Expectations.Lifted as X hiding (expectationFailure)
 
 import Blammo.Logging
 import Control.Monad.Base
@@ -22,15 +43,11 @@ import Control.Monad.Primitive
 import Control.Monad.Random (MonadRandom(..))
 import Control.Monad.Reader
 import Control.Monad.Trans.Control
-import Data.Pool as X
 import Database.Persist.Sql (SqlPersistT, runSqlPool)
-import Freckle.App (runApp)
-import Freckle.App.Database as X
 import LoadEnv
-import Test.Hspec as X
-  (Spec, beforeAll, beforeWith, context, describe, example, fit, it, xit)
+import qualified Test.Hspec as Hspec hiding (expectationFailure)
 import Test.Hspec.Core.Spec (Arg, Example, SpecWith, evaluateExample)
-import Test.Hspec.Expectations.Lifted as X
+import qualified Test.Hspec.Expectations.Lifted as Hspec (expectationFailure)
 
 -- | An Hspec example over some @App@ value
 --
@@ -85,6 +102,17 @@ instance HasLogger app => Example (AppExample app a) where
     params
     ($ ())
 
+-- | A type restricted version of id
+--
+-- Like 'example', which forces the expectation to 'IO', this can be used to
+-- force the expectation to 'AppExample'.
+--
+-- This can be used to avoid ambiguity errors when your expectation uses only
+-- polymorphic functions like 'runDB' or lifted 'shouldBe' et-al.
+--
+appExample :: AppExample app a -> AppExample app a
+appExample = id
+
 -- | Spec before helper
 --
 -- @
@@ -112,8 +140,11 @@ withAppSql f load = beforeAll (loadEnvTest *> load) . beforeWith setup
 loadEnvTest :: IO ()
 loadEnvTest = loadEnvFrom ".env.test" >> loadEnv
 
--- | Run an action with the test @App@
-runAppTest :: HasLogger app => ReaderT app (LoggingT IO) a -> AppExample app a
-runAppTest action = do
-  app <- ask
-  liftIO $ runApp app action
+expectationFailure :: MonadIO m => String -> m ()
+expectationFailure msg = Hspec.expectationFailure msg >> error "unreachable"
+
+pending :: MonadIO m => m ()
+pending = liftIO Hspec.pending
+
+pendingWith :: MonadIO m => String -> m ()
+pendingWith msg = liftIO $ Hspec.pendingWith msg
