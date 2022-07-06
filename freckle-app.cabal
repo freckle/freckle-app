@@ -38,6 +38,7 @@ library
       Freckle.App.Datadog
       Freckle.App.Datadog.Gauge
       Freckle.App.Datadog.Rts
+      Freckle.App.Ecs
       Freckle.App.Env
       Freckle.App.Ghci
       Freckle.App.GlobalCache
@@ -108,6 +109,7 @@ library
     , envparse
     , errors
     , exceptions
+    , extra
     , filepath
     , hashable
     , hspec >=2.8.1

@@ -24,6 +24,8 @@ module Freckle.App.Datadog
   , envParseDogStatsEnabled
   , envParseDogStatsSettings
   , envParseDogStatsTags
+  , getEcsMetadataTags
+  , withTagsAsThreadContext
   , mkStatsClient
 
   -- * To be removed in next major bump
@@ -32,13 +34,28 @@ module Freckle.App.Datadog
 
 import Freckle.App.Prelude
 
+import Blammo.Logging (MonadMask, Pair, withThreadContext)
 import Control.Lens (set)
 import Control.Monad.Reader
+import Data.Aeson (Value(..))
+import Data.String
 import Data.Time (diffUTCTime)
+import Freckle.App.Ecs
 import qualified Freckle.App.Env as Env
-import Network.StatsD.Datadog hiding (metric, name, tags)
+import Network.StatsD.Datadog hiding (Tag, metric, name, tag, tags)
 import qualified Network.StatsD.Datadog as Datadog
 import Yesod.Core.Types (HandlerData, handlerEnv, rheSite)
+
+data Tag = Tag
+  { tagKey :: Text
+  , tagValue :: Text
+  }
+
+tagToDatadogTag :: Tag -> Datadog.Tag
+tagToDatadogTag Tag {..} = Datadog.tag tagKey tagValue
+
+tagToPair :: Tag -> Pair
+tagToPair Tag {..} = (fromString $ unpack tagKey, String tagValue)
 
 class HasDogStatsClient app where
   getDogStatsClient :: app -> Maybe StatsClient
@@ -181,7 +198,7 @@ sendAppMetricWithTags name tags metricType metricValue = do
     appTags <- asks getDogStatsTags
 
     let
-      ddTags = appTags <> map (uncurry tag) tags
+      ddTags = map tagToDatadogTag $ appTags <> map (uncurry Tag) tags
       ddMetric = set Datadog.tags ddTags
         $ Datadog.metric (MetricName name) metricType metricValue
 
@@ -204,4 +221,39 @@ envParseDogStatsSettings = do
 
 envParseDogStatsTags :: Env.Parser Env.Error [Tag]
 envParseDogStatsTags =
-  map (uncurry tag) <$> Env.var Env.keyValues "DOGSTATSD_TAGS" (Env.def [])
+  build
+    <$> optional (Env.var Env.nonempty "DD_ENV" mempty)
+    <*> optional (Env.var Env.nonempty "DD_SERVICE" mempty)
+    <*> optional (Env.var Env.nonempty "DD_VERSION" mempty)
+    <*> Env.var Env.keyValues "DOGSTATSD_TAGS" (Env.def [])
+ where
+  build mEnv mService mVersion tags =
+    catMaybes
+        [ Tag "env" <$> mEnv
+        , Tag "environment" <$> mEnv -- Legacy
+        , Tag "service" <$> mService
+        , Tag "version" <$> mVersion
+        ]
+      <> map (uncurry Tag) tags
+
+getEcsMetadataTags :: MonadIO m => m [Tag]
+getEcsMetadataTags = maybe [] toTags <$> getEcsMetadata
+ where
+  toTags (EcsMetadata EcsContainerMetadata {..} EcsContainerTaskMetadata {..})
+    = [ Tag "container_id" ecmDockerId
+      , Tag "container_name" ecmDockerName
+      , Tag "docker_image" ecmImage
+      , Tag "image_tag" ecmImageID
+      , Tag "cluster_name" ectmCluster
+      , Tag "task_arn" ectmTaskARN
+      , Tag "task_family" ectmFamily
+      , Tag "task_version" ectmRevision
+      ]
+
+withTagsAsThreadContext
+  :: (MonadMask m, MonadIO m, MonadReader env m, HasDogStatsTags env)
+  => m a
+  -> m a
+withTagsAsThreadContext f = do
+  tags <- asks getDogStatsTags
+  withThreadContext (map tagToPair tags) f
