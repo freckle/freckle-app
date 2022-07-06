@@ -8,8 +8,8 @@ import Freckle.App.Prelude
 
 import Blammo.Logging
 import Database.PostgreSQL.Simple (SqlError(..))
-import Freckle.App.Datadog (HasDogStatsClient, HasDogStatsTags)
-import qualified Freckle.App.Datadog as Datadog
+import Freckle.App.Stats (HasStatsClient)
+import qualified Freckle.App.Stats as Stats
 import Network.HTTP.Types (ResponseHeaders, status503)
 import qualified Network.Wai as W
 import UnliftIO.Exception (displayException, handleJust)
@@ -20,20 +20,18 @@ import Yesod.Core.Handler (HandlerFor, sendWaiResponse)
 -- Also logs and increments a metric.
 --
 respondQueryCanceled
-  :: (HasDogStatsClient site, HasDogStatsTags site)
-  => HandlerFor site res
-  -> HandlerFor site res
+  :: HasStatsClient site => HandlerFor site res -> HandlerFor site res
 respondQueryCanceled = respondQueryCanceledHeaders []
 
 -- | 'respondQueryCanceledHeaders' but adding headers to the 503 response
 respondQueryCanceledHeaders
-  :: (HasDogStatsClient site, HasDogStatsTags site)
+  :: HasStatsClient site
   => ResponseHeaders
   -> HandlerFor site res
   -> HandlerFor site res
 respondQueryCanceledHeaders headers = handleJust queryCanceled $ \ex -> do
   logError $ "Query canceled" :# ["exception" .= displayException ex]
-  Datadog.increment "query_canceled" []
+  Stats.increment "query_canceled"
   sendWaiResponse $ W.responseLBS status503 headers "Query canceled"
 
 queryCanceled :: SqlError -> Maybe SqlError

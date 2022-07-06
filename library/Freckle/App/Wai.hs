@@ -1,44 +1,19 @@
 -- | Integration of "Freckle.App" tooling with "Network.Wai"
 module Freckle.App.Wai
-  ( makeRequestMetricsMiddleware
-  , noCacheMiddleware
+  ( noCacheMiddleware
   , corsMiddleware
   , denyFrameEmbeddingMiddleware
   ) where
 
-import Freckle.App.Prelude hiding (decodeUtf8)
+import Freckle.App.Prelude
 
-import Control.Monad.Reader (runReaderT)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import qualified Data.CaseInsensitive as CI
-import Data.Text.Encoding (decodeUtf8With)
-import Data.Text.Encoding.Error (lenientDecode)
-import Freckle.App.Datadog (HasDogStatsClient, HasDogStatsTags)
-import qualified Freckle.App.Datadog as Datadog
 import Network.HTTP.Types (ResponseHeaders)
-import Network.HTTP.Types.Status (status200, statusCode)
+import Network.HTTP.Types.Status (status200)
 import Network.Wai
 import Network.Wai.Middleware.AddHeaders (addHeaders)
-
-makeRequestMetricsMiddleware
-  :: (HasDogStatsClient env, HasDogStatsTags env)
-  => env
-  -> (Request -> [(Text, Text)])
-  -> Middleware
-makeRequestMetricsMiddleware env getTags app req sendResponse' = do
-  start <- getCurrentTime
-  app req $ \res -> do
-    flip runReaderT env $ do
-      Datadog.increment "requests" $ tags res
-      Datadog.histogramSinceMs "response_time_ms" (tags res) start
-    sendResponse' res
- where
-  tags res =
-    getTags req
-      <> [ ("method", decodeUtf8 $ requestMethod req)
-         , ("status", pack $ show $ statusCode $ responseStatus res)
-         ]
 
 noCacheMiddleware :: Middleware
 noCacheMiddleware = addHeaders [cacheControlHeader]
@@ -100,6 +75,3 @@ corsResponseHeaders validateOrigin extraExposedHeaders origin =
 
   exposedHeaders =
     ["Set-Cookie", "Content-Disposition", "Link"] <> extraExposedHeaders
-
-decodeUtf8 :: ByteString -> Text
-decodeUtf8 = decodeUtf8With lenientDecode

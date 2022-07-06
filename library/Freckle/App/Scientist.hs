@@ -4,33 +4,30 @@ module Freckle.App.Scientist
 
 import Freckle.App.Prelude
 
-import Data.List.NonEmpty as NE
-import qualified Freckle.App.Datadog as Datadog
+import Freckle.App.Stats (HasStatsClient)
+import qualified Freckle.App.Stats as Stats
 import Scientist
 import Scientist.Duration
 
--- | Publish experiment durations to Datadog
+-- | Publish experiment durations using "Freckle.App.Stats"
 --
 -- * Experiments are labeled "science.${name}"
--- * Control results are tagged with "variant:control"
--- * Candidates are tagged with "variant:control-${i}"
+-- * Results are tagged with "variant:${name}"
 --
 experimentPublishDatadog
-  :: ( MonadReader env m
-     , MonadUnliftIO m
-     , Datadog.HasDogStatsClient env
-     , Datadog.HasDogStatsTags env
-     )
+  :: (MonadReader env m, MonadUnliftIO m, HasStatsClient env)
   => Result c a b
   -> m ()
 experimentPublishDatadog result = for_ (resultDetails result) $ \details -> do
-  let statName = "science." <> resultDetailsExperimentName details
-  Datadog.gauge statName [("variant", "control")]
-    $ durationToSeconds
-    $ resultControlDuration
-    $ resultDetailsControl details
-  for_ (NE.zip (resultDetailsCandidates details) (NE.fromList [1 ..]))
-    $ \(candidate, i :: Int) -> do
-        Datadog.gauge statName [("variant", "candidate-" <> tshow i)]
-          $ durationToSeconds
-          $ resultCandidateDuration candidate
+  let
+    statName = "science." <> resultDetailsExperimentName details
+    ResultControl {..} = resultDetailsControl details
+
+  Stats.tagged [("variant", resultControlName)]
+    $ Stats.gauge statName
+    $ durationToSeconds resultControlDuration
+
+  for_ (resultDetailsCandidates details) $ \ResultCandidate {..} ->
+    Stats.tagged [("variant", "candidate-" <> resultCandidateName)]
+      $ Stats.gauge statName
+      $ durationToSeconds resultCandidateDuration

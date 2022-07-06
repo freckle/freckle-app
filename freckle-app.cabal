@@ -35,9 +35,7 @@ library
       Freckle.App
       Freckle.App.Bugsnag
       Freckle.App.Database
-      Freckle.App.Datadog
-      Freckle.App.Datadog.Gauge
-      Freckle.App.Datadog.Rts
+      Freckle.App.Ecs
       Freckle.App.Env
       Freckle.App.Ghci
       Freckle.App.GlobalCache
@@ -51,6 +49,9 @@ library
       Freckle.App.Memcached.Servers
       Freckle.App.Prelude
       Freckle.App.Scientist
+      Freckle.App.Stats
+      Freckle.App.Stats.Gauge
+      Freckle.App.Stats.Rts
       Freckle.App.Test
       Freckle.App.Test.DocTest
       Freckle.App.Test.Hspec.Runner
@@ -61,6 +62,7 @@ library
       Freckle.App.Yesod
       Freckle.App.Yesod.Routes
       Network.HTTP.Link.Compat
+      Network.Wai.Middleware.Stats
       Yesod.Core.Lens
   other-modules:
       Paths_freckle_app
@@ -108,6 +110,7 @@ library
     , envparse
     , errors
     , exceptions
+    , extra
     , filepath
     , hashable
     , hspec >=2.8.1
