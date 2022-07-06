@@ -1,5 +1,5 @@
--- | Stateful gauges for Datadog
-module Freckle.App.Datadog.Gauge
+-- | Stateful gauges for "Freckle.App.Stats"
+module Freckle.App.Stats.Gauge
   ( Gauge
   , new
   , increment
@@ -10,7 +10,8 @@ module Freckle.App.Datadog.Gauge
 
 import Freckle.App.Prelude hiding (subtract)
 
-import Freckle.App.Datadog (HasDogStatsClient, HasDogStatsTags, gauge)
+import Freckle.App.Stats (HasStatsClient)
+import qualified Freckle.App.Stats as Stats
 import qualified System.Metrics.Gauge as EKG
 
 -- | A data type containing all reporting values for a gauge
@@ -26,22 +27,12 @@ new name tags = Gauge name tags <$> liftIO EKG.new
 
 -- | Increment gauge state and report its current value
 increment
-  :: ( MonadUnliftIO m
-     , MonadReader env m
-     , HasDogStatsClient env
-     , HasDogStatsTags env
-     )
-  => Gauge
-  -> m ()
+  :: (MonadUnliftIO m, MonadReader env m, HasStatsClient env) => Gauge -> m ()
 increment = add 1
 
 -- | Add to gauge state and report its current value
 add
-  :: ( MonadUnliftIO m
-     , MonadReader env m
-     , HasDogStatsClient env
-     , HasDogStatsTags env
-     )
+  :: (MonadUnliftIO m, MonadReader env m, HasStatsClient env)
   => Int64
   -> Gauge
   -> m ()
@@ -49,33 +40,19 @@ add i = withEKGGauge (`EKG.add` i)
 
 -- | Decrement gauge state and report its current value
 decrement
-  :: ( MonadUnliftIO m
-     , MonadReader env m
-     , HasDogStatsClient env
-     , HasDogStatsTags env
-     )
-  => Gauge
-  -> m ()
+  :: (MonadUnliftIO m, MonadReader env m, HasStatsClient env) => Gauge -> m ()
 decrement = subtract 1
 
 -- | Subtract from gauge state and report its current value
 subtract
-  :: ( MonadUnliftIO m
-     , MonadReader env m
-     , HasDogStatsClient env
-     , HasDogStatsTags env
-     )
+  :: (MonadUnliftIO m, MonadReader env m, HasStatsClient env)
   => Int64
   -> Gauge
   -> m ()
 subtract i = withEKGGauge (`EKG.subtract` i)
 
 withEKGGauge
-  :: ( MonadUnliftIO m
-     , MonadReader env m
-     , HasDogStatsClient env
-     , HasDogStatsTags env
-     )
+  :: (MonadUnliftIO m, MonadReader env m, HasStatsClient env)
   => (EKG.Gauge -> IO ())
   -> Gauge
   -> m ()
@@ -83,4 +60,4 @@ withEKGGauge f Gauge {..} = do
   current <- liftIO $ do
     f ekgGauge
     EKG.read ekgGauge
-  gauge name tags $ fromIntegral current
+  Stats.tagged tags $ Stats.gauge name $ fromIntegral current
