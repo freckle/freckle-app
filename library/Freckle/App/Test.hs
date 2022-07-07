@@ -140,7 +140,7 @@ withAppSql f load = beforeAll (loadEnvTest *> load) . beforeWith setup
 loadEnvTest :: IO ()
 loadEnvTest = loadEnvFrom ".env.test" >> loadEnv
 
-expectationFailure :: MonadIO m => String -> m ()
+expectationFailure :: (HasCallStack, MonadIO m) => String -> m a
 expectationFailure msg = Hspec.expectationFailure msg >> error "unreachable"
 
 pending :: MonadIO m => m ()
