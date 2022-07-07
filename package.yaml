@@ -62,7 +62,6 @@ library:
     - conduit
     - containers
     - datadog
-    - dlist
     - doctest
     - ekg-core
     - envparse
@@ -83,7 +82,6 @@ library:
     - load-env
     - memcache
     - monad-control
-    - monad-logger
     - mtl
     - network-uri
     - persistent
@@ -126,7 +124,6 @@ tests:
       - lens
       - lens-aeson
       - memcache
-      - mtl
       - postgresql-simple
       - wai
       - wai-extra
