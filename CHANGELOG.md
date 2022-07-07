@@ -1,4 +1,13 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.3.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.4.0.0...main)
+
+## [v1.4.0.0](https://github.com/freckle/freckle-app/compare/v1.3.0.0...v1.4.0.0)
+
+- Remove `runCapturedLoggingT`
+
+  We can use `Blammo.Logging.Logger.newTestLogger` instead. See `MemcachedSpec`
+  as an example.
+
+- Compatibility down to LTS 12.26 / GHC 8.4
 
 ## [v1.3.0.0](https://github.com/freckle/freckle-app/compare/v1.2.0.2...v1.3.0.0)
 
