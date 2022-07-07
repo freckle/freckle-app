@@ -1,4 +1,4 @@
-resolver: lts-19.6
+resolver: lts-19.14
 
 extra-deps:
   - Blammo-1.0.2.2
