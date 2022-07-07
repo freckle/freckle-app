@@ -75,7 +75,7 @@ library:
     - hspec-expectations-lifted
     - hspec-junit-formatter >= 1.1.0.1
     - http-client
-    - http-conduit >= 2.3.5
+    - http-conduit >= 2.3.5 # addToRequestQueryString
     - http-link-header
     - http-types
     - immortal
@@ -83,7 +83,7 @@ library:
     - load-env
     - memcache
     - monad-control
-    - monad-logger >= 0.3.31
+    - monad-logger
     - mtl
     - network-uri
     - persistent
@@ -91,7 +91,7 @@ library:
     - postgresql-simple
     - primitive
     - resource-pool
-    - retry >= 0.8.1.0
+    - retry >= 0.8.1.0 # retryingDynamic
     - safe
     - scientist
     - semigroupoids
@@ -116,6 +116,7 @@ tests:
     source-dirs: tests
     ghc-options: -threaded -rtsopts "-with-rtsopts=-N"
     dependencies:
+      - Blammo
       - aeson
       - bytestring
       - errors

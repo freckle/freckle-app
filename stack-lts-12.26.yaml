@@ -1,0 +1,63 @@
+resolver: lts-12.26
+
+extra-deps:
+  - Blammo-1.0.2.2
+  - bugsnag-1.0.0.1
+  - bugsnag-wai-1.0.0.1
+  - ekg-core-0.1.1.7
+  - envparse-0.5.0
+  - hspec-2.8.1
+  - hspec-core-2.8.1
+  - hspec-discover-2.8.1
+  - hspec-junit-formatter-1.1.0.2
+  - http-conduit-2.3.5
+  - memcache-0.3.0.1
+  - monad-logger-aeson-0.3.0.2
+  - retry-0.8.1.0
+  - scientist-0.0.0.0
+
+  # Transitive dependencies of bugsnag
+  - bugsnag-hs-0.2.0.8
+  - ua-parser-0.7.7.0
+
+  # Transitive dependencies of memcache
+  - network-3.1.0.0
+
+  # Need to compile with newer network, taken from lts-14.27
+  - connection-0.3.1
+  - simple-sendfile-0.2.30
+  - socks-0.6.1
+  - wai-extra-3.0.29
+  - warp-3.3.5
+
+  # Transitive dependencies of warp
+  - http2-2.0.3
+  - time-manager-0.0.0
+
+  # Transitive dependencies of http2
+  - network-byte-order-0.1.1.0
+
+  # So newer aeson is accepted
+  - lens-aeson-1.1
+  - postgresql-simple-0.6.2@r4
+
+  # So newer postgresql-simple is accepted
+  - persistent-2.9.0
+  - persistent-postgresql-2.9.0
+
+  # So newer primitive is accepted
+  - MonadRandom-0.5.1.1@r8
+
+  # See https://github.com/jship/monad-logger-aeson/blob/main/stack-lts-12.yaml
+  - QuickCheck-2.13.1
+  - aeson-1.5.2.0
+  - assoc-1
+  - base-orphans-0.8.1
+  - context-0.2.0.1
+  - primitive-0.7.4.0
+  - splitmix-0.0.2
+  - tagged-0.8.6
+  - these-1.1
+  - time-compat-1.9.2.2
+  - unordered-containers-0.2.10.0
+  - vector-algorithms-0.8.0.1

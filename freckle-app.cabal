@@ -54,7 +54,6 @@ library
       Freckle.App.Test
       Freckle.App.Test.DocTest
       Freckle.App.Test.Hspec.Runner
-      Freckle.App.Test.Logging
       Freckle.App.Version
       Freckle.App.Wai
       Freckle.App.Yesod
@@ -123,7 +122,7 @@ library
     , load-env
     , memcache
     , monad-control
-    , monad-logger >=0.3.31
+    , monad-logger
     , mtl
     , network-uri
     , persistent
@@ -277,7 +276,8 @@ test-suite spec
       TypeFamilies
   ghc-options: -threaded -rtsopts "-with-rtsopts=-N"
   build-depends:
-      aeson
+      Blammo
+    , aeson
     , base <5
     , bytestring
     , errors
