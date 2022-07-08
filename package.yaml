@@ -55,6 +55,7 @@ library:
     - Blammo
     - Glob
     - MonadRandom
+    - QuickCheck
     - aeson
     - bugsnag
     - bytestring
@@ -115,6 +116,7 @@ tests:
     ghc-options: -threaded -rtsopts "-with-rtsopts=-N"
     dependencies:
       - Blammo
+      - QuickCheck
       - aeson
       - bytestring
       - errors
