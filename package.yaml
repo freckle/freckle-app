@@ -84,6 +84,7 @@ library:
     - monad-control
     - mtl
     - network-uri
+    - path-pieces
     - persistent
     - persistent-postgresql
     - postgresql-simple
@@ -115,6 +116,7 @@ tests:
     ghc-options: -threaded -rtsopts "-with-rtsopts=-N"
     dependencies:
       - Blammo
+      - QuickCheck
       - aeson
       - bytestring
       - errors

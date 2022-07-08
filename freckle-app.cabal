@@ -54,6 +54,8 @@ library
       Freckle.App.Test
       Freckle.App.Test.DocTest
       Freckle.App.Test.Hspec.Runner
+      Freckle.App.Test.Properties.JSON
+      Freckle.App.Test.Properties.PathPiece
       Freckle.App.Version
       Freckle.App.Wai
       Freckle.App.Yesod
@@ -123,6 +125,7 @@ library
     , monad-control
     , mtl
     , network-uri
+    , path-pieces
     , persistent
     , persistent-postgresql
     , postgresql-simple
@@ -242,6 +245,8 @@ test-suite spec
       Freckle.App.HttpSpec
       Freckle.App.Memcached.ServersSpec
       Freckle.App.MemcachedSpec
+      Freckle.App.Test.Properties.JSONSpec
+      Freckle.App.Test.Properties.PathPieceSpec
       Freckle.App.WaiSpec
       Spec
       Paths_freckle_app
@@ -275,6 +280,7 @@ test-suite spec
   ghc-options: -threaded -rtsopts "-with-rtsopts=-N"
   build-depends:
       Blammo
+    , QuickCheck
     , aeson
     , base <5
     , bytestring
