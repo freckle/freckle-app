@@ -22,4 +22,10 @@ spec :: Spec
 spec = do
   describe "jsonInstancesRoundTrip" $ do
     describe "Integer" $ jsonInstancesRoundTrip @Integer
+    describe "Bool" $ jsonInstancesRoundTrip @Bool
     describe "Some custom type" $ jsonInstancesRoundTrip @MyCustomType
+
+  describe "pathPieceInstancesRoundTrip" $ do
+    describe "Integer" $ pathPieceInstancesRoundTrip @Integer
+    describe "Bool" $ pathPieceInstancesRoundTrip @Bool
+    describe "Maybe String" $ pathPieceInstancesRoundTrip @(Maybe String)

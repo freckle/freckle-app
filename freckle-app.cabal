@@ -125,6 +125,7 @@ library
     , monad-control
     , mtl
     , network-uri
+    , path-pieces
     , persistent
     , persistent-postgresql
     , postgresql-simple
