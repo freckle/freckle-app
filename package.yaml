@@ -55,7 +55,6 @@ library:
     - Blammo
     - Glob
     - MonadRandom
-    - QuickCheck
     - aeson
     - bugsnag
     - bytestring

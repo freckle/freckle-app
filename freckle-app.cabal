@@ -52,9 +52,10 @@ library
       Freckle.App.Prelude
       Freckle.App.Scientist
       Freckle.App.Test
-      Freckle.App.Test.CommonTests
       Freckle.App.Test.DocTest
       Freckle.App.Test.Hspec.Runner
+      Freckle.App.Test.Properties.JSON
+      Freckle.App.Test.Properties.PathPiece
       Freckle.App.Version
       Freckle.App.Wai
       Freckle.App.Yesod
@@ -94,7 +95,6 @@ library
       Blammo
     , Glob
     , MonadRandom
-    , QuickCheck
     , aeson
     , base <5
     , bugsnag
@@ -245,7 +245,8 @@ test-suite spec
       Freckle.App.HttpSpec
       Freckle.App.Memcached.ServersSpec
       Freckle.App.MemcachedSpec
-      Freckle.App.Test.CommonTestsSpec
+      Freckle.App.Test.Properties.JSONSpec
+      Freckle.App.Test.Properties.PathPieceSpec
       Freckle.App.WaiSpec
       Spec
       Paths_freckle_app
