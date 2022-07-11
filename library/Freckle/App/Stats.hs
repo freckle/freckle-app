@@ -71,12 +71,12 @@ envParseStatsSettings =
       <> tags
 
 data StatsClient = StatsClient
-  { amcClient :: Datadog.StatsClient
-  , amcTags :: [(Text, Text)]
+  { scClient :: Datadog.StatsClient
+  , scTags :: [(Text, Text)]
   }
 
 tagsL :: Lens' StatsClient [(Text, Text)]
-tagsL = lens amcTags $ \x y -> x { amcTags = y }
+tagsL = lens scTags $ \x y -> x { scTags = y }
 
 class HasStatsClient env where
   statsClientL :: Lens' env StatsClient
@@ -97,8 +97,8 @@ withStatsClient StatsSettings {..} f = do
       Datadog.withDogStatsD amsSettings $ \client ->
         -- Add the tags to the thread context so they're present in all logs
         withThreadContext (map toPair tags)
-          $ f StatsClient { amcClient = client, amcTags = tags }
-    else f $ StatsClient { amcClient = Datadog.Dummy, amcTags = [] }
+          $ f StatsClient { scClient = client, scTags = tags }
+    else f $ StatsClient { scClient = Datadog.Dummy, scTags = [] }
   where toPair = bimap (fromString . unpack) String
 
 -- | Include the given tags on all metrics emitted from a block
@@ -184,9 +184,9 @@ sendMetric
 sendMetric metricType name metricValue = do
   StatsClient {..} <- view statsClientL
 
-  Datadog.send amcClient
+  Datadog.send scClient
     $ Datadog.metric (Datadog.MetricName name) metricType metricValue
-    & (Datadog.tags .~ map (uncurry Datadog.tag) amcTags)
+    & (Datadog.tags .~ map (uncurry Datadog.tag) scTags)
 
 getEcsMetadataTags :: MonadIO m => m [(Text, Text)]
 getEcsMetadataTags = maybe [] toTags <$> getEcsMetadata
