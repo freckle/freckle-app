@@ -14,7 +14,7 @@ import Data.Aeson.Compat as KeyMap
 import qualified Data.List.NonEmpty as NE
 import qualified Freckle.App.Env as Env
 import Freckle.App.Memcached
-import Freckle.App.Memcached.Client (MemcachedClient, newMemcachedClient)
+import Freckle.App.Memcached.Client (MemcachedClient, withMemcachedClient)
 import qualified Freckle.App.Memcached.Client as Memcached
 import Freckle.App.Memcached.Servers
 
@@ -48,14 +48,15 @@ instance HasMemcachedClient App where
 instance HasLogger App where
   loggerL = lens appLogger $ \x y -> x { appLogger = y }
 
-loadApp :: IO App
-loadApp = do
+loadApp :: (App -> IO a) -> IO a
+loadApp f = do
   servers <- Env.parse id $ Env.var
     (Env.eitherReader readMemcachedServers)
     "MEMCACHED_SERVERS"
     (Env.def defaultMemcachedServers)
-
-  App <$> newMemcachedClient servers <*> newTestLogger defaultLogSettings
+  appLogger <- newTestLogger defaultLogSettings
+  withMemcachedClient servers $ \appMemcachedClient -> do
+    f App { .. }
 
 spec :: Spec
 spec = withApp loadApp $ do

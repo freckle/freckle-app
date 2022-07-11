@@ -1,6 +1,7 @@
 module Freckle.App.Memcached.Client
   ( MemcachedClient
   , newMemcachedClient
+  , withMemcachedClient
   , memcachedClientDisabled
   , HasMemcachedClient(..)
   , get
@@ -15,6 +16,7 @@ import Database.Memcache.Types (Value)
 import Freckle.App.Memcached.CacheKey
 import Freckle.App.Memcached.CacheTTL
 import Freckle.App.Memcached.Servers
+import UnliftIO.Exception (finally)
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
 
@@ -35,6 +37,12 @@ newMemcachedClient :: MonadIO m => MemcachedServers -> m MemcachedClient
 newMemcachedClient servers = case toServerSpecs servers of
   [] -> pure memcachedClientDisabled
   specs -> liftIO $ MemcachedClient <$> Memcache.newClient specs Memcache.def
+
+withMemcachedClient
+  :: MonadUnliftIO m => MemcachedServers -> (MemcachedClient -> m a) -> m a
+withMemcachedClient servers f = do
+  c <- newMemcachedClient servers
+  f c `finally` quitClient c
 
 memcachedClientDisabled :: MemcachedClient
 memcachedClientDisabled = MemcachedClientDisabled
@@ -61,6 +69,11 @@ set k v expiration = with $ \case
   MemcachedClient mc ->
     void $ liftIO $ Memcache.set mc (fromCacheKey k) v 0 $ fromCacheTTL
       expiration
+  MemcachedClientDisabled -> pure ()
+
+quitClient :: MonadIO m => MemcachedClient -> m ()
+quitClient = \case
+  MemcachedClient mc -> void $ liftIO $ Memcache.quit mc
   MemcachedClientDisabled -> pure ()
 
 with

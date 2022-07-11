@@ -22,28 +22,27 @@
 -- > instance HasLogger App where
 -- >   loggerL = lens appLogger $ \x y -> x { appLogger = y }
 --
--- and a way to build a value:
+-- and a bracketed function for building and using a value:
 --
--- > loadApp :: IO App
+-- > loadApp :: (App -> m a) -> m a
+-- > loadApp f = do
+-- >   app <- -- ...
+-- >   f app
 --
 -- It's likely you'll want to use @"Freckle.App.Env"@ to load your @App@:
 --
 -- > import qualified Blammo.Logger.LogSettings.Env as LoggerEnv
 -- > import qualified Freckle.App.Env as Env
 -- >
--- > loadApp = Env.parse id $ App
--- >   <$> Env.switch "DRY_RUN" mempty
--- >   <*> LoggerEnv.parser
---
--- Though not required, a type synonym can make things throughout your
--- application a bit more readable:
---
--- > type AppM = ReaderT App (LoggingT IO)
+-- > loadApp f = do
+-- >   app <- Env.parse id $ App
+-- >     <$> Env.switch "DRY_RUN" mempty
+-- >     <*> LoggerEnv.parser
 --
 -- Now you have application-specific actions that can do IO, log, and access
 -- your state:
 --
--- > myAppAction :: AppM ()
+-- > myAppAction :: (MonadIO m, MonadLogger m, MonadReader App env) => m ()
 -- > myAppAction = do
 -- >   isDryRun <- asks appDryRun
 -- >
@@ -56,8 +55,7 @@
 --
 -- > main :: IO ()
 -- > main = do
--- >   app <- loadApp
--- >   runApp app $ do
+-- >   runApp loadApp $ do
 -- >     myAppAction
 -- >     myOtherAppAction
 --
@@ -96,71 +94,43 @@
 -- The @"Freckle.App.Database"@ module provides @'makePostgresPool'@ for
 -- building a Pool given this (limited) config data:
 --
--- > loadApp :: IO App
--- > loadApp = do
+-- > loadApp :: (App -> IO a) -> IO a
+-- > loadApp f = do
 -- >   appConfig{..} <- loadConfig
 -- >   appLogger <- newLogger configLoggerSettings
 -- >   appSqlPool <- runLoggerLoggingT appLogger $ makePostgresPool configDbPoolSize
--- >   pure App{..}
---
--- /Note/: the actual database connection parameters (host, user, etc) are
--- (currently) parsed from conventional environment variables by the underlying
--- driver directly. Our application configuration is only involved in declaring
--- the pool size.
+-- >   f App{..}
 --
 -- This unlocks @'runDB'@ for your application:
 --
--- > myAppAction :: AppM [Entity Something]
+-- > myAppAction
+-- >   :: (MonadIO m, MonadReader env m, HasSqlPool env)
+-- >   => SqlPersistT m [Entity Something]
 -- > myAppAction = runDB $ selectList [] []
 --
 -- == Testing
 --
 -- @"Freckle.App.Test"@ exposes an @'AppExample'@ type for examples in a
 -- @'SpecWith' App@ spec. The can be run by giving your @loadApp@ function to
--- Hspec's @'before'@.
+-- Hspec's @'aroundAll'@.
 --
--- Our @Test@ module also exposes @'runAppTest'@ for running @AppM@ actions and
--- lifted expectations for use within such an example.
+-- Using MTL-style constraints (i.e. 'MonadReader') means you can use your
+-- actions directly in expectations, but you may need some type annotations:
 --
 -- > spec :: Spec
--- > spec = before loadApp $ do
+-- > spec = aroundAll loadApp $ do
 -- >   describe "myAppAction" $ do
 -- >     it "works" $ do
--- >       result <- runAppTest myAppAction
+-- >       result <- myAppAction :: AppExample App Text
 -- >       result `shouldBe` "as expected"
 --
--- If your application makes use of the database, a few things will have to be
--- different:
---
--- First, we want to have a specialized @'runDB'@ in tests to avoid excessive
--- annotations because of the generalized type of @'runDB'@ itself:
---
--- > import Database.Persist.Sql
--- > import qualified Freckle.App.Database as DB
--- >
--- > runDB :: SqlPersistM IO a -> AppExample App a
--- > runDB = DB.runDB
---
--- Second, we'll probably want a conventional @withApp@ function so that we can
--- truncate tables as part of spec setup:
---
--- > import Freckle.App.Test hiding (withApp)
--- > import Test.Hspec
--- >
--- > withApp :: SpecWith App -> Spec
--- > withApp = withAppSql truncateTables loadApp
---
--- And now you can write specs that also use the database:
+-- If your app type 'HasSqlPool', you can use 'runDB' in your specs too:
 --
 -- > spec :: Spec
--- > spec = withApp $ do
--- >   describe "myAppAction" $ do
--- >     it "works" . withGraph runDB do
--- >       nodeWith -- ...
--- >       nodeWith -- ...
--- >       nodeWith -- ...
--- >
--- >       result <- lift $ runAppTest myAppAction
+-- > spec = aroundAll loadApp $ do
+-- >   describe "myQuery" $ do
+-- >     it "works" $ do
+-- >       result <- runDB myQuery :: AppExample App Text
 -- >       result `shouldBe` "as expected"
 --
 module Freckle.App
@@ -175,9 +145,13 @@ import Control.Monad.Reader as X
 import Freckle.App.Database as X
 import System.IO (BufferMode(..), hSetBuffering, stderr, stdout)
 
-runApp :: HasLogger app => app -> ReaderT app (LoggingT IO) a -> IO a
-runApp app action = do
+runApp
+  :: HasLogger app
+  => (forall b . (app -> IO b) -> IO b)
+  -> ReaderT app (LoggingT IO) a
+  -> IO a
+runApp loadApp action = do
   -- Ensure output is streamed if in a Docker container
   hSetBuffering stdout LineBuffering
   hSetBuffering stderr LineBuffering
-  runLoggerLoggingT app $ runReaderT action app
+  loadApp $ \app -> runLoggerLoggingT app $ runReaderT action app

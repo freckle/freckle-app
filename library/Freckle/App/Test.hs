@@ -124,8 +124,8 @@ appExample = id
 -- this spec can use 'runAppTest' if the app 'HasLogger' (and 'runDB', if the
 -- app 'HasSqlPool').
 --
-withApp :: IO app -> SpecWith app -> Spec
-withApp load = beforeAll (loadEnvTest *> load)
+withApp :: ((app -> IO ()) -> IO ()) -> SpecWith app -> Spec
+withApp run = beforeAll loadEnvTest . Hspec.aroundAll run
 
 -- | 'withApp', with custom DB 'Pool' initialization
 --
@@ -133,8 +133,13 @@ withApp load = beforeAll (loadEnvTest *> load)
 -- truncate tables.
 --
 withAppSql
-  :: HasSqlPool app => SqlPersistT IO a -> IO app -> SpecWith app -> Spec
-withAppSql f load = beforeAll (loadEnvTest *> load) . beforeWith setup
+  :: HasSqlPool app
+  => SqlPersistT IO a
+  -> ((app -> IO ()) -> IO ())
+  -> SpecWith app
+  -> Spec
+withAppSql f run =
+  beforeAll loadEnvTest . Hspec.aroundAll run . beforeWith setup
   where setup app = app <$ runSqlPool f (getSqlPool app)
 
 loadEnvTest :: IO ()
