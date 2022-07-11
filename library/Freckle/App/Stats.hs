@@ -34,6 +34,8 @@ import Data.Time (diffUTCTime)
 import Freckle.App.Ecs
 import qualified Freckle.App.Env as Env
 import qualified Network.StatsD.Datadog as Datadog
+import Yesod.Core.Lens
+import Yesod.Core.Types (HandlerData)
 
 data StatsSettings = StatsSettings
   { amsEnabled :: Bool
@@ -83,6 +85,9 @@ class HasStatsClient env where
 
 instance HasStatsClient StatsClient where
   statsClientL = id
+
+instance HasStatsClient site =>  HasStatsClient (HandlerData child site) where
+  statsClientL = envL . siteL . statsClientL
 
 withStatsClient
   :: (MonadMask m, MonadUnliftIO m)
