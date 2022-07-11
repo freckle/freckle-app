@@ -1,5 +1,7 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.4.0.0...main)
 
+- Add functions that check properties that we like to commonly test.
+
 ## [v1.4.0.0](https://github.com/freckle/freckle-app/compare/v1.3.0.0...v1.4.0.0)
 
 - Remove `runCapturedLoggingT`
