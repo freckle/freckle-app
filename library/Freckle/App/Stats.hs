@@ -2,75 +2,7 @@
 
 -- | An intentionally-leaky StatsD interface to Datadog
 --
--- Usage:
---
--- - Use 'envParseStatsSettings' to configure things
---
---   @
---   data AppSettings = AppSettings
---    { -- ...
---    , appStatsSettings :: StatsSettings
---    }
---
---   loadSettings :: IO AppSettings
---   loadSettings = Env.parse id $ AppSettings
---     <$> -- ...
---     <*> 'envParseStatsSettings'
---   @
---
---   This will read,
---
---   - @DOGSTATSD_ENABLED=x@
---   - @DOGSTATSD_HOST=127.0.0.1@
---   - @DOGSTATSD_PORT=8125@
---   - @DOGSTATSD_TAGS=[<key>:<value>,...]@
---   - Optionally @DD_ENV@, @DD_SERVICE@, and @DD_VERSION@
---
--- - Give your @App@ a 'HasStatsClient' instance
---
---   @
---   data App = App
---     { -- ...
---     , appStatsClient :: 'StatsClient'
---     }
---
---   instance 'HasStatsClient' App where
---     'statsClientL' = lens appStatsClient $ \x y -> { appStatsClient = y }
---   @
---
--- - Use 'withStatsClient' to build and store a client on your @App@ when you
---   run it
---
---   @
---   'withStatsClient' appStatsSettings $ \client -> do
---     app <- App
---       <$> ...
---       <*> pure client
---
---     'runApp' app $ ...
---   @
---
--- - Throughout your application code, emit metrics as desired
---
---   @
---   import qualified Freckle.App.Stats as Stats
---
---   myFunction :: (MonadIO m, MonadReader env m, 'HasStatsClient' env) => m ()
---   myFunction = do
---     start <- liftIO getCurrentTime
---     result <- myAction
---
---     Stats.'increment' \"action.attempt\"
---     Stats.'histogramSinceMs' \"action.duration\" start
---
---     case result of
---       Left err -> do
---         Stats.'increment' \"action.failure\"
---         -- ...
---       Right x -. do
---         Stats.'increment' \"action.success\"
---         -- ...
---   @
+-- $usage
 --
 module Freckle.App.Stats
   ( StatsSettings
@@ -269,3 +201,75 @@ getEcsMetadataTags = maybe [] toTags <$> getEcsMetadata
       , ("task_family", ectmFamily)
       , ("task_version", ectmRevision)
       ]
+
+-- $usage
+-- Usage:
+--
+-- - Use 'envParseStatsSettings' to configure things
+--
+--   @
+--   data AppSettings = AppSettings
+--    { -- ...
+--    , appStatsSettings :: StatsSettings
+--    }
+--
+--   loadSettings :: IO AppSettings
+--   loadSettings = Env.parse id $ AppSettings
+--     <$> -- ...
+--     <*> 'envParseStatsSettings'
+--   @
+--
+--   This will read,
+--
+--   - @DOGSTATSD_ENABLED=x@
+--   - @DOGSTATSD_HOST=127.0.0.1@
+--   - @DOGSTATSD_PORT=8125@
+--   - @DOGSTATSD_TAGS=[<key>:<value>,...]@
+--   - Optionally @DD_ENV@, @DD_SERVICE@, and @DD_VERSION@
+--
+-- - Give your @App@ a 'HasStatsClient' instance
+--
+--   @
+--   data App = App
+--     { -- ...
+--     , appStatsClient :: 'StatsClient'
+--     }
+--
+--   instance 'HasStatsClient' App where
+--     'statsClientL' = lens appStatsClient $ \x y -> { appStatsClient = y }
+--   @
+--
+-- - Use 'withStatsClient' to build and store a client on your @App@ when you
+--   run it
+--
+--   @
+--   'withStatsClient' appStatsSettings $ \client -> do
+--     app <- App
+--       <$> ...
+--       <*> pure client
+--
+--     'runApp' app $ ...
+--   @
+--
+-- - Throughout your application code, emit metrics as desired
+--
+--   @
+--   import qualified Freckle.App.Stats as Stats
+--
+--   myFunction :: (MonadIO m, MonadReader env m, 'HasStatsClient' env) => m ()
+--   myFunction = do
+--     start <- liftIO getCurrentTime
+--     result <- myAction
+--
+--     Stats.'increment' \"action.attempt\"
+--     Stats.'histogramSinceMs' \"action.duration\" start
+--
+--     case result of
+--       Left err -> do
+--         Stats.'increment' \"action.failure\"
+--         -- ...
+--       Right x -. do
+--         Stats.'increment' \"action.success\"
+--         -- ...
+--   @
+--
