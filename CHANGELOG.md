@@ -1,4 +1,51 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.4.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.5.0.0...main)
+
+## [v1.5.0.0](https://github.com/freckle/freckle-app/compare/v1.4.0.0...v1.5.0.0)
+
+- Remove `Freckle.App.Datadog` modules for `Freckle.App.Stats` equivalents
+
+  It's not a drop-in, but the required changes should be mechanical:
+
+  - Instead of `HasDogStats{Client,Tags}`, implement a single `HasStatsClient`
+  - Instead of `mkStatsClient` use `withStatsClient` (the new style of `runApp`
+    had will enable that)
+  - Use `tagged` instead of extra arguments to metric sends
+  - Move to the new `Rts`, `Gauge`, and `Middleware.Stats` modules
+
+- Change signature of `runApp` and `withApp`
+
+  Instead of passing a loaded `App` (or a function that loads an `App`) to
+  `runApp` and `withApp`, you should now pass a function that _takes a function_
+  and calls it on the loaded `App`.
+
+  This is necessary for apps that hold onto values that require cleanup, like
+  `withStatsClient`.
+
+  ```hs
+  -- This doesn't work
+  loadApp :: IO App
+  loadApp = do
+    -- ...
+    withStatsClient $ \appStatsClient -> do
+      -- ???
+
+  -- This does
+  loadApp :: (App -> IO a) -> IO a
+  loadApp f = do
+    -- ...
+    withStatsClient $ \appStatsClient -> do
+      f App { .. }
+  ```
+
+  The old form can be trivially converted to the new form like so,
+
+  ```hs
+  loadApp :: (App -> IO a) -> IO a
+  loadApp f = f =<< loadApp'
+
+  loadApp' :: IO App
+  loadApp' = -- old code
+  ```
 
 - Add functions that check properties that we like to commonly test.
 
