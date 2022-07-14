@@ -28,5 +28,5 @@ extra-deps:
   # See https://github.com/jship/monad-logger-aeson/blob/main/stack-lts-14.yaml
   - aeson-1.5.2.0
   - context-0.2.0.1
-  - primitive-0.7.4.0
+  - primitive-0.7.0.1
   - these-1.1
