@@ -10,6 +10,7 @@ module Freckle.App.Stats
 
   -- * Client
   , StatsClient
+  , tagsL
   , withStatsClient
   , HasStatsClient(..)
 
