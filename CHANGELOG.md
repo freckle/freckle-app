@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.5.0.1...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.5.1.0...main)
+
+## [v1.5.0.1](https://github.com/freckle/freckle-app/compare/v1.5.0.1...v1.5.1.0)
+
+- Export `Freckle.App.Stats.tagsL`
 
 ## [v1.5.0.1](https://github.com/freckle/freckle-app/compare/v1.5.0.0...v1.5.0.1)
 
