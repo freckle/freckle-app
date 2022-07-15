@@ -33,7 +33,9 @@ flag test-git
 library
   exposed-modules:
       Freckle.App
+      Freckle.App.Aeson
       Freckle.App.Bugsnag
+      Freckle.App.Bugsnag.MetaData
       Freckle.App.Database
       Freckle.App.Ecs
       Freckle.App.Env
@@ -244,6 +246,7 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Main.hs
   other-modules:
+      Freckle.App.Bugsnag.MetaDataSpec
       Freckle.App.BugsnagSpec
       Freckle.App.HttpSpec
       Freckle.App.Memcached.ServersSpec
@@ -286,6 +289,7 @@ test-suite spec
     , QuickCheck
     , aeson
     , base <5
+    , bugsnag
     , bytestring
     , errors
     , freckle-app
@@ -295,6 +299,7 @@ test-suite spec
     , lens-aeson
     , memcache
     , postgresql-simple
+    , unliftio
     , wai
     , wai-extra
   default-language: Haskell2010
