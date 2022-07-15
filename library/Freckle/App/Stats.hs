@@ -6,6 +6,8 @@
 --
 module Freckle.App.Stats
   ( StatsSettings
+  , defaultStatsSettings
+  , setStatsSettingsTags
   , envParseStatsSettings
 
   -- * Client
@@ -43,6 +45,16 @@ data StatsSettings = StatsSettings
   , amsSettings :: Datadog.DogStatsSettings
   , amsTags :: [(Text, Text)]
   }
+
+defaultStatsSettings :: StatsSettings
+defaultStatsSettings = StatsSettings
+  { amsEnabled = False
+  , amsSettings = Datadog.defaultSettings
+  , amsTags = []
+  }
+
+setStatsSettingsTags :: [(Text, Text)] -> StatsSettings -> StatsSettings
+setStatsSettingsTags x settings = settings { amsTags = x }
 
 envParseStatsSettings :: Env.Parser Env.Error StatsSettings
 envParseStatsSettings =
@@ -104,7 +116,7 @@ withStatsClient StatsSettings {..} f = do
         -- Add the tags to the thread context so they're present in all logs
         withThreadContext (map toPair tags)
           $ f StatsClient { scClient = client, scTags = tags }
-    else f $ StatsClient { scClient = Datadog.Dummy, scTags = [] }
+    else f $ StatsClient { scClient = Datadog.Dummy, scTags = amsTags }
   where toPair = bimap (fromString . unpack) String
 
 -- | Include the given tags on all metrics emitted from a block

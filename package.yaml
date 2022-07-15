@@ -119,6 +119,7 @@ tests:
       - Blammo
       - QuickCheck
       - aeson
+      - bugsnag
       - bytestring
       - errors
       - freckle-app
@@ -128,6 +129,7 @@ tests:
       - lens-aeson
       - memcache
       - postgresql-simple
+      - unliftio
       - wai
       - wai-extra
 
