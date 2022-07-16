@@ -8,6 +8,7 @@ module Freckle.App.Test
   , appExample
   , withApp
   , withAppSql
+  , beforeSql
   , expectationFailure
   , pending
   , pendingWith
@@ -44,7 +45,7 @@ import Control.Monad.Random (MonadRandom(..))
 import Control.Monad.Reader
 import Control.Monad.Trans.Control
 import Database.Persist.Sql (SqlPersistT, runSqlPool)
-import LoadEnv
+import qualified Freckle.App.Dotenv as Dotenv
 import qualified Test.Hspec as Hspec hiding (expectationFailure)
 import Test.Hspec.Core.Spec (Arg, Example, SpecWith, evaluateExample)
 import qualified Test.Hspec.Expectations.Lifted as Hspec (expectationFailure)
@@ -120,12 +121,11 @@ appExample = id
 -- spec = 'withApp' loadApp $ do
 -- @
 --
--- Reads @.env.test@, then @.env@, then loads the application. Examples within
--- this spec can use 'runAppTest' if the app 'HasLogger' (and 'runDB', if the
--- app 'HasSqlPool').
+-- Reads @.env.test@, then loads the application. Examples within this spec can
+-- use any @'MonadReader' app@ (including 'runDB', if the app 'HasSqlPool').
 --
 withApp :: ((app -> IO ()) -> IO ()) -> SpecWith app -> Spec
-withApp run = beforeAll loadEnvTest . Hspec.aroundAll run
+withApp run = beforeAll Dotenv.loadTest . Hspec.aroundAll run
 
 -- | 'withApp', with custom DB 'Pool' initialization
 --
@@ -138,12 +138,12 @@ withAppSql
   -> ((app -> IO ()) -> IO ())
   -> SpecWith app
   -> Spec
-withAppSql f run =
-  beforeAll loadEnvTest . Hspec.aroundAll run . beforeWith setup
-  where setup app = app <$ runSqlPool f (getSqlPool app)
+withAppSql f run = withApp run . beforeSql f
+{-# DEPRECATED withAppSql "Replace `withAppSql f g` with `withApp g . beforeSql f`" #-}
 
-loadEnvTest :: IO ()
-loadEnvTest = loadEnvFrom ".env.test" >> loadEnv
+-- | Run the given SQL action before every spec item
+beforeSql :: HasSqlPool app => SqlPersistT IO a -> SpecWith app -> SpecWith app
+beforeSql f = beforeWith $ \app -> app <$ runSqlPool f (getSqlPool app)
 
 expectationFailure :: (HasCallStack, MonadIO m) => String -> m a
 expectationFailure msg = Hspec.expectationFailure msg >> error "unreachable"
