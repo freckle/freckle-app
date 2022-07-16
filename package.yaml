@@ -63,6 +63,7 @@ library:
     - containers
     - datadog
     - doctest
+    - dotenv
     - ekg-core
     - envparse
     - errors
@@ -80,7 +81,6 @@ library:
     - http-types
     - immortal
     - lens
-    - load-env
     - memcache
     - monad-control
     - mtl

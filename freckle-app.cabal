@@ -32,11 +32,13 @@ flag test-git
 
 library
   exposed-modules:
+      Configuration.Dotenv.Compat
       Freckle.App
       Freckle.App.Aeson
       Freckle.App.Bugsnag
       Freckle.App.Bugsnag.MetaData
       Freckle.App.Database
+      Freckle.App.Dotenv
       Freckle.App.Ecs
       Freckle.App.Env
       Freckle.App.Ghci
@@ -108,6 +110,7 @@ library
     , containers
     , datadog
     , doctest
+    , dotenv
     , ekg-core
     , envparse
     , errors
@@ -125,7 +128,6 @@ library
     , http-types
     , immortal
     , lens
-    , load-env
     , memcache
     , monad-control
     , mtl
