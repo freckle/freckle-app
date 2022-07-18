@@ -14,12 +14,6 @@ extra-doc-files:
 extra-source-files:
   - package.yaml
 
-flags:
-  test-git:
-    description: Run tests that run git commands
-    manual: true
-    default: true
-
 dependencies:
   - base < 5
 
@@ -138,21 +132,3 @@ tests:
     source-dirs: doctest
     dependencies:
       - freckle-app
-
-  gittest:
-    main: Main.hs
-    source-dirs: gittest
-    dependencies:
-      - freckle-app
-      - directory
-      - hspec
-      - temporary
-      - time
-      - process
-      - text
-    when:
-      - condition: flag(test-git)
-        then:
-          buildable: true
-        else:
-          buildable: false

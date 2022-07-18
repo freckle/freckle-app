@@ -32,7 +32,6 @@ import Data.List (isInfixOf)
 import Database.PostgreSQL.Simple (SqlError(..))
 import Database.PostgreSQL.Simple.Errors
 import qualified Freckle.App.Env as Env
-import Freckle.App.Version
 import Network.Bugsnag hiding (notifyBugsnag, notifyBugsnagWith)
 import qualified Network.Bugsnag as Bugsnag
 import Network.HTTP.Client (HttpException(..), host, method)
@@ -41,17 +40,16 @@ import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
 
 class HasAppVersion env where
-  appVersionL :: Lens' env AppVersion
-
-instance HasAppVersion AppVersion where
-  appVersionL = id
+  appVersionL :: Lens' env Text
 
 instance HasAppVersion site =>  HasAppVersion (HandlerData child site) where
   appVersionL = envL . siteL . appVersionL
 
-setAppVersion :: AppVersion -> BeforeNotify
-setAppVersion AppVersion {..} = updateEvent $ \event ->
-  event { event_app = Just $ defaultApp { app_version = Just avName } }
+setAppVersion :: Text -> BeforeNotify
+setAppVersion version = updateEvent $ \event -> event
+  { event_app = Just $ updateApp $ fromMaybe defaultApp $ event_app event
+  }
+  where updateApp app = app { app_version = Just version }
 
 class HasBugsnagSettings env where
   bugsnagSettingsL :: Lens' env Settings
