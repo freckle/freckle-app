@@ -1,4 +1,34 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.5.1.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.6.0.0...main)
+
+## [v1.6.0.0](https://github.com/freckle/freckle-app/compare/v1.5.0.1...v1.6.0.0)
+
+- Remove `AppVersion`
+
+  This also removes the `test-git` flag.
+
+  This was over-engineered, in our opinion. If you're making use of the
+  conventional `DD_` variables that the `Stats` module expects, you should be
+  able to:
+
+  - Replace any `appVersion :: AppVersion` with `appVersion :: Text`
+  - Replace `appVersion <- getAppVersion` with `appVersion <- maybe "unknown"
+    pack <$> lookupEnv "DD_VERSION"`
+  - Replace `avName appVersion` with `appVersion`
+  - Remove uses of `avCreatedAt`
+
+- Add `Freckle.App.Dotenv`, wrapping [`dotenv`](https://hackage.haskell.org/package/dotenv)
+
+  And move `Freckle.App.Test.withApp` to use it instead of `LoadEnv`. This is
+  behavior-neutral except:
+
+  - We no longer load `.env` after `.env.test`, we only load `.env.test`
+
+    Missing variables should generate errors prompting you to copy values from
+    the former to the latter as required.
+
+  - We will verify the `.env` file against an `.env.example` if present.
+
+- Add `Freckle.App.Bugsnag.Metadata`
 
 ## [v1.5.0.1](https://github.com/freckle/freckle-app/compare/v1.5.0.1...v1.5.1.0)
 
