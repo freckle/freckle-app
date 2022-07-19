@@ -11,8 +11,7 @@
   able to:
 
   - Replace any `appVersion :: AppVersion` with `appVersion :: Text`
-  - Replace `appVersion <- getAppVersion` with `appVersion <- maybe "unknown"
-    pack <$> lookupEnv "DD_VERSION"`
+  - Replace `appVersion <- getAppVersion` with `appVersion <- maybe "unknown" pack <$> lookupEnv "DD_VERSION"`
   - Replace `avName appVersion` with `appVersion`
   - Remove uses of `avCreatedAt`
 
