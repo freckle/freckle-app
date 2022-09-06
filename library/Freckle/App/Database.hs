@@ -20,9 +20,6 @@ module Freckle.App.Database
   , envPostgresPasswordSource
   ) where
 
-import Freckle.App.Prelude
-import qualified Freckle.App.Stats as Stats
-import qualified Freckle.App.Stats.Gauge as Gauge
 import Blammo.Logging
 import qualified Control.Immortal as Immortal
 import Control.Monad.Reader
@@ -38,20 +35,24 @@ import Database.Persist.Postgresql
   , createPostgresqlPoolModified
   , createSqlPool
   , openSimpleConn
-  , runSqlPool, runSqlConn
+  , runSqlConn
+  , runSqlPool
   )
 import Database.PostgreSQL.Simple
   (Connection, Only(..), connectPostgreSQL, execute)
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import qualified Freckle.App.Env as Env
+import Freckle.App.Prelude
+import qualified Freckle.App.Stats as Stats
+import qualified Freckle.App.Stats.Gauge as Gauge
+import Network.AWS.XRayClient.Persistent
 import Network.AWS.XRayClient.WAI
 import qualified Prelude as Unsafe (read)
 import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
-import UnliftIO.Exception (displayException, bracket_)
+import UnliftIO.Exception (bracket_, displayException)
 import UnliftIO.IORef
-import Yesod.Core (waiRequest, MonadUnliftIO (withRunInIO), MonadHandler)
-import Network.AWS.XRayClient.Persistent
+import Yesod.Core (MonadHandler, MonadUnliftIO(withRunInIO), waiRequest)
 
 type SqlPool = Pool SqlBackend
 
