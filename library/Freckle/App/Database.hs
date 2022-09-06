@@ -21,7 +21,8 @@ module Freckle.App.Database
   ) where
 
 import Freckle.App.Prelude
-
+import qualified Freckle.App.Stats as Stats
+import qualified Freckle.App.Stats.Gauge as Gauge
 import Blammo.Logging
 import qualified Control.Immortal as Immortal
 import Control.Monad.Reader
@@ -37,17 +38,20 @@ import Database.Persist.Postgresql
   , createPostgresqlPoolModified
   , createSqlPool
   , openSimpleConn
-  , runSqlPool
+  , runSqlPool, runSqlConn
   )
 import Database.PostgreSQL.Simple
   (Connection, Only(..), connectPostgreSQL, execute)
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import qualified Freckle.App.Env as Env
+import Network.AWS.XRayClient.WAI
 import qualified Prelude as Unsafe (read)
 import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
-import UnliftIO.Exception (displayException)
+import UnliftIO.Exception (displayException, bracket_)
 import UnliftIO.IORef
+import Yesod.Core (waiRequest, MonadUnliftIO (withRunInIO), MonadHandler)
+import Network.AWS.XRayClient.Persistent
 
 type SqlPool = Pool SqlBackend
 
@@ -57,6 +61,9 @@ class HasSqlPool app where
 instance HasSqlPool SqlPool where
   getSqlPool = id
 
+class HasActiveConnectionGauge app where
+  getActiveConnectionGauge :: app -> Gauge.Gauge
+
 makePostgresPool :: (MonadUnliftIO m, MonadLoggerIO m) => m SqlPool
 makePostgresPool = do
   conf <- liftIO $ do
@@ -65,12 +72,68 @@ makePostgresPool = do
   makePostgresPoolWith conf
 
 runDB
-  :: (HasSqlPool app, MonadUnliftIO m, MonadReader app m)
+  :: ( HasActiveConnectionGauge app
+     , HasSqlPool app
+     , Stats.HasStatsClient app
+     , MonadHandler m
+     , MonadUnliftIO m
+     , MonadReader app m
+     )
   => SqlPersistT m a
   -> m a
 runDB action = do
+  app <- ask
   pool <- asks getSqlPool
-  runSqlPool action pool
+  mVaultData <- vaultDataFromRequest <$> waiRequest
+  maybe
+    runSqlPool
+    (runSqlPoolXRay "runDB")
+    mVaultData
+    (bracket_ (increment app) (decrement app) action)
+    pool
+  where
+    increment = withGauge Gauge.increment
+    decrement = withGauge Gauge.decrement
+    withGauge f = runReaderT $ f =<< asks getActiveConnectionGauge
+
+-- | @'runSqlPool'@ but with XRay tracing
+--
+-- Arguments are ordered to promote composition:
+--
+-- 1. Name before vault data, since Vault data could be @'Maybe'@
+-- 2. Action than pool, to match @'runSqlPool'@
+--
+-- Together, this leads to the nice composition:
+--
+-- @
+-- mVaultData <- getVaultData
+-- maybe 'runSqlPool' ('runSqlPoolXRay' "name") mVaultData action pool
+-- @
+--
+-- N.B. This could make sense in an aws-xray-client-persistent package.
+--
+runSqlPoolXRay
+  :: (backend ~ SqlBackend, MonadUnliftIO m)
+  => Text
+  -- ^ Subsegment name
+  --
+  -- The top-level subsegment will be named @\"<this> runSqlPool\"@ and the,
+  -- with a lower-level subsegment named @\"<this> query\"@.
+  --
+  -> XRayVaultData -- ^ Vault data to trace with
+  -> ReaderT backend m a
+  -> Pool backend
+  -> m a
+runSqlPoolXRay name vaultData action pool =
+  traceXRaySubsegment' vaultData (name <> " runSqlPool") id
+    $ withRunInIO
+    $ \run -> withResource pool $ \backend -> do
+        let
+          sendTrace = atomicallyAddVaultDataSubsegment vaultData
+          stdGenIORef = xrayVaultDataStdGen vaultData
+          subsegmentName = name <> " query"
+        run . runSqlConn action =<< liftIO
+          (xraySqlBackend sendTrace stdGenIORef subsegmentName backend)
 
 data PostgresConnectionConf = PostgresConnectionConf
   { pccHost :: String
