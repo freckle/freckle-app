@@ -1,11 +1,11 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.34.6.
 --
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.6.0.0
+version:        1.7.0.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -96,6 +96,8 @@ library
     , Glob
     , MonadRandom
     , aeson
+    , aws-xray-client-persistent
+    , aws-xray-client-wai
     , base <5
     , bugsnag
     , bytestring
