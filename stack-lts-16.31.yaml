@@ -2,6 +2,8 @@ resolver: lts-16.31
 extra-deps:
   - Blammo-1.0.2.2
   - aeson-1.5.2.0
+  - aws-xray-client-persistent-0.1.0.5
+  - aws-xray-client-wai-0.1.0.2
   - bugsnag-1.0.0.0
   - bugsnag-hs-0.2.0.8
   - bugsnag-wai-1.0.0.0
