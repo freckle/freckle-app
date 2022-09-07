@@ -18,7 +18,6 @@ module Freckle.App.Database
   , postgresStatementTimeoutMilliseconds
   , envParseDatabaseConf
   , envPostgresPasswordSource
-  , HasActiveConnectionGauge
   ) where
 
 import Freckle.App.Prelude
@@ -46,7 +45,7 @@ import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import qualified Freckle.App.Env as Env
 import qualified Freckle.App.Stats as Stats
-import qualified Freckle.App.Stats.Gauge as Gauge
+import qualified System.Metrics.Gauge as EKG
 import Network.AWS.XRayClient.Persistent
 import Network.AWS.XRayClient.WAI
 import qualified Prelude as Unsafe (read)
@@ -64,9 +63,6 @@ class HasSqlPool app where
 instance HasSqlPool SqlPool where
   getSqlPool = id
 
-class HasActiveConnectionGauge app where
-  getActiveConnectionGauge :: app -> Maybe Gauge.Gauge
-
 makePostgresPool :: (MonadUnliftIO m, MonadLoggerIO m) => m SqlPool
 makePostgresPool = do
   conf <- liftIO $ do
@@ -75,8 +71,7 @@ makePostgresPool = do
   makePostgresPoolWith conf
 
 runDB
-  :: ( HasActiveConnectionGauge app
-     , HasSqlPool app
+  :: ( HasSqlPool app
      , Stats.HasStatsClient app
      , MonadHandler m
      , MonadUnliftIO m
@@ -95,10 +90,10 @@ runDB action = do
     (bracket_ (increment app) (decrement app) action)
     pool
   where
-    increment = withGauge Gauge.increment
-    decrement = withGauge Gauge.decrement
-    withGauge f = runReaderT $
-      maybe (pure ()) f =<< asks getActiveConnectionGauge
+    increment = runReaderT $ Stats.withGauge "db.active-connections" (withEKG (`EKG.add` 1))
+    decrement = runReaderT $ Stats.withGauge "db.active-connections" (withEKG (`EKG.subtract` 1))
+    withEKG f gauge = do
+      liftIO $ f gauge >> EKG.read gauge
 
 -- | @'runSqlPool'@ but with XRay tracing
 --

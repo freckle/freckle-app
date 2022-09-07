@@ -49,7 +49,6 @@ library
       Freckle.App.Prelude
       Freckle.App.Scientist
       Freckle.App.Stats
-      Freckle.App.Stats.Gauge
       Freckle.App.Stats.Rts
       Freckle.App.Test
       Freckle.App.Test.DocTest

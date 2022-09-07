@@ -15,7 +15,7 @@ module Freckle.App.Stats
   , tagsL
   , withStatsClient
   , HasStatsClient(..)
-
+  , withGauge
   -- * Reporting
   , tagged
   , increment
@@ -30,7 +30,7 @@ import Freckle.App.Prelude
 
 import Blammo.Logging
 import Control.Lens (Lens', lens, view, (&), (.~), (<>~))
-import Control.Monad.Reader (local)
+import Control.Monad.Reader (local, asks)
 import Data.Aeson (Value(..))
 import Data.String
 import Data.Time (diffUTCTime)
@@ -39,6 +39,9 @@ import qualified Freckle.App.Env as Env
 import qualified Network.StatsD.Datadog as Datadog
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
+import qualified System.Metrics.Gauge as EKG
+import Data.IORef
+import qualified Data.HashMap.Strict as Map
 
 data StatsSettings = StatsSettings
   { amsEnabled :: Bool
@@ -88,6 +91,7 @@ envParseStatsSettings =
 data StatsClient = StatsClient
   { scClient :: Datadog.StatsClient
   , scTags :: [(Text, Text)]
+  , scGauges :: IORef (HashMap Text EKG.Gauge)
   }
 
 tagsL :: Lens' StatsClient [(Text, Text)]
@@ -111,13 +115,24 @@ withStatsClient StatsSettings {..} f = do
   if amsEnabled
     then do
       tags <- (amsTags <>) <$> getEcsMetadataTags
-
+      gauges <- liftIO $ newIORef mempty
       Datadog.withDogStatsD amsSettings $ \client ->
         -- Add the tags to the thread context so they're present in all logs
         withThreadContext (map toPair tags)
-          $ f StatsClient { scClient = client, scTags = tags }
-    else f $ StatsClient { scClient = Datadog.Dummy, scTags = amsTags }
+          $ f StatsClient { scClient = client, scTags = tags, scGauges = gauges }
+    else do
+      gauges <- liftIO $ newIORef mempty
+      f $ StatsClient { scClient = Datadog.Dummy, scTags = amsTags, scGauges = gauges }
   where toPair = bimap (fromString . unpack) String
+
+withGauge :: (MonadReader app m, HasStatsClient app, MonadUnliftIO m) => Text -> (EKG.Gauge -> m a) -> m a
+withGauge name f = do
+  gaugesRef <- asks $ scGauges . view statsClientL
+  gaugesMap <- liftIO $ readIORef gaugesRef
+  gaugeValue <- liftIO $ maybe EKG.new pure (Map.lookup name gaugesMap)
+  a <- f gaugeValue
+  liftIO $ writeIORef gaugesRef (Map.insert name gaugeValue gaugesMap)
+  pure a
 
 -- | Include the given tags on all metrics emitted from a block
 tagged
