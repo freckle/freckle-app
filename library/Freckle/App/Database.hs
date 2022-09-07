@@ -20,6 +20,8 @@ module Freckle.App.Database
   , envPostgresPasswordSource
   ) where
 
+import Freckle.App.Prelude
+
 import Blammo.Logging
 import qualified Control.Immortal as Immortal
 import Control.Monad.Reader
@@ -42,7 +44,6 @@ import Database.PostgreSQL.Simple
   (Connection, Only(..), connectPostgreSQL, execute)
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import qualified Freckle.App.Env as Env
-import Freckle.App.Prelude
 import qualified Freckle.App.Stats as Stats
 import qualified Freckle.App.Stats.Gauge as Gauge
 import Network.AWS.XRayClient.Persistent
@@ -63,7 +64,7 @@ instance HasSqlPool SqlPool where
   getSqlPool = id
 
 class HasActiveConnectionGauge app where
-  getActiveConnectionGauge :: app -> Gauge.Gauge
+  getActiveConnectionGauge :: app -> Maybe Gauge.Gauge
 
 makePostgresPool :: (MonadUnliftIO m, MonadLoggerIO m) => m SqlPool
 makePostgresPool = do
@@ -95,7 +96,8 @@ runDB action = do
   where
     increment = withGauge Gauge.increment
     decrement = withGauge Gauge.decrement
-    withGauge f = runReaderT $ f =<< asks getActiveConnectionGauge
+    withGauge f = runReaderT $
+      maybe (pure ()) f =<< asks getActiveConnectionGauge
 
 -- | @'runSqlPool'@ but with XRay tracing
 --
