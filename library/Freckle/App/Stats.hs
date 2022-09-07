@@ -41,7 +41,7 @@ import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
 import qualified System.Metrics.Gauge as EKG
 import Data.IORef
-import qualified Data.HashMap.Strict as Map
+import qualified Data.HashMap.Strict as HashMap
 
 data StatsSettings = StatsSettings
   { amsEnabled :: Bool
@@ -129,9 +129,9 @@ withGauge :: (MonadReader app m, HasStatsClient app, MonadUnliftIO m) => Text ->
 withGauge name f = do
   gaugesRef <- asks $ scGauges . view statsClientL
   gaugesMap <- liftIO $ readIORef gaugesRef
-  gaugeValue <- liftIO $ maybe EKG.new pure (Map.lookup name gaugesMap)
+  gaugeValue <- liftIO $ maybe EKG.new pure (HashMap.lookup name gaugesMap)
   a <- f gaugeValue
-  liftIO $ writeIORef gaugesRef (Map.insert name gaugeValue gaugesMap)
+  liftIO $ writeIORef gaugesRef (HashMap.insert name gaugeValue gaugesMap)
   pure a
 
 -- | Include the given tags on all metrics emitted from a block
