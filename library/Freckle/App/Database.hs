@@ -18,6 +18,7 @@ module Freckle.App.Database
   , postgresStatementTimeoutMilliseconds
   , envParseDatabaseConf
   , envPostgresPasswordSource
+  , HasActiveConnectionGauge
   ) where
 
 import Freckle.App.Prelude
