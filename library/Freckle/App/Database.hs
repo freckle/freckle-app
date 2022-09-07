@@ -45,10 +45,10 @@ import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import qualified Freckle.App.Env as Env
 import qualified Freckle.App.Stats as Stats
-import qualified System.Metrics.Gauge as EKG
 import Network.AWS.XRayClient.Persistent
 import Network.AWS.XRayClient.WAI
 import qualified Prelude as Unsafe (read)
+import qualified System.Metrics.Gauge as EKG
 import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
 import UnliftIO.Exception (bracket_, displayException)

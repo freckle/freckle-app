@@ -30,18 +30,18 @@ import Freckle.App.Prelude
 
 import Blammo.Logging
 import Control.Lens (Lens', lens, view, (&), (.~), (<>~))
-import Control.Monad.Reader (local, asks)
+import Control.Monad.Reader (asks, local)
 import Data.Aeson (Value(..))
+import qualified Data.HashMap.Strict as HashMap
+import Data.IORef
 import Data.String
 import Data.Time (diffUTCTime)
 import Freckle.App.Ecs
 import qualified Freckle.App.Env as Env
 import qualified Network.StatsD.Datadog as Datadog
+import qualified System.Metrics.Gauge as EKG
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
-import qualified System.Metrics.Gauge as EKG
-import Data.IORef
-import qualified Data.HashMap.Strict as HashMap
 
 data StatsSettings = StatsSettings
   { amsEnabled :: Bool
