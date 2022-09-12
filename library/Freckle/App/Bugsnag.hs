@@ -90,9 +90,11 @@ notifyBugsnagWith f ex = do
   void $ liftIO $ forkIO $ Bugsnag.notifyBugsnagWith f settings ex
 
 asSqlError :: SqlError -> BeforeNotify
-asSqlError err@SqlError {..} = toSqlGrouping <> toSqlException
+asSqlError err@SqlError {..} =
+  setGroupingHashBy (groupTimeoutByRequestUrl err)
+    <> setGroupingHashBy (const $ sqlErrorGroupingHash err)
+    <> toSqlException
  where
-  toSqlGrouping = maybe mempty setGroupingHash (sqlErrorGroupingHash err)
   toSqlException = updateExceptions $ \ex -> ex
     { exception_errorClass = decodeUtf8 $ "SqlError-" <> sqlState
     , exception_message =
@@ -105,6 +107,13 @@ asSqlError err@SqlError {..} = toSqlGrouping <> toSqlException
       <> sqlErrorHint
       <> ")"
     }
+
+groupTimeoutByRequestUrl :: SqlError -> Event -> Maybe Text
+groupTimeoutByRequestUrl SqlError {..} event = do
+  guard $ sqlState == "57014"
+  req <- event_request event
+  url <- request_url req
+  pure $ "SQL-Timeout-In-" <> url
 
 sqlErrorGroupingHash :: SqlError -> Maybe Text
 sqlErrorGroupingHash err = do
