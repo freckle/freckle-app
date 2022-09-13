@@ -125,14 +125,22 @@ withStatsClient StatsSettings {..} f = do
       f $ StatsClient { scClient = Datadog.Dummy, scTags = amsTags, scGauges = gauges }
   where toPair = bimap (fromString . unpack) String
 
-withGauge :: (MonadReader app m, HasStatsClient app, MonadUnliftIO m) => Text -> (EKG.Gauge -> m a) -> m a
+withGauge :: (MonadReader app m, HasStatsClient app, MonadUnliftIO m) => Text -> m a -> m a
 withGauge name f = do
   gaugesRef <- asks $ scGauges . view statsClientL
   gaugesMap <- liftIO $ readIORef gaugesRef
-  gaugeValue <- liftIO $ maybe EKG.new pure (HashMap.lookup name gaugesMap)
-  a <- f gaugeValue
-  liftIO $ writeIORef gaugesRef (HashMap.insert name gaugeValue gaugesMap)
-  pure a
+  gaugeValue <- liftIO $ maybe (createNewEKG gaugesRef gaugesMap) pure (HashMap.lookup name gaugesMap)
+  bracketEKG f gaugeValue
+  where
+    createNewEKG ref hashmap = do 
+      ekg <- EKG.new
+      liftIO $ writeIORef ref (HashMap.insert name ekg hashmap)
+      pure ekg
+    bracketEKG action value = do
+      liftIO $ value `EKG.add` 1
+      result <- action
+      liftIO $ value `EKG.subtract` 1
+      pure result
 
 -- | Include the given tags on all metrics emitted from a block
 tagged

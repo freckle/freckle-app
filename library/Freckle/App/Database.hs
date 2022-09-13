@@ -48,10 +48,9 @@ import qualified Freckle.App.Stats as Stats
 import Network.AWS.XRayClient.Persistent
 import Network.AWS.XRayClient.WAI
 import qualified Prelude as Unsafe (read)
-import qualified System.Metrics.Gauge as EKG
 import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
-import UnliftIO.Exception (bracket_, displayException)
+import UnliftIO.Exception (displayException)
 import UnliftIO.IORef
 import Yesod.Core (MonadHandler, MonadUnliftIO(withRunInIO), waiRequest)
 
@@ -80,20 +79,16 @@ runDB
   => SqlPersistT m a
   -> m a
 runDB action = do
-  app <- ask
   pool <- asks getSqlPool
   mVaultData <- vaultDataFromRequest <$> waiRequest
-  maybe
-    runSqlPool
-    (runSqlPoolXRay "runDB")
-    mVaultData
-    (bracket_ (increment app) (decrement app) action)
-    pool
-  where
-    increment = runReaderT $ Stats.withGauge "db.active-connections" (withEKG (`EKG.add` 1))
-    decrement = runReaderT $ Stats.withGauge "db.active-connections" (withEKG (`EKG.subtract` 1))
-    withEKG f gauge = do
-      liftIO $ f gauge >> EKG.read gauge
+  Stats.withGauge "db.active-connections" $
+    maybe
+      runSqlPool
+      (runSqlPoolXRay "runDB")
+      mVaultData
+      action
+      pool
+  
 
 -- | @'runSqlPool'@ but with XRay tracing
 --
