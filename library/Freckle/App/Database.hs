@@ -88,7 +88,7 @@ runDB action = do
       mVaultData
       action
       pool
-  
+
 
 -- | @'runSqlPool'@ but with XRay tracing
 --

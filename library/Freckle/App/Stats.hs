@@ -132,7 +132,7 @@ withGauge name f = do
   gaugeValue <- liftIO $ maybe (createNewEKG gaugesRef gaugesMap) pure (HashMap.lookup name gaugesMap)
   bracketEKG f gaugeValue
   where
-    createNewEKG ref hashmap = do 
+    createNewEKG ref hashmap = do
       ekg <- EKG.new
       liftIO $ writeIORef ref (HashMap.insert name ekg hashmap)
       pure ekg
