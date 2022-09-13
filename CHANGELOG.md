@@ -1,4 +1,9 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.6.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.6.0.1...main)
+
+## [v1.6.0.1](https://github.com/freckle/freckle-app/compare/v1.6.0.0...v1.6.0.1)
+
+- The built-in Bugsnag `BeforeNotify` will further group `SqlError`s that are
+  timeouts (57014) by Request URL (when request info is present in the `Event`)
 
 ## [v1.6.0.0](https://github.com/freckle/freckle-app/compare/v1.5.0.1...v1.6.0.0)
 
