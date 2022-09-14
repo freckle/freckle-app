@@ -29,6 +29,7 @@ import Data.Bugsnag
 import Data.Bugsnag.Settings
 import qualified Data.ByteString.Char8 as BS8
 import Data.List (isInfixOf)
+import qualified Data.Text as T
 import Database.PostgreSQL.Simple (SqlError(..))
 import Database.PostgreSQL.Simple.Errors
 import qualified Freckle.App.Env as Env
@@ -113,7 +114,7 @@ groupTimeoutByRequestUrl SqlError {..} event = do
   guard $ sqlState == "57014"
   req <- event_request event
   url <- request_url req
-  pure $ "SQL-Timeout-In-" <> url
+  pure $ "SQL-Timeout-In-" <> T.takeWhile (/= '?') url
 
 sqlErrorGroupingHash :: SqlError -> Maybe Text
 sqlErrorGroupingHash err = do
