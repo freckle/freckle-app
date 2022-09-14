@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.6.0.1...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.6.0.2...main)
+
+## [v1.6.0.2](https://github.com/freckle/freckle-app/compare/v1.6.0.1...v1.6.0.2)
+
+- Strip query string from URLs used to group timeout exceptions in Bugsnag.
 
 ## [v1.6.0.1](https://github.com/freckle/freckle-app/compare/v1.6.0.0...v1.6.0.1)
 
