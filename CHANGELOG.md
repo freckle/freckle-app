@@ -1,4 +1,13 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.6.0.2...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.6.0.3...main)
+
+## [v1.6.0.3](https://github.com/freckle/freckle-app/compare/v1.6.0.2...v1.6.0.3)
+
+- Revert regrouping of `SqlError` by `url`
+
+  Consider `/foos/1` vs `/foos/2`: grouping naively by `url` makes these two
+  errors when we wanted them to be one. This can't be solved without knowledge
+  of the routing system, so we can't do it from within this library as-is.
+  Therefore, we've reverted the feature for now.
 
 ## [v1.6.0.2](https://github.com/freckle/freckle-app/compare/v1.6.0.1...v1.6.0.2)
 
