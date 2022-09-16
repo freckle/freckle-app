@@ -35,7 +35,7 @@ module Freckle.App.Stats
 import Freckle.App.Prelude
 
 import Blammo.Logging
-import Control.Lens (Lens', lens, view, (&), (.~), (<>~), to)
+import Control.Lens (Lens', lens, to, view, (&), (.~), (<>~))
 import Control.Monad.Reader (asks, local)
 import Data.Aeson (Value(..))
 import Data.String
