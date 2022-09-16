@@ -44,6 +44,7 @@ import Database.PostgreSQL.Simple
   (Connection, Only(..), connectPostgreSQL, execute)
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import qualified Freckle.App.Env as Env
+import Freckle.App.Stats (HasStatsClient)
 import qualified Freckle.App.Stats as Stats
 import Network.AWS.XRayClient.Persistent
 import Network.AWS.XRayClient.WAI
@@ -71,7 +72,7 @@ makePostgresPool = do
 
 runDB
   :: ( HasSqlPool app
-     , Stats.HasStatsClient app
+     , HasStatsClient app
      , MonadHandler m
      , MonadUnliftIO m
      , MonadReader app m
@@ -81,7 +82,7 @@ runDB
 runDB action = do
   pool <- asks getSqlPool
   mVaultData <- vaultDataFromRequest <$> waiRequest
-  Stats.withGauge Stats.dbConnectionsL $
+  Stats.withGauge Stats.dbConnections $
     maybe
       runSqlPool
       (runSqlPoolXRay "runDB")

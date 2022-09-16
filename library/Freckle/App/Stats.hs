@@ -16,10 +16,13 @@ module Freckle.App.Stats
   , withStatsClient
   , HasStatsClient(..)
 
-  -- * Reporting
+  -- * Gauges
   , Gauges
-  , dbConnectionsL
+  , GaugeName
+  , dbConnections
   , withGauge
+
+  -- * Reporting
   , tagged
   , increment
   , counter
@@ -32,7 +35,7 @@ module Freckle.App.Stats
 import Freckle.App.Prelude
 
 import Blammo.Logging
-import Control.Lens (Lens', lens, view, (&), (.~), (<>~))
+import Control.Lens (Lens', lens, view, (&), (.~), (<>~), to)
 import Control.Monad.Reader (asks, local)
 import Data.Aeson (Value(..))
 import Data.String
@@ -92,12 +95,16 @@ envParseStatsSettings =
 
 -- should be data but newtype for now because there's only one and only one planned
 newtype Gauges = Gauges
-  { dbConnections :: EKG.Gauge
+  { gdbConnections :: EKG.Gauge
   -- ^ Track open db connections
   }
 
-dbConnectionsL :: Lens' Gauges EKG.Gauge
-dbConnectionsL = lens dbConnections $ \ x y -> x { dbConnections = y}
+-- Opaque wrapper to hide EKG.Gauge
+newtype GaugeName = GaugeName
+  { unGaugeName :: Gauges -> EKG.Gauge }
+
+dbConnections :: GaugeName
+dbConnections = GaugeName gdbConnections
 
 data StatsClient = StatsClient
   { scClient :: Datadog.StatsClient
@@ -138,9 +145,9 @@ withStatsClient StatsSettings {..} f = do
       f $ StatsClient { scClient = Datadog.Dummy, scTags = amsTags, scGauges = gauges }
   where toPair = bimap (fromString . unpack) String
 
-withGauge :: (MonadReader app m, HasStatsClient app, MonadUnliftIO m) => Lens' Gauges EKG.Gauge -> m a -> m a
-withGauge lens' f = do
-  gauge' <- asks $ view (statsClientL . gaugesL . lens')
+withGauge :: (MonadReader app m, HasStatsClient app, MonadUnliftIO m) => GaugeName -> m a -> m a
+withGauge gaugeName f = do
+  gauge' <- asks $ view $ statsClientL . gaugesL . to (unGaugeName gaugeName)
   bracket_ (plus1 gauge') (minus1 gauge') f
   where
     plus1 g = liftIO $ EKG.add g 1
