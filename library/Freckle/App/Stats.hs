@@ -91,10 +91,10 @@ envParseStatsSettings =
       <> tags
 
 -- should be data but newtype for now because there's only one and only one planned
-newtype Gauges = Gauges 
+newtype Gauges = Gauges
   { dbConnections :: EKG.Gauge
   -- ^ Track open db connections
-  } 
+  }
 
 dbConnectionsL :: Lens' Gauges EKG.Gauge
 dbConnectionsL = lens dbConnections $ \ x y -> x { dbConnections = y}
