@@ -2,7 +2,7 @@
 
 ## [v1.7.0.0](https://github.com/freckle/freckle-app/compare/v1.6.0.3...v1.7.0.0)
 
-- Add XRay and EKG support to freckle-app's runDB. 
+- Add XRay and EKG support to freckle-app's runDB.
 
   This involves an interface breaking change for StatsClient thus the major version
   bump.
