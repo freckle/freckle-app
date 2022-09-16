@@ -90,21 +90,6 @@ runDB action = do
       pool
 
 -- | @'runSqlPool'@ but with XRay tracing
---
--- Arguments are ordered to promote composition:
---
--- 1. Name before vault data, since Vault data could be @'Maybe'@
--- 2. Action than pool, to match @'runSqlPool'@
---
--- Together, this leads to the nice composition:
---
--- @
--- mVaultData <- getVaultData
--- maybe 'runSqlPool' ('runSqlPoolXRay' "name") mVaultData action pool
--- @
---
--- N.B. This could make sense in an aws-xray-client-persistent package.
---
 runSqlPoolXRay
   :: (backend ~ SqlBackend, MonadUnliftIO m)
   => Text
