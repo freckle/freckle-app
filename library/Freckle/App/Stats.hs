@@ -15,8 +15,11 @@ module Freckle.App.Stats
   , tagsL
   , withStatsClient
   , HasStatsClient(..)
-  , withGauge
+
   -- * Reporting
+  , Gauges
+  , dbConnectionsL
+  , withGauge
   , tagged
   , increment
   , counter
@@ -32,14 +35,13 @@ import Blammo.Logging
 import Control.Lens (Lens', lens, view, (&), (.~), (<>~))
 import Control.Monad.Reader (asks, local)
 import Data.Aeson (Value(..))
-import qualified Data.HashMap.Strict as HashMap
-import Data.IORef
 import Data.String
 import Data.Time (diffUTCTime)
 import Freckle.App.Ecs
 import qualified Freckle.App.Env as Env
 import qualified Network.StatsD.Datadog as Datadog
 import qualified System.Metrics.Gauge as EKG
+import UnliftIO.Exception (bracket_)
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
 
@@ -88,14 +90,26 @@ envParseStatsSettings =
         ]
       <> tags
 
+-- should be data but newtype for now because there's only one and only one planned
+newtype Gauges = Gauges 
+  { dbConnections :: EKG.Gauge
+  -- ^ Track open db connections
+  } 
+
+dbConnectionsL :: Lens' Gauges EKG.Gauge
+dbConnectionsL = lens dbConnections $ \ x y -> x { dbConnections = y}
+
 data StatsClient = StatsClient
   { scClient :: Datadog.StatsClient
   , scTags :: [(Text, Text)]
-  , scGauges :: IORef (HashMap Text EKG.Gauge)
+  , scGauges :: Gauges
   }
 
 tagsL :: Lens' StatsClient [(Text, Text)]
 tagsL = lens scTags $ \x y -> x { scTags = y }
+
+gaugesL :: Lens' StatsClient Gauges
+gaugesL = lens scGauges $ \x y -> x { scGauges = y }
 
 class HasStatsClient env where
   statsClientL :: Lens' env StatsClient
@@ -112,35 +126,25 @@ withStatsClient
   -> (StatsClient -> m a)
   -> m a
 withStatsClient StatsSettings {..} f = do
+  gauges <- liftIO $ fmap Gauges EKG.new
   if amsEnabled
     then do
       tags <- (amsTags <>) <$> getEcsMetadataTags
-      gauges <- liftIO $ newIORef mempty
       Datadog.withDogStatsD amsSettings $ \client ->
         -- Add the tags to the thread context so they're present in all logs
         withThreadContext (map toPair tags)
           $ f StatsClient { scClient = client, scTags = tags, scGauges = gauges }
     else do
-      gauges <- liftIO $ newIORef mempty
       f $ StatsClient { scClient = Datadog.Dummy, scTags = amsTags, scGauges = gauges }
   where toPair = bimap (fromString . unpack) String
 
-withGauge :: (MonadReader app m, HasStatsClient app, MonadUnliftIO m) => Text -> m a -> m a
-withGauge name f = do
-  gaugesRef <- asks $ scGauges . view statsClientL
-  gaugesMap <- liftIO $ readIORef gaugesRef
-  gaugeValue <- liftIO $ maybe (createNewEKG gaugesRef gaugesMap) pure (HashMap.lookup name gaugesMap)
-  bracketEKG f gaugeValue
+withGauge :: (MonadReader app m, HasStatsClient app, MonadUnliftIO m) => Lens' Gauges EKG.Gauge -> m a -> m a
+withGauge lens' f = do
+  gauge' <- asks $ view (statsClientL . gaugesL . lens')
+  bracket_ (plus1 gauge') (minus1 gauge') f
   where
-    createNewEKG ref hashmap = do
-      ekg <- EKG.new
-      liftIO $ writeIORef ref (HashMap.insert name ekg hashmap)
-      pure ekg
-    bracketEKG action value = do
-      liftIO $ value `EKG.add` 1
-      result <- action
-      liftIO $ value `EKG.subtract` 1
-      pure result
+    plus1 g = liftIO $ EKG.add g 1
+    minus1 g = liftIO $ EKG.subtract g 1
 
 -- | Include the given tags on all metrics emitted from a block
 tagged

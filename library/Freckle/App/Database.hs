@@ -81,14 +81,13 @@ runDB
 runDB action = do
   pool <- asks getSqlPool
   mVaultData <- vaultDataFromRequest <$> waiRequest
-  Stats.withGauge "db.active-connections" $
+  Stats.withGauge Stats.dbConnectionsL $
     maybe
       runSqlPool
       (runSqlPoolXRay "runDB")
       mVaultData
       action
       pool
-
 
 -- | @'runSqlPool'@ but with XRay tracing
 --
