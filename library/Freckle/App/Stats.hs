@@ -147,7 +147,7 @@ withStatsClient StatsSettings {..} f = do
 
 withGauge :: (MonadReader app m, HasStatsClient app, MonadUnliftIO m) => GaugeName -> m a -> m a
 withGauge gaugeName f = do
-  gauge' <- asks $ view $ statsClientL . gaugesL . to (unGaugeName gaugeName)
+  gauge' <- view $ statsClientL . gaugesL . to (unGaugeName gaugeName)
   bracket_ (plus1 gauge') (minus1 gauge') f
   where
     plus1 g = liftIO $ EKG.add g 1
