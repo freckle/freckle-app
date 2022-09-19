@@ -101,7 +101,8 @@ newtype Gauges = Gauges
 
 -- Opaque wrapper to hide EKG.Gauge
 newtype GaugeName = GaugeName
-  { unGaugeName :: Gauges -> EKG.Gauge }
+  { unGaugeName :: Gauges -> EKG.Gauge
+  }
 
 dbConnections :: GaugeName
 dbConnections = GaugeName gdbConnections
