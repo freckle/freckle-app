@@ -36,7 +36,7 @@ import Freckle.App.Prelude
 
 import Blammo.Logging
 import Control.Lens (Lens', lens, to, view, (&), (.~), (<>~))
-import Control.Monad.Reader (asks, local)
+import Control.Monad.Reader (local)
 import Data.Aeson (Value(..))
 import Data.String
 import Data.Time (diffUTCTime)
