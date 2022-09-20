@@ -37,17 +37,23 @@ import Database.Persist.Postgresql
   , createPostgresqlPoolModified
   , createSqlPool
   , openSimpleConn
+  , runSqlConn
   , runSqlPool
   )
 import Database.PostgreSQL.Simple
   (Connection, Only(..), connectPostgreSQL, execute)
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import qualified Freckle.App.Env as Env
+import Freckle.App.Stats (HasStatsClient)
+import qualified Freckle.App.Stats as Stats
+import Network.AWS.XRayClient.Persistent
+import Network.AWS.XRayClient.WAI
 import qualified Prelude as Unsafe (read)
 import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
 import UnliftIO.Exception (displayException)
 import UnliftIO.IORef
+import Yesod.Core (MonadHandler, MonadUnliftIO(withRunInIO), waiRequest)
 
 type SqlPool = Pool SqlBackend
 
@@ -65,12 +71,48 @@ makePostgresPool = do
   makePostgresPoolWith conf
 
 runDB
-  :: (HasSqlPool app, MonadUnliftIO m, MonadReader app m)
+  :: ( HasSqlPool app
+     , HasStatsClient app
+     , MonadHandler m
+     , MonadUnliftIO m
+     , MonadReader app m
+     )
   => SqlPersistT m a
   -> m a
 runDB action = do
   pool <- asks getSqlPool
-  runSqlPool action pool
+  mVaultData <- vaultDataFromRequest <$> waiRequest
+  Stats.withGauge Stats.dbConnections $
+    maybe
+      runSqlPool
+      (runSqlPoolXRay "runDB")
+      mVaultData
+      action
+      pool
+
+-- | @'runSqlPool'@ but with XRay tracing
+runSqlPoolXRay
+  :: (backend ~ SqlBackend, MonadUnliftIO m)
+  => Text
+  -- ^ Subsegment name
+  --
+  -- The top-level subsegment will be named @\"<this> runSqlPool\"@ and the,
+  -- with a lower-level subsegment named @\"<this> query\"@.
+  --
+  -> XRayVaultData -- ^ Vault data to trace with
+  -> ReaderT backend m a
+  -> Pool backend
+  -> m a
+runSqlPoolXRay name vaultData action pool =
+  traceXRaySubsegment' vaultData (name <> " runSqlPool") id
+    $ withRunInIO
+    $ \run -> withResource pool $ \backend -> do
+        let
+          sendTrace = atomicallyAddVaultDataSubsegment vaultData
+          stdGenIORef = xrayVaultDataStdGen vaultData
+          subsegmentName = name <> " query"
+        run . runSqlConn action =<< liftIO
+          (xraySqlBackend sendTrace stdGenIORef subsegmentName backend)
 
 data PostgresConnectionConf = PostgresConnectionConf
   { pccHost :: String

@@ -1,4 +1,11 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.6.0.3...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.7.0.0...main)
+
+## [v1.7.0.0](https://github.com/freckle/freckle-app/compare/v1.6.0.3...v1.7.0.0)
+
+- Add XRay and EKG support to freckle-app's runDB.
+
+  This involves an breaking change in `runDB`'s constraints, thus the major version
+  bump.
 
 ## [v1.6.0.3](https://github.com/freckle/freckle-app/compare/v1.6.0.2...v1.6.0.3)
 
