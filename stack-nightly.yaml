@@ -1,4 +1,4 @@
-resolver: nightly-2022-06-14
+resolver: nightly-2022-11-22
 extra-deps:
   - Blammo-1.0.2.2
   - context-0.2.0.1
@@ -6,5 +6,5 @@ extra-deps:
   - ekg-core-0.1.1.7
   - envparse-0.5.0
   - memcache-0.3.0.1
-  - monad-logger-aeson-0.3.0.2
+  - monad-validate-1.2.0.1
   - scientist-0.0.0.0
