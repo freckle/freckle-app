@@ -55,7 +55,9 @@ library:
     - bugsnag
     - bytestring
     - case-insensitive
+    - cassava
     - conduit
+    - conduit-extra
     - containers
     - datadog
     - doctest
@@ -79,8 +81,10 @@ library:
     - lens
     - memcache
     - monad-control
+    - monad-validate
     - mtl
     - network-uri
+    - nonempty-containers
     - path-pieces
     - persistent
     - persistent-postgresql
@@ -117,6 +121,8 @@ tests:
       - aeson
       - bugsnag
       - bytestring
+      - cassava
+      - conduit
       - errors
       - freckle-app
       - hspec
@@ -125,7 +131,10 @@ tests:
       - lens-aeson
       - memcache
       - postgresql-simple
+      - monad-validate
+      - nonempty-containers
       - unliftio
+      - vector
       - wai
       - wai-extra
 

@@ -1,6 +1,6 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.34.6.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -32,6 +32,7 @@ library
       Freckle.App.Aeson
       Freckle.App.Bugsnag
       Freckle.App.Bugsnag.MetaData
+      Freckle.App.Csv
       Freckle.App.Database
       Freckle.App.Dotenv
       Freckle.App.Ecs
@@ -101,7 +102,9 @@ library
     , bugsnag
     , bytestring
     , case-insensitive
+    , cassava
     , conduit
+    , conduit-extra
     , containers
     , datadog
     , doctest
@@ -125,8 +128,10 @@ library
     , lens
     , memcache
     , monad-control
+    , monad-validate
     , mtl
     , network-uri
+    , nonempty-containers
     , path-pieces
     , persistent
     , persistent-postgresql
@@ -196,6 +201,7 @@ test-suite spec
   other-modules:
       Freckle.App.Bugsnag.MetaDataSpec
       Freckle.App.BugsnagSpec
+      Freckle.App.CsvSpec
       Freckle.App.HttpSpec
       Freckle.App.Memcached.ServersSpec
       Freckle.App.MemcachedSpec
@@ -239,6 +245,8 @@ test-suite spec
     , base <5
     , bugsnag
     , bytestring
+    , cassava
+    , conduit
     , errors
     , freckle-app
     , hspec
@@ -246,8 +254,11 @@ test-suite spec
     , lens
     , lens-aeson
     , memcache
+    , monad-validate
+    , nonempty-containers
     , postgresql-simple
     , unliftio
+    , vector
     , wai
     , wai-extra
   default-language: Haskell2010
