@@ -18,7 +18,7 @@ module Freckle.App.Stats
 
   -- * Gauges
   , Gauges
-  , GaugeName
+  , Gauge
   , dbConnections
   , withGauge
 
@@ -93,19 +93,18 @@ envParseStatsSettings =
         ]
       <> tags
 
--- should be data but newtype for now because there's only one and only one planned
 newtype Gauges = Gauges
-  { gdbConnections :: EKG.Gauge
+  { gdbConnections :: Gauge
   -- ^ Track open db connections
   }
 
--- Opaque wrapper to hide EKG.Gauge
-newtype GaugeName = GaugeName
-  { unGaugeName :: Gauges -> EKG.Gauge
+data Gauge = Gauge
+  { gName :: Text
+  , gGauge :: EKG.Gauge
   }
 
-dbConnections :: GaugeName
-dbConnections = GaugeName gdbConnections
+dbConnections :: Gauges -> Gauge
+dbConnections = gdbConnections
 
 data StatsClient = StatsClient
   { scClient :: Datadog.StatsClient
@@ -134,25 +133,48 @@ withStatsClient
   -> (StatsClient -> m a)
   -> m a
 withStatsClient StatsSettings {..} f = do
-  gauges <- liftIO $ fmap Gauges EKG.new
+  gauges <- liftIO $ do
+    gdbConnections <- Gauge "active_pool_connections" <$> EKG.new
+    pure Gauges { .. }
+
   if amsEnabled
     then do
       tags <- (amsTags <>) <$> getEcsMetadataTags
       Datadog.withDogStatsD amsSettings $ \client ->
         -- Add the tags to the thread context so they're present in all logs
-        withThreadContext (map toPair tags)
-          $ f StatsClient { scClient = client, scTags = tags, scGauges = gauges }
+        withThreadContext (map toPair tags) $ f StatsClient
+          { scClient = client
+          , scTags = tags
+          , scGauges = gauges
+          }
     else do
-      f $ StatsClient { scClient = Datadog.Dummy, scTags = amsTags, scGauges = gauges }
+      f $ StatsClient
+        { scClient = Datadog.Dummy
+        , scTags = amsTags
+        , scGauges = gauges
+        }
   where toPair = bimap (fromString . unpack) String
 
-withGauge :: (MonadReader app m, HasStatsClient app, MonadUnliftIO m) => GaugeName -> m a -> m a
-withGauge gaugeName f = do
-  gauge' <- view $ statsClientL . gaugesL . to (unGaugeName gaugeName)
-  bracket_ (plus1 gauge') (minus1 gauge') f
-  where
-    plus1 g = liftIO $ EKG.add g 1
-    minus1 g = liftIO $ EKG.subtract g 1
+withGauge
+  :: (MonadReader app m, HasStatsClient app, MonadUnliftIO m)
+  => (Gauges -> Gauge)
+  -> m a
+  -> m a
+withGauge getGauge f = do
+  gauge' <- view $ statsClientL . gaugesL . to getGauge
+  bracket_ (inc gauge') (dec gauge') f
+ where
+  inc g@Gauge {..} = do
+    liftIO $ EKG.inc gGauge
+    publish g
+
+  dec g@Gauge {..} = do
+    liftIO $ EKG.dec gGauge
+    publish g
+
+  publish Gauge {..} = do
+    n <- liftIO $ EKG.read gGauge
+    gauge gName $ fromIntegral n
 
 -- | Include the given tags on all metrics emitted from a block
 tagged
