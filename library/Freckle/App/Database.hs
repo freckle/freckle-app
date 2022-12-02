@@ -55,7 +55,8 @@ import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
 import UnliftIO.Exception (displayException)
 import UnliftIO.IORef
-import Yesod.Core (MonadUnliftIO (withRunInIO))
+import Yesod.Core (MonadUnliftIO(withRunInIO), YesodRequest(reqWaiRequest))
+import Yesod.Core.Types (HandlerData(handlerRequest))
 
 type SqlPool = Pool SqlBackend
 
@@ -67,6 +68,9 @@ instance HasSqlPool SqlPool where
 
 class HasVaultData env where
   getVaultData :: env -> Maybe XRayVaultData
+
+instance HasVaultData (HandlerData child site) where
+  getVaultData = vaultDataFromRequest . reqWaiRequest . handlerRequest
 
 makePostgresPool :: (MonadUnliftIO m, MonadLoggerIO m) => m SqlPool
 makePostgresPool = do
