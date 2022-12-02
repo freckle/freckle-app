@@ -103,6 +103,8 @@ instance HasLogger app => Example (AppExample app a) where
     params
     ($ ())
 
+instance HasVaultData app => HasVaultData (AppExample app a) where
+  getVaultData = asks getVaultData
 -- | A type restricted version of id
 --
 -- Like 'example', which forces the expectation to 'IO', this can be used to

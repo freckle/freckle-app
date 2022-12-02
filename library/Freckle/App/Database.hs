@@ -8,6 +8,7 @@
 -- | Database access for your @App@
 module Freckle.App.Database
   ( HasSqlPool(..)
+  , HasVaultData(..)
   , SqlPool
   , makePostgresPool
   , makePostgresPoolWith
@@ -54,7 +55,7 @@ import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
 import UnliftIO.Exception (displayException)
 import UnliftIO.IORef
-import Yesod.Core (MonadHandler, MonadUnliftIO(withRunInIO), waiRequest)
+import Yesod.Core (MonadUnliftIO (withRunInIO))
 
 type SqlPool = Pool SqlBackend
 
@@ -63,6 +64,9 @@ class HasSqlPool app where
 
 instance HasSqlPool SqlPool where
   getSqlPool = id
+
+class HasVaultData env where
+  getVaultData :: env -> Maybe XRayVaultData
 
 makePostgresPool :: (MonadUnliftIO m, MonadLoggerIO m) => m SqlPool
 makePostgresPool = do
@@ -74,7 +78,7 @@ makePostgresPool = do
 runDB
   :: ( HasSqlPool app
      , HasStatsClient app
-     , MonadHandler m
+     , HasVaultData app
      , MonadUnliftIO m
      , MonadReader app m
      )
@@ -82,7 +86,7 @@ runDB
   -> m a
 runDB action = do
   pool <- asks getSqlPool
-  mVaultData <- vaultDataFromRequest <$> waiRequest
+  mVaultData <- asks getVaultData-- vaultDataFromRequest <$> waiRequest
   Stats.withGauge Stats.dbConnections $
     maybe
       runSqlPool

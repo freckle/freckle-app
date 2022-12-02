@@ -3,6 +3,7 @@
 ## [v1.8.0.0](https://github.com/freckle/freckle-app/compare/v1.7.1.0...v1.8.0.0)
 
 - Fix bug: gauges not being published.
+- Add HasVaultData type class to remove the dependency on Yesod's MonadHandler
 
 ## [v1.7.1.0](https://github.com/freckle/freckle-app/compare/v1.7.0.0...v1.7.1.0)
 
