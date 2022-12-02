@@ -90,7 +90,7 @@ runDB
   -> m a
 runDB action = do
   pool <- asks getSqlPool
-  mVaultData <- asks getVaultData-- vaultDataFromRequest <$> waiRequest
+  mVaultData <- asks getVaultData
   Stats.withGauge Stats.dbConnections $
     maybe
       runSqlPool
