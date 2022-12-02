@@ -55,7 +55,7 @@ import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
 import UnliftIO.Exception (displayException)
 import UnliftIO.IORef
-import Yesod.Core (MonadUnliftIO (withRunInIO))
+import Yesod.Core (MonadUnliftIO(withRunInIO))
 
 type SqlPool = Pool SqlBackend
 
