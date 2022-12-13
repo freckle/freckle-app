@@ -100,7 +100,7 @@ runDB action = do
       action
       pool
 
-runDBSimple 
+runDBSimple
   :: ( HasSqlPool app
      , MonadUnliftIO m
      , MonadReader app m
