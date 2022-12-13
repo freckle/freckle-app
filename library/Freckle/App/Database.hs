@@ -13,6 +13,7 @@ module Freckle.App.Database
   , makePostgresPool
   , makePostgresPoolWith
   , runDB
+  , runDBSimple
   , PostgresConnectionConf(..)
   , PostgresPasswordSource(..)
   , PostgresPassword(..)
@@ -98,6 +99,17 @@ runDB action = do
       mVaultData
       action
       pool
+
+runDBSimple 
+  :: ( HasSqlPool app
+     , MonadUnliftIO m
+     , MonadReader app m
+     )
+  => SqlPersistT m a
+  -> m a
+runDBSimple action = do
+  pool <- asks getSqlPool
+  runSqlPool action pool
 
 -- | @'runSqlPool'@ but with XRay tracing
 runSqlPoolXRay
