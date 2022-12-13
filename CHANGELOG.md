@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.8.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.8.1.0...main)
+
+## [v1.8.1.0](https://github.com/freckle/freckle-app/compare/v1.8.0.0...v1.8.1.0)
+
+- Add `runDBSimple` for use cases where instrumentation is not valuable.
 
 ## [v1.8.0.0](https://github.com/freckle/freckle-app/compare/v1.7.1.0...v1.8.0.0)
 
