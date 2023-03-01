@@ -234,9 +234,6 @@ data AuroraIamToken = AuroraIamToken
 
 createAuroraIamToken :: MonadIO m => PostgresConnectionConf -> m AuroraIamToken
 createAuroraIamToken aitPostgresConnectionConf@PostgresConnectionConf {..} = do
-  -- TODO: Consider recording how long creating an auth token takes
-  -- somewhere, even if it is just in the logs, so we get an idea of how long
-  -- it takes in prod.
   aitToken <- T.strip . decodeUtf8 . BSL.toStrict <$> readProcessStdout_
     (proc
       "aws"
