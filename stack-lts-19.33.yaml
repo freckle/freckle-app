@@ -1,0 +1,14 @@
+resolver: lts-19.33
+
+extra-deps:
+  - Blammo-1.0.2.2
+  - bugsnag-1.0.0.1
+  - bugsnag-wai-1.0.0.1
+  - context-0.2.0.1
+  - ekg-core-0.1.1.7
+  - envparse-0.5.0
+  - hspec-junit-formatter-1.1.0.2
+  - memcache-0.3.0.1
+  - monad-logger-aeson-0.3.0.2
+  - monad-validate-1.2.0.1
+  - scientist-0.0.0.0
