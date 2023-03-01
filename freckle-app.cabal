@@ -91,7 +91,7 @@ library
       StandaloneDeriving
       TypeApplications
       TypeFamilies
-  ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-local-signatures -Wno-monomorphism-restriction -Wno-unsafe -Wno-safe
+  ghc-options: -fignore-optim-changes -Weverything -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-local-signatures -Wno-monomorphism-restriction -Wno-unsafe -Wno-safe
   build-depends:
       Blammo
     , Glob
@@ -162,6 +162,8 @@ library
     ghc-options: -Wno-missing-kind-signatures
   if impl(ghc >= 8.10)
     ghc-options: -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module
+  if impl(ghc >= 8.8)
+    ghc-options: -fwrite-ide-info
 
 test-suite doctest
   type: exitcode-stdio-1.0
@@ -195,7 +197,7 @@ test-suite doctest
       StandaloneDeriving
       TypeApplications
       TypeFamilies
-  ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-local-signatures -Wno-monomorphism-restriction -Wno-unsafe -Wno-safe
+  ghc-options: -fignore-optim-changes -Weverything -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-local-signatures -Wno-monomorphism-restriction -Wno-unsafe -Wno-safe
   build-depends:
       base <5
     , freckle-app
@@ -204,6 +206,8 @@ test-suite doctest
     ghc-options: -Wno-missing-kind-signatures
   if impl(ghc >= 8.10)
     ghc-options: -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module
+  if impl(ghc >= 8.8)
+    ghc-options: -fwrite-ide-info
 
 test-suite spec
   type: exitcode-stdio-1.0
@@ -247,7 +251,7 @@ test-suite spec
       StandaloneDeriving
       TypeApplications
       TypeFamilies
-  ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-local-signatures -Wno-monomorphism-restriction -Wno-unsafe -Wno-safe -threaded -rtsopts "-with-rtsopts=-N"
+  ghc-options: -fignore-optim-changes -Weverything -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-local-signatures -Wno-monomorphism-restriction -Wno-unsafe -Wno-safe -threaded -rtsopts "-with-rtsopts=-N"
   build-depends:
       Blammo
     , QuickCheck
@@ -276,3 +280,5 @@ test-suite spec
     ghc-options: -Wno-missing-kind-signatures
   if impl(ghc >= 8.10)
     ghc-options: -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module
+  if impl(ghc >= 8.8)
+    ghc-options: -fwrite-ide-info
