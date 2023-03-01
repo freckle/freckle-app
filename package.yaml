@@ -111,6 +111,7 @@ library:
     - persistent-postgresql
     - postgresql-simple
     - primitive
+    - resourcet
     - resource-pool
     - retry >= 0.8.1.0 # retryingDynamic
     - safe
