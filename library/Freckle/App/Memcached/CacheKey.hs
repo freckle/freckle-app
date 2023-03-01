@@ -10,7 +10,6 @@ import Freckle.App.Prelude
 import Data.Char (isControl, isSpace)
 import qualified Data.Text as T
 import Database.Memcache.Types (Key)
-import GHC.Stack (HasCallStack)
 import UnliftIO.Exception (throwString)
 
 newtype CacheKey = CacheKey Text
