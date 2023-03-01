@@ -43,10 +43,9 @@ loadFile = traverse_ go <=< locateInParents
     let examplePath = takeDirectory path </> ".env.example"
     exampleExists <- doesFileExist examplePath
 
-    void $ Dotenv.loadFile $ Dotenv.Config
+    void $ Dotenv.loadFile $ Dotenv.defaultConfig
       { Dotenv.configPath = [path]
       , Dotenv.configExamplePath = [ examplePath | exampleExists ]
-      , Dotenv.configOverride = False
       }
 
 locateInParents :: FilePath -> IO (Maybe FilePath)
