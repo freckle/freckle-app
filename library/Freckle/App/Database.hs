@@ -92,19 +92,11 @@ runDB
 runDB action = do
   pool <- asks getSqlPool
   mVaultData <- asks getVaultData
-  Stats.withGauge Stats.dbConnections $
-    maybe
-      runSqlPool
-      (runSqlPoolXRay "runDB")
-      mVaultData
-      action
-      pool
+  Stats.withGauge Stats.dbConnections
+    $ maybe runSqlPool (runSqlPoolXRay "runDB") mVaultData action pool
 
 runDBSimple
-  :: ( HasSqlPool app
-     , MonadUnliftIO m
-     , MonadReader app m
-     )
+  :: (HasSqlPool app, MonadUnliftIO m, MonadReader app m)
   => SqlPersistT m a
   -> m a
 runDBSimple action = do
