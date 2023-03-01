@@ -141,11 +141,11 @@
 -- >       result `shouldBe` "as expected"
 --
 module Freckle.App
-  ( AppT(..)
-  , runApp
-  , runAppT
-  , module X
+  ( runApp
   , setLineBuffering
+  , module X
+  , AppT(..)
+  , runAppT
   ) where
 
 import Freckle.App.Prelude
@@ -157,6 +157,25 @@ import Control.Monad.Reader as X
 import Control.Monad.Trans.Resource (MonadResource, ResourceT, runResourceT)
 import Freckle.App.Database as X
 import System.IO (BufferMode(..), hSetBuffering, stderr, stdout)
+
+runApp
+  :: HasLogger app
+  => (forall b . (app -> IO b) -> IO b)
+  -> AppT app IO a
+  -> IO a
+runApp loadApp action = do
+  setLineBuffering
+  loadApp $ runAppT action
+
+-- | Ensure output is streamed if in a Docker container
+--
+-- 'runApp' calls this for you, but it may be useful if you're running the app
+-- some other way.
+--
+setLineBuffering :: MonadIO m => m ()
+setLineBuffering = liftIO $ do
+  hSetBuffering stdout LineBuffering
+  hSetBuffering stderr LineBuffering
 
 newtype AppT app m a = AppT
   { unAppT :: ReaderT app (LoggingT (ResourceT m)) a
@@ -179,25 +198,6 @@ instance MonadUnliftIO m => MonadUnliftIO (AppT app m) where
   {-# INLINE withRunInIO #-}
   withRunInIO inner = AppT $ withRunInIO $ \run -> inner $ run . unAppT
 
-runApp
-  :: HasLogger app
-  => (forall b . (app -> IO b) -> IO b)
-  -> AppT app IO a
-  -> IO a
-runApp = runAppT
-
-runAppT
-  :: (MonadUnliftIO m, HasLogger app)
-  => (forall b . (app -> m b) -> m b)
-  -> AppT app m a
-  -> m a
-runAppT loadApp action = do
-  setLineBuffering
-  loadApp $ \app ->
-    runResourceT $ runLoggerLoggingT app $ runReaderT (unAppT action) app
-
-setLineBuffering :: MonadIO m => m ()
-setLineBuffering = liftIO $ do
-  -- Ensure output is streamed if in a Docker container
-  hSetBuffering stdout LineBuffering
-  hSetBuffering stderr LineBuffering
+runAppT :: (MonadUnliftIO m, HasLogger app) => AppT app m a -> app -> m a
+runAppT action app =
+  runResourceT $ runLoggerLoggingT app $ runReaderT (unAppT action) app
