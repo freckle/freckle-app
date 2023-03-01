@@ -22,4 +22,6 @@ import Data.Aeson.KeyMap as X
 import Data.HashMap.Strict as X
 #endif
 
+-- Ignored twice because HLint changes the name in some version
+{-# ANN module ("HLint: ignore Avoid restricted alias" :: String) #-}
 {-# ANN module ("HLint: ignore Avoid restricted qualification" :: String) #-}
