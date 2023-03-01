@@ -2,7 +2,9 @@
 
 -- | Compatibility module for "Data.Aeson" 1.x vs 2.0
 --
--- TODO: An @aeson-compat@ package. Sadly, the name is taken.
+-- This should be its own package, but the obvious name (@aeson-compat@) is
+-- taken by something old and unrelated. I think that's why no one is doing it
+-- yet, including us.
 --
 module Freckle.App.Aeson
   ( module X
