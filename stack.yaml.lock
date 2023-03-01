@@ -12,23 +12,19 @@ packages:
   original:
     hackage: monad-validate-1.2.0.1
 - completed:
-    name: hs-opentelemetry-awsxray
-    pantry-tree:
-      sha256: 303a9154b10261e04dca4084d615a2ba15d83eace1854bb9362427daa778230d
-      size: 2234
-    sha256: 00fb4454006ed4c85bb8fa2d73f072f60415611e981ad9454efe77406db0ee78
-    size: 13290
-    url: https://github.com/freckle/hs-opentelemetry-awsxray/archive/1189301f706cf5dfd519f04715f50f604d6f03b5.tar.gz
-    version: 0.0.0.0
-  original:
-    url: https://github.com/freckle/hs-opentelemetry-awsxray/archive/1189301f706cf5dfd519f04715f50f604d6f03b5.tar.gz
-- completed:
     hackage: hs-opentelemetry-api-0.0.3.6@sha256:76345dca8efda3040f58e85fa8b17264505177928bd035936132448715437a7c,3428
     pantry-tree:
       sha256: 6bcb617406e61a2fa68ebc313fad675671ac8acb57a144da41201fa1a75cdaa3
       size: 2907
   original:
     hackage: hs-opentelemetry-api-0.0.3.6
+- completed:
+    hackage: hs-opentelemetry-awsxray-0.1.0.1@sha256:dec49a81296c91a64a5a7037ac967c0f952974eed6c92de56e58b0eef58561c1,3602
+    pantry-tree:
+      sha256: 0388ea8f8cb3761fb719316b69ebe663c7c978053de231a0aafc305ee43c3e06
+      size: 977
+  original:
+    hackage: hs-opentelemetry-awsxray-0.1.0.1
 - completed:
     hackage: hs-opentelemetry-exporter-otlp-0.0.1.4@sha256:25fcf5c2173f1dd3fe4f288f3232da70e9d8398363430932b7e2a278f78c3765,2150
     pantry-tree:

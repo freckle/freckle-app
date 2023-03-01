@@ -14,9 +14,8 @@ extra-deps:
   - scientist-0.0.0.0
 
   # For OTel
-  - github: freckle/hs-opentelemetry-awsxray
-    commit: 1189301f706cf5dfd519f04715f50f604d6f03b5
   - hs-opentelemetry-api-0.0.3.6
+  - hs-opentelemetry-awsxray-0.1.0.1
   - hs-opentelemetry-exporter-otlp-0.0.1.4
   - hs-opentelemetry-instrumentation-persistent-0.0.1.0
   - hs-opentelemetry-otlp-0.0.1.0
