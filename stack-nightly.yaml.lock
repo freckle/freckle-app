@@ -5,64 +5,15 @@
 
 packages:
 - completed:
-    hackage: Blammo-1.0.2.2@sha256:ffa21d4b43dbd871e9b97918412581bc7b34d95b1fe0ce058afe925d44b641e1,4166
-    pantry-tree:
-      sha256: 45eadbef288fdfd99dcf8090d65a05ad7d6126103397e88d13210fb2aff2b4c2
-      size: 1257
-  original:
-    hackage: Blammo-1.0.2.2
-- completed:
-    hackage: context-0.2.0.1@sha256:b5a1390a5ad11b7edd0449c9ef96823f082bff4988bd09583e37a4e93e9aad10,1891
-    pantry-tree:
-      sha256: ebb043dd007864588c6b1676a0d30e521deab4353a3f19716f6f6f7d52b62817
-      size: 952
-  original:
-    hackage: context-0.2.0.1
-- completed:
-    hackage: datadog-0.3.0.0@sha256:c36a0e2d7b1f1c24b0b405df8b0bf3a17f6512f1da02f8c444fbb64944b0114b,3439
-    pantry-tree:
-      sha256: 6c3d2da0a57d62f41a753cb3e973162e1a62e7554c28cc5fc18ff85b252583f1
-      size: 1488
-  original:
-    hackage: datadog-0.3.0.0
-- completed:
-    hackage: ekg-core-0.1.1.7@sha256:f4f97b11411f18b7fe6eb85542445684c69dcb6ee3aebf995ca3052dc8970016,2037
-    pantry-tree:
-      sha256: 251452bdfd5fc7c9150f75d5842b0c5b6d1f72e5bef6af37f8873f37872be4d2
-      size: 1073
-  original:
-    hackage: ekg-core-0.1.1.7
-- completed:
-    hackage: envparse-0.5.0@sha256:ba9ad793ed2fcfce644b3ebb8eb6c2fef2e44924f75e1b324956340e664c416e,2849
-    pantry-tree:
-      sha256: 419a6843224ad32755064276f8e36500c71238db1b5807a2c9596fa4ed909a5a
-      size: 1181
-  original:
-    hackage: envparse-0.5.0
-- completed:
-    hackage: memcache-0.3.0.1@sha256:d69c6365b32a8bb8b7252d8040fb6d6304ce032604ffdfc2990a31778e4b54dd,3779
-    pantry-tree:
-      sha256: 30ea6868da386ad0dd69001441388da646aa72ab557bcbb19e6e6de0d5a77165
-      size: 944
-  original:
-    hackage: memcache-0.3.0.1
-- completed:
     hackage: monad-validate-1.2.0.1@sha256:5a100da896f11ca4b7c123da85decbedeb46c37054a097f258ac911e715cb68d,2587
     pantry-tree:
       sha256: 034ee4de9765e38b763f5d73b236cc112205728e680cefbfe12d2882accc3264
       size: 611
   original:
     hackage: monad-validate-1.2.0.1
-- completed:
-    hackage: scientist-0.0.0.0@sha256:058c629a6805668f3a16c386dbc5dd90c1ce55ff2c7cf5672f0410bdb873d04c,2999
-    pantry-tree:
-      sha256: 370ee941c6ce59486e5c27a1ce294e50ea47aa36a5bdd4f4eee0cd4834d8b763
-      size: 1061
-  original:
-    hackage: scientist-0.0.0.0
 snapshots:
 - completed:
-    sha256: 92126d00df5676c3790f67dcb0addd6e8b9cf5bcfbe69ba48335dc43bebf9f34
-    size: 546216
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2022/11/22.yaml
-  original: nightly-2022-11-22
+    sha256: 859c14182cd0c4d1f9b0f7ff8baaefb15c778278fb0ea2fa90cfea326bb4e62c
+    size: 598563
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/2/27.yaml
+  original: nightly-2023-02-27
