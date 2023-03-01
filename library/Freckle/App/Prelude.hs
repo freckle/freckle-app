@@ -1,13 +1,12 @@
 -- | Those functions and types we can't do without!
 module Freckle.App.Prelude
-  (
-  -- * 'Prelude' as the starting point, without common partial functions
-    module Prelude
+  ( module Prelude
 
   -- * Commonly imported types
   , Alternative
   , Exception
   , Generic
+  , HasCallStack
   , HashMap
   , HashSet
   , Hashable
@@ -100,9 +99,9 @@ import Control.Applicative (Alternative, liftA2, optional, (<|>))
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Primitive (PrimMonad)
 import Control.Monad.Reader (MonadReader, ReaderT)
+import Data.Hashable (Hashable)
 import Data.HashMap.Strict (HashMap)
 import Data.HashSet (HashSet)
-import Data.Hashable (Hashable)
 import Data.Int (Int64)
 import Data.List.NonEmpty (NonEmpty)
 import Data.Map.Strict (Map)
@@ -111,6 +110,7 @@ import Data.Text (Text, pack, unpack)
 import Data.Time (NominalDiffTime, UTCTime, getCurrentTime)
 import Data.Vector (Vector)
 import GHC.Generics (Generic)
+import GHC.Stack (HasCallStack)
 import UnliftIO (MonadUnliftIO)
 import UnliftIO.Exception (Exception)
 

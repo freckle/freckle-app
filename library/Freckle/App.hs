@@ -150,11 +150,13 @@ module Freckle.App
 import Freckle.App.Prelude
 
 import Blammo.Logging as X
+import Control.Lens (view)
 import Control.Monad.Catch (MonadCatch, MonadThrow)
 import Control.Monad.IO.Unlift (MonadUnliftIO(..))
 import Control.Monad.Reader as X
 import Control.Monad.Trans.Resource (MonadResource, ResourceT, runResourceT)
 import Freckle.App.Database as X
+import Freckle.App.OpenTelemetry as X
 import System.IO (BufferMode(..), hSetBuffering, stderr, stdout)
 
 runApp
@@ -196,6 +198,9 @@ newtype AppT app m a = AppT
 instance MonadUnliftIO m => MonadUnliftIO (AppT app m) where
   {-# INLINE withRunInIO #-}
   withRunInIO inner = AppT $ withRunInIO $ \run -> inner $ run . unAppT
+
+instance (Monad m, HasTracer app) => MonadTracer (AppT app m) where
+  getTracer = view tracerL
 
 runAppT :: (MonadUnliftIO m, HasLogger app) => AppT app m a -> app -> m a
 runAppT action app =

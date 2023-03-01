@@ -13,6 +13,7 @@ module Freckle.App.Database
   , makePostgresPool
   , makePostgresPoolWith
   , runDB
+  , runDBXRay
   , runDBSimple
   , PostgresConnectionConf(..)
   , PostgresPasswordSource(..)
@@ -42,22 +43,26 @@ import Database.Persist.Postgresql
   , openSimpleConn
   , runSqlConn
   , runSqlPool
+  , runSqlPoolWithExtensibleHooks
   )
+import Database.Persist.SqlBackend.SqlPoolHooks
 import Database.PostgreSQL.Simple
   (Connection, Only(..), connectPostgreSQL, execute)
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import qualified Freckle.App.Env as Env
+import Freckle.App.OpenTelemetry
 import Freckle.App.Stats (HasStatsClient)
 import qualified Freckle.App.Stats as Stats
 import Network.AWS.XRayClient.Persistent
 import Network.AWS.XRayClient.WAI
+import OpenTelemetry.Instrumentation.Persistent
 import qualified Prelude as Unsafe (read)
 import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
 import UnliftIO.Exception (displayException)
 import UnliftIO.IORef
 import Yesod.Core (MonadUnliftIO(withRunInIO), YesodRequest(reqWaiRequest))
-import Yesod.Core.Types (HandlerData(handlerRequest))
+import Yesod.Core.Types (HandlerData(..), RunHandlerEnv(..))
 
 type SqlPool = Pool SqlBackend
 
@@ -73,6 +78,9 @@ class HasVaultData env where
 instance HasVaultData (HandlerData child site) where
   getVaultData = vaultDataFromRequest . reqWaiRequest . handlerRequest
 
+instance HasSqlPool site => HasSqlPool (HandlerData child site) where
+  getSqlPool = getSqlPool . rheSite . handlerEnv
+
 makePostgresPool :: (MonadUnliftIO m, MonadLoggerIO m) => m SqlPool
 makePostgresPool = do
   conf <- liftIO $ do
@@ -80,7 +88,35 @@ makePostgresPool = do
     Env.parse id $ Env.kept $ envParseDatabaseConf postgresPasswordSource
   makePostgresPoolWith conf
 
+-- | Run a Database action with connection stats and tracing
+--
+-- This uses OpenTelemetry and 'MonadTracer'. For callstacks in traces to be
+-- useful, ensure you have 'HasCallStack' on functions that call this (and
+-- functions that call those, for as far as you require to get to a useful
+-- source location).
+--
+-- If you need to remain on the old version with 'HasVaultData', use 'runDBXRay'
+-- (and disable the deprecation warning).
+--
 runDB
+  :: ( MonadUnliftIO m
+     , MonadTracer m
+     , MonadReader app m
+     , HasSqlPool app
+     , HasStatsClient app
+     , HasCallStack
+     )
+  => SqlPersistT m a
+  -> m a
+runDB action = do
+  pool <- asks getSqlPool
+  Stats.withGauge Stats.dbConnections
+    $ inSpan "runDB"
+    $ runSqlPoolWithExtensibleHooks action pool Nothing
+    $ setAlterBackend defaultSqlPoolHooks
+    $ wrapSqlBackend []
+
+runDBXRay
   :: ( HasSqlPool app
      , HasStatsClient app
      , HasVaultData app
@@ -89,11 +125,12 @@ runDB
      )
   => SqlPersistT m a
   -> m a
-runDB action = do
+runDBXRay action = do
   pool <- asks getSqlPool
   mVaultData <- asks getVaultData
   Stats.withGauge Stats.dbConnections
     $ maybe runSqlPool (runSqlPoolXRay "runDB") mVaultData action pool
+{-# DEPRECATED runDBXRay "Migrate to MonadTracer and use runDB" #-}
 
 runDBSimple
   :: (HasSqlPool app, MonadUnliftIO m, MonadReader app m)
