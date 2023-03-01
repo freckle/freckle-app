@@ -59,6 +59,13 @@
 -- >     myAppAction
 -- >     myOtherAppAction
 --
+-- == 'AppT'
+--
+-- Functions like @myAppAction@ will be run in the concrete stack 'AppT', but
+-- you should implement it using constraints (e.g. @'MonadReader' app@) because
+-- this stack may evolved over time. See its docs for all the constraints it
+-- satisfies.
+--
 -- == Database
 --
 -- Adding Database access requires an instance of @'HasSqlPool'@ on your @App@
@@ -134,24 +141,63 @@
 -- >       result `shouldBe` "as expected"
 --
 module Freckle.App
-  ( runApp
+  ( AppT(..)
+  , runApp
+  , runAppT
   , module X
+  , setLineBuffering
   ) where
 
-import Prelude
+import Freckle.App.Prelude
 
 import Blammo.Logging as X
+import Control.Monad.Catch (MonadCatch, MonadThrow)
+import Control.Monad.IO.Unlift (MonadUnliftIO(..))
 import Control.Monad.Reader as X
+import Control.Monad.Trans.Resource (MonadResource, ResourceT, runResourceT)
 import Freckle.App.Database as X
 import System.IO (BufferMode(..), hSetBuffering, stderr, stdout)
+
+newtype AppT app m a = AppT
+  { unAppT :: ReaderT app (LoggingT (ResourceT m)) a
+  }
+  deriving newtype
+    ( Functor
+    , Applicative
+    , Monad
+    , MonadIO
+    , MonadThrow
+    , MonadCatch
+    , MonadLogger
+    , MonadResource
+    , MonadReader app
+    )
+
+-- Just copies ReaderT's definition. This can be newtype-derived in GHC 8.10+,
+-- but we do it by hand while we want to support older.
+instance MonadUnliftIO m => MonadUnliftIO (AppT app m) where
+  {-# INLINE withRunInIO #-}
+  withRunInIO inner = AppT $ withRunInIO $ \run -> inner $ run . unAppT
 
 runApp
   :: HasLogger app
   => (forall b . (app -> IO b) -> IO b)
-  -> ReaderT app (LoggingT IO) a
+  -> AppT app IO a
   -> IO a
-runApp loadApp action = do
+runApp = runAppT
+
+runAppT
+  :: (MonadUnliftIO m, HasLogger app)
+  => (forall b . (app -> m b) -> m b)
+  -> AppT app m a
+  -> m a
+runAppT loadApp action = do
+  setLineBuffering
+  loadApp $ \app ->
+    runResourceT $ runLoggerLoggingT app $ runReaderT (unAppT action) app
+
+setLineBuffering :: MonadIO m => m ()
+setLineBuffering = liftIO $ do
   -- Ensure output is streamed if in a Docker container
   hSetBuffering stdout LineBuffering
   hSetBuffering stderr LineBuffering
-  loadApp $ \app -> runLoggerLoggingT app $ runReaderT action app

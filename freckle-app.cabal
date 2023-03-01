@@ -139,6 +139,7 @@ library
     , postgresql-simple
     , primitive
     , resource-pool
+    , resourcet
     , retry >=0.8.1.0
     , safe
     , scientist
