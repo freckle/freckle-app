@@ -1,4 +1,3 @@
----
 name: freckle-app
 version: 1.8.1.0
 maintainer: Freckle Education
@@ -13,6 +12,26 @@ extra-doc-files:
 
 extra-source-files:
   - package.yaml
+
+ghc-options:
+  - -fignore-optim-changes
+  - -fwrite-ide-info
+  - -Weverything
+  - -Wno-missing-exported-signatures # re-enables missing-signatures
+  - -Wno-missing-import-lists
+  - -Wno-missing-local-signatures
+  - -Wno-monomorphism-restriction
+  - -Wno-unsafe
+  - -Wno-safe
+
+when:
+  - condition: "impl(ghc >= 9.2)"
+    ghc-options:
+      - -Wno-missing-kind-signatures
+  - condition: "impl(ghc >= 8.10)"
+    ghc-options:
+      - -Wno-missing-safe-haskell-mode
+      - -Wno-prepositive-qualified-module
 
 dependencies:
   - base < 5
