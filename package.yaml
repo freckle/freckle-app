@@ -15,7 +15,6 @@ extra-source-files:
 
 ghc-options:
   - -fignore-optim-changes
-  - -fwrite-ide-info
   - -Weverything
   - -Wno-missing-exported-signatures # re-enables missing-signatures
   - -Wno-missing-import-lists
@@ -32,6 +31,9 @@ when:
     ghc-options:
       - -Wno-missing-safe-haskell-mode
       - -Wno-prepositive-qualified-module
+  - condition: "impl(ghc >= 8.8)"
+    ghc-options:
+      - -fwrite-ide-info
 
 dependencies:
   - base < 5
