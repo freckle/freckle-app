@@ -62,9 +62,8 @@
 -- == 'AppT'
 --
 -- Functions like @myAppAction@ will be run in the concrete stack 'AppT', but
--- you should implement it using constraints (e.g. @'MonadReader' app@) because
--- this stack may evolved over time. See its docs for all the constraints it
--- satisfies.
+-- you should prefer using using constraints (e.g. @'MonadReader' app@). See its
+-- docs for all the constraints it satisfies.
 --
 -- == Database
 --
