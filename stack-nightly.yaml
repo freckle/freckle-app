@@ -1,3 +1,15 @@
 resolver: nightly-2023-02-27
 extra-deps:
   - monad-validate-1.2.0.1
+
+  # For OTel
+  - github: freckle/hs-opentelemetry-awsxray
+    commit: 1189301f706cf5dfd519f04715f50f604d6f03b5
+  - hs-opentelemetry-api-0.0.3.6
+  - hs-opentelemetry-exporter-otlp-0.0.1.4
+  - hs-opentelemetry-instrumentation-persistent-0.0.1.0
+  - hs-opentelemetry-otlp-0.0.1.0
+  - hs-opentelemetry-propagator-w3c-0.0.1.2
+  - hs-opentelemetry-sdk-0.0.3.4
+  - thread-utils-context-0.2.0.0
+  - thread-utils-finalizers-0.1.0.0

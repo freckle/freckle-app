@@ -116,6 +116,94 @@ packages:
       size: 1061
   original:
     hackage: scientist-0.0.0.0
+- completed:
+    name: hs-opentelemetry-awsxray
+    pantry-tree:
+      sha256: 303a9154b10261e04dca4084d615a2ba15d83eace1854bb9362427daa778230d
+      size: 2234
+    sha256: 00fb4454006ed4c85bb8fa2d73f072f60415611e981ad9454efe77406db0ee78
+    size: 13290
+    url: https://github.com/freckle/hs-opentelemetry-awsxray/archive/1189301f706cf5dfd519f04715f50f604d6f03b5.tar.gz
+    version: 0.0.0.0
+  original:
+    url: https://github.com/freckle/hs-opentelemetry-awsxray/archive/1189301f706cf5dfd519f04715f50f604d6f03b5.tar.gz
+- completed:
+    hackage: hs-opentelemetry-api-0.0.3.6@sha256:76345dca8efda3040f58e85fa8b17264505177928bd035936132448715437a7c,3428
+    pantry-tree:
+      sha256: 6bcb617406e61a2fa68ebc313fad675671ac8acb57a144da41201fa1a75cdaa3
+      size: 2907
+  original:
+    hackage: hs-opentelemetry-api-0.0.3.6
+- completed:
+    hackage: hs-opentelemetry-exporter-otlp-0.0.1.4@sha256:25fcf5c2173f1dd3fe4f288f3232da70e9d8398363430932b7e2a278f78c3765,2150
+    pantry-tree:
+      sha256: 6d2ae7125938614e10d01b317d10bfd4575bb62889360c4476dda2b904766cda
+      size: 400
+  original:
+    hackage: hs-opentelemetry-exporter-otlp-0.0.1.4
+- completed:
+    hackage: hs-opentelemetry-instrumentation-persistent-0.0.1.0@sha256:5963e5bf98ccf73543955ebd523c2a4776f7e6a2edf0feabbc44664153662caf,1669
+    pantry-tree:
+      sha256: 0cf9da228de66c804c8f945cc90301aa76b85d872011afb0bcaf02569c7b0903
+      size: 424
+  original:
+    hackage: hs-opentelemetry-instrumentation-persistent-0.0.1.0
+- completed:
+    hackage: hs-opentelemetry-otlp-0.0.1.0@sha256:88bb6b68f172a336f78018b0823f47363fb7408eb19f7301489f81ad4d5c0f33,2307
+    pantry-tree:
+      sha256: e56292fc693805babed3c7ba7fc54e59d2e9adbc38de6bcc659009e8b10b9a1b
+      size: 2252
+  original:
+    hackage: hs-opentelemetry-otlp-0.0.1.0
+- completed:
+    hackage: hs-opentelemetry-propagator-w3c-0.0.1.2@sha256:ba1e33ff73bec76ec53b049b0cb3d1a65a6849a60c0da08bbef308f0edc241d1,1751
+    pantry-tree:
+      sha256: 3f3a81317fe511bf11191d6ea186d7c98c7fd794b32cc358606ee681637b2a0e
+      size: 496
+  original:
+    hackage: hs-opentelemetry-propagator-w3c-0.0.1.2
+- completed:
+    hackage: hs-opentelemetry-sdk-0.0.3.4@sha256:b33cb9e705ea3c591df324976d47ae2b11087af6a0533221840cec2a929db331,3638
+    pantry-tree:
+      sha256: 7445b1dbd5c88677567712bb9cc4e2caa9ef3923662a2afcbad959c22c9b295e
+      size: 1430
+  original:
+    hackage: hs-opentelemetry-sdk-0.0.3.4
+- completed:
+    hackage: proto-lens-0.7.1.0@sha256:b151890929e71db5b8c2ad86cd758bcdf1dfcf25f34eb6c9ce19e3d7cd4eae39,2959
+    pantry-tree:
+      sha256: 2f1199d04d0588805e06faa0bf9a75898584d76243d4f945acbcc0e93913732e
+      size: 1857
+  original:
+    hackage: proto-lens-0.7.1.0
+- completed:
+    hackage: proto-lens-runtime-0.7.0.3@sha256:5165848fa8c112716a4d550dcd8dda8858226294ce3e24462e5b0d9050de9899,3051
+    pantry-tree:
+      sha256: 5f45965abaf9a76cf9f91a2a54803ed34cf7987c2fe87dac1782f8f8be65bf35
+      size: 168
+  original:
+    hackage: proto-lens-runtime-0.7.0.3
+- completed:
+    hackage: random-1.2.1@sha256:8bee24dc0c985a90ee78d94c61f8aed21c49633686f0f1c14c5078d818ee43a2,6598
+    pantry-tree:
+      sha256: 8bdc994ce41f43624ab42302a881fe5a0f81d965f5d238841e24943664681a06
+      size: 1528
+  original:
+    hackage: random-1.2.1
+- completed:
+    hackage: thread-utils-context-0.2.0.0@sha256:7863e568c7a43cd21616342d20484d4c962aaa9710619f104c6fb7ee32273940,1883
+    pantry-tree:
+      sha256: 605ea068880ad39c96fce0d91db9f2d54553ed43dfc41c37845fade8be2e9568
+      size: 450
+  original:
+    hackage: thread-utils-context-0.2.0.0
+- completed:
+    hackage: thread-utils-finalizers-0.1.0.0@sha256:a8435240bfc0ae96c94704d2986699a11a395c496f9a7f2e5f5d729a0b967549,1381
+    pantry-tree:
+      sha256: 7f708d158d5d0e32ffe77f6375a792ceb6f92e4d8dd8b32fc69e7de962e7e518
+      size: 400
+  original:
+    hackage: thread-utils-finalizers-0.1.0.0
 snapshots:
 - completed:
     sha256: 428ec8d5ce932190d3cbe266b9eb3c175cd81e984babf876b64019e2cbe4ea68
