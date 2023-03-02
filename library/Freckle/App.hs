@@ -153,6 +153,7 @@ import Blammo.Logging as X
 import Control.Lens (view)
 import Control.Monad.Catch (MonadCatch, MonadThrow)
 import Control.Monad.IO.Unlift (MonadUnliftIO(..))
+import Control.Monad.Primitive (PrimMonad(..))
 import Control.Monad.Reader as X
 import Control.Monad.Trans.Resource (MonadResource, ResourceT, runResourceT)
 import Freckle.App.Database as X
@@ -188,7 +189,9 @@ newtype AppT app m a = AppT
     , MonadIO
     , MonadThrow
     , MonadCatch
+    , MonadMask
     , MonadLogger
+    , MonadLoggerIO
     , MonadResource
     , MonadReader app
     )
@@ -196,8 +199,19 @@ newtype AppT app m a = AppT
 -- Just copies ReaderT's definition. This can be newtype-derived in GHC 8.10+,
 -- but we do it by hand while we want to support older.
 instance MonadUnliftIO m => MonadUnliftIO (AppT app m) where
-  {-# INLINE withRunInIO #-}
   withRunInIO inner = AppT $ withRunInIO $ \run -> inner $ run . unAppT
+  {-# INLINE withRunInIO #-}
+
+instance PrimMonad m => PrimMonad (AppT app m) where
+  type PrimState (AppT app m) = PrimState m
+
+  -- This should really just be `lift . primitive`, but:
+  --
+  -- - We'd need `MonadTrans (AppT app)`, which meh
+  -- - We'd need an orphan `Primitive LoggingT`, which no thanks
+  --
+  primitive = AppT . lift . lift . lift . primitive
+  {-# INLINE primitive #-}
 
 instance (Monad m, HasTracer app) => MonadTracer (AppT app m) where
   getTracer = view tracerL
