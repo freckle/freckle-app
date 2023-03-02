@@ -118,6 +118,7 @@ library
     , extra
     , filepath
     , hashable
+    , hs-opentelemetry-api
     , hs-opentelemetry-awsxray
     , hs-opentelemetry-instrumentation-persistent
     , hs-opentelemetry-sdk
