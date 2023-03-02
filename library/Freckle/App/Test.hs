@@ -36,6 +36,7 @@ import Test.Hspec as X
 import Test.Hspec.Expectations.Lifted as X hiding (expectationFailure)
 
 import Blammo.Logging
+import Control.Lens (view)
 import Control.Monad.Base
 import Control.Monad.Catch
 import qualified Control.Monad.Fail as Fail
@@ -46,9 +47,11 @@ import Control.Monad.Reader
 import Control.Monad.Trans.Control
 import Database.Persist.Sql (SqlPersistT, runSqlPool)
 import qualified Freckle.App.Dotenv as Dotenv
+import Freckle.App.OpenTelemetry
 import qualified Test.Hspec as Hspec hiding (expectationFailure)
 import Test.Hspec.Core.Spec (Arg, Example, SpecWith, evaluateExample)
 import qualified Test.Hspec.Expectations.Lifted as Hspec (expectationFailure)
+import qualified UnliftIO.Exception as UnliftIO
 
 -- | An Hspec example over some @App@ value
 --
@@ -85,6 +88,17 @@ instance MonadUnliftIO (AppExample app) where
   withRunInIO inner =
     AppExample $ withRunInIO $ \run -> inner (run . unAppExample)
 
+instance MonadMask (AppExample app) where
+  mask = UnliftIO.mask
+  uninterruptibleMask = UnliftIO.uninterruptibleMask
+  generalBracket acquire release use = mask $ \unmasked -> do
+    resource <- acquire
+    b <- unmasked (use resource) `UnliftIO.catch` \e -> do
+      _ <- release resource (ExitCaseException e)
+      throwM e
+    c <- release resource (ExitCaseSuccess b)
+    pure (b, c)
+
 instance MonadRandom (AppExample app) where
   getRandomR = liftIO . getRandomR
   getRandom = liftIO getRandom
@@ -105,6 +119,9 @@ instance HasLogger app => Example (AppExample app a) where
 
 instance HasVaultData app => HasVaultData (AppExample app a) where
   getVaultData = asks getVaultData
+
+instance HasTracer app => MonadTracer (AppExample app) where
+  getTracer = view tracerL
 
 -- | A type restricted version of id
 --
