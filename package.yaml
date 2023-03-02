@@ -16,12 +16,13 @@ extra-source-files:
 ghc-options:
   - -fignore-optim-changes
   - -Weverything
+  - -Wno-all-missed-specialisations
   - -Wno-missing-exported-signatures # re-enables missing-signatures
   - -Wno-missing-import-lists
   - -Wno-missing-local-signatures
   - -Wno-monomorphism-restriction
-  - -Wno-unsafe
   - -Wno-safe
+  - -Wno-unsafe
 
 when:
   - condition: "impl(ghc >= 9.2)"
