@@ -48,6 +48,7 @@ library
       Freckle.App.Memcached.Client
       Freckle.App.Memcached.Servers
       Freckle.App.OpenTelemetry
+      Freckle.App.OpenTelemetry.Wai
       Freckle.App.Prelude
       Freckle.App.Scientist
       Freckle.App.Stats
@@ -121,6 +122,7 @@ library
     , hs-opentelemetry-api
     , hs-opentelemetry-awsxray
     , hs-opentelemetry-instrumentation-persistent
+    , hs-opentelemetry-instrumentation-wai
     , hs-opentelemetry-sdk
     , hspec >=2.8.1
     , hspec-core >=2.8.1
