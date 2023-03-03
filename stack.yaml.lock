@@ -47,13 +47,6 @@ packages:
   original:
     hackage: hs-opentelemetry-instrumentation-wai-0.0.1.3
 - completed:
-    hackage: hs-opentelemetry-instrumentation-yesod-0.0.1.3@sha256:e6e6923e3d320aba4d84997a41c628507cb754e4370b1fcf727b8b337908769c,1913
-    pantry-tree:
-      sha256: dcb06cc670aec9056905a9ae5cb77391183cd12c886dcf1db778818ba65fd79d
-      size: 415
-  original:
-    hackage: hs-opentelemetry-instrumentation-yesod-0.0.1.3
-- completed:
     hackage: hs-opentelemetry-otlp-0.0.1.0@sha256:88bb6b68f172a336f78018b0823f47363fb7408eb19f7301489f81ad4d5c0f33,2307
     pantry-tree:
       sha256: e56292fc693805babed3c7ba7fc54e59d2e9adbc38de6bcc659009e8b10b9a1b
