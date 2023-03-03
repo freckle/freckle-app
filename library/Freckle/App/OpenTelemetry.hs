@@ -10,9 +10,6 @@ module Freckle.App.OpenTelemetry
   , getCurrentTraceId
   , getCurrentTraceIdHex
 
-  -- * Middleware
-  , addTraceIdThreadContext
-
   -- * Setup
   -- ** Built-ins
   , withTracerProviderXRay
@@ -33,16 +30,8 @@ module Freckle.App.OpenTelemetry
 import Freckle.App.Prelude
 
 import Blammo.Logging
-  ( LogLevel(..)
-  , Logger
-  , Message(..)
-  , logOtherNS
-  , runLoggerLoggingT
-  , withThreadContext
-  , (.=)
-  )
+  (LogLevel(..), Logger, Message(..), logOtherNS, runLoggerLoggingT)
 import Control.Lens ((.~), (<>~))
-import Network.Wai (Middleware)
 import OpenTelemetry.AWSXRay
 import qualified OpenTelemetry.Context as Trace
 import qualified OpenTelemetry.Context.ThreadLocal as Trace
@@ -67,17 +56,6 @@ import OpenTelemetry.Trace.Setup.Lens
 
 inSpan :: (MonadUnliftIO m, MonadTracer m, HasCallStack) => Text -> m a -> m a
 inSpan = flip Trace.inSpan defaultSpanArguments
-
-addTraceIdThreadContext :: Middleware
-addTraceIdThreadContext app request respond = do
-  mTraceId <- getCurrentTraceIdHex
-
-  let
-    wrap = case mTraceId of
-      Nothing -> id
-      Just traceId -> withThreadContext ["trace_id" .= traceId]
-
-  wrap $ app request respond
 
 -- | Configure tracing with Id values compatible with AWS X-Ray
 withTracerProviderXRay :: MonadUnliftIO m => (TracerProvider -> m a) -> m a
