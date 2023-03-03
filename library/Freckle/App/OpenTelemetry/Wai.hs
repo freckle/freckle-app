@@ -8,6 +8,7 @@ module Freckle.App.OpenTelemetry.Wai
 import Freckle.App.Prelude
 
 import Blammo.Logging (withThreadContext, (.=))
+import qualified Data.Text as T
 import Freckle.App.OpenTelemetry
 import Network.Wai
 import Network.Wai.Middleware.AddHeaders
@@ -34,8 +35,16 @@ addTraceIdResponseHeader =
 addTraceIdThreadContext :: Middleware
 addTraceIdThreadContext =
   withTraceIdMiddleware $ \traceId app request respond -> do
-    let traceIdHex = traceIdBaseEncodedText Base16 traceId
-    withThreadContext ["trace_id" .= traceIdHex] $ app request respond
+    let
+      traceIdHex = traceIdBaseEncodedText Base16 traceId
+
+      -- Including the Trace-Id formatted for X-Ray too, just to make the
+      -- automatic Trace-to-Logs Insights thing function
+      context =
+        ["trace_id" .= traceIdHex, "amzn_trace_id" .= toXRayId traceIdHex]
+
+    withThreadContext context $ app request respond
+  where toXRayId x = let (a, b) = T.splitAt 8 x in "1-" <> a <> "-" <> b
 
 withTraceIdMiddleware :: (TraceId -> Middleware) -> Middleware
 withTraceIdMiddleware f app request respond = do
