@@ -150,7 +150,6 @@ module Freckle.App
 import Freckle.App.Prelude
 
 import Blammo.Logging as X
-import Control.Lens (view)
 import Control.Monad.Catch (MonadCatch, MonadThrow)
 import Control.Monad.IO.Unlift (MonadUnliftIO(..))
 import Control.Monad.Primitive (PrimMonad(..))
@@ -213,8 +212,8 @@ instance PrimMonad m => PrimMonad (AppT app m) where
   primitive = AppT . lift . lift . lift . primitive
   {-# INLINE primitive #-}
 
-instance (Monad m, HasTracer app) => MonadTracer (AppT app m) where
-  getTracer = view tracerL
+instance Applicative m => MonadTracer (AppT app m) where
+  getVaultData = pure Nothing
 
 runAppT :: (MonadUnliftIO m, HasLogger app) => AppT app m a -> app -> m a
 runAppT action app =

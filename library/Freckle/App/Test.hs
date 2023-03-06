@@ -36,7 +36,6 @@ import Test.Hspec as X
 import Test.Hspec.Expectations.Lifted as X hiding (expectationFailure)
 
 import Blammo.Logging
-import Control.Lens (view)
 import Control.Monad.Base
 import Control.Monad.Catch
 import qualified Control.Monad.Fail as Fail
@@ -117,11 +116,8 @@ instance HasLogger app => Example (AppExample app a) where
     params
     ($ ())
 
-instance HasVaultData app => HasVaultData (AppExample app a) where
-  getVaultData = asks getVaultData
-
-instance HasTracer app => MonadTracer (AppExample app) where
-  getTracer = view tracerL
+instance MonadTracer (AppExample app) where
+  getVaultData = pure Nothing
 
 -- | A type restricted version of id
 --
