@@ -87,7 +87,7 @@ withTracerProviderXRayLogger logger =
     . setupLogger logger
 
 httpIsInteresting :: HTTP.Status -> Nano -> Bool
-httpIsInteresting s d = HTTP.statusCode s /= 200 || d >= milliToNano 100
+httpIsInteresting s d = s /= HTTP.status200 || d >= milliToNano 100
 
 milliToNano :: Milli -> Nano
 milliToNano = (* 1000000) . coerce
@@ -126,10 +126,7 @@ setupSampling isInteresting = samplerL .~ sampler
       mDuration <- getDuration args
 
       let
-        mStatus =
-          (`HTTP.mkStatus` "")
-            . round
-            <$> getDoubleAttribute "http.status_code" args
+        mStatus = toEnum . round <$> getDoubleAttribute "http.status_code" args
 
         result = case (mStatus, mDuration) of
           (Just s, Just d) | isInteresting s d -> RecordAndSample
