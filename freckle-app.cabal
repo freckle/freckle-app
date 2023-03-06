@@ -48,6 +48,7 @@ library
       Freckle.App.Memcached.Client
       Freckle.App.Memcached.Servers
       Freckle.App.OpenTelemetry
+      Freckle.App.OpenTelemetry.Sampler
       Freckle.App.OpenTelemetry.Wai
       Freckle.App.Prelude
       Freckle.App.Scientist
