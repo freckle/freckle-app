@@ -26,12 +26,19 @@ freckleSampler = parentBased $ parentBasedOptions $ Sampler
     mTraceState <- getTraceState ctxt
     mDuration <- getDuration args
 
+    liftIO $ print $ attributes args
+    liftIO $ print mDuration
+    liftIO $ print $ milliToNano 100
+
     let
       mStatus = toEnum . round <$> getDoubleAttribute "http.status_code" args
 
       result = case (mStatus, mDuration) of
         (Just s, Just d) | httpIsInteresting s d -> RecordAndSample
         _ -> Drop
+
+    liftIO $ print mStatus
+    liftIO $ print result
 
     pure (result, [], fromMaybe TraceState.empty mTraceState)
   }
