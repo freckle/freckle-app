@@ -142,21 +142,29 @@
 module Freckle.App
   ( runApp
   , setLineBuffering
-  , module X
+
+  -- * Concrete transformer stack
   , AppT(..)
   , runAppT
+
+  -- * Re-exports
+  , module Freckle.App.Database
+  , module Freckle.App.OpenTelemetry
+  , module Blammo.Logging
+  , module Control.Monad.Reader
   ) where
 
 import Freckle.App.Prelude
 
-import Blammo.Logging as X
+import Blammo.Logging
+import Control.Lens (view)
 import Control.Monad.Catch (MonadCatch, MonadThrow)
 import Control.Monad.IO.Unlift (MonadUnliftIO(..))
 import Control.Monad.Primitive (PrimMonad(..))
-import Control.Monad.Reader as X
+import Control.Monad.Reader
 import Control.Monad.Trans.Resource (MonadResource, ResourceT, runResourceT)
-import Freckle.App.Database as X
-import Freckle.App.OpenTelemetry as X
+import Freckle.App.Database
+import Freckle.App.OpenTelemetry
 import System.IO (BufferMode(..), hSetBuffering, stderr, stdout)
 
 runApp
