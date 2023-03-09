@@ -67,13 +67,17 @@
 --
 -- == Database
 --
--- Adding Database access requires an instance of @'HasSqlPool'@ on your @App@
--- type. Most often, this will be easiest if you indeed separate a @Config@
--- attribute:
+-- Adding Database access requires a few more instances on your @App@ type:
+--
+-- - @'HasSqlPool'@: so we can, you know, talk to a DB
+-- - @'HasStatsClient'@: so we can manage connection count metrics
+--
+-- Most often, this will be easiest if you indeed separate a @Config@ attribute:
 --
 -- > data Config = Config
 -- >   { configDbPoolSize :: Int
 -- >   , configLogSettings :: LogSettings
+-- >   , configStatsSettings :: StatsSettings
 -- >   }
 --
 -- So you can isolate Env-related concerns
@@ -82,6 +86,7 @@
 -- > loadConfig = Env.parse id $ Config
 -- >   <$> Env.var Env.auto "PGPOOLSIZE" (Env.def 1)
 -- >   <*> LoggerEnv.parser
+-- >   <*> envParseStatsSettings
 --
 -- from the runtime application state:
 --
@@ -89,6 +94,7 @@
 -- >   { appConfig :: Config
 -- >   , appLogger :: Logger
 -- >   , appSqlPool :: SqlPool
+-- >   , appStatsClient :: StatsClient
 -- >   }
 -- >
 -- > instance HasLogger App where
@@ -96,6 +102,9 @@
 -- >
 -- > instance HasSqlPool App where
 -- >   getSqlPool = appSqlPool
+-- >
+-- > instance HasStatsClient App where
+-- >   statsClientL = lens appStatsClient $ \x y -> x { appStatsClient = y }
 --
 -- The @"Freckle.App.Database"@ module provides @'makePostgresPool'@ for
 -- building a Pool given this (limited) config data:
@@ -105,12 +114,17 @@
 -- >   appConfig{..} <- loadConfig
 -- >   appLogger <- newLogger configLoggerSettings
 -- >   appSqlPool <- runLoggerLoggingT appLogger $ makePostgresPool configDbPoolSize
--- >   f App{..}
+-- >   withStatsClient configStatsSettings $ \appStatsClient -> do
+-- >     f App{..}
 --
 -- This unlocks @'runDB'@ for your application:
 --
 -- > myAppAction
--- >   :: (MonadIO m, MonadReader env m, HasSqlPool env)
+-- >   :: ( MonadUnliftIO m
+-- >      , MonadReader env m
+-- >      , HasSqlPool env
+-- >      , HasStatsClient env
+-- >      )
 -- >   => SqlPersistT m [Entity Something]
 -- > myAppAction = runDB $ selectList [] []
 --
@@ -130,7 +144,8 @@
 -- >       result <- myAppAction :: AppExample App Text
 -- >       result `shouldBe` "as expected"
 --
--- If your app type 'HasSqlPool', you can use 'runDB' in your specs too:
+-- If your @App@ type has the required instances, you can use 'runDB' in your
+-- specs too:
 --
 -- > spec :: Spec
 -- > spec = aroundAll loadApp $ do
