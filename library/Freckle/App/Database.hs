@@ -17,13 +17,16 @@ module Freckle.App.Database
   , postgresStatementTimeoutMilliseconds
   , envParseDatabaseConf
   , envPostgresPasswordSource
+
+    -- * Re-exported constraints required to use 'runDB'
+  , MonadTracer
+  , HasStatsClient
   ) where
 
 import Freckle.App.Prelude
 
 import Blammo.Logging
 import qualified Control.Immortal as Immortal
-import Control.Monad.IO.Unlift (MonadUnliftIO (..))
 import Control.Monad.Reader
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS8
@@ -36,9 +39,10 @@ import Database.Persist.Postgresql
   , createPostgresqlPoolModified
   , createSqlPool
   , openSimpleConn
-  , runSqlConn
   , runSqlPool
+  , runSqlPoolWithExtensibleHooks
   )
+import Database.Persist.SqlBackend.SqlPoolHooks
 import Database.PostgreSQL.Simple
   ( Connection
   , Only (..)
@@ -48,11 +52,10 @@ import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import Freckle.App.Env (Timeout (..))
 import qualified Freckle.App.Env as Env
-import Freckle.App.OpenTelemetry (MonadTracer (..))
+import Freckle.App.OpenTelemetry
 import Freckle.App.Stats (HasStatsClient)
 import qualified Freckle.App.Stats as Stats
-import Network.AWS.XRayClient.Persistent
-import Network.AWS.XRayClient.WAI
+import OpenTelemetry.Instrumentation.Persistent
 import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
 import UnliftIO.Exception (displayException)
@@ -78,20 +81,28 @@ makePostgresPool = do
   makePostgresPoolWith conf
 
 -- | Run a Database action with connection stats and tracing
+--
+-- This uses OpenTelemetry and 'MonadTracer'. For callstacks in traces to be
+-- useful, ensure you have 'HasCallStack' on functions that call this (and
+-- functions that call those, for as far as you require to get to a useful
+-- source location).
 runDB
   :: ( MonadUnliftIO m
      , MonadTracer m
      , MonadReader app m
      , HasSqlPool app
      , HasStatsClient app
+     , HasCallStack
      )
   => SqlPersistT m a
   -> m a
 runDB action = do
   pool <- asks getSqlPool
-  mVaultData <- getVaultData
   Stats.withGauge Stats.dbConnections $
-    maybe runSqlPool (runSqlPoolXRay "runDB") mVaultData action pool
+    inSpan "runDB" defaultSpanArguments $
+      runSqlPoolWithExtensibleHooks action pool Nothing $
+        setAlterBackend defaultSqlPoolHooks $
+          wrapSqlBackend []
 
 runDBSimple
   :: (HasSqlPool app, MonadUnliftIO m, MonadReader app m)
@@ -100,31 +111,6 @@ runDBSimple
 runDBSimple action = do
   pool <- asks getSqlPool
   runSqlPool action pool
-
--- | @'runSqlPool'@ but with XRay tracing
-runSqlPoolXRay
-  :: (backend ~ SqlBackend, MonadUnliftIO m)
-  => Text
-  -- ^ Subsegment name
-  --
-  -- The top-level subsegment will be named @\"<this> runSqlPool\"@ and the,
-  -- with a lower-level subsegment named @\"<this> query\"@.
-  -> XRayVaultData
-  -- ^ Vault data to trace with
-  -> ReaderT backend m a
-  -> Pool backend
-  -> m a
-runSqlPoolXRay name vaultData action pool =
-  traceXRaySubsegment' vaultData (name <> " runSqlPool") id $
-    withRunInIO $
-      \run -> withResource pool $ \backend -> do
-        let
-          sendTrace = atomicallyAddVaultDataSubsegment vaultData
-          stdGenIORef = xrayVaultDataStdGen vaultData
-          subsegmentName = name <> " query"
-        run . runSqlConn action
-          =<< liftIO
-            (xraySqlBackend sendTrace stdGenIORef subsegmentName backend)
 
 data PostgresConnectionConf = PostgresConnectionConf
   { pccHost :: String

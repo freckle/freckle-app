@@ -36,6 +36,7 @@ import Test.Hspec as X
 import Test.Hspec.Expectations.Lifted as X hiding (expectationFailure)
 
 import Blammo.Logging
+import Control.Lens (view)
 import Control.Monad.Base
 import Control.Monad.Catch
 import qualified Control.Monad.Fail as Fail
@@ -45,6 +46,7 @@ import Control.Monad.Random (MonadRandom (..))
 import Control.Monad.Reader
 import Control.Monad.Trans.Control
 import Database.Persist.Sql (SqlPersistT, runSqlPool)
+import qualified Freckle.App.Database.XRay as XRay
 import qualified Freckle.App.Dotenv as Dotenv
 import Freckle.App.OpenTelemetry
 import qualified Test.Hspec as Hspec hiding (expectationFailure)
@@ -117,7 +119,10 @@ instance HasLogger app => Example (AppExample app a) where
       params
       ($ ())
 
-instance MonadTracer (AppExample app) where
+instance HasTracer app => MonadTracer (AppExample app) where
+  getTracer = view tracerL
+
+instance XRay.MonadTracer (AppExample app) where
   getVaultData = pure Nothing
 
 -- | A type restricted version of id

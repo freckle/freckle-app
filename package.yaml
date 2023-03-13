@@ -1,5 +1,5 @@
 name: freckle-app
-version: 1.9.5.1
+version: 1.10.0.0
 maintainer: Freckle Education
 category: Utils
 github: freckle/freckle-app
@@ -94,6 +94,10 @@ library:
     - extra
     - filepath
     - hashable
+    - hs-opentelemetry-api
+    - hs-opentelemetry-instrumentation-persistent
+    - hs-opentelemetry-instrumentation-wai
+    - hs-opentelemetry-sdk
     - hspec >= 2.8.1
     - hspec-core >= 2.8.1
     - hspec-expectations-lifted
@@ -116,8 +120,8 @@ library:
     - persistent-postgresql
     - postgresql-simple
     - primitive
-    - resourcet
     - resource-pool
+    - resourcet
     - retry >= 0.8.1.0 # retryingDynamic
     - safe
     - scientist
@@ -153,6 +157,7 @@ tests:
       - conduit
       - errors
       - freckle-app
+      - hs-opentelemetry-api
       - hspec
       - http-types
       - lens
