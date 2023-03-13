@@ -61,6 +61,7 @@ library
       Freckle.App.Yesod
       Freckle.App.Yesod.Routes
       Network.HTTP.Link.Compat
+      Network.Wai.Middleware.Cors
       Network.Wai.Middleware.Stats
       Yesod.Core.Lens
   other-modules:
