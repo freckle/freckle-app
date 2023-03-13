@@ -70,6 +70,7 @@
 -- Adding Database access requires a few more instances on your @App@ type:
 --
 -- - @'HasSqlPool'@: so we can, you know, talk to a DB
+-- - @'HasTracer'@: to satisfy @'MonadTracer'@ so we can trace @'runDB'@
 -- - @'HasStatsClient'@: so we can manage connection count metrics
 --
 -- Most often, this will be easiest if you indeed separate a @Config@ attribute:
@@ -94,6 +95,7 @@
 -- >   { appConfig :: Config
 -- >   , appLogger :: Logger
 -- >   , appSqlPool :: SqlPool
+-- >   , appTracer :: Tracer
 -- >   , appStatsClient :: StatsClient
 -- >   }
 -- >
@@ -102,6 +104,9 @@
 -- >
 -- > instance HasSqlPool App where
 -- >   getSqlPool = appSqlPool
+-- >
+-- > instance HasTracer App where
+-- >   tracerL = lens appTracer $ \x y -> x { appTracer = y }
 -- >
 -- > instance HasStatsClient App where
 -- >   statsClientL = lens appStatsClient $ \x y -> x { appStatsClient = y }
@@ -114,13 +119,16 @@
 -- >   appConfig{..} <- loadConfig
 -- >   appLogger <- newLogger configLoggerSettings
 -- >   appSqlPool <- runLoggerLoggingT appLogger $ makePostgresPool configDbPoolSize
--- >   withStatsClient configStatsSettings $ \appStatsClient -> do
--- >     f App{..}
+-- >   withTracerProvider $ \tracerProvider -> do
+-- >     withStatsClient configStatsSettings $ \appStatsClient -> do
+-- >       let appTracer = makeTracer tracerProvider "my-app" tracerOptions
+-- >       f App{..}
 --
 -- This unlocks @'runDB'@ for your application:
 --
 -- > myAppAction
 -- >   :: ( MonadUnliftIO m
+-- >      , MonadTracer m
 -- >      , MonadReader env m
 -- >      , HasSqlPool env
 -- >      , HasStatsClient env
@@ -171,12 +179,14 @@ module Freckle.App
 import Freckle.App.Prelude
 
 import Blammo.Logging
+import Control.Lens (view)
 import Control.Monad.Catch (MonadCatch, MonadThrow)
 import Control.Monad.IO.Unlift (MonadUnliftIO (..))
 import Control.Monad.Primitive (PrimMonad (..))
 import Control.Monad.Reader
 import Control.Monad.Trans.Resource (MonadResource, ResourceT, runResourceT)
 import Freckle.App.Database
+import qualified Freckle.App.Database.XRay as XRay
 import Freckle.App.OpenTelemetry
 import System.IO (BufferMode (..), hSetBuffering, stderr, stdout)
 
@@ -232,7 +242,10 @@ instance PrimMonad m => PrimMonad (AppT app m) where
   primitive = AppT . lift . lift . lift . primitive
   {-# INLINE primitive #-}
 
-instance Applicative m => MonadTracer (AppT app m) where
+instance (Monad m, HasTracer app) => MonadTracer (AppT app m) where
+  getTracer = view tracerL
+
+instance Applicative m => XRay.MonadTracer (AppT app m) where
   getVaultData = pure Nothing
 
 runAppT :: (MonadUnliftIO m, HasLogger app) => AppT app m a -> app -> m a

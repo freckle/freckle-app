@@ -10,6 +10,9 @@ module Freckle.App.Wai
   , requestLogger
   , addThreadContextFromRequest
 
+    -- * Tracing
+  , newOpenTelemetryWaiMiddleware
+
     -- * Metrics
   , addThreadContextFromStatsTags
   , requestStats
@@ -19,6 +22,7 @@ import Network.Wai
 import Network.Wai.Middleware.AddHeaders
 import Network.Wai.Middleware.Cors
 import Network.Wai.Middleware.Logging
+import Network.Wai.Middleware.OpenTelemetry
 import Network.Wai.Middleware.Stats
 
 -- | Middleware that adds header to disable all caching

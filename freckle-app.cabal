@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.9.5.1
+version:        1.10.0.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -35,6 +35,7 @@ library
       Freckle.App.Bugsnag.MetaData
       Freckle.App.Csv
       Freckle.App.Database
+      Freckle.App.Database.XRay
       Freckle.App.Dotenv
       Freckle.App.Ecs
       Freckle.App.Env
@@ -67,6 +68,7 @@ library
       Freckle.App.Yesod.Routes
       Network.HTTP.Link.Compat
       Network.Wai.Middleware.Cors
+      Network.Wai.Middleware.OpenTelemetry
       Network.Wai.Middleware.Stats
       Yesod.Core.Lens
   other-modules:
@@ -126,6 +128,10 @@ library
     , extra
     , filepath
     , hashable
+    , hs-opentelemetry-api
+    , hs-opentelemetry-instrumentation-persistent
+    , hs-opentelemetry-instrumentation-wai
+    , hs-opentelemetry-sdk
     , hspec >=2.8.1
     , hspec-core >=2.8.1
     , hspec-expectations-lifted
@@ -234,6 +240,7 @@ test-suite spec
       Freckle.App.Test.Properties.JSONSpec
       Freckle.App.Test.Properties.PathPieceSpec
       Freckle.App.WaiSpec
+      Network.Wai.Middleware.OpenTelemetrySpec
       Spec
       Paths_freckle_app
   hs-source-dirs:
@@ -275,6 +282,7 @@ test-suite spec
     , conduit
     , errors
     , freckle-app
+    , hs-opentelemetry-api
     , hspec
     , http-types
     , lens
