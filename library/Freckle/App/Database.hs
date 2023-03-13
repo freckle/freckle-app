@@ -1,9 +1,5 @@
 {-# LANGUAGE ApplicativeDo #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE StrictData #-}
-{-# LANGUAGE TypeOperators #-}
 
 -- | Database access for your @App@
 module Freckle.App.Database
