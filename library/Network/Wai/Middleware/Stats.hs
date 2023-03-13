@@ -1,15 +1,30 @@
 module Network.Wai.Middleware.Stats
-  ( requestStats
+  ( addThreadContextFromStatsTags
+  , requestStats
   ) where
 
 import Freckle.App.Prelude
 
+import Blammo.Logging (Pair, withThreadContext)
+import Control.Lens ((^.))
 import Control.Monad.Reader (runReaderT)
-import Freckle.App.Stats (HasStatsClient)
+import Data.Aeson ((.=))
+import qualified Freckle.App.Aeson as Key
+import Freckle.App.Stats (HasStatsClient(..), tagsL)
 import qualified Freckle.App.Stats as Stats
 import Network.HTTP.Types.Status (Status(..))
 import Network.Wai (Middleware, Request, requestMethod, responseStatus)
 
+-- | Add any tags in the ambient 'StatsClient' to the logging context
+addThreadContextFromStatsTags :: HasStatsClient env => env -> Middleware
+addThreadContextFromStatsTags env app req respond = do
+  let context = uncurry fromTag <$> env ^. statsClientL . tagsL
+  withThreadContext context $ app req respond
+ where
+  fromTag :: Text -> Text -> Pair
+  fromTag k v = Key.fromText k .= v
+
+-- | Emit @requests@ and @response_time_ms@ metrics
 requestStats
   :: HasStatsClient env => env -> (Request -> [(Text, Text)]) -> Middleware
 requestStats env getTags app req respond = do
