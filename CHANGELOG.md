@@ -1,4 +1,11 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.8.1.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.0.0...main)
+
+## [v1.9.0.0](https://github.com/freckle/freckle-app/compare/v1.8.1.0...v1.9.0.0)
+
+- Refactor `Freckle.App.Wai` interface
+- Add `addThreadContextFromStatsTags`
+- Replace `HasXRayVaultData` with `MonadTracer`
+- Introduce `AppT`
 
 ## [v1.8.1.0](https://github.com/freckle/freckle-app/compare/v1.8.0.0...v1.8.1.0)
 
