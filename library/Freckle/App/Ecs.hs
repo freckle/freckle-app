@@ -1,5 +1,6 @@
 module Freckle.App.Ecs
   ( EcsMetadata(..)
+  , EcsMetadataError(..)
   , EcsContainerMetadata(..)
   , EcsContainerTaskMetadata(..)
   , getEcsMetadata
@@ -7,16 +8,22 @@ module Freckle.App.Ecs
 
 import Freckle.App.Prelude
 
-import Control.Error.Util (hush)
+import Control.Monad.Except (MonadError(..))
 import Data.Aeson
 import Data.List.Extra (dropPrefix)
 import Freckle.App.Http
 import System.Environment (lookupEnv)
+import UnliftIO.Exception (Exception(..))
 
 data EcsMetadata = EcsMetadata
   { emContainerMetadata :: EcsContainerMetadata
   , emContainerTaskMetadata :: EcsContainerTaskMetadata
   }
+
+data EcsMetadataError
+  = EcsMetadataErrorInvalidURI String
+  | EcsMetadataErrorInvalidJSON HttpDecodeError
+  deriving stock Show
 
 data EcsContainerMetadata = EcsContainerMetadata
   { ecmDockerId :: Text
@@ -43,15 +50,24 @@ instance FromJSON EcsContainerTaskMetadata where
 aesonDropPrefix :: String -> Options
 aesonDropPrefix x = defaultOptions { fieldLabelModifier = dropPrefix x }
 
-getEcsMetadata :: MonadIO m => m (Maybe EcsMetadata)
-getEcsMetadata =
-  liftA2 EcsMetadata
-    <$> makeContainerMetadataRequest "/"
-    <*> makeContainerMetadataRequest "/task"
-
-makeContainerMetadataRequest :: (MonadIO m, FromJSON a) => Text -> m (Maybe a)
-makeContainerMetadataRequest path = do
+getEcsMetadata
+  :: (MonadIO m, MonadError EcsMetadataError m) => m (Maybe EcsMetadata)
+getEcsMetadata = do
   mURI <- liftIO $ lookupEnv "ECS_CONTAINER_METADATA_URI"
-  meMetadata <- for mURI $ \uri -> do
-    httpJson $ parseRequest_ $ uri <> unpack path
-  pure $ hush . getResponseBody =<< meMetadata
+
+  for mURI $ \uri ->
+    EcsMetadata
+      <$> makeContainerMetadataRequest (uri <> "/")
+      <*> makeContainerMetadataRequest (uri <> "/task")
+
+makeContainerMetadataRequest
+  :: (MonadIO m, MonadError EcsMetadataError m, FromJSON a) => String -> m a
+makeContainerMetadataRequest =
+  mapEither EcsMetadataErrorInvalidJSON
+    . getResponseBody
+    <=< httpJson
+    <=< mapEither (EcsMetadataErrorInvalidURI . displayException)
+    . parseRequest
+
+mapEither :: MonadError e m => (x -> e) -> Either x a -> m a
+mapEither f = either (throwError . f) pure

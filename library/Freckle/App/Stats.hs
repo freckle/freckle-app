@@ -36,6 +36,7 @@ import Freckle.App.Prelude
 
 import Blammo.Logging
 import Control.Lens (Lens', lens, to, view, (&), (.~), (<>~))
+import Control.Monad.Except (runExceptT)
 import Control.Monad.Reader (local)
 import Data.Aeson (Value(..))
 import Data.String
@@ -43,6 +44,7 @@ import Data.Time (diffUTCTime)
 import Freckle.App.Ecs
 import qualified Freckle.App.Env as Env
 import qualified Network.StatsD.Datadog as Datadog
+import System.IO (hPutStrLn, stderr)
 import qualified System.Metrics.Gauge as EKG
 import UnliftIO.Exception (bracket_)
 import Yesod.Core.Lens
@@ -264,8 +266,12 @@ sendMetric metricType name metricValue = do
     & (Datadog.tags .~ map (uncurry Datadog.tag) scTags)
 
 getEcsMetadataTags :: MonadIO m => m [(Text, Text)]
-getEcsMetadataTags = maybe [] toTags <$> getEcsMetadata
+getEcsMetadataTags = do
+  emMetadata <- runExceptT getEcsMetadata
+  either (([] <$) . err) (pure . maybe [] toTags) emMetadata
  where
+  err e = liftIO $ hPutStrLn stderr $ "Error reading ECS Metadata: " <> show e
+
   toTags (EcsMetadata EcsContainerMetadata {..} EcsContainerTaskMetadata {..})
     = [ ("container_id", ecmDockerId)
       , ("container_name", ecmDockerName)
