@@ -1,4 +1,11 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.0.1...main)
+
+## [v1.9.0.1](https://github.com/freckle/freckle-app/compare/v1.9.0.0...v1.9.0.1)
+
+- Report errors getting ECS Metadata during `withStatsClient` initialization
+
+  This does change the type of `getEcsMetadata`, but we consider it a
+  patch-level bump because that module is very unlikely to be used directly.
 
 ## [v1.9.0.0](https://github.com/freckle/freckle-app/compare/v1.8.1.0...v1.9.0.0)
 
