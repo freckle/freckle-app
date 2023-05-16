@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.0.1...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.0.2...main)
+
+## [v1.9.0.2](https://github.com/freckle/freckle-app/compare/v1.9.0.1...v1.9.0.2)
+
+- Fix for not setting ECS Metadata tags in `StatsClient`
 
 ## [v1.9.0.1](https://github.com/freckle/freckle-app/compare/v1.9.0.0...v1.9.0.1)
 
