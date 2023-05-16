@@ -21,7 +21,8 @@ data EcsMetadata = EcsMetadata
   }
 
 data EcsMetadataError
-  = EcsMetadataErrorInvalidURI String
+  = EcsMetadataErrorNotEnabled
+  | EcsMetadataErrorInvalidURI String
   | EcsMetadataErrorUnexpectedStatus Status Request
   | EcsMetadataErrorInvalidJSON HttpDecodeError
   deriving stock Show
@@ -51,15 +52,17 @@ instance FromJSON EcsContainerTaskMetadata where
 aesonDropPrefix :: String -> Options
 aesonDropPrefix x = defaultOptions { fieldLabelModifier = dropPrefix x }
 
-getEcsMetadata
-  :: (MonadIO m, MonadError EcsMetadataError m) => m (Maybe EcsMetadata)
+getEcsMetadata :: (MonadIO m, MonadError EcsMetadataError m) => m EcsMetadata
 getEcsMetadata = do
-  mURI <- liftIO $ lookupEnv "ECS_CONTAINER_METADATA_URI"
+  mURI <-
+    liftIO $ (<|>) <$> lookupEnv "ECS_CONTAINER_METADATA_URI_V4" <*> lookupEnv
+      "ECS_CONTAINER_METADATA_URI"
 
-  for mURI $ \uri ->
-    EcsMetadata
-      <$> makeContainerMetadataRequest (uri <> "/")
-      <*> makeContainerMetadataRequest (uri <> "/task")
+  uri <- maybe (throwError EcsMetadataErrorNotEnabled) pure mURI
+
+  EcsMetadata
+    <$> makeContainerMetadataRequest (uri <> "/")
+    <*> makeContainerMetadataRequest (uri <> "/task")
 
 makeContainerMetadataRequest
   :: (MonadIO m, MonadError EcsMetadataError m, FromJSON a) => String -> m a
