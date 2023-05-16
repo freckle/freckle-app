@@ -27,6 +27,10 @@ data EcsMetadataError
   | EcsMetadataErrorInvalidJSON HttpDecodeError
   deriving stock Show
 
+-- | Parsing for the @/@ response
+--
+-- <https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-metadata-endpoint-v4.html#task-metadata-endpoint-v4-examples>
+--
 data EcsContainerMetadata = EcsContainerMetadata
   { ecmDockerId :: Text
   , ecmDockerName :: Text
@@ -38,6 +42,10 @@ data EcsContainerMetadata = EcsContainerMetadata
 instance FromJSON EcsContainerMetadata where
   parseJSON = genericParseJSON $ aesonDropPrefix "ecm"
 
+-- | Parsing of the @/task@ response
+--
+-- <https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-metadata-endpoint-v4.html#task-metadata-endpoint-v4-response>
+--
 data EcsContainerTaskMetadata = EcsContainerTaskMetadata
   { ectmCluster :: Text
   , ectmTaskARN :: Text
