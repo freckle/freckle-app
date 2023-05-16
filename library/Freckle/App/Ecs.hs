@@ -23,8 +23,8 @@ data EcsMetadata = EcsMetadata
 data EcsMetadataError
   = EcsMetadataErrorNotEnabled
   | EcsMetadataErrorInvalidURI String
-  | EcsMetadataErrorUnexpectedStatus Status Request
-  | EcsMetadataErrorInvalidJSON HttpDecodeError
+  | EcsMetadataErrorUnexpectedStatus Request Status
+  | EcsMetadataErrorInvalidJSON Request HttpDecodeError
   deriving stock Show
 
 -- | Parsing for the @/@ response
@@ -83,9 +83,9 @@ makeContainerMetadataRequest uri = do
 
   unless (statusIsSuccessful status)
     $ throwError
-    $ EcsMetadataErrorUnexpectedStatus status req
+    $ EcsMetadataErrorUnexpectedStatus req status
 
-  mapEither EcsMetadataErrorInvalidJSON $ getResponseBody resp
+  mapEither (EcsMetadataErrorInvalidJSON req) $ getResponseBody resp
 
 mapEither :: MonadError e m => (x -> e) -> Either x a -> m a
 mapEither f = either (throwError . f) pure
