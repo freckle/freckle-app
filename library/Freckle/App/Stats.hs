@@ -267,8 +267,8 @@ sendMetric metricType name metricValue = do
 
 getEcsMetadataTags :: MonadIO m => m [(Text, Text)]
 getEcsMetadataTags = do
-  emMetadata <- runExceptT getEcsMetadata
-  either (([] <$) . err) (pure . maybe [] toTags) emMetadata
+  eMetadata <- runExceptT getEcsMetadata
+  either (([] <$) . err) (pure . toTags) eMetadata
  where
   err e = liftIO $ hPutStrLn stderr $ "Error reading ECS Metadata: " <> show e
 
