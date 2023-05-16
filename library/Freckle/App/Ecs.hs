@@ -22,6 +22,7 @@ data EcsMetadata = EcsMetadata
 
 data EcsMetadataError
   = EcsMetadataErrorInvalidURI String
+  | EcsMetadataErrorUnexpectedStatus Status Request
   | EcsMetadataErrorInvalidJSON HttpDecodeError
   deriving stock Show
 
@@ -62,12 +63,18 @@ getEcsMetadata = do
 
 makeContainerMetadataRequest
   :: (MonadIO m, MonadError EcsMetadataError m, FromJSON a) => String -> m a
-makeContainerMetadataRequest =
-  mapEither EcsMetadataErrorInvalidJSON
-    . getResponseBody
-    <=< httpJson
-    <=< mapEither (EcsMetadataErrorInvalidURI . displayException)
-    . parseRequest
+makeContainerMetadataRequest uri = do
+  req <- mapEither (EcsMetadataErrorInvalidURI . displayException)
+    $ parseRequest uri
+  resp <- httpJson req
+
+  let status = getResponseStatus resp
+
+  unless (statusIsSuccessful status)
+    $ throwError
+    $ EcsMetadataErrorUnexpectedStatus status req
+
+  mapEither EcsMetadataErrorInvalidJSON $ getResponseBody resp
 
 mapEither :: MonadError e m => (x -> e) -> Either x a -> m a
 mapEither f = either (throwError . f) pure
