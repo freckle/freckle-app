@@ -69,7 +69,7 @@ getEcsMetadata = do
   uri <- maybe (throwError EcsMetadataErrorNotEnabled) pure mURI
 
   EcsMetadata
-    <$> makeContainerMetadataRequest (uri <> "/")
+    <$> makeContainerMetadataRequest uri
     <*> makeContainerMetadataRequest (uri <> "/task")
 
 makeContainerMetadataRequest
