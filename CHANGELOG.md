@@ -1,5 +1,7 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.0.2...main)
 
+- Derive `MonadResource` for `AppExample`.
+
 ## [v1.9.0.2](https://github.com/freckle/freckle-app/compare/v1.9.0.1...v1.9.0.2)
 
 - Fix for not setting ECS Metadata tags in `StatsClient`

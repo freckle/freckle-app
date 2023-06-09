@@ -36,6 +36,7 @@ import Test.Hspec as X
 import Test.Hspec.Expectations.Lifted as X hiding (expectationFailure)
 
 import Blammo.Logging
+import Conduit (MonadResource)
 import Control.Monad.Base
 import Control.Monad.Catch
 import qualified Control.Monad.Fail as Fail
@@ -74,6 +75,7 @@ newtype AppExample app a = AppExample
     , MonadThrow
     , MonadLogger
     , Fail.MonadFail
+    , MonadResource
     )
 
 -- We could derive this in newer versions of unliftio-core, but defining it by
