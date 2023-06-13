@@ -277,7 +277,7 @@ setStartupOptions :: MonadIO m => PostgresConnectionConf -> Connection -> m ()
 setStartupOptions PostgresConnectionConf {..} conn = do
   let timeoutMillis = postgresStatementTimeoutMilliseconds pccStatementTimeout
   void $ liftIO $ do
-    execute
+    void $ execute
       conn
       [sql| SET statement_timeout = ? |]
       (Only timeoutMillis)
