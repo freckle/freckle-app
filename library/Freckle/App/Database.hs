@@ -276,7 +276,7 @@ refreshIamToken conf tokenIORef = do
 setStartupOptions :: MonadIO m => PostgresConnectionConf -> Connection -> m ()
 setStartupOptions PostgresConnectionConf {..} conn = do
   let timeoutMillis = postgresStatementTimeoutMilliseconds pccStatementTimeout
-  void $ liftIO $ do
+  liftIO $ do
     void $ execute
       conn
       [sql| SET statement_timeout = ? |]
