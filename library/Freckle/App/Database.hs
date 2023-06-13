@@ -130,6 +130,7 @@ data PostgresConnectionConf = PostgresConnectionConf
   , pccDatabase :: String
   , pccPoolSize :: Int
   , pccStatementTimeout :: PostgresStatementTimeout
+  , pccSchema :: String
   }
   deriving stock (Show, Eq)
 
@@ -199,6 +200,7 @@ envParseDatabaseConf source = do
   database <- Env.var Env.nonempty "PGDATABASE" mempty
   port <- Env.var Env.auto "PGPORT" mempty
   poolSize <- Env.var Env.auto "PGPOOLSIZE" $ Env.def 10
+  schema <- Env.var Env.auto "PGSCHEMA" mempty
   statementTimeout <-
     Env.var (Env.eitherReader readPostgresStatementTimeout) "PGSTATEMENTTIMEOUT"
       $ Env.def (PostgresStatementTimeoutSeconds 120)
@@ -210,6 +212,7 @@ envParseDatabaseConf source = do
     , pccDatabase = database
     , pccPoolSize = poolSize
     , pccStatementTimeout = statementTimeout
+    , pccSchema = schema
     }
 
 data AuroraIamToken = AuroraIamToken
@@ -309,4 +312,5 @@ postgresConnectionString PostgresConnectionConf {..} password =
     , "user=" <> pccUser
     , "password=" <> password
     , "dbname=" <> pccDatabase
+    , "options=-csearch_path=" <> pccSchema
     ]
