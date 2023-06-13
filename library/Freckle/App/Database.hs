@@ -130,7 +130,7 @@ data PostgresConnectionConf = PostgresConnectionConf
   , pccDatabase :: String
   , pccPoolSize :: Int
   , pccStatementTimeout :: PostgresStatementTimeout
-  , pccSchema :: String
+  , pccSchema :: Maybe String
   }
   deriving stock (Show, Eq)
 
@@ -281,10 +281,7 @@ setStartupOptions PostgresConnectionConf {..} conn = do
       conn
       [sql| SET statement_timeout = ? |]
       (Only timeoutMillis)
-    execute
-      conn
-      [sql| SET search_path TO ? |]
-      (Only pccSchema)
+    for_ pccSchema $ \schema -> execute conn [sql| SET search_path TO ? |] (Only schema)
 
 makePostgresPoolWith
   :: (MonadUnliftIO m, MonadLoggerIO m) => PostgresConnectionConf -> m SqlPool
