@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.0.2...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.0.3...main)
+
+## [v1.9.0.3](https://github.com/freckle/freckle-app/compare/v1.9.0.2...v1.9.0.3)
+
+- Use option `PGSCHEMA` environment variable to set schema at connection start.
 
 ## [v1.9.0.2](https://github.com/freckle/freckle-app/compare/v1.9.0.1...v1.9.0.2)
 

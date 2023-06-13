@@ -130,6 +130,7 @@ data PostgresConnectionConf = PostgresConnectionConf
   , pccDatabase :: String
   , pccPoolSize :: Int
   , pccStatementTimeout :: PostgresStatementTimeout
+  , pccSchema :: Maybe String
   }
   deriving stock (Show, Eq)
 
@@ -199,6 +200,7 @@ envParseDatabaseConf source = do
   database <- Env.var Env.nonempty "PGDATABASE" mempty
   port <- Env.var Env.auto "PGPORT" mempty
   poolSize <- Env.var Env.auto "PGPOOLSIZE" $ Env.def 10
+  schema <- optional $ Env.var Env.nonempty "PGSCHEMA" mempty
   statementTimeout <-
     Env.var (Env.eitherReader readPostgresStatementTimeout) "PGSTATEMENTTIMEOUT"
       $ Env.def (PostgresStatementTimeoutSeconds 120)
@@ -210,6 +212,7 @@ envParseDatabaseConf source = do
     , pccDatabase = database
     , pccPoolSize = poolSize
     , pccStatementTimeout = statementTimeout
+    , pccSchema = schema
     }
 
 data AuroraIamToken = AuroraIamToken
@@ -270,20 +273,22 @@ refreshIamToken conf tokenIORef = do
   token' <- createAuroraIamToken conf
   writeIORef tokenIORef token'
 
-setTimeout :: MonadIO m => PostgresConnectionConf -> Connection -> m ()
-setTimeout PostgresConnectionConf {..} conn = do
+setStartupOptions :: MonadIO m => PostgresConnectionConf -> Connection -> m ()
+setStartupOptions PostgresConnectionConf {..} conn = do
   let timeoutMillis = postgresStatementTimeoutMilliseconds pccStatementTimeout
-  void $ liftIO $ execute
-    conn
-    [sql| SET statement_timeout = ? |]
-    (Only timeoutMillis)
+  liftIO $ do
+    void $ execute
+      conn
+      [sql| SET statement_timeout = ? |]
+      (Only timeoutMillis)
+    for_ pccSchema $ \schema -> execute conn [sql| SET search_path TO ? |] (Only schema)
 
 makePostgresPoolWith
   :: (MonadUnliftIO m, MonadLoggerIO m) => PostgresConnectionConf -> m SqlPool
 makePostgresPoolWith conf@PostgresConnectionConf {..} = case pccPassword of
   PostgresPasswordIamAuth -> makePostgresPoolWithIamAuth conf
   PostgresPasswordStatic password -> createPostgresqlPoolModified
-    (setTimeout conf)
+    (setStartupOptions conf)
     (postgresConnectionString conf password)
     pccPoolSize
 
@@ -298,7 +303,7 @@ makePostgresPoolWithIamAuth conf@PostgresConnectionConf {..} = do
     token <- readIORef tokenIORef
     let connStr = postgresConnectionString conf (unpack $ aitToken token)
     conn <- connectPostgreSQL connStr
-    setTimeout conf conn
+    setStartupOptions conf conn
     openSimpleConn logFunc conn
 
 postgresConnectionString :: PostgresConnectionConf -> String -> ByteString
