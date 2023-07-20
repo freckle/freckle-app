@@ -1,7 +1,10 @@
+{-# LANGUAGE ApplicativeDo #-}
 {-# LANGUAGE NamedFieldPuns #-}
 
 module Freckle.App.Kafka
   ( envKafkaBrokerAddresses
+  , KafkaProducerPoolConfig (..)
+  , envKafkaProducerPoolConfig
   , KafkaProducerPool (..)
   , HasKafkaProducerPool (..)
   , createKafkaProducerPool
@@ -40,6 +43,37 @@ readKafkaBrokerAddresses t = case NE.nonEmpty $ T.splitOn "," $ T.pack t of
     | x /= "" -> Right $ BrokerAddress <$> xs
   _ -> Left "Broker Address cannot be empty"
 
+data KafkaProducerPoolConfig = KafkaProducerPoolConfig
+  { kafkaProducerPoolConfigStripes :: Int
+  -- ^ The number of stripes (distinct sub-pools) to maintain.
+  -- The smallest acceptable value is 1.
+  , kafkaProducerPoolConfigIdleTimeout :: NominalDiffTime
+  -- ^ Amount of time for which an unused resource is kept open.
+  -- The smallest acceptable value is 0.5 seconds.
+  --
+  -- The elapsed time before destroying a resource may be a little
+  -- longer than requested, as the reaper thread wakes at 1-second
+  -- intervals.
+  , kafkaProducerPoolConfigSize :: Int
+  -- ^ Maximum number of resources to keep open per stripe.  The
+  -- smallest acceptable value is 1.
+  --
+  -- Requests for resources will block if this limit is reached on a
+  -- single stripe, even if other stripes have idle resources
+  -- available.
+  }
+  deriving stock (Show)
+
+-- Same defaults as `Database.Persist.Sql.ConnectionPoolConfig`
+defaultKafkaProducerPoolConfig :: KafkaProducerPoolConfig
+defaultKafkaProducerPoolConfig = KafkaProducerPoolConfig 1 600 10
+
+envKafkaProducerPoolConfig
+  :: Env.Parser Env.Error KafkaProducerPoolConfig
+envKafkaProducerPoolConfig = do
+  poolSize <- Env.var Env.auto "KAFKA_PRODUCER_POOL_SIZE" $ Env.def 10
+  pure $ defaultKafkaProducerPoolConfig {kafkaProducerPoolConfigSize = poolSize}
+
 data KafkaProducerPool
   = NullKafkaProducerPool
   | KafkaProducerPool (Pool KafkaProducer)
@@ -52,25 +86,15 @@ instance HasKafkaProducerPool site => HasKafkaProducerPool (HandlerData child si
 
 createKafkaProducerPool
   :: NonEmpty BrokerAddress
-  -> Int
-  -- ^ The number of stripes (distinct sub-pools) to maintain.
-  -- The smallest acceptable value is 1.
-  -> NominalDiffTime
-  -- ^ Amount of time for which an unused resource is kept open.
-  -- The smallest acceptable value is 0.5 seconds.
-  --
-  -- The elapsed time before destroying a resource may be a little
-  -- longer than requested, as the reaper thread wakes at 1-second
-  -- intervals.
-  -> Int
-  -- ^ Maximum number of resources to keep open per stripe.  The
-  -- smallest acceptable value is 1.
-  --
-  -- Requests for resources will block if this limit is reached on a
-  -- single stripe, even if other stripes have idle resources
-  -- available.
+  -> KafkaProducerPoolConfig
   -> IO (Pool KafkaProducer)
-createKafkaProducerPool addresses = Pool.createPool mkProducer closeProducer
+createKafkaProducerPool addresses KafkaProducerPoolConfig {..} =
+  Pool.createPool
+    mkProducer
+    closeProducer
+    kafkaProducerPoolConfigStripes
+    kafkaProducerPoolConfigIdleTimeout
+    kafkaProducerPoolConfigSize
  where
   mkProducer =
     either throw pure =<< newProducer (brokersList $ toList addresses)
