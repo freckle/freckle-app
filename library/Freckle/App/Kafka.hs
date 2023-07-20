@@ -35,10 +35,10 @@ envKafkaBrokerAddresses = Env.var
     (Env.eitherReader readKafkaBrokerAddresses)
     "KAFKA_BROKER_ADDRESSES"
     mempty
-  
+
 readKafkaBrokerAddresses :: String -> Either String (NonEmpty BrokerAddress)
 readKafkaBrokerAddresses t = case (NE.nonEmpty $ T.splitOn "," $ T.pack t) of
-  Just xs@(x NE.:| _) 
+  Just xs@(x NE.:| _)
     | x /= "" -> Right $ BrokerAddress <$> xs
   _ -> Left "Broker Address cannot be empty"
 
@@ -52,7 +52,7 @@ class HasKafkaProducerPool env where
 instance HasKafkaProducerPool site => HasKafkaProducerPool (HandlerData child site) where
   kafkaProducerPoolL = envL . siteL . kafkaProducerPoolL
 
-createKafkaProducerPool :: NonEmpty BrokerAddress 
+createKafkaProducerPool :: NonEmpty BrokerAddress
   -> Int
   -- ^ The number of stripes (distinct sub-pools) to maintain.
   -- The smallest acceptable value is 1.
@@ -72,7 +72,7 @@ createKafkaProducerPool :: NonEmpty BrokerAddress
   -- available.
   -> IO (Pool KafkaProducer)
 createKafkaProducerPool addresses = Pool.createPool mkProducer closeProducer
-  where          
+  where
       mkProducer =
         either throw pure =<< newProducer (brokersList $ toList addresses)
       throw err = throwString $ "Failed to open kafka producer: " <> show err
