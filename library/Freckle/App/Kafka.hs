@@ -14,7 +14,7 @@ import Freckle.App.Prelude
 import Blammo.Logging
 import Control.Lens (Lens', view)
 import Data.Aeson (ToJSON, encode)
-import Data.ByteString (toStrict)
+import Data.ByteString.Lazy (toStrict)
 import qualified Data.List.NonEmpty as NE
 import Data.Pool (Pool)
 import qualified Data.Pool as Pool
