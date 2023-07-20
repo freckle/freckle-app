@@ -42,6 +42,7 @@ library
       Freckle.App.Http
       Freckle.App.Http.Paginate
       Freckle.App.Http.Retry
+      Freckle.App.Kafka
       Freckle.App.Memcached
       Freckle.App.Memcached.CacheKey
       Freckle.App.Memcached.CacheTTL
@@ -127,6 +128,7 @@ library
     , http-conduit >=2.3.5
     , http-link-header
     , http-types
+    , hw-kafka-client
     , immortal
     , lens
     , memcache
