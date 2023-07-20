@@ -3,14 +3,14 @@ module Freckle.App.Memcached.Client
   , newMemcachedClient
   , withMemcachedClient
   , memcachedClientDisabled
-  , HasMemcachedClient(..)
+  , HasMemcachedClient (..)
   , get
   , set
   ) where
 
 import Freckle.App.Prelude
 
-import Control.Lens (Lens', _1, view)
+import Control.Lens (Lens', view, _1)
 import qualified Database.Memcache.Client as Memcache
 import Database.Memcache.Types (Value)
 import Freckle.App.Memcached.CacheKey
@@ -58,7 +58,6 @@ get k = with $ \case
 -- | Set a value to expire in the given seconds
 --
 -- Pass @0@ to set a value that never expires.
---
 set
   :: (MonadIO m, MonadReader env m, HasMemcachedClient env)
   => CacheKey
@@ -67,8 +66,11 @@ set
   -> m ()
 set k v expiration = with $ \case
   MemcachedClient mc ->
-    void $ liftIO $ Memcache.set mc (fromCacheKey k) v 0 $ fromCacheTTL
-      expiration
+    void $
+      liftIO $
+        Memcache.set mc (fromCacheKey k) v 0 $
+          fromCacheTTL
+            expiration
   MemcachedClientDisabled -> pure ()
 
 quitClient :: MonadIO m => MemcachedClient -> m ()

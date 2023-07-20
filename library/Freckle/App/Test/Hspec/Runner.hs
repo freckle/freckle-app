@@ -8,13 +8,15 @@ module Freckle.App.Test.Hspec.Runner
 import Freckle.App.Prelude
 
 import Control.Concurrent (getNumCapabilities, setNumCapabilities)
-import Control.Monad.Trans.Maybe (MaybeT(MaybeT), runMaybeT)
+import Control.Monad.Trans.Maybe (MaybeT (MaybeT), runMaybeT)
 import Data.List (isInfixOf)
-import qualified Prelude as Unsafe (read)
 import System.Environment (getArgs, lookupEnv)
 import Test.Hspec (Spec)
 import Test.Hspec.JUnit
-  (configWithJUnit, defaultJUnitConfig, setJUnitConfigOutputFile)
+  ( configWithJUnit
+  , defaultJUnitConfig
+  , setJUnitConfigOutputFile
+  )
 import Test.Hspec.Runner
   ( Config
   , Path
@@ -26,6 +28,7 @@ import Test.Hspec.Runner
   , readConfig
   , runSpec
   )
+import qualified Prelude as Unsafe (read)
 
 run :: String -> Spec -> IO ()
 run = runWith defaultConfig
@@ -44,17 +47,21 @@ runWith config name spec = do
   -- Run unreliable tests first, so local dev errors are reported for reliable
   -- specs at the end
   putStrLn "Running UNRELIABLE tests; failures here should not fail the build"
-  void $ runner ("unreliable-" <> name) id =<< load
-    args
-    (skip reliableTests config)
+  void $
+    runner ("unreliable-" <> name) id
+      =<< load
+        args
+        (skip reliableTests config)
 
   putStrLn "Running RELIABLE"
-  reliableSummary <- runner name id
-    =<< load args (skip (anys [unreliableTests, isolatedTests]) config)
+  reliableSummary <-
+    runner name id
+      =<< load args (skip (anys [unreliableTests, isolatedTests]) config)
 
   putStrLn "Running ISOLATED"
-  isolatedSummary <- runner ("isolated-" <> name) noConcurrency
-    =<< load args (skip (not . isolatedTests) config)
+  isolatedSummary <-
+    runner ("isolated-" <> name) noConcurrency
+      =<< load args (skip (not . isolatedTests) config)
 
   evaluateSummary $ reliableSummary <> isolatedSummary
  where
@@ -62,7 +69,7 @@ runWith config name spec = do
   junit filename changeConfig =
     (spec `runJUnitSpec` ("/tmp/junit", filename)) . changeConfig
   hspec _ changeConfig = runSpec spec . changeConfig
-  noConcurrency x = x { configConcurrentJobs = Just 1 }
+  noConcurrency x = x {configConcurrentJobs = Just 1}
 
 runJUnitSpec :: Spec -> (FilePath, String) -> Config -> IO Summary
 runJUnitSpec spec (path, name) config =
@@ -74,13 +81,15 @@ runJUnitSpec spec (path, name) config =
 
 makeParallelConfig :: Config -> IO Config
 makeParallelConfig config = do
-  jobCores <- fromMaybe 1 <$> runMaybeT
-    (MaybeT lookupTestCapabilities <|> MaybeT lookupHostCapabilities)
+  jobCores <-
+    fromMaybe 1
+      <$> runMaybeT
+        (MaybeT lookupTestCapabilities <|> MaybeT lookupHostCapabilities)
   putStrLn $ "Running spec with " <> show jobCores <> " cores"
   setNumCapabilities jobCores
   -- Api specs are IO bound, having more jobs than cores allows for more
   -- cooperative IO from green thread interleaving.
-  pure config { configConcurrentJobs = Just $ jobCores * 4 }
+  pure config {configConcurrentJobs = Just $ jobCores * 4}
 
 lookupTestCapabilities :: IO (Maybe Int)
 lookupTestCapabilities = fmap Unsafe.read <$> lookupEnv "TEST_CAPABILITIES"
@@ -93,7 +102,7 @@ reduceCapabilities :: Int -> Int
 reduceCapabilities = max 1 . (`div` 2)
 
 skip :: (Path -> Bool) -> Config -> Config
-skip predicate config = config { configSkipPredicate = Just predicate }
+skip predicate config = config {configSkipPredicate = Just predicate}
 
 unreliableTests :: Path -> Bool
 unreliableTests = ("UNRELIABLE" `isInfixOf`) . snd

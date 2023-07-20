@@ -13,7 +13,6 @@ import Scientist.Duration
 --
 -- * Experiments are labeled "science.${name}"
 -- * Results are tagged with "variant:${name}"
---
 experimentPublishDatadog
   :: (MonadReader env m, MonadUnliftIO m, HasStatsClient env)
   => Result c a b
@@ -23,11 +22,11 @@ experimentPublishDatadog result = for_ (resultDetails result) $ \details -> do
     statName = "science." <> resultDetailsExperimentName details
     ResultControl {..} = resultDetailsControl details
 
-  Stats.tagged [("variant", resultControlName)]
-    $ Stats.gauge statName
-    $ durationToSeconds resultControlDuration
+  Stats.tagged [("variant", resultControlName)] $
+    Stats.gauge statName $
+      durationToSeconds resultControlDuration
 
   for_ (resultDetailsCandidates details) $ \ResultCandidate {..} ->
-    Stats.tagged [("variant", "candidate-" <> resultCandidateName)]
-      $ Stats.gauge statName
-      $ durationToSeconds resultCandidateDuration
+    Stats.tagged [("variant", "candidate-" <> resultCandidateName)] $
+      Stats.gauge statName $
+        durationToSeconds resultCandidateDuration

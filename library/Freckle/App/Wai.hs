@@ -3,14 +3,14 @@ module Freckle.App.Wai
   ( noCacheMiddleware
   , denyFrameEmbeddingMiddleware
 
-  -- * CORS
+    -- * CORS
   , corsMiddleware
 
-  -- * Logs
+    -- * Logs
   , requestLogger
   , addThreadContextFromRequest
 
-  -- * Metrics
+    -- * Metrics
   , addThreadContextFromStatsTags
   , requestStats
   ) where

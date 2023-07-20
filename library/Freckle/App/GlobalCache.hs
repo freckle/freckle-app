@@ -42,7 +42,6 @@
 --     LogStderr -> newStderrLoggerSet
 --     LogFile f -> flip newFileLoggerSet f
 -- @
---
 module Freckle.App.GlobalCache
   ( GlobalCache
   , newGlobalCache
@@ -66,7 +65,8 @@ globallyCache :: GlobalCache a -> IO a -> IO a
 globallyCache (GlobalCache var) construct = do
   mv <- readIORef var
   maybe (cache =<< construct) pure mv
-  where cache v = atomicModifyIORef' var $ const (Just v, v)
+ where
+  cache v = atomicModifyIORef' var $ const (Just v, v)
 
 -- | Garbage collect one of our 'IORef's after an action has run
 --
@@ -77,7 +77,6 @@ globallyCache (GlobalCache var) construct = do
 -- To avoid garbage collection issues, we can leverage a "System.Mem.Weak" to
 -- add a finalizer. When that 'MVar' gets garbage collected we can clear the
 -- global 'IORef'. This maintains the status quo, with minimal plumbing.
---
 withGlobalCacheCleanup :: GlobalCache a -> IO b -> IO ()
 withGlobalCacheCleanup (GlobalCache var) action = do
   cleanup <- newMVar ()

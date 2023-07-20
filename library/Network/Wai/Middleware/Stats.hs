@@ -10,9 +10,9 @@ import Control.Lens ((^.))
 import Control.Monad.Reader (runReaderT)
 import Data.Aeson ((.=))
 import qualified Freckle.App.Aeson as Key
-import Freckle.App.Stats (HasStatsClient(..), tagsL)
+import Freckle.App.Stats (HasStatsClient (..), tagsL)
 import qualified Freckle.App.Stats as Stats
-import Network.HTTP.Types.Status (Status(..))
+import Network.HTTP.Types.Status (Status (..))
 import Network.Wai (Middleware, Request, requestMethod, responseStatus)
 
 -- | Add any tags in the ambient 'StatsClient' to the logging context
@@ -30,12 +30,11 @@ requestStats
 requestStats env getTags app req respond = do
   start <- getCurrentTime
   app req $ \res -> do
-    let
-      tags =
-        getTags req
-          <> [ ("method", decodeUtf8 $ requestMethod req)
-             , ("status", pack $ show $ statusCode $ responseStatus res)
-             ]
+    let tags =
+          getTags req
+            <> [ ("method", decodeUtf8 $ requestMethod req)
+               , ("status", pack $ show $ statusCode $ responseStatus res)
+               ]
 
     flip runReaderT env $ Stats.tagged tags $ do
       Stats.increment "requests"

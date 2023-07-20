@@ -19,16 +19,15 @@
 -- >   <$> var auto "BATCH_SIZE" (def 1)
 -- >   <*> switch "DRY_RUN" mempty
 -- >   <*> flag (Off LevelInfo) (On LevelDebug) "DEBUG" mempty
---
 module Freckle.App.Env
   ( module Env
 
-  -- * Replacements
-  , Off(..)
-  , On(..)
+    -- * Replacements
+  , Off (..)
+  , On (..)
   , flag
 
-  -- * Extensions
+    -- * Extensions
   , kept
   , eitherReader
   , time
@@ -43,7 +42,7 @@ import Data.Time (defaultTimeLocale, parseTimeM)
 import Env hiding (flag)
 import qualified Env
 import Env.Internal.Free (hoistAlt)
-import Env.Internal.Parser (Parser(..), VarF(..))
+import Env.Internal.Parser (Parser (..), VarF (..))
 
 -- | Designates the value of a parameter when a flag is not provided.
 newtype Off a = Off a
@@ -74,7 +73,6 @@ newtype On a = On a
 --
 -- >>> flag (Off LevelInfo) (On LevelDebug) "DEBUG" mempty `parsePure` [("DEBUG", "no")]
 -- Right LevelDebug
---
 flag :: Off a -> On a -> String -> Mod Flag a -> Parser Error a
 flag (Off f) (On t) n m = Env.flag f t n m
 
@@ -88,7 +86,6 @@ flag (Off f) (On t) n m = Env.flag f t n m
 -- In @envparse-0.5@, the default is reversed and @sensitive@ can be used to
 -- explicitly unset read variables, and so this function will instead make them
 -- all behave as if @sensitive@ was /not/ used.
---
 kept :: Parser e a -> Parser e a
 kept = Parser . hoistAlt go . unParser
  where
@@ -102,10 +99,10 @@ kept = Parser . hoistAlt go . unParser
 -- | Create a 'Reader' from a simple parser function
 --
 -- This is a building-block for other 'Reader's
---
 eitherReader :: (String -> Either String a) -> Reader Error a
 eitherReader f s = first (unread . suffix) $ f s
-  where suffix x = x <> ": " <> show s
+ where
+  suffix x = x <> ": " <> show s
 
 -- | Read a time value using the given format
 --
@@ -114,12 +111,11 @@ eitherReader f s = first (unread . suffix) $ f s
 --
 -- >>> var (time "%Y-%m-%d") "TIME" mempty `parsePure` [("TIME", "10:00PM")]
 -- Left [("TIME",UnreadError "unable to parse time as %Y-%m-%d: \"10:00PM\"")]
---
 time :: String -> Reader Error UTCTime
 time fmt =
-  eitherReader
-    $ note ("unable to parse time as " <> fmt)
-    . parseTimeM True defaultTimeLocale fmt
+  eitherReader $
+    note ("unable to parse time as " <> fmt)
+      . parseTimeM True defaultTimeLocale fmt
 
 -- | Read key-value pairs
 --
@@ -135,7 +131,6 @@ time fmt =
 --
 -- >>> var keyValues "TAGS" mempty `parsePure` [("TAGS", "foo:bar,:bat")]
 -- Left [("TAGS",UnreadError "Value bat has no key: \"foo:bar,:bat\"")]
---
 keyValues :: Reader Error [(Text, Text)]
 keyValues = eitherReader $ traverse keyValue . T.splitOn "," . pack
  where

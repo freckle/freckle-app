@@ -4,16 +4,16 @@
 
 -- | Database access for your @App@
 module Freckle.App.Database
-  ( HasSqlPool(..)
+  ( HasSqlPool (..)
   , SqlPool
   , makePostgresPool
   , makePostgresPoolWith
   , runDB
   , runDBSimple
-  , PostgresConnectionConf(..)
-  , PostgresPasswordSource(..)
-  , PostgresPassword(..)
-  , PostgresStatementTimeout(..)
+  , PostgresConnectionConf (..)
+  , PostgresPasswordSource (..)
+  , PostgresPassword (..)
+  , PostgresStatementTimeout (..)
   , postgresStatementTimeoutMilliseconds
   , envParseDatabaseConf
   , envPostgresPasswordSource
@@ -23,7 +23,7 @@ import Freckle.App.Prelude
 
 import Blammo.Logging
 import qualified Control.Immortal as Immortal
-import Control.Monad.IO.Unlift (MonadUnliftIO(..))
+import Control.Monad.IO.Unlift (MonadUnliftIO (..))
 import Control.Monad.Reader
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS8
@@ -41,20 +41,24 @@ import Database.Persist.Postgresql
   , runSqlPool
   )
 import Database.PostgreSQL.Simple
-  (Connection, Only(..), connectPostgreSQL, execute)
+  ( Connection
+  , Only (..)
+  , connectPostgreSQL
+  , execute
+  )
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import qualified Freckle.App.Env as Env
-import Freckle.App.OpenTelemetry (MonadTracer(..))
+import Freckle.App.OpenTelemetry (MonadTracer (..))
 import Freckle.App.Stats (HasStatsClient)
 import qualified Freckle.App.Stats as Stats
 import Network.AWS.XRayClient.Persistent
 import Network.AWS.XRayClient.WAI
-import qualified Prelude as Unsafe (read)
 import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
 import UnliftIO.Exception (displayException)
 import UnliftIO.IORef
-import Yesod.Core.Types (HandlerData(..), RunHandlerEnv(..))
+import Yesod.Core.Types (HandlerData (..), RunHandlerEnv (..))
+import qualified Prelude as Unsafe (read)
 
 type SqlPool = Pool SqlBackend
 
@@ -87,8 +91,8 @@ runDB
 runDB action = do
   pool <- asks getSqlPool
   mVaultData <- getVaultData
-  Stats.withGauge Stats.dbConnections
-    $ maybe runSqlPool (runSqlPoolXRay "runDB") mVaultData action pool
+  Stats.withGauge Stats.dbConnections $
+    maybe runSqlPool (runSqlPoolXRay "runDB") mVaultData action pool
 
 runDBSimple
   :: (HasSqlPool app, MonadUnliftIO m, MonadReader app m)
@@ -106,21 +110,22 @@ runSqlPoolXRay
   --
   -- The top-level subsegment will be named @\"<this> runSqlPool\"@ and the,
   -- with a lower-level subsegment named @\"<this> query\"@.
-  --
-  -> XRayVaultData -- ^ Vault data to trace with
+  -> XRayVaultData
+  -- ^ Vault data to trace with
   -> ReaderT backend m a
   -> Pool backend
   -> m a
 runSqlPoolXRay name vaultData action pool =
-  traceXRaySubsegment' vaultData (name <> " runSqlPool") id
-    $ withRunInIO
-    $ \run -> withResource pool $ \backend -> do
+  traceXRaySubsegment' vaultData (name <> " runSqlPool") id $
+    withRunInIO $
+      \run -> withResource pool $ \backend -> do
         let
           sendTrace = atomicallyAddVaultDataSubsegment vaultData
           stdGenIORef = xrayVaultDataStdGen vaultData
           subsegmentName = name <> " query"
-        run . runSqlConn action =<< liftIO
-          (xraySqlBackend sendTrace stdGenIORef subsegmentName backend)
+        run . runSqlConn action
+          =<< liftIO
+            (xraySqlBackend sendTrace stdGenIORef subsegmentName backend)
 
 data PostgresConnectionConf = PostgresConnectionConf
   { pccHost :: String
@@ -170,7 +175,6 @@ postgresStatementTimeoutMilliseconds = \case
 --
 -- >>> readPostgresStatementTimeout "2m0"
 -- Left "..."
---
 readPostgresStatementTimeout
   :: String -> Either String PostgresStatementTimeout
 readPostgresStatementTimeout x = case span isDigit x of
@@ -182,11 +186,12 @@ readPostgresStatementTimeout x = case span isDigit x of
   _ -> Left "must be {digits}(s|ms)"
 
 envPostgresPasswordSource :: Env.Parser Env.Error PostgresPasswordSource
-envPostgresPasswordSource = Env.flag
-  (Env.Off PostgresPasswordSourceEnv)
-  (Env.On PostgresPasswordSourceIamAuth)
-  "USE_RDS_IAM_AUTH"
-  mempty
+envPostgresPasswordSource =
+  Env.flag
+    (Env.Off PostgresPasswordSourceEnv)
+    (Env.On PostgresPasswordSourceIamAuth)
+    "USE_RDS_IAM_AUTH"
+    mempty
 
 envParseDatabaseConf
   :: PostgresPasswordSource -> Env.Parser Env.Error PostgresConnectionConf
@@ -202,18 +207,19 @@ envParseDatabaseConf source = do
   poolSize <- Env.var Env.auto "PGPOOLSIZE" $ Env.def 10
   schema <- optional $ Env.var Env.nonempty "PGSCHEMA" mempty
   statementTimeout <-
-    Env.var (Env.eitherReader readPostgresStatementTimeout) "PGSTATEMENTTIMEOUT"
-      $ Env.def (PostgresStatementTimeoutSeconds 120)
-  pure PostgresConnectionConf
-    { pccHost = host
-    , pccPort = port
-    , pccUser = user
-    , pccPassword = password
-    , pccDatabase = database
-    , pccPoolSize = poolSize
-    , pccStatementTimeout = statementTimeout
-    , pccSchema = schema
-    }
+    Env.var (Env.eitherReader readPostgresStatementTimeout) "PGSTATEMENTTIMEOUT" $
+      Env.def (PostgresStatementTimeoutSeconds 120)
+  pure
+    PostgresConnectionConf
+      { pccHost = host
+      , pccPort = port
+      , pccUser = user
+      , pccPassword = password
+      , pccDatabase = database
+      , pccPoolSize = poolSize
+      , pccStatementTimeout = statementTimeout
+      , pccSchema = schema
+      }
 
 data AuroraIamToken = AuroraIamToken
   { aitToken :: Text
@@ -224,27 +230,28 @@ data AuroraIamToken = AuroraIamToken
 
 createAuroraIamToken :: MonadIO m => PostgresConnectionConf -> m AuroraIamToken
 createAuroraIamToken aitPostgresConnectionConf@PostgresConnectionConf {..} = do
-  aitToken <- T.strip . decodeUtf8 . BSL.toStrict <$> readProcessStdout_
-    (proc
-      "aws"
-      [ "rds"
-      , "generate-db-auth-token"
-      , "--hostname"
-      , pccHost
-      , "--port"
-      , show pccPort
-      , "--username"
-      , pccUser
-      ]
-    )
+  aitToken <-
+    T.strip . decodeUtf8 . BSL.toStrict
+      <$> readProcessStdout_
+        ( proc
+            "aws"
+            [ "rds"
+            , "generate-db-auth-token"
+            , "--hostname"
+            , pccHost
+            , "--port"
+            , show pccPort
+            , "--username"
+            , pccUser
+            ]
+        )
   aitCreatedAt <- liftIO getCurrentTime
-  pure AuroraIamToken { .. }
+  pure AuroraIamToken {..}
 
 -- | Spawns a thread that refreshes the IAM auth token every minute
 --
 -- The IAM auth token lasts 15 minutes, but we refresh it every minute just to
 -- be super safe.
---
 spawnIamTokenRefreshThread
   :: (MonadUnliftIO m, MonadLogger m)
   => PostgresConnectionConf
@@ -262,9 +269,9 @@ spawnIamTokenRefreshThread conf = do
 
   onFinishCallback = \case
     Left ex ->
-      logError
-        $ "Error refreshing IAM auth token"
-        :# ["exception" .= displayException ex]
+      logError $
+        "Error refreshing IAM auth token"
+          :# ["exception" .= displayException ex]
     Right () -> pure ()
 
 refreshIamToken
@@ -277,20 +284,22 @@ setStartupOptions :: MonadIO m => PostgresConnectionConf -> Connection -> m ()
 setStartupOptions PostgresConnectionConf {..} conn = do
   let timeoutMillis = postgresStatementTimeoutMilliseconds pccStatementTimeout
   liftIO $ do
-    void $ execute
-      conn
-      [sql| SET statement_timeout = ? |]
-      (Only timeoutMillis)
+    void $
+      execute
+        conn
+        [sql| SET statement_timeout = ? |]
+        (Only timeoutMillis)
     for_ pccSchema $ \schema -> execute conn [sql| SET search_path TO ? |] (Only schema)
 
 makePostgresPoolWith
   :: (MonadUnliftIO m, MonadLoggerIO m) => PostgresConnectionConf -> m SqlPool
 makePostgresPoolWith conf@PostgresConnectionConf {..} = case pccPassword of
   PostgresPasswordIamAuth -> makePostgresPoolWithIamAuth conf
-  PostgresPasswordStatic password -> createPostgresqlPoolModified
-    (setStartupOptions conf)
-    (postgresConnectionString conf password)
-    pccPoolSize
+  PostgresPasswordStatic password ->
+    createPostgresqlPoolModified
+      (setStartupOptions conf)
+      (postgresConnectionString conf password)
+      pccPoolSize
 
 -- | Creates a PostgreSQL pool using IAM auth for the password
 makePostgresPoolWithIamAuth
@@ -308,10 +317,11 @@ makePostgresPoolWithIamAuth conf@PostgresConnectionConf {..} = do
 
 postgresConnectionString :: PostgresConnectionConf -> String -> ByteString
 postgresConnectionString PostgresConnectionConf {..} password =
-  BS8.pack $ unwords
-    [ "host=" <> pccHost
-    , "port=" <> show pccPort
-    , "user=" <> pccUser
-    , "password=" <> password
-    , "dbname=" <> pccDatabase
-    ]
+  BS8.pack $
+    unwords
+      [ "host=" <> pccHost
+      , "port=" <> show pccPort
+      , "user=" <> pccUser
+      , "password=" <> password
+      , "dbname=" <> pccDatabase
+      ]

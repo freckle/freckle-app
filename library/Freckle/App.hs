@@ -153,16 +153,15 @@
 -- >     it "works" $ do
 -- >       result <- runDB myQuery :: AppExample App Text
 -- >       result `shouldBe` "as expected"
---
 module Freckle.App
   ( runApp
   , setLineBuffering
 
-  -- * Concrete transformer stack
-  , AppT(..)
+    -- * Concrete transformer stack
+  , AppT (..)
   , runAppT
 
-  -- * Re-exports
+    -- * Re-exports
   , module Freckle.App.Database
   , module Freckle.App.OpenTelemetry
   , module Blammo.Logging
@@ -173,17 +172,17 @@ import Freckle.App.Prelude
 
 import Blammo.Logging
 import Control.Monad.Catch (MonadCatch, MonadThrow)
-import Control.Monad.IO.Unlift (MonadUnliftIO(..))
-import Control.Monad.Primitive (PrimMonad(..))
+import Control.Monad.IO.Unlift (MonadUnliftIO (..))
+import Control.Monad.Primitive (PrimMonad (..))
 import Control.Monad.Reader
 import Control.Monad.Trans.Resource (MonadResource, ResourceT, runResourceT)
 import Freckle.App.Database
 import Freckle.App.OpenTelemetry
-import System.IO (BufferMode(..), hSetBuffering, stderr, stdout)
+import System.IO (BufferMode (..), hSetBuffering, stderr, stdout)
 
 runApp
   :: HasLogger app
-  => (forall b . (app -> IO b) -> IO b)
+  => (forall b. (app -> IO b) -> IO b)
   -> AppT app IO a
   -> IO a
 runApp loadApp action = do
@@ -194,7 +193,6 @@ runApp loadApp action = do
 --
 -- 'runApp' calls this for you, but it may be useful if you're running the app
 -- some other way.
---
 setLineBuffering :: MonadIO m => m ()
 setLineBuffering = liftIO $ do
   hSetBuffering stdout LineBuffering

@@ -1,5 +1,5 @@
 module Freckle.App.OpenTelemetry
-  ( MonadTracer(..)
+  ( MonadTracer (..)
   ) where
 
 import Freckle.App.Prelude
@@ -11,7 +11,6 @@ import Yesod.Core (HandlerFor, waiRequest)
 --
 -- This is named the same as the OpenTelemetry class we'll use once we move to
 -- that tracing system
---
 class MonadTracer m where
   getVaultData :: m (Maybe XRayVaultData)
 

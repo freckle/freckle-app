@@ -50,22 +50,21 @@
 --
 -- See "Freckle.Http.App.Paginate" to process requested pages in a streaming
 -- fashion, or perform pagination based on somethign other than @Link@.
---
 module Freckle.App.Http
   ( httpJson
-  , HttpDecodeError(..)
+  , HttpDecodeError (..)
   , httpDecode
   , httpLbs
   , httpNoBody
   , httpPaginated
   , sourcePaginated
 
-  -- * Request builders
+    -- * Request builders
   , Request
   , parseRequest
   , parseRequest_
 
-  -- * Request modifiers
+    -- * Request modifiers
   , addRequestHeader
   , addAcceptHeader
   , addBearerAuthorizationHeader
@@ -76,38 +75,35 @@ module Freckle.App.Http
   , setRequestCheckStatus
   , setRequestPath
 
-  -- * Response accessors
+    -- * Response accessors
   , Response
   , getResponseStatus
   , getResponseBody
 
-  -- ** Unsafe access
+    -- ** Unsafe access
   , getResponseBodyUnsafe
 
-  -- * Exceptions
-  , HttpException(..)
-
-  -- **
-  -- | Predicates useful for handling 'HttpException's
-  --
-  -- For example, given a function 'guarded', which returns 'Just' a given value
-  -- when a predicate holds for it (otherwise 'Nothing'), you can add
-  -- error-handling specific to exceptions caused by 4XX responses:
-  --
-  -- @
-  -- 'handleJust' (guarded 'httpExceptionIsClientError') handle4XXError $ do
-  --   resp <- 'httpJson' $ 'setRequestCheckStatus' $ parseRequest_ "http://..."
-  --   body <- 'getResponseBodyUnsafe' resp
-  --
-  --   -- ...
-  -- @
-  --
+    -- * Exceptions
+  , HttpException (..)
+    -- | Predicates useful for handling 'HttpException's
+    --
+    -- For example, given a function 'guarded', which returns 'Just' a given value
+    -- when a predicate holds for it (otherwise 'Nothing'), you can add
+    -- error-handling specific to exceptions caused by 4XX responses:
+    --
+    -- @
+    -- 'handleJust' (guarded 'httpExceptionIsClientError') handle4XXError $ do
+    --   resp <- 'httpJson' $ 'setRequestCheckStatus' $ parseRequest_ "http://..."
+    --   body <- 'getResponseBodyUnsafe' resp
+    --
+    --   -- ...
+    -- @
   , httpExceptionIsInformational
   , httpExceptionIsRedirection
   , httpExceptionIsClientError
   , httpExceptionIsServerError
 
-  -- * "Network.HTTP.Types" re-exports
+    -- * "Network.HTTP.Types" re-exports
   , Status
   , statusCode
   , statusIsInformational
@@ -128,7 +124,7 @@ import qualified Data.ByteString.Lazy.Char8 as BSL8
 import qualified Data.List.NonEmpty as NE
 import Freckle.App.Http.Paginate
 import Freckle.App.Http.Retry
-import Network.HTTP.Conduit (HttpExceptionContent(..))
+import Network.HTTP.Conduit (HttpExceptionContent (..))
 import Network.HTTP.Simple hiding (httpLbs, httpNoBody)
 import qualified Network.HTTP.Simple as HTTP
 import Network.HTTP.Types.Header (hAccept, hAuthorization)
@@ -141,7 +137,7 @@ import Network.HTTP.Types.Status
   , statusIsServerError
   , statusIsSuccessful
   )
-import UnliftIO.Exception (Exception(..), throwIO)
+import UnliftIO.Exception (Exception (..), throwIO)
 
 data HttpDecodeError = HttpDecodeError
   { hdeBody :: ByteString
@@ -151,9 +147,9 @@ data HttpDecodeError = HttpDecodeError
 
 instance Exception HttpDecodeError where
   displayException HttpDecodeError {..} =
-    unlines
-      $ ["Error decoding HTTP Response:", "Raw body:", BSL8.unpack hdeBody]
-      <> fromErrors hdeErrors
+    unlines $
+      ["Error decoding HTTP Response:", "Raw body:", BSL8.unpack hdeBody]
+        <> fromErrors hdeErrors
    where
     fromErrors = \case
       err NE.:| [] -> ["Error:", err]
@@ -165,8 +161,9 @@ httpJson
   :: (MonadIO m, FromJSON a)
   => Request
   -> m (Response (Either HttpDecodeError a))
-httpJson = httpDecode (first pure . Aeson.eitherDecode)
-  . addAcceptHeader "application/json"
+httpJson =
+  httpDecode (first pure . Aeson.eitherDecode)
+    . addAcceptHeader "application/json"
 
 -- | Request and decode a response
 httpDecode
@@ -195,7 +192,6 @@ httpNoBody = rateLimited HTTP.httpNoBody
 -- The second argument is used to extract the data to combine out of the
 -- response. This is particularly useful for 'Either' values, like you may get
 -- from 'httpJson'. It lives in @m@ to support functions such as 'getResponseBodyUnsafe'.
---
 httpPaginated
   :: (MonadIO m, Monoid b)
   => (Request -> m (Response a))
@@ -216,7 +212,6 @@ addBearerAuthorizationHeader = addRequestHeader hAuthorization . ("Bearer " <>)
 -- If you plan to use this function, and haven't built your decoding to handle
 -- error response bodies too, you'll want to use 'setRequestCheckStatus' so that
 -- you see status-code exceptions before 'HttpDecodeError's.
---
 getResponseBodyUnsafe
   :: (MonadIO m, Exception e) => Response (Either e a) -> m a
 getResponseBodyUnsafe = either throwIO pure . getResponseBody

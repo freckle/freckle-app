@@ -35,7 +35,6 @@ loadTest = loadFile ".env.test"
 --    have a @.env(.test)@ file (such as this one!).
 --
 -- 3. Use the @.env.example@ feature, but only if one exists alongside
---
 loadFile :: FilePath -> IO ()
 loadFile = traverse_ go <=< locateInParents
  where
@@ -43,10 +42,12 @@ loadFile = traverse_ go <=< locateInParents
     let examplePath = takeDirectory path </> ".env.example"
     exampleExists <- doesFileExist examplePath
 
-    void $ Dotenv.loadFile $ Dotenv.defaultConfig
-      { Dotenv.configPath = [path]
-      , Dotenv.configExamplePath = [ examplePath | exampleExists ]
-      }
+    void $
+      Dotenv.loadFile $
+        Dotenv.defaultConfig
+          { Dotenv.configPath = [path]
+          , Dotenv.configExamplePath = [examplePath | exampleExists]
+          }
 
 locateInParents :: FilePath -> IO (Maybe FilePath)
 locateInParents path = go =<< getCurrentDirectory

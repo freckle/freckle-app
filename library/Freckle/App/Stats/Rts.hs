@@ -16,7 +16,6 @@ import UnliftIO.Concurrent (threadDelay)
 -- | Initialize a thread to poll RTS stats
 --
 -- Stats are collected via `ekg-core` and 'System.Metrics.registerGcMetrics'
---
 forkRtsStatPolling
   :: (MonadUnliftIO m, MonadReader env m, HasStatsClient env) => m ()
 forkRtsStatPolling = do

@@ -5,7 +5,6 @@
 -- This should be its own package, but the obvious name (@aeson-compat@) is
 -- taken by something old and unrelated. I think that's why no one is doing it
 -- yet, including us.
---
 module Freckle.App.Aeson
   ( module X
   ) where

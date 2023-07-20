@@ -4,7 +4,7 @@
 {-# OPTIONS_GHC -fno-warn-deprecations #-}
 
 module Freckle.App.Test
-  ( AppExample(..)
+  ( AppExample (..)
   , appExample
   , withApp
   , withAppSql
@@ -13,7 +13,7 @@ module Freckle.App.Test
   , pending
   , pendingWith
 
-  -- * Re-exports
+    -- * Re-exports
   , module X
   ) where
 
@@ -39,9 +39,9 @@ import Blammo.Logging
 import Control.Monad.Base
 import Control.Monad.Catch
 import qualified Control.Monad.Fail as Fail
-import Control.Monad.IO.Unlift (MonadUnliftIO(..))
+import Control.Monad.IO.Unlift (MonadUnliftIO (..))
 import Control.Monad.Primitive
-import Control.Monad.Random (MonadRandom(..))
+import Control.Monad.Random (MonadRandom (..))
 import Control.Monad.Reader
 import Control.Monad.Trans.Control
 import Database.Persist.Sql (SqlPersistT, runSqlPool)
@@ -58,7 +58,6 @@ import qualified UnliftIO.Exception as UnliftIO
 --
 -- - Export @LOG_LEVEL=error@, if this would be quiet enough, or
 -- - Export @LOG_DESTINATION=@/dev/null@ to fully silence
---
 newtype AppExample app a = AppExample
   { unAppExample :: ReaderT app (LoggingT IO) a
   }
@@ -92,9 +91,10 @@ instance MonadMask (AppExample app) where
   uninterruptibleMask = UnliftIO.uninterruptibleMask
   generalBracket acquire release use = mask $ \unmasked -> do
     resource <- acquire
-    b <- unmasked (use resource) `UnliftIO.catch` \e -> do
-      _ <- release resource (ExitCaseException e)
-      throwM e
+    b <-
+      unmasked (use resource) `UnliftIO.catch` \e -> do
+        _ <- release resource (ExitCaseException e)
+        throwM e
     c <- release resource (ExitCaseSuccess b)
     pure (b, c)
 
@@ -111,10 +111,11 @@ instance PrimMonad (AppExample app) where
 instance HasLogger app => Example (AppExample app a) where
   type Arg (AppExample app a) = app
 
-  evaluateExample (AppExample ex) params action = evaluateExample
-    (action $ \app -> void $ runLoggerLoggingT app $ runReaderT ex app)
-    params
-    ($ ())
+  evaluateExample (AppExample ex) params action =
+    evaluateExample
+      (action $ \app -> void $ runLoggerLoggingT app $ runReaderT ex app)
+      params
+      ($ ())
 
 instance MonadTracer (AppExample app) where
   getVaultData = pure Nothing
@@ -126,7 +127,6 @@ instance MonadTracer (AppExample app) where
 --
 -- This can be used to avoid ambiguity errors when your expectation uses only
 -- polymorphic functions like 'runDB' or lifted 'shouldBe' et-al.
---
 appExample :: AppExample app a -> AppExample app a
 appExample = id
 
@@ -139,7 +139,6 @@ appExample = id
 --
 -- Reads @.env.test@, then loads the application. Examples within this spec can
 -- use any @'MonadReader' app@ (including 'runDB', if the app 'HasSqlPool').
---
 withApp :: ((app -> IO ()) -> IO ()) -> SpecWith app -> Spec
 withApp run = beforeAll Dotenv.loadTest . Hspec.aroundAll run
 
@@ -147,7 +146,6 @@ withApp run = beforeAll Dotenv.loadTest . Hspec.aroundAll run
 --
 -- Runs the given function on the pool before every spec item. For example, to
 -- truncate tables.
---
 withAppSql
   :: HasSqlPool app
   => SqlPersistT IO a

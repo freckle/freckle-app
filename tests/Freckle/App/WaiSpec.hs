@@ -8,7 +8,10 @@ import Data.ByteString (ByteString)
 import Data.Function (on)
 import Data.List (deleteBy)
 import Freckle.App.Wai
-  (corsMiddleware, denyFrameEmbeddingMiddleware, noCacheMiddleware)
+  ( corsMiddleware
+  , denyFrameEmbeddingMiddleware
+  , noCacheMiddleware
+  )
 import Network.HTTP.Types.Method (Method)
 import Network.HTTP.Types.Status (status200)
 import Network.Wai
@@ -42,17 +45,23 @@ spec = do
         runSession f $ corsMiddleware validateOrigin extraExposedHeaders app
 
     it "adds CORS headers to responses for non-OPTIONS" $ runTestSession $ do
-      response <- request $ setMethod "GET" $ setOriginHeader
-        "unimportant"
-        defaultRequest
+      response <-
+        request $
+          setMethod "GET" $
+            setOriginHeader
+              "unimportant"
+              defaultRequest
 
       assertAccessControlHeaders "BADORIGIN" response
       assertBody "Test" response
 
     it "responds itself, with CORS headers, for OPTIONS" $ runTestSession $ do
-      response <- request $ setMethod "OPTIONS" $ setOriginHeader
-        "unimportant"
-        defaultRequest
+      response <-
+        request $
+          setMethod "OPTIONS" $
+            setOriginHeader
+              "unimportant"
+              defaultRequest
 
       assertAccessControlHeaders "BADORIGIN" response
       assertBody mempty response
@@ -75,9 +84,9 @@ spec = do
       assertBody "Test" responseA
       assertBody "Test" responseB
 
-    it "adds extra Exposed-Headers"
-      $ runTestSessionWith (const False) ["X-Foo"]
-      $ do
+    it "adds extra Exposed-Headers" $
+      runTestSessionWith (const False) ["X-Foo"] $
+        do
           response <- request $ setOriginHeader "unimportant" defaultRequest
           assertHeader
             "Access-Control-Expose-Headers"
@@ -99,14 +108,15 @@ app :: Application
 app _req respond = respond $ responseLBS status200 [] "Test"
 
 setMethod :: Method -> Request -> Request
-setMethod method req = req { requestMethod = method }
+setMethod method req = req {requestMethod = method}
 
 setOriginHeader :: ByteString -> Request -> Request
 setOriginHeader origin req =
   let
     header = ("Origin", origin)
     others = deleteBy ((==) `on` fst) header $ requestHeaders req
-  in req { requestHeaders = others <> [header] }
+  in
+    req {requestHeaders = others <> [header]}
 
 assertAccessControlHeaders :: ByteString -> SResponse -> Session ()
 assertAccessControlHeaders origin response = do

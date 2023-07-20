@@ -7,7 +7,7 @@ module Freckle.App.Yesod
 import Freckle.App.Prelude
 
 import Blammo.Logging
-import Database.PostgreSQL.Simple (SqlError(..))
+import Database.PostgreSQL.Simple (SqlError (..))
 import Freckle.App.Stats (HasStatsClient)
 import qualified Freckle.App.Stats as Stats
 import Network.HTTP.Types (ResponseHeaders, status503)
@@ -18,7 +18,6 @@ import Yesod.Core.Handler (HandlerFor, sendWaiResponse)
 -- | Catch 'SqlError' when queries are canceled due to timeout and respond 503
 --
 -- Also logs and increments a metric.
---
 respondQueryCanceled
   :: HasStatsClient site => HandlerFor site res -> HandlerFor site res
 respondQueryCanceled = respondQueryCanceledHeaders []

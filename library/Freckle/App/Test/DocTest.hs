@@ -4,7 +4,7 @@ module Freckle.App.Test.DocTest
   ( doctest
   , doctestWith
 
-  -- * Lower-level, for site-specific use
+    -- * Lower-level, for site-specific use
   , findPackageFlags
   , findDocTestedFiles
   ) where
@@ -16,8 +16,8 @@ import Data.Aeson
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Data.Yaml (decodeFileThrow)
-import "Glob" System.FilePath.Glob (globDir1)
 import qualified Test.DocTest as DocTest
+import "Glob" System.FilePath.Glob (globDir1)
 
 -- | Run doctest on files in the given directory
 doctest :: FilePath -> IO ()
@@ -37,8 +37,8 @@ data PackageYaml = PackageYaml
   }
 
 instance FromJSON PackageYaml where
-  parseJSON = withObject "PackageYaml"
-    $ \o -> PackageYaml <$> o .: "default-extensions" <*> o .: "name"
+  parseJSON = withObject "PackageYaml" $
+    \o -> PackageYaml <$> o .: "default-extensions" <*> o .: "name"
 
 -- Parse @default-extensions@ and @name& out of @package.yaml@
 --
@@ -64,7 +64,6 @@ findPackageFlags = do
 --
 -- So we want to only run doctest for files that need it. This function finds
 -- such files by /naively/ looking for the @^-- >>>@ pattern.
---
 findDocTestedFiles :: FilePath -> IO [FilePath]
 findDocTestedFiles dir = do
   paths <- globDir1 "**/*.hs" dir
