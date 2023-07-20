@@ -2,14 +2,11 @@
 
 module Freckle.App.Kafka
   ( envKafkaBrokerAddresses
-
   , KafkaProducerPool (..)
   , HasKafkaProducerPool (..)
   , createKafkaProducerPool
-
   , produceKeyedOn
   , produceKeyedOnAsync
-
   ) where
 
 import Freckle.App.Prelude
@@ -31,7 +28,8 @@ import Yesod.Core.Types (HandlerData)
 
 envKafkaBrokerAddresses
   :: Env.Parser Env.Error (NonEmpty BrokerAddress)
-envKafkaBrokerAddresses = Env.var
+envKafkaBrokerAddresses =
+  Env.var
     (Env.eitherReader readKafkaBrokerAddresses)
     "KAFKA_BROKER_ADDRESSES"
     mempty
@@ -52,7 +50,8 @@ class HasKafkaProducerPool env where
 instance HasKafkaProducerPool site => HasKafkaProducerPool (HandlerData child site) where
   kafkaProducerPoolL = envL . siteL . kafkaProducerPoolL
 
-createKafkaProducerPool :: NonEmpty BrokerAddress
+createKafkaProducerPool
+  :: NonEmpty BrokerAddress
   -> Int
   -- ^ The number of stripes (distinct sub-pools) to maintain.
   -- The smallest acceptable value is 1.
@@ -72,10 +71,10 @@ createKafkaProducerPool :: NonEmpty BrokerAddress
   -- available.
   -> IO (Pool KafkaProducer)
 createKafkaProducerPool addresses = Pool.createPool mkProducer closeProducer
-  where
-      mkProducer =
-        either throw pure =<< newProducer (brokersList $ toList addresses)
-      throw err = throwString $ "Failed to open kafka producer: " <> show err
+ where
+  mkProducer =
+    either throw pure =<< newProducer (brokersList $ toList addresses)
+  throw err = throwString $ "Failed to open kafka producer: " <> show err
 
 produceKeyedOn
   :: ( ToJSON value

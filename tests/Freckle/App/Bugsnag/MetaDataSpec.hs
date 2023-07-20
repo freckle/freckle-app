@@ -24,13 +24,13 @@ spec = do
           withThreadContext ["quix" .= ("quip" :: Text)] $ do
             collected <- collectMetaData
 
-            let
-              expected = mconcat
-                [ metaData
-                  "tags"
-                  ["foo" .= ("bar" :: Text), "baz" .= ("bat" :: Text)]
-                , metaData "context" ["quix" .= ("quip" :: Text)]
-                ]
+            let expected =
+                  mconcat
+                    [ metaData
+                        "tags"
+                        ["foo" .= ("bar" :: Text), "baz" .= ("bat" :: Text)]
+                    , metaData "context" ["quix" .= ("quip" :: Text)]
+                    ]
 
             runMergeMetaData Nothing collected `shouldBe` Just expected
 
@@ -42,34 +42,37 @@ spec = do
 
     it "preserves new metadata on collisions" $ example $ do
       let
-        existing = metaData
-          "test"
-          [ "foo" .= ("bar1" :: Text)
-          , "baz" .= object ["bat" .= ("quix1" :: Text)]
-          , "keep" .= ("me" :: Text)
-          ]
-        incoming = metaData
-          "test"
-          [ "foo" .= ("bar2" :: Text)
-          , "baz" .= object ["bat" .= ("quix2" :: Text)]
-          , "add" .= ("me" :: Text)
-          ]
-        expected = metaData
-          "test"
-          [ "foo" .= ("bar2" :: Text)
-          , "baz" .= object ["bat" .= ("quix2" :: Text)]
-          , "keep" .= ("me" :: Text)
-          , "add" .= ("me" :: Text)
-          ]
-
+        existing =
+          metaData
+            "test"
+            [ "foo" .= ("bar1" :: Text)
+            , "baz" .= object ["bat" .= ("quix1" :: Text)]
+            , "keep" .= ("me" :: Text)
+            ]
+        incoming =
+          metaData
+            "test"
+            [ "foo" .= ("bar2" :: Text)
+            , "baz" .= object ["bat" .= ("quix2" :: Text)]
+            , "add" .= ("me" :: Text)
+            ]
+        expected =
+          metaData
+            "test"
+            [ "foo" .= ("bar2" :: Text)
+            , "baz" .= object ["bat" .= ("quix2" :: Text)]
+            , "keep" .= ("me" :: Text)
+            , "add" .= ("me" :: Text)
+            ]
 
       runMergeMetaData (Just existing) incoming `shouldBe` Just expected
 
 runMergeMetaData :: Maybe MetaData -> MetaData -> Maybe MetaData
 runMergeMetaData mExisting incoming = MetaData <$> event_metaData event
  where
-  event = runBeforeNotify (mergeMetaData incoming) someException
-    $ defaultEvent { event_metaData = unMetaData <$> mExisting }
+  event =
+    runBeforeNotify (mergeMetaData incoming) someException $
+      defaultEvent {event_metaData = unMetaData <$> mExisting}
 
 someException :: SomeException
 someException = undefined

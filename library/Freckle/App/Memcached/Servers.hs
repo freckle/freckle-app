@@ -20,9 +20,8 @@
 -- -- Default to disabled
 -- Env.var (Env.eitherReader readMemcachedServers) "MEMCACHED_SERVERS" (Env.def emptyMemcachedServers)
 -- @
---
 module Freckle.App.Memcached.Servers
-  ( MemcachedServers(..)
+  ( MemcachedServers (..)
   , defaultMemcachedServers
   , emptyMemcachedServers
   , readMemcachedServers
@@ -34,7 +33,7 @@ import Freckle.App.Prelude
 import Control.Error.Util (note)
 import qualified Data.Text as T
 import qualified Database.Memcache.Client as Memcache
-import Network.URI (URI(..), URIAuth(..), parseAbsoluteURI)
+import Network.URI (URI (..), URIAuth (..), parseAbsoluteURI)
 
 newtype MemcachedServers = MemcachedServers
   { unMemcachedServers :: [MemcachedServer]
@@ -88,15 +87,16 @@ readAuthentication = go . pack
     guard $ not $ T.null u
     guard $ not $ T.null p
 
-    pure Memcache.Auth
-      { Memcache.username = encodeUtf8 u
-      , Memcache.password = encodeUtf8 p
-      }
+    pure
+      Memcache.Auth
+        { Memcache.username = encodeUtf8 u
+        , Memcache.password = encodeUtf8 p
+        }
 
 setHost :: URIAuth -> Memcache.ServerSpec -> Memcache.ServerSpec
 setHost auth ss = case uriRegName auth of
   "" -> ss
-  rn -> ss { Memcache.ssHost = rn }
+  rn -> ss {Memcache.ssHost = rn}
 
 setPort :: URIAuth -> Memcache.ServerSpec -> Memcache.ServerSpec
 setPort auth ss = fromMaybe ss $ do
@@ -104,7 +104,7 @@ setPort auth ss = fromMaybe ss $ do
     "" -> Nothing
     (':' : p) -> fromPort p
     p -> fromPort p
-  pure $ ss { Memcache.ssPort = p }
+  pure $ ss {Memcache.ssPort = p}
  where
 #if MIN_VERSION_memcache(0,3,0)
   -- ssPort is a ServiceName, which is a String
@@ -116,4 +116,4 @@ setPort auth ss = fromMaybe ss $ do
 
 setAuth
   :: Memcache.Authentication -> Memcache.ServerSpec -> Memcache.ServerSpec
-setAuth auth ss = ss { Memcache.ssAuth = auth }
+setAuth auth ss = ss {Memcache.ssAuth = auth}

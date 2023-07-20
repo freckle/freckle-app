@@ -20,7 +20,6 @@ import Yesod.Routes.TH.Types
 -- > \case
 -- >   RoutePiece a -> case a of
 -- >     RouteResource{} -> "ResourceName"
---
 mkRouteNameCaseExp :: [ResourceTree String] -> TH.Q TH.Exp
 mkRouteNameCaseExp tree = TH.LamCaseE . fold <$> traverse mkMatches tree
 
@@ -28,15 +27,13 @@ mkRouteNameCaseExp tree = TH.LamCaseE . fold <$> traverse mkMatches tree
 --
 -- > RoutePiece a -> case a of
 -- >   ...
---
 mkMatches :: ResourceTree String -> TH.Q [TH.Match]
 mkMatches (ResourceLeaf resource) = pure [mkLeafMatch resource]
 mkMatches (ResourceParent name _checkOverlap params children) = do
   caseVar <- TH.newName "a"
-  let
-    -- by convention the final param in a route is the next route constructor
-    paramVars =
-      fmap (const TH.WildP) (filter isDynamic params) <> [TH.VarP caseVar]
+  let -- by convention the final param in a route is the next route constructor
+      paramVars =
+        fmap (const TH.WildP) (filter isDynamic params) <> [TH.VarP caseVar]
   matches <- fold <$> traverse mkMatches children
   pure
     [ TH.Match
@@ -44,7 +41,8 @@ mkMatches (ResourceParent name _checkOverlap params children) = do
         (TH.NormalB $ TH.CaseE (TH.VarE caseVar) matches)
         []
     ]
-  where constName = TH.mkName name
+ where
+  constName = TH.mkName name
 
 conP :: TH.Name -> [TH.Pat] -> TH.Pat
 #if MIN_VERSION_template_haskell(2,18,0)
@@ -55,18 +53,18 @@ conP = TH.ConP
 
 isDynamic :: Piece a -> Bool
 isDynamic = \case
-  Static{} -> False
-  Dynamic{} -> True
+  Static {} -> False
+  Dynamic {} -> True
 
 -- | Leaf match expressions for a resource
 --
 -- > Name{} -> "ResourceName"
---
 mkLeafMatch :: Resource String -> TH.Match
-mkLeafMatch resource = TH.Match
-  (TH.RecP constName [])
-  (TH.NormalB $ TH.LitE $ TH.StringL name)
-  []
+mkLeafMatch resource =
+  TH.Match
+    (TH.RecP constName [])
+    (TH.NormalB $ TH.LitE $ TH.StringL name)
+    []
  where
   constName = TH.mkName name
   name = resourceName resource

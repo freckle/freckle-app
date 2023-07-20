@@ -8,14 +8,13 @@
 -- 4. Use 'caching'
 --
 -- To avoid 'Cachable', see 'cachingAs' and 'cachingAsJSON'.
---
 module Freckle.App.Memcached
-  ( Cachable(..)
+  ( Cachable (..)
   , caching
   , cachingAs
   , cachingAsJSON
 
-  -- * Re-exports
+    -- * Re-exports
   , module Freckle.App.Memcached.Client
   , module Freckle.App.Memcached.CacheKey
   , module Freckle.App.Memcached.CacheTTL
@@ -31,9 +30,9 @@ import Data.Text.Encoding (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
 import Freckle.App.Memcached.CacheKey
 import Freckle.App.Memcached.CacheTTL
-import Freckle.App.Memcached.Client (HasMemcachedClient(..))
+import Freckle.App.Memcached.Client (HasMemcachedClient (..))
 import qualified Freckle.App.Memcached.Client as Memcached
-import UnliftIO.Exception (Exception(..), handleAny)
+import UnliftIO.Exception (Exception (..), handleAny)
 
 class Cachable a where
   toCachable :: a -> ByteString
@@ -81,9 +80,9 @@ cachingAs
   -> m a
 cachingAs from to key ttl f = do
   result <-
-    fmap (maybe CacheNotFound (either (CacheError . pack) CacheFound . from))
-    $ handleCachingError Nothing "getting"
-    $ Memcached.get key
+    fmap (maybe CacheNotFound (either (CacheError . pack) CacheFound . from)) $
+      handleCachingError Nothing "getting" $
+        Memcached.get key
 
   case result of
     CacheFound a -> pure a
@@ -119,10 +118,10 @@ handleCachingError value action = handleAny $ \ex -> do
 
 logCachingError :: MonadLogger m => Text -> Text -> m ()
 logCachingError action message =
-  logErrorNS "caching"
-    $ "Error "
-    <> action
-    :# ["action" .= action, "message" .= message]
+  logErrorNS "caching" $
+    "Error "
+      <> action
+      :# ["action" .= action, "message" .= message]
 
 encodeStrict :: ToJSON a => a -> ByteString
 encodeStrict = BSL.toStrict . encode

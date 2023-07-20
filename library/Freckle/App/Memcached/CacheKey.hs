@@ -13,7 +13,7 @@ import Database.Memcache.Types (Key)
 import UnliftIO.Exception (throwString)
 
 newtype CacheKey = CacheKey Text
-  deriving stock Show
+  deriving stock (Show)
   deriving newtype (Eq, Hashable)
 
 unCacheKey :: CacheKey -> Text
@@ -28,7 +28,6 @@ unCacheKey (CacheKey x) = x
 -- normally clients wouldn't need to use such long keys); the key must not
 -- include control characters or whitespace.
 -- @
---
 cacheKey :: Text -> Either String CacheKey
 cacheKey t
   | T.length t > 250 = invalid "Must be fewer than 250 characters"

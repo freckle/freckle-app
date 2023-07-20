@@ -2,7 +2,7 @@
 module Freckle.App.Prelude
   ( module Prelude
 
-  -- * Commonly imported types
+    -- * Commonly imported types
   , Alternative
   , Exception
   , Generic
@@ -24,20 +24,20 @@ module Freckle.App.Prelude
   , UTCTime
   , Vector
 
-  -- * Commonly used functions
+    -- * Commonly used functions
 
-  -- ** Lifts
+    -- ** Lifts
   , lift
   , liftIO
 
-  -- ** 'Text'
+    -- ** 'Text'
   , tshow
   , pack
   , unpack
   , encodeUtf8
   , decodeUtf8
 
-  -- ** 'Maybe'
+    -- ** 'Maybe'
   , catMaybes
   , fromMaybe
   , isJust
@@ -46,32 +46,32 @@ module Freckle.App.Prelude
   , mapMaybe
   , maybeToList
 
-  -- ** Safe alternatives to partial prelude functions (e.g. 'headMay')
+    -- ** Safe alternatives to partial prelude functions (e.g. 'headMay')
   , module SafeAlternatives
 
-  -- ** 'Either'
+    -- ** 'Either'
   , partitionEithers
 
-  -- ** 'Foldable'
+    -- ** 'Foldable'
   , module Foldable
 
-  -- ** 'Traversable'
+    -- ** 'Traversable'
   , module Traversable
 
-  -- ** 'Functor'
+    -- ** 'Functor'
   , (<$$>)
 
-  -- ** 'Bifunctor'
+    -- ** 'Bifunctor'
   , bimap
   , first
   , second
 
-  -- ** 'Applicative'
+    -- ** 'Applicative'
   , (<|>)
   , liftA2
   , optional
 
-  -- ** 'Monad'
+    -- ** 'Monad'
   , (<=<)
   , (>=>)
   , guard
@@ -80,18 +80,29 @@ module Freckle.App.Prelude
   , void
   , when
 
-  -- ** 'Arrow'
+    -- ** 'Arrow'
   , (&&&)
   , (***)
 
-  -- ** 'UTCTime'
+    -- ** 'UTCTime'
   , getCurrentTime
   ) where
 
 -- Use 'Prelude' as the starting point, removing common partial functions
 
 import Prelude hiding
-  (cycle, foldl1, foldr1, head, init, last, maximum, minimum, read, tail, (!!))
+  ( cycle
+  , foldl1
+  , foldr1
+  , head
+  , init
+  , last
+  , maximum
+  , minimum
+  , read
+  , tail
+  , (!!)
+  )
 
 -- Commonly used types (and their commonly used functions)
 
@@ -99,9 +110,9 @@ import Control.Applicative (Alternative, liftA2, optional, (<|>))
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Primitive (PrimMonad)
 import Control.Monad.Reader (MonadReader, ReaderT)
-import Data.Hashable (Hashable)
 import Data.HashMap.Strict (HashMap)
 import Data.HashSet (HashSet)
+import Data.Hashable (Hashable)
 import Data.Int (Int64)
 import Data.List.NonEmpty (NonEmpty)
 import Data.Map.Strict (Map)
@@ -138,7 +149,14 @@ import Data.Bifunctor (bimap, first, second)
 import Data.Either (partitionEithers)
 import Data.Foldable as Foldable hiding (foldl1, foldr1)
 import Data.Maybe
-  (catMaybes, fromMaybe, isJust, isNothing, listToMaybe, mapMaybe, maybeToList)
+  ( catMaybes
+  , fromMaybe
+  , isJust
+  , isNothing
+  , listToMaybe
+  , mapMaybe
+  , maybeToList
+  )
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Data.Traversable as Traversable
 

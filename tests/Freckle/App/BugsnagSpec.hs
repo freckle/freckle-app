@@ -5,7 +5,7 @@ module Freckle.App.BugsnagSpec
 import Freckle.App.Prelude
 
 import Data.ByteString (ByteString)
-import Database.PostgreSQL.Simple (ExecStatus(..), SqlError(..))
+import Database.PostgreSQL.Simple (ExecStatus (..), SqlError (..))
 import Freckle.App.Bugsnag
 import Test.Hspec
 
@@ -14,21 +14,24 @@ spec = do
   describe "sqlErrorGroupingHash" $ do
     it "groups duplicate key errors by constraint name" $ do
       let
-        err1 = sqlError
-          { sqlState = duplicateKeyState
-          , sqlErrorMsg = duplicateKeyErrorMsg "table_a_id_key"
-          , sqlErrorDetail = "Key (a, b)=(1, 2) already exists"
-          }
-        err2 = sqlError
-          { sqlState = duplicateKeyState
-          , sqlErrorMsg = duplicateKeyErrorMsg "table_a_id_key"
-          , sqlErrorDetail = "Key (a, b)=(3, 2) already exists"
-          }
-        err3 = sqlError
-          { sqlState = duplicateKeyState
-          , sqlErrorMsg = duplicateKeyErrorMsg "table_b_id_key"
-          , sqlErrorDetail = "Key (a, b)=(1, 2) already exists"
-          }
+        err1 =
+          sqlError
+            { sqlState = duplicateKeyState
+            , sqlErrorMsg = duplicateKeyErrorMsg "table_a_id_key"
+            , sqlErrorDetail = "Key (a, b)=(1, 2) already exists"
+            }
+        err2 =
+          sqlError
+            { sqlState = duplicateKeyState
+            , sqlErrorMsg = duplicateKeyErrorMsg "table_a_id_key"
+            , sqlErrorDetail = "Key (a, b)=(3, 2) already exists"
+            }
+        err3 =
+          sqlError
+            { sqlState = duplicateKeyState
+            , sqlErrorMsg = duplicateKeyErrorMsg "table_b_id_key"
+            , sqlErrorDetail = "Key (a, b)=(1, 2) already exists"
+            }
 
       -- All duplicate keys hashed
       sqlErrorGroupingHash err1 `shouldSatisfy` isJust
@@ -42,26 +45,30 @@ spec = do
 
     it "groups foreign key errors by constraint name" $ do
       let
-        err1 = sqlError
-          { sqlState = foreignKeyState
-          , sqlErrorMsg = foreignKeyErrorMsg "table_a" "table_b_id_fkey"
-          , sqlErrorDetail = "Key (a, b)=(1, 2) is still referenced"
-          }
-        err2 = sqlError
-          { sqlState = foreignKeyState
-          , sqlErrorMsg = foreignKeyErrorMsg "table_a" "table_b_id_fkey"
-          , sqlErrorDetail = "Key (a, b)=(3, 2) is still referenced"
-          }
-        err3 = sqlError
-          { sqlState = foreignKeyState
-          , sqlErrorMsg = foreignKeyErrorMsg "table_b" "table_b_id_key"
-          , sqlErrorDetail = "Key (a, b)=(1, 2) is still referenced"
-          }
-        err4 = sqlError
-          { sqlState = foreignKeyState
-          , sqlErrorMsg = foreignKeyErrorMsg "table_a" "table_a_id_key"
-          , sqlErrorDetail = "Key (a, b)=(1, 2) is still referenced"
-          }
+        err1 =
+          sqlError
+            { sqlState = foreignKeyState
+            , sqlErrorMsg = foreignKeyErrorMsg "table_a" "table_b_id_fkey"
+            , sqlErrorDetail = "Key (a, b)=(1, 2) is still referenced"
+            }
+        err2 =
+          sqlError
+            { sqlState = foreignKeyState
+            , sqlErrorMsg = foreignKeyErrorMsg "table_a" "table_b_id_fkey"
+            , sqlErrorDetail = "Key (a, b)=(3, 2) is still referenced"
+            }
+        err3 =
+          sqlError
+            { sqlState = foreignKeyState
+            , sqlErrorMsg = foreignKeyErrorMsg "table_b" "table_b_id_key"
+            , sqlErrorDetail = "Key (a, b)=(1, 2) is still referenced"
+            }
+        err4 =
+          sqlError
+            { sqlState = foreignKeyState
+            , sqlErrorMsg = foreignKeyErrorMsg "table_a" "table_a_id_key"
+            , sqlErrorDetail = "Key (a, b)=(1, 2) is still referenced"
+            }
 
       -- All errors hashed
       sqlErrorGroupingHash err1 `shouldSatisfy` isJust
@@ -78,43 +85,44 @@ spec = do
       sqlErrorGroupingHash err3 `shouldNotBe` sqlErrorGroupingHash err4
 
     it "does not group other SqlErrors" $ do
-      let
-        err = sqlError
-          { sqlState = "9999"
-          , sqlErrorMsg = duplicateKeyErrorMsg "table_a_id_key"
-          , sqlErrorDetail = "Key (a, b)=(1, 2) already exists"
-          }
+      let err =
+            sqlError
+              { sqlState = "9999"
+              , sqlErrorMsg = duplicateKeyErrorMsg "table_a_id_key"
+              , sqlErrorDetail = "Key (a, b)=(1, 2) already exists"
+              }
 
       sqlErrorGroupingHash err `shouldBe` Nothing
 
     it "does not group other states" $ do
-      let
-        err = sqlError
-          { sqlState = "12345"
-          , sqlErrorMsg = "State is wrong, \"table_a_id_key\""
-          , sqlErrorDetail = "Key (a, b)=(1, 2) already exists"
-          }
+      let err =
+            sqlError
+              { sqlState = "12345"
+              , sqlErrorMsg = "State is wrong, \"table_a_id_key\""
+              , sqlErrorDetail = "Key (a, b)=(1, 2) already exists"
+              }
 
       sqlErrorGroupingHash err `shouldBe` Nothing
 
     it "does not group when unable to parse" $ do
-      let
-        err = sqlError
-          { sqlState = foreignKeyState
-          , sqlErrorMsg = "FK needs two quoted values, \"table_a_id_fkey\""
-          , sqlErrorDetail = "Key (a, b)=(1, 2) already exists"
-          }
+      let err =
+            sqlError
+              { sqlState = foreignKeyState
+              , sqlErrorMsg = "FK needs two quoted values, \"table_a_id_fkey\""
+              , sqlErrorDetail = "Key (a, b)=(1, 2) already exists"
+              }
 
       sqlErrorGroupingHash err `shouldBe` Nothing
 
 sqlError :: SqlError
-sqlError = SqlError
-  { sqlState = ""
-  , sqlExecStatus = FatalError
-  , sqlErrorMsg = ""
-  , sqlErrorDetail = ""
-  , sqlErrorHint = ""
-  }
+sqlError =
+  SqlError
+    { sqlState = ""
+    , sqlExecStatus = FatalError
+    , sqlErrorMsg = ""
+    , sqlErrorDetail = ""
+    , sqlErrorHint = ""
+    }
 
 duplicateKeyState :: ByteString
 duplicateKeyState = "23505"

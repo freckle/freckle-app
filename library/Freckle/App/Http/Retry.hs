@@ -1,5 +1,5 @@
 module Freckle.App.Http.Retry
-  ( RetriesExhausted(..)
+  ( RetriesExhausted (..)
   , rateLimited
   , rateLimited'
   ) where
@@ -8,11 +8,11 @@ import Freckle.App.Prelude
 
 import Control.Retry
 import qualified Data.ByteString.Char8 as BS8
-import Network.HTTP.Client (Request(..))
+import Network.HTTP.Client (Request (..))
 import Network.HTTP.Simple
 import Network.HTTP.Types.Status (status429)
 import Text.Read (readMaybe)
-import UnliftIO.Exception (Exception(..), throwIO)
+import UnliftIO.Exception (Exception (..), throwIO)
 
 -- | Thrown if we exhaust our retries limit and still see a @429@
 --
@@ -31,12 +31,11 @@ import UnliftIO.Exception (Exception(..), throwIO)
 -- Unfortunately, it's not possible to reuse the user-defined 'checkResponse' in
 -- order to throw a uniform 'HttpException' in this case; so we throw this
 -- ourselves instead.
---
 data RetriesExhausted = RetriesExhausted
   { reLimit :: Int
   , reResponse :: Response ()
   }
-  deriving stock Show
+  deriving stock (Show)
 
 instance Exception RetriesExhausted where
   displayException RetriesExhausted {..} =
@@ -57,29 +56,33 @@ rateLimited'
   -> Request
   -> m (Response body)
 rateLimited' retryLimit f req = do
-  resp <- retryingDynamic
-    (limitRetries retryLimit)
-    (\_ ->
-      pure
-        . maybe DontRetry (ConsultPolicyOverrideDelay . microseconds)
-        . getRetryAfter
-    )
-    (\_ -> f $ suppressRetryStatusError req)
+  resp <-
+    retryingDynamic
+      (limitRetries retryLimit)
+      ( \_ ->
+          pure
+            . maybe DontRetry (ConsultPolicyOverrideDelay . microseconds)
+            . getRetryAfter
+      )
+      (\_ -> f $ suppressRetryStatusError req)
 
   checkRetriesExhausted retryLimit resp
 
 suppressRetryStatusError :: Request -> Request
-suppressRetryStatusError req = req
-  { checkResponse = \req' resp ->
-    unless (getResponseStatus resp == status429)
-      $ originalCheckResponse req' resp
-  }
-  where originalCheckResponse = checkResponse req
+suppressRetryStatusError req =
+  req
+    { checkResponse = \req' resp ->
+        unless (getResponseStatus resp == status429) $
+          originalCheckResponse req' resp
+    }
+ where
+  originalCheckResponse = checkResponse req
 
 checkRetriesExhausted :: MonadIO m => Int -> Response body -> m (Response body)
 checkRetriesExhausted retryLimit resp
-  | getResponseStatus resp == status429 = throwIO
-  $ RetriesExhausted { reLimit = retryLimit, reResponse = void resp }
+  | getResponseStatus resp == status429 =
+      throwIO $
+        RetriesExhausted {reLimit = retryLimit, reResponse = void resp}
   | otherwise = pure resp
 
 getRetryAfter :: Response body -> Maybe Int

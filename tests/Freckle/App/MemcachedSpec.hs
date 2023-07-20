@@ -9,7 +9,7 @@ import Freckle.App.Test
 import Blammo.Logging.LogSettings
 import Blammo.Logging.Logger
 import Control.Lens (lens)
-import Data.Aeson (Value(..))
+import Data.Aeson (Value (..))
 import Data.Aeson.Compat as KeyMap
 import qualified Data.List.NonEmpty as NE
 import qualified Freckle.App.Env as Env
@@ -43,20 +43,22 @@ data App = App
 
 instance HasMemcachedClient App where
   memcachedClientL =
-    lens appMemcachedClient $ \x y -> x { appMemcachedClient = y }
+    lens appMemcachedClient $ \x y -> x {appMemcachedClient = y}
 
 instance HasLogger App where
-  loggerL = lens appLogger $ \x y -> x { appLogger = y }
+  loggerL = lens appLogger $ \x y -> x {appLogger = y}
 
 loadApp :: (App -> IO a) -> IO a
 loadApp f = do
-  servers <- Env.parse id $ Env.var
-    (Env.eitherReader readMemcachedServers)
-    "MEMCACHED_SERVERS"
-    (Env.def defaultMemcachedServers)
+  servers <-
+    Env.parse id $
+      Env.var
+        (Env.eitherReader readMemcachedServers)
+        "MEMCACHED_SERVERS"
+        (Env.def defaultMemcachedServers)
   appLogger <- newTestLogger defaultLogSettings
   withMemcachedClient servers $ \appMemcachedClient -> do
-    f App { .. }
+    f App {..}
 
 spec :: Spec
 spec = withApp loadApp $ do
@@ -84,7 +86,8 @@ spec = withApp loadApp $ do
       msgs <- getLoggedMessagesLenient
       let Just LoggedMessage {..} = NE.last <$> NE.nonEmpty msgs
       loggedMessageText `shouldBe` "Error deserializing"
-      loggedMessageMeta `shouldBe` KeyMap.fromList
-        [ ("action", String "deserializing")
-        , ("message", String "invalid: \"Broken\"")
-        ]
+      loggedMessageMeta
+        `shouldBe` KeyMap.fromList
+          [ ("action", String "deserializing")
+          , ("message", String "invalid: \"Broken\"")
+          ]

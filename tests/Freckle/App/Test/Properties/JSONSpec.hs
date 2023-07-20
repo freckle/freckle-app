@@ -23,6 +23,6 @@ spec = do
   describe "prop_roundTripJSON" $ do
     it "round trips for Integer" $ property $ prop_roundTripJSON @Integer
     it "round trips for Bool" $ property $ prop_roundTripJSON @Bool
-    it "round trips for some custom type"
-      $ property
-      $ prop_roundTripJSON @MyCustomType
+    it "round trips for some custom type" $
+      property $
+        prop_roundTripJSON @MyCustomType

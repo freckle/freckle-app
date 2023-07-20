@@ -1,10 +1,11 @@
 {-# LANGUAGE CPP #-}
+
 module Network.HTTP.Link.Compat
-    ( Link
-    , linkURI
-    , parseLinkURI
-    , module Network.HTTP.Link
-    )
+  ( Link
+  , linkURI
+  , parseLinkURI
+  , module Network.HTTP.Link
+  )
 where
 
 import Prelude

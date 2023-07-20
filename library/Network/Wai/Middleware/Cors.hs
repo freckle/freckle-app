@@ -26,11 +26,13 @@ corsMiddleware validateOrigin extraExposedHeaders =
 handleOptions :: (ByteString -> Bool) -> [ByteString] -> Middleware
 handleOptions validateOrigin extraExposedHeaders app req sendResponse =
   case (requestMethod req, lookup "Origin" (requestHeaders req)) of
-    ("OPTIONS", Just origin) -> sendResponse $ responseLBS
-      status200
-      (toHeaders $ corsResponseHeaders validateOrigin extraExposedHeaders origin
-      )
-      mempty
+    ("OPTIONS", Just origin) ->
+      sendResponse $
+        responseLBS
+          status200
+          ( toHeaders $ corsResponseHeaders validateOrigin extraExposedHeaders origin
+          )
+          mempty
     _ -> app req sendResponse
  where
   toHeaders :: [(ByteString, ByteString)] -> ResponseHeaders
@@ -40,11 +42,12 @@ addCORSHeaders :: (ByteString -> Bool) -> [ByteString] -> Middleware
 addCORSHeaders validateOrigin extraExposedHeaders app req sendResponse =
   case lookup "Origin" (requestHeaders req) of
     Nothing -> app req sendResponse
-    Just origin -> addHeaders
-      (corsResponseHeaders validateOrigin extraExposedHeaders origin)
-      app
-      req
-      sendResponse
+    Just origin ->
+      addHeaders
+        (corsResponseHeaders validateOrigin extraExposedHeaders origin)
+        app
+        req
+        sendResponse
 
 corsResponseHeaders
   :: (ByteString -> Bool)

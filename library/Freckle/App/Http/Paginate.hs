@@ -51,7 +51,6 @@
 --   let next = C8.pack $ show $ pNext body
 --   pure $ addToRequestQueryString [("next", Just next)] req
 -- @
---
 module Freckle.App.Http.Paginate
   ( sourcePaginated
   , sourcePaginatedBy
@@ -65,7 +64,6 @@ import Network.HTTP.Link.Compat hiding (linkHeader)
 import Network.HTTP.Simple
 
 -- | Stream pages of a paginated response, using @Link@ to find next pages
---
 sourcePaginated
   :: MonadIO m
   => (Request -> m (Response body))

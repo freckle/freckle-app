@@ -10,7 +10,7 @@ import Data.Word (Word32)
 import Database.Memcache.Types (Expiration)
 
 newtype CacheTTL = CacheTTL Int
-  deriving stock Show
+  deriving stock (Show)
   deriving newtype (Eq, Ord, Enum, Num, Real, Integral)
 
 cacheTTL :: Int -> CacheTTL

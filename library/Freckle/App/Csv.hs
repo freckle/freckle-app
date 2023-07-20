@@ -4,21 +4,24 @@
 --
 -- A minor extension of [cassava](https://hackage.haskell.org/package/cassava).
 -- Using `MonadValidate` and `Conduit`.
---
 module Freckle.App.Csv
   ( csvWithValidationSink
   , csvWithParserAndValidationSink
-   -- * Conduit Primitives
+
+    -- * Conduit Primitives
   , runCsvConduit
   , decodeCsv
-  -- * Header Validation
+
+    -- * Header Validation
   , ValidateHeader
   , validateHeader
   , hasHeader
   , defaultValidateOrderedHeader
-  -- * Exceptions
-  , CsvException(..)
-  -- * Options
+
+    -- * Exceptions
+  , CsvException (..)
+
+    -- * Options
   , defaultOptions
   ) where
 
@@ -27,15 +30,21 @@ import Freckle.App.Prelude
 import Conduit
 import Control.Monad (foldM)
 import Control.Monad.Validate
-  (MonadValidate(..), Validate, ValidateT, refute, runValidate, runValidateT)
-import Data.Aeson (KeyValue(..), ToJSON(..), object, pairs, (.=))
+  ( MonadValidate (..)
+  , Validate
+  , ValidateT
+  , refute
+  , runValidate
+  , runValidateT
+  )
+import Data.Aeson (KeyValue (..), ToJSON (..), object, pairs, (.=))
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS8
 import qualified Data.Conduit.Combinators as Conduit
 import qualified Data.Conduit.Text as Conduit
 import Data.Csv
   ( DefaultOrdered
-  , FromNamedRecord(..)
+  , FromNamedRecord (..)
   , Header
   , Name
   , NamedRecord
@@ -48,7 +57,7 @@ import qualified Data.Csv.Incremental as CsvI
 import Data.Functor.Bind (Bind)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.List.NonEmpty as NE
-import Data.Proxy (Proxy(Proxy))
+import Data.Proxy (Proxy (Proxy))
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 import Data.Sequence.NonEmpty (NESeq)
@@ -60,12 +69,12 @@ import UnliftIO.Exception (handle)
 -- | Treat CSV header line as 1
 --
 -- CSVs can break rows over lines, but we don't currently handle that.
---
 headerLineNumber :: Int
 headerLineNumber = 1
 
 class ValidateHeader a where
-  validateHeader :: (Bind m, Monad m) => proxy a -> Header -> ValidateT (NESeq String) m ()
+  validateHeader
+    :: (Bind m, Monad m) => proxy a -> Header -> ValidateT (NESeq String) m ()
 
 hasHeader :: Monad m => Header -> Name -> ValidateT (NESeq String) m ()
 hasHeader h name
@@ -85,7 +94,6 @@ defaultValidateOrderedHeader _ h =
 --
 -- - Expects UTF-8
 -- - Provides incremental validation
---
 csvWithValidationSink
   :: forall a b err m
    . ( MonadThrow m
@@ -106,7 +114,6 @@ csvWithValidationSink =
 --
 -- - Expects UTF-8
 -- - Provides incremental validation
---
 csvWithParserAndValidationSink
   :: forall a b err m
    . (MonadThrow m, MonadUnliftIO m, PrimMonad m)
@@ -120,10 +127,10 @@ csvWithParserAndValidationSink
   -> m (Validate (NonEmpty (CsvException err)) (Vector b))
 csvWithParserAndValidationSink headerValidator p source validation = do
   validatedCsv <-
-    runCsvConduit
-    $ transPipe lift source
-    .| decodeCsvWithP headerValidator p
-    .| transPipe lift sinkVector
+    runCsvConduit $
+      transPipe lift source
+        .| decodeCsvWithP headerValidator p
+        .| transPipe lift sinkVector
 
   pure $ case validatedCsv of
     Left errs -> refute $ NE.fromList $ toList errs
@@ -153,7 +160,6 @@ decodeCsv = decodeCsvWithP (validateHeader (Proxy @a)) parseNamedRecord
 
 -- | Stream in 'ByteString's and parse records in constant space with a custom
 -- record parser
---
 decodeCsvWithP
   :: forall a m err
    . (MonadThrow m, MonadValidate (Seq (CsvException err)) m)
@@ -168,21 +174,22 @@ decodeCsvWithP headerValidator p =
 
 parseCsv
   :: forall a m err
-   . (MonadValidate (Seq (CsvException err)) m)
+   . MonadValidate (Seq (CsvException err)) m
   => (Header -> Validate (NESeq String) ())
   -> (NamedRecord -> Parser a)
   -> ConduitT ByteString a m ()
-parseCsv headerValidator p = parseHeader
-  headerValidator
-  (CsvI.decodeByNameWithP (stripParser p) defaultDecodeOptions)
+parseCsv headerValidator p =
+  parseHeader
+    headerValidator
+    (CsvI.decodeByNameWithP (stripParser p) defaultDecodeOptions)
 
 data CsvException a
   = CsvMissingColumn !Text
   | CsvParseException !Int !Text
   | CsvFileNotFound
   | CsvUnknownFileEncoding
-  | CsvExceptionExtension a
-  -- ^ A constructor for providing extensible csv exceptions
+  | -- | A constructor for providing extensible csv exceptions
+    CsvExceptionExtension a
   deriving stock (Eq, Show)
 
 instance ToJSON a => ToJSON (CsvException a) where
@@ -192,10 +199,11 @@ instance ToJSON a => ToJSON (CsvException a) where
 csvExceptionPairs
   :: KeyValue kv => ([kv] -> r) -> (a -> r) -> CsvException a -> r
 csvExceptionPairs done extend = \case
-  CsvMissingColumn column -> done
-    [ "message" .= ("Missing column " <> tshow column)
-    , "missingColumn" .= column
-    ]
+  CsvMissingColumn column ->
+    done
+      [ "message" .= ("Missing column " <> tshow column)
+      , "missingColumn" .= column
+      ]
   CsvParseException rowNumber message ->
     done ["rowNumber" .= rowNumber, "message" .= message]
   CsvFileNotFound -> done ["message" .= ("file not found" :: Text)]
@@ -205,7 +213,7 @@ csvExceptionPairs done extend = \case
 
 parseHeader
   :: forall a m err
-   . (MonadValidate (Seq (CsvException err)) m)
+   . MonadValidate (Seq (CsvException err)) m
   => (Header -> Validate (NESeq String) ())
   -> CsvI.HeaderParser (CsvI.Parser a)
   -> ConduitT ByteString a m ()
@@ -216,7 +224,7 @@ parseHeader headerValidator = \case
     await >>= (parseHeader headerValidator . k) . fromMaybe mempty
   CsvI.DoneH header parser ->
     case runValidate $ headerValidator $ fmap stripUtf8 header of
-      Right{} -> parseRow (succ headerLineNumber) parser
+      Right {} -> parseRow (succ headerLineNumber) parser
       Left errs ->
         lift $ refute $ Seq.fromList $ CsvMissingColumn . pack <$> toList errs
 
@@ -232,7 +240,8 @@ parseRow rowNumber parse = case parse of
     !newRowNumber <- handleRows rows
     await >>= parseRow newRowNumber . k . fromMaybe mempty
   CsvI.Done rows -> void $ handleRows rows
-  where handleRows = foldM handleRow rowNumber
+ where
+  handleRows = foldM handleRow rowNumber
 
 handleRow
   :: MonadValidate (Seq (CsvException err)) m

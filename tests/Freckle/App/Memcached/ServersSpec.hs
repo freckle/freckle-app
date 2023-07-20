@@ -64,9 +64,9 @@ spec = do
         `shouldBe` Just (Memcache.Auth "user" "password")
 
     it "can do all of this for a list of servers" $ example $ do
-      let
-        mServerSpecs = readServerSpecs
-          "memcached://a-host,memcached://b-host:11212,memcached://u:p@:11213"
+      let mServerSpecs =
+            readServerSpecs
+              "memcached://a-host,memcached://b-host:11212,memcached://u:p@:11213"
 
       fmap (map Memcache.ssHost) mServerSpecs
         `shouldBe` Just ["a-host", "b-host", defaultHost]
@@ -74,7 +74,7 @@ spec = do
         `shouldBe` Just ["11211", "11212", "11213"]
       fmap (map Memcache.ssAuth) mServerSpecs
         `shouldBe` Just
-                     [Memcache.NoAuth, Memcache.NoAuth, Memcache.Auth "u" "p"]
+          [Memcache.NoAuth, Memcache.NoAuth, Memcache.Auth "u" "p"]
 
 readServerSpec :: String -> Maybe Memcache.ServerSpec
 readServerSpec = headMay <=< readServerSpecs
