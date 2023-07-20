@@ -4,7 +4,7 @@ module Freckle.App.Kafka
   ( BrokerAddress(..)
   , HasKafkaBrokerAddress (..)
   , envKafkaBrokerAddress
-  
+
   , KafkaProducer (..)
   , HasKafkaProducer (..)
   , kafkaProducer
@@ -41,7 +41,7 @@ instance HasKafkaBrokerAddress site => HasKafkaBrokerAddress (HandlerData child 
 envKafkaBrokerAddress
   :: Env.Parser Env.Error BrokerAddress
 envKafkaBrokerAddress = BrokerAddress <$> addressOrNothing
-  
+
  where
   addressOrNothing = (parseKafkaBrokerAddress <$> parseKey) <|> pure Nothing
   parseKey = Env.var Env.nonempty "KAFKA_BROKER_ADDRESS" mempty
