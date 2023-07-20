@@ -1,15 +1,14 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
 module Freckle.App.Kafka
-  ( BrokerAddress(..)
-  , HasKafkaBrokerAddress (..)
-  , envKafkaBrokerAddress
+  ( envKafkaBrokerAddresses
 
-  , KafkaProducer (..)
-  , HasKafkaProducer (..)
-  , kafkaProducer
+  , KafkaProducerPool (..)
+  , HasKafkaProducerPool (..)
+  , createKafkaProducerPool
 
-  , produceAsync
+  , produceKeyedOn
+  , produceKeyedOnAsync
 
   ) where
 
@@ -24,45 +23,37 @@ import Data.Pool (Pool)
 import qualified Data.Pool as Pool
 import qualified Data.Text as T
 import qualified Freckle.App.Env as Env
-import qualified Kafka.Producer as Kafka
+import Kafka.Producer
 import UnliftIO.Async (async)
 import UnliftIO.Exception (throwString)
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
 
-newtype BrokerAddress = BrokerAddress { getBrokerAddress :: Maybe (NonEmpty Kafka.BrokerAddress)}
+envKafkaBrokerAddresses
+  :: Env.Parser Env.Error (NonEmpty BrokerAddress)
+envKafkaBrokerAddresses = Env.var
+    (Env.eitherReader readKafkaBrokerAddresses)
+    "KAFKA_BROKER_ADDRESSES"
+    mempty
+  
+readKafkaBrokerAddresses :: String -> Either String (NonEmpty BrokerAddress)
+readKafkaBrokerAddresses t = case (NE.nonEmpty $ T.splitOn "," $ T.pack t) of
+  Just xs@(x NE.:| _) 
+    | x /= "" -> Right $ BrokerAddress <$> xs
+  _ -> Left "Broker Address cannot be empty"
 
-class HasKafkaBrokerAddress env where
-  kafkaBrokerAddressL :: Lens' env BrokerAddress
+data KafkaProducerPool
+  = NullKafkaProducerPool
+  | KafkaProducerPool (Pool KafkaProducer)
 
-instance HasKafkaBrokerAddress site => HasKafkaBrokerAddress (HandlerData child site) where
-  kafkaBrokerAddressL = envL . siteL . kafkaBrokerAddressL
+class HasKafkaProducerPool env where
+  kafkaProducerPoolL :: Lens' env KafkaProducerPool
 
-envKafkaBrokerAddress
-  :: Env.Parser Env.Error BrokerAddress
-envKafkaBrokerAddress = BrokerAddress <$> addressOrNothing
+instance HasKafkaProducerPool site => HasKafkaProducerPool (HandlerData child site) where
+  kafkaProducerPoolL = envL . siteL . kafkaProducerPoolL
 
- where
-  addressOrNothing = (parseKafkaBrokerAddress <$> parseKey) <|> pure Nothing
-  parseKey = Env.var Env.nonempty "KAFKA_BROKER_ADDRESS" mempty
-  parseKafkaBrokerAddress = NE.nonEmpty . fmap Kafka.BrokerAddress . T.splitOn ","
-
-data KafkaProducer
-  = NullKafkaProducer
-  | KafkaProducerPool (Pool Kafka.KafkaProducer)
-
-class HasKafkaProducer env where
-  kafkaProducerL :: Lens' env KafkaProducer
-
-instance HasKafkaProducer site => HasKafkaProducer (HandlerData child site) where
-  kafkaProducerL = envL . siteL . kafkaProducerL
-
-kafkaProducer
-  :: ( MonadReader env m
-     , HasKafkaBrokerAddress env
-     , MonadUnliftIO m
-     )
-  => Int
+createKafkaProducerPool :: NonEmpty BrokerAddress 
+  -> Int
   -- ^ The number of stripes (distinct sub-pools) to maintain.
   -- The smallest acceptable value is 1.
   -> NominalDiffTime
@@ -79,41 +70,34 @@ kafkaProducer
   -- Requests for resources will block if this limit is reached on a
   -- single stripe, even if other stripes have idle resources
   -- available.
-  -> m KafkaProducer
-kafkaProducer numStripes idleTime maxResources =
-  view kafkaBrokerAddressL >>= \case
-    BrokerAddress Nothing -> pure NullKafkaProducer
-    BrokerAddress (Just addresses) -> do
-      let
-        pool =
-          Pool.createPool mkProducer Kafka.closeProducer numStripes idleTime maxResources
-        mkProducer =
-          either throw pure =<< Kafka.newProducer (Kafka.brokersList $ toList addresses)
-        throw err = throwString $ "Failed to open kafka producer: " <> show err
-      KafkaProducerPool
-        <$> liftIO pool
+  -> IO (Pool KafkaProducer)
+createKafkaProducerPool addresses = Pool.createPool mkProducer closeProducer
+  where          
+      mkProducer =
+        either throw pure =<< newProducer (brokersList $ toList addresses)
+      throw err = throwString $ "Failed to open kafka producer: " <> show err
 
-produceAsync
+produceKeyedOn
   :: ( ToJSON value
      , ToJSON key
      , MonadLogger m
      , MonadReader env m
-     , HasKafkaProducer env
+     , HasKafkaProducerPool env
      , MonadUnliftIO m
      )
-  => Kafka.TopicName
+  => TopicName
   -> NonEmpty value
   -> (value -> key)
   -> m ()
-produceAsync prTopic values keyF = void $ async $ do
+produceKeyedOn prTopic values keyF = do
   logDebugNS "kafka" $ "Producing Kafka events" :# ["events" .= values]
-  view kafkaProducerL >>= \case
-    NullKafkaProducer -> pure ()
+  view kafkaProducerPoolL >>= \case
+    NullKafkaProducerPool -> pure ()
     KafkaProducerPool producerPool -> do
       errors <-
         liftIO $
           Pool.withResource producerPool $ \producer ->
-            Kafka.produceMessageBatch producer $
+            produceMessageBatch producer $
               toList $
                 mkProducerRecord <$> values
       unless (null errors) $
@@ -121,12 +105,26 @@ produceAsync prTopic values keyF = void $ async $ do
           "Failed to send events" :# ["errors" .= fmap (tshow . snd) errors]
  where
   mkProducerRecord value =
-    Kafka.ProducerRecord
+    ProducerRecord
       { prTopic
-      , prPartition = Kafka.UnassignedPartition
+      , prPartition = UnassignedPartition
       , prKey = Just $ toStrict $ encode $ keyF value
       , prValue =
           Just $
             toStrict $
               encode value
       }
+
+produceKeyedOnAsync
+  :: ( ToJSON value
+     , ToJSON key
+     , MonadLogger m
+     , MonadReader env m
+     , HasKafkaProducerPool env
+     , MonadUnliftIO m
+     )
+  => TopicName
+  -> NonEmpty value
+  -> (value -> key)
+  -> m ()
+produceKeyedOnAsync prTopic values = void . async . produceKeyedOn prTopic values
