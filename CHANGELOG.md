@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.0.3...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.1.0...main)
+
+## [v1.9.1.0](https://github.com/freckle/freckle-app/compare/v1.9.0.3...v1.9.1.0)
+
+- Add `Freckle.App.Kafka` for producing kafka events
 
 ## [v1.9.0.3](https://github.com/freckle/freckle-app/compare/v1.9.0.2...v1.9.0.3)
 
