@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.1.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.1.1...main)
+
+## [v1.9.1.1](https://github.com/freckle/freckle-app/compare/v1.9.1.0...v1.9.1.1)
+
+- Add `KafkaProducerPoolConfig` for controlling Kafka producer pool parameters
 
 ## [v1.9.1.0](https://github.com/freckle/freckle-app/compare/v1.9.0.3...v1.9.1.0)
 
