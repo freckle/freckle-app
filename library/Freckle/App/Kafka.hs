@@ -37,7 +37,7 @@ envKafkaBrokerAddresses = Env.var
     mempty
 
 readKafkaBrokerAddresses :: String -> Either String (NonEmpty BrokerAddress)
-readKafkaBrokerAddresses t = case (NE.nonEmpty $ T.splitOn "," $ T.pack t) of
+readKafkaBrokerAddresses t = case NE.nonEmpty $ T.splitOn "," $ T.pack t of
   Just xs@(x NE.:| _)
     | x /= "" -> Right $ BrokerAddress <$> xs
   _ -> Left "Broker Address cannot be empty"
