@@ -99,6 +99,7 @@ library:
     - http-conduit >= 2.3.5 # addToRequestQueryString
     - http-link-header
     - http-types
+    - hw-kafka-client
     - immortal
     - lens
     - memcache
