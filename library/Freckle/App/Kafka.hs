@@ -64,7 +64,7 @@ data KafkaProducerPoolConfig = KafkaProducerPoolConfig
   }
   deriving stock (Show)
 
--- Same defaults as `Database.Persist.Sql.ConnectionPoolConfig`
+-- | Same defaults as 'Database.Persist.Sql.ConnectionPoolConfig'
 defaultKafkaProducerPoolConfig :: KafkaProducerPoolConfig
 defaultKafkaProducerPoolConfig = KafkaProducerPoolConfig 1 600 10
 
