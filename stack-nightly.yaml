@@ -1,5 +1,6 @@
 resolver: nightly-2023-02-27
 extra-deps:
+  - bcp47-0.2.0.6
   - monad-validate-1.2.0.1
 
   # For OTel

@@ -1,11 +1,11 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.35.1.
+-- This file has been generated from package.yaml by hpack version 0.35.2.
 --
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.9.1.1
+version:        1.9.2.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -61,6 +61,19 @@ library
       Freckle.App.Wai
       Freckle.App.Yesod
       Freckle.App.Yesod.Routes
+      Freckle.Test.Yesod
+      Freckle.Test.Yesod.BodyAssertions
+      Freckle.Test.Yesod.Cookies
+      Freckle.Test.Yesod.Foundation
+      Freckle.Test.Yesod.GeneralAssertions
+      Freckle.Test.Yesod.GetBody
+      Freckle.Test.Yesod.HeaderAssertions
+      Freckle.Test.Yesod.JsonAssertions
+      Freckle.Test.Yesod.MakingRequests
+      Freckle.Test.Yesod.MonadYesodExample
+      Freckle.Test.Yesod.RequestBuilder
+      Freckle.Test.Yesod.SResponse
+      Freckle.Test.Yesod.StatusAssertions
       Network.HTTP.Link.Compat
       Network.Wai.Middleware.Cors
       Network.Wai.Middleware.Stats
@@ -98,11 +111,13 @@ library
   build-depends:
       Blammo
     , Glob
+    , HUnit
     , MonadRandom
     , aeson
     , aws-xray-client-persistent
     , aws-xray-client-wai
-    , base <5
+    , base
+    , bcp47
     , bugsnag
     , bytestring
     , case-insensitive
@@ -110,6 +125,7 @@ library
     , conduit
     , conduit-extra
     , containers
+    , cookie
     , datadog
     , doctest
     , dotenv
@@ -122,6 +138,7 @@ library
     , hashable
     , hspec >=2.8.1
     , hspec-core >=2.8.1
+    , hspec-expectations-json
     , hspec-expectations-lifted
     , hspec-junit-formatter >=1.1.0.1
     , http-client
@@ -131,6 +148,7 @@ library
     , hw-kafka-client
     , immortal
     , lens
+    , lens-aeson
     , memcache
     , monad-control
     , monad-validate
@@ -162,6 +180,7 @@ library
     , wai-extra
     , yaml
     , yesod-core
+    , yesod-test
   default-language: Haskell2010
   if impl(ghc >= 9.2)
     ghc-options: -Wno-missing-kind-signatures
