@@ -5,9 +5,14 @@ extra-deps:
   - aws-xray-client-0.1.0.2
   - aws-xray-client-persistent-0.1.0.5
   - aws-xray-client-wai-0.1.0.2
+  - bcp47-0.2.0.6
   - bugsnag-1.0.0.0
   - bugsnag-wai-1.0.0.0
+  - bytebuild-0.3.10.0
+  - bytehash-0.1.0.0
+  - byteslice-0.2.7.0
   - context-0.2.0.1
+  - contiguous-0.6.1.1
   - envparse-0.5.0
   - hspec-2.9.3
   - hspec-core-2.9.3
@@ -16,7 +21,9 @@ extra-deps:
   - memcache-0.3.0.1
   - monad-logger-aeson-0.3.0.2
   - monad-validate-1.2.0.1
+  - run-st-0.1.1.0
   - scientist-0.0.0.0
+  - zigzag-0.0.1.0
 
   # For OTel
   - hs-opentelemetry-api-0.0.3.6
