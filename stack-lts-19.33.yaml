@@ -2,23 +2,16 @@ resolver: lts-19.33
 
 extra-deps:
   - Blammo-1.0.2.2
-  - bcp47-0.2.0.6
   - bugsnag-1.0.0.1
   - bugsnag-wai-1.0.0.1
-  - bytebuild-0.3.10.0
-  - bytehash-0.1.0.0
-  - byteslice-0.2.7.0
   - context-0.2.0.1
-  - contiguous-0.6.1.1
   - ekg-core-0.1.1.7
   - envparse-0.5.0
   - hspec-junit-formatter-1.1.0.2
   - memcache-0.3.0.1
   - monad-logger-aeson-0.3.0.2
   - monad-validate-1.2.0.1
-  - run-st-0.1.1.0
   - scientist-0.0.0.0
-  - zigzag-0.0.1.0
 
   # For OTel
   - hs-opentelemetry-api-0.0.3.6
@@ -31,3 +24,13 @@ extra-deps:
   - hs-opentelemetry-sdk-0.0.3.4
   - thread-utils-context-0.2.0.0
   - thread-utils-finalizers-0.1.0.0
+
+  # for bcp47
+  - bcp47-0.2.0.6
+  - country-0.2.2
+  - bytebuild-0.3.10.0
+  - bytehash-0.1.0.0
+  - byteslice-0.2.7.0
+  - contiguous-0.6.1.1
+  - run-st-0.1.1.0
+  - zigzag-0.0.1.0
