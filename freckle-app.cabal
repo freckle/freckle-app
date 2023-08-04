@@ -65,7 +65,6 @@ library
       Freckle.Test.Yesod.BodyAssertions
       Freckle.Test.Yesod.Cookies
       Freckle.Test.Yesod.Foundation
-      Freckle.Test.Yesod.GeneralAssertions
       Freckle.Test.Yesod.GetBody
       Freckle.Test.Yesod.HeaderAssertions
       Freckle.Test.Yesod.JsonAssertions
