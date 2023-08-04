@@ -110,7 +110,6 @@ library
   build-depends:
       Blammo
     , Glob
-    , HUnit
     , MonadRandom
     , aeson
     , aws-xray-client-persistent
@@ -137,7 +136,6 @@ library
     , hashable
     , hspec >=2.8.1
     , hspec-core >=2.8.1
-    , hspec-expectations-json
     , hspec-expectations-lifted
     , hspec-junit-formatter >=1.1.0.1
     , http-client
@@ -147,7 +145,6 @@ library
     , hw-kafka-client
     , immortal
     , lens
-    , lens-aeson
     , memcache
     , monad-control
     , monad-validate
