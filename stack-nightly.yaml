@@ -3,6 +3,9 @@ extra-deps:
   - bcp47-0.2.0.6
   - monad-validate-1.2.0.1
 
+  # Held back due to https://github.com/lexi-lambda/monad-validate/pull/1
+  - mtl-2.2.2
+
   # For OTel
   - hs-opentelemetry-api-0.0.3.6
   - hs-opentelemetry-awsxray-0.1.0.1
