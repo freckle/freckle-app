@@ -15,6 +15,7 @@ import qualified Control.Immortal as Immortal
 import Control.Lens (Lens', view)
 import Data.Aeson
 import qualified Data.List.NonEmpty as NE
+import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
 import qualified Env
 import Freckle.App.Env
@@ -85,7 +86,7 @@ envKafkaConsumerConfig = do
   kafkaTopics <- envKafkaTopics
   kafkaOffsetReset <- envKafkaOffsetReset
   kafkaExtraProps <-
-    Env.var keyValueMap "KAFKA_EXTRA_SUBSCRIPTION_PROPS" (Env.def mempty)
+    Env.var (fmap Map.fromList . keyValues) "KAFKA_EXTRA_SUBSCRIPTION_PROPS" (Env.def mempty)
   pure $
     KafkaConsumerConfig
       brokerAddresses
