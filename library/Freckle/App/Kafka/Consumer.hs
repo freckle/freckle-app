@@ -30,10 +30,22 @@ import UnliftIO.Exception (bracket, displayException, throwIO)
 
 data KafkaConsumerConfig = KafkaConsumerConfig
   { kafkaConsumerConfigBrokerAddresses :: NonEmpty BrokerAddress
+  -- ^ The list of host/port pairs for establishing the initial connection
+  -- to the Kafka cluster.
+  --
+  -- This is the `bootstrap.servers` Kafka consumer configuration property.
   , kafkaConsumerConfigGroupId :: ConsumerGroupId
+  -- ^ The consumer group id to which the consumer belongs.
+  --
+  -- This is the `group.id` Kafka consumer configuration property.
   , kafkaConsumerConfigTopics :: NonEmpty TopicName
+  -- ^ The list of topic names that for which the consumer will subscribe.
   , kafkaConsumerConfigOffsetReset :: OffsetReset
+  -- ^ The offset reset parameter used when there is no initial offset in Kafka.
+  --
+  -- This is the `auto.offset.reset` Kafka consumer configuration property.
   , kafkaConsumerConfigExtraSubscriptionProps :: Map Text Text
+  -- ^ Extra properties used to configure the Kafka consumer.
   }
   deriving stock (Show)
 
@@ -98,6 +110,7 @@ subscription :: KafkaConsumerConfig -> Subscription
 subscription KafkaConsumerConfig {..} =
   topics (NE.toList kafkaConsumerConfigTopics)
     <> offsetReset kafkaConsumerConfigOffsetReset
+    <> extraSubscriptionProps kafkaConsumerConfigExtraSubscriptionProps
 
 withKafkaConsumer
   :: MonadUnliftIO m
