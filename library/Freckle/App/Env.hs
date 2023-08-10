@@ -32,11 +32,13 @@ module Freckle.App.Env
   , eitherReader
   , time
   , keyValues
+  , keyValueMap
   ) where
 
 import Freckle.App.Prelude
 
 import Control.Error.Util (note)
+import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
 import Data.Time (defaultTimeLocale, parseTimeM)
 import Env hiding (flag)
@@ -139,3 +141,6 @@ keyValues = eitherReader $ traverse keyValue . T.splitOn "," . pack
     (k, v) | T.null v -> Left $ "Key " <> unpack k <> " has no value"
     (k, v) | T.null k -> Left $ "Value " <> unpack v <> " has no key"
     (k, v) -> Right (k, v)
+
+keyValueMap :: Reader Error (Map Text Text)
+keyValueMap = fmap Map.fromList . keyValues
