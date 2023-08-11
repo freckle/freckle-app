@@ -46,8 +46,8 @@ import Database.PostgreSQL.Simple
   , execute
   )
 import Database.PostgreSQL.Simple.SqlQQ (sql)
-import qualified Freckle.App.Env as Env
 import Freckle.App.Env (Timeout (..))
+import qualified Freckle.App.Env as Env
 import Freckle.App.OpenTelemetry (MonadTracer (..))
 import Freckle.App.Stats (HasStatsClient)
 import qualified Freckle.App.Stats as Stats

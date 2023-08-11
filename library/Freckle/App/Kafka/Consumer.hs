@@ -86,7 +86,10 @@ envKafkaConsumerConfig = do
   kafkaTopics <- envKafkaTopics
   kafkaOffsetReset <- envKafkaOffsetReset
   kafkaExtraProps <-
-    Env.var (fmap Map.fromList . keyValues) "KAFKA_EXTRA_SUBSCRIPTION_PROPS" (Env.def mempty)
+    Env.var
+      (fmap Map.fromList . keyValues)
+      "KAFKA_EXTRA_SUBSCRIPTION_PROPS"
+      (Env.def mempty)
   pure $
     KafkaConsumerConfig
       brokerAddresses
