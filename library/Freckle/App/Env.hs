@@ -152,20 +152,20 @@ data Timeout
 
 -- | Read a timeout value as seconds or milliseconds
 --
--- >>> timeout "10"
+-- >>> var timeout "TIMEOUT" mempty `parsePure` [("TIMEOUT", "10")]
 -- Right (TimeoutSeconds 10)
 --
--- >>> timeout "10s"
+-- >>> var timeout "TIMEOUT" mempty `parsePure` [("TIMEOUT", "10s")]
 -- Right (TimeoutSeconds 10)
 --
--- >>> timeout "10ms"
+-- >>> var timeout "TIMEOUT" mempty `parsePure` [("TIMEOUT", "10ms")]
 -- Right (TimeoutMilliseconds 10)
 --
--- >>> timeout "20m"
--- Left "..."
+-- >>> var timeout "TIMEOUT" mempty `parsePure` [("TIMEOUT", "20m")]
+-- Left [("TIMEOUT",UnreadError "must be {digits}(s|ms): \"20m\"")]
 --
--- >>> timeout "2m0"
--- Left "..."
+-- >>> var timeout "TIMEOUT" mempty `parsePure` [("TIMEOUT", "2m0")]
+-- Left [("TIMEOUT",UnreadError "must be {digits}(s|ms): \"2m0\"")]
 timeout :: Reader Error Timeout
 timeout = eitherReader $ parseTimeout . span isDigit
  where
