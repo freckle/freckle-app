@@ -21,7 +21,8 @@ import qualified Env
 import Freckle.App.Env
 import Freckle.App.Kafka (envKafkaBrokerAddresses)
 import Kafka.Consumer hiding
-  ( closeConsumer
+  ( Timeout
+  , closeConsumer
   , newConsumer
   , runConsumer
   , subscription
@@ -127,6 +128,11 @@ withKafkaConsumer config = bracket newConsumer closeConsumer
   newConsumer = either throwIO pure =<< Kafka.newConsumer props sub
   closeConsumer = maybe (pure ()) throwIO <=< Kafka.closeConsumer
 
+timeoutMs :: Timeout -> Int
+timeoutMs = \case
+  TimeoutSeconds s -> s * 1000
+  TimeoutMilliseconds ms -> ms
+
 runConsumer
   :: ( MonadUnliftIO m
      , MonadReader env m
@@ -134,13 +140,13 @@ runConsumer
      , HasKafkaConsumer env
      , FromJSON a
      )
-  => Int
+  => Timeout
   -> (a -> m ())
   -> m ()
-runConsumer ms onMessage = void $ Immortal.create $ \thread -> Immortal.onUnexpectedFinish thread handleException $ do
+runConsumer pollTimeout onMessage = void $ Immortal.create $ \thread -> Immortal.onUnexpectedFinish thread handleException $ do
   consumer <- view kafkaConsumerL
   eMessage <-
-    pollMessage consumer $ Timeout ms
+    pollMessage consumer $ Kafka.Timeout $ timeoutMs pollTimeout
   case eMessage of
     Left (KafkaResponseError RdKafkaRespErrTimedOut) -> logInfo $ "Polling timeout"
     Left err -> logError $ "Error polling for message from Kafka" :# ["error" .= show err]
