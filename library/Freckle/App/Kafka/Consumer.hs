@@ -148,7 +148,7 @@ runConsumer pollTimeout onMessage = void $ Immortal.create $ \thread -> Immortal
   eMessage <-
     pollMessage consumer $ Kafka.Timeout $ timeoutMs pollTimeout
   case eMessage of
-    Left (KafkaResponseError RdKafkaRespErrTimedOut) -> logInfo $ "Polling timeout"
+    Left (KafkaResponseError RdKafkaRespErrTimedOut) -> logDebug $ "Polling timeout"
     Left err -> logError $ "Error polling for message from Kafka" :# ["error" .= show err]
     Right (ConsumerRecord {..}) -> for_ crValue $ \bs -> do
       case eitherDecodeStrict bs of
