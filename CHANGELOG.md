@@ -1,5 +1,11 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.1.1...main)
 
+## [v1.9.2.0](https://github.com/freckle/freckle-app/compare/v1.9.1.1...v1.9.2.0)
+
+- Add `Freckle.App.Kafka.Consumer` for consuming Kafka events.
+- Move producer to `Freckle.App.Kafka.Producer`.
+- Re-export both modules in `Freckle.App.Kafka`.
+
 ## [v1.9.1.1](https://github.com/freckle/freckle-app/compare/v1.9.1.0...v1.9.1.1)
 
 - Add `KafkaProducerPoolConfig` for controlling Kafka producer pool parameters
