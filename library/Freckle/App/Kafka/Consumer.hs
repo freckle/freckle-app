@@ -19,7 +19,7 @@ import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
 import qualified Env
 import Freckle.App.Env
-import Freckle.App.Kafka (envKafkaBrokerAddresses)
+import Freckle.App.Kafka.Producer (envKafkaBrokerAddresses)
 import Kafka.Consumer hiding
   ( Timeout
   , closeConsumer

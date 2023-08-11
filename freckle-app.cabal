@@ -44,6 +44,7 @@ library
       Freckle.App.Http.Retry
       Freckle.App.Kafka
       Freckle.App.Kafka.Consumer
+      Freckle.App.Kafka.Producer
       Freckle.App.Memcached
       Freckle.App.Memcached.CacheKey
       Freckle.App.Memcached.CacheTTL
