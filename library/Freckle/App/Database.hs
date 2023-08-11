@@ -13,7 +13,7 @@ module Freckle.App.Database
   , PostgresConnectionConf (..)
   , PostgresPasswordSource (..)
   , PostgresPassword (..)
-  , PostgresStatementTimeout (..)
+  , PostgresStatementTimeout
   , postgresStatementTimeoutMilliseconds
   , envParseDatabaseConf
   , envPostgresPasswordSource
@@ -28,7 +28,6 @@ import Control.Monad.Reader
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS8
 import qualified Data.ByteString.Lazy as BSL
-import Data.Char (isDigit)
 import Data.Pool
 import qualified Data.Text as T
 import Database.Persist.Postgresql
@@ -48,6 +47,7 @@ import Database.PostgreSQL.Simple
   )
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import qualified Freckle.App.Env as Env
+import Freckle.App.Env (Timeout (..))
 import Freckle.App.OpenTelemetry (MonadTracer (..))
 import Freckle.App.Stats (HasStatsClient)
 import qualified Freckle.App.Stats as Stats
@@ -58,7 +58,6 @@ import UnliftIO.Concurrent (threadDelay)
 import UnliftIO.Exception (displayException)
 import UnliftIO.IORef
 import Yesod.Core.Types (HandlerData (..), RunHandlerEnv (..))
-import qualified Prelude as Unsafe (read)
 
 type SqlPool = Pool SqlBackend
 
@@ -149,41 +148,12 @@ data PostgresPassword
   | PostgresPasswordStatic String
   deriving stock (Show, Eq)
 
-data PostgresStatementTimeout
-  = PostgresStatementTimeoutSeconds Int
-  | PostgresStatementTimeoutMilliseconds Int
-  deriving stock (Show, Eq)
+type PostgresStatementTimeout = Timeout
 
 postgresStatementTimeoutMilliseconds :: PostgresStatementTimeout -> Int
 postgresStatementTimeoutMilliseconds = \case
-  PostgresStatementTimeoutSeconds s -> s * 1000
-  PostgresStatementTimeoutMilliseconds ms -> ms
-
--- | Read @PGSTATEMENTTIMEOUT@ as seconds or milliseconds
---
--- >>> readPostgresStatementTimeout "10"
--- Right (PostgresStatementTimeoutSeconds 10)
---
--- >>> readPostgresStatementTimeout "10s"
--- Right (PostgresStatementTimeoutSeconds 10)
---
--- >>> readPostgresStatementTimeout "10ms"
--- Right (PostgresStatementTimeoutMilliseconds 10)
---
--- >>> readPostgresStatementTimeout "20m"
--- Left "..."
---
--- >>> readPostgresStatementTimeout "2m0"
--- Left "..."
-readPostgresStatementTimeout
-  :: String -> Either String PostgresStatementTimeout
-readPostgresStatementTimeout x = case span isDigit x of
-  ("", _) -> Left "must be {digits}(s|ms)"
-  (digits, "") -> Right $ PostgresStatementTimeoutSeconds $ Unsafe.read digits
-  (digits, "s") -> Right $ PostgresStatementTimeoutSeconds $ Unsafe.read digits
-  (digits, "ms") ->
-    Right $ PostgresStatementTimeoutMilliseconds $ Unsafe.read digits
-  _ -> Left "must be {digits}(s|ms)"
+  TimeoutSeconds s -> s * 1000
+  TimeoutMilliseconds ms -> ms
 
 envPostgresPasswordSource :: Env.Parser Env.Error PostgresPasswordSource
 envPostgresPasswordSource =
@@ -207,8 +177,7 @@ envParseDatabaseConf source = do
   poolSize <- Env.var Env.auto "PGPOOLSIZE" $ Env.def 10
   schema <- optional $ Env.var Env.nonempty "PGSCHEMA" mempty
   statementTimeout <-
-    Env.var (Env.eitherReader readPostgresStatementTimeout) "PGSTATEMENTTIMEOUT" $
-      Env.def (PostgresStatementTimeoutSeconds 120)
+    Env.var Env.timeout "PGSTATEMENTTIMEOUT" $ Env.def (TimeoutSeconds 120)
   pure
     PostgresConnectionConf
       { pccHost = host
