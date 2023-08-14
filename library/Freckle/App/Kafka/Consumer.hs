@@ -149,14 +149,15 @@ runConsumer pollTimeout onMessage = void $ Immortal.create $ \thread -> Immortal
   case eMessage of
     Left (KafkaResponseError RdKafkaRespErrTimedOut) -> logDebug $ "Polling timeout"
     Left err -> logError $ "Error polling for message from Kafka" :# ["error" .= show err]
-    Right (ConsumerRecord {..}) -> for_ crValue $ \bs -> do
+    Right m@(ConsumerRecord {..}) -> for_ crValue $ \bs -> do
       case eitherDecodeStrict bs of
         Left err -> logError $ "Could not decode message value" :# ["error" .= err]
-        Right a -> onMessage a
-  maybe
-    (logInfo "Committed offsets")
-    (\err -> logError $ "Error committing offsets" :# ["error" .= show err])
-    =<< commitAllOffsets OffsetCommit consumer
+        Right a -> do
+          onMessage a
+          maybe
+            (logInfo "Committed offsets")
+            (\err -> logError $ "Error committing offsets" :# ["error" .= show err])
+            =<< commitOffsetMessage OffsetCommit consumer m
  where
   handleException = \case
     Left ex ->
