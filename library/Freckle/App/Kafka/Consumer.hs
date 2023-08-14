@@ -40,8 +40,8 @@ data KafkaConsumerConfig = KafkaConsumerConfig
   -- ^ The consumer group id to which the consumer belongs.
   --
   -- This is the `group.id` Kafka consumer configuration property.
-  , kafkaConsumerConfigTopics :: NonEmpty TopicName
-  -- ^ The list of topic names that for which the consumer will subscribe.
+  , kafkaConsumerConfigTopic :: TopicName
+  -- ^ The topic name polled for messages by the Kafka consumer.
   , kafkaConsumerConfigOffsetReset :: OffsetReset
   -- ^ The offset reset parameter used when there is no initial offset in Kafka.
   --
@@ -51,19 +51,18 @@ data KafkaConsumerConfig = KafkaConsumerConfig
   }
   deriving stock (Show)
 
-envKafkaTopics
-  :: Env.Parser Env.Error (NonEmpty TopicName)
-envKafkaTopics =
+envKafkaTopic
+  :: Env.Parser Env.Error TopicName
+envKafkaTopic =
   Env.var
-    (eitherReader readKafkaTopics)
-    "KAFKA_TOPICS"
+    (eitherReader readKafkaTopic)
+    "KAFKA_TOPIC"
     mempty
 
-readKafkaTopics :: String -> Either String (NonEmpty TopicName)
-readKafkaTopics t = case NE.nonEmpty $ T.splitOn "," $ T.pack t of
-  Just xs@(x NE.:| _)
-    | x /= "" -> Right $ TopicName <$> xs
-  _ -> Left "Kafka topics cannot be empty"
+readKafkaTopic :: String -> Either String TopicName
+readKafkaTopic t = case T.pack t of
+  "" -> Left "Kafka topics cannot be empty"
+  x -> Right $ TopicName x
 
 envKafkaOffsetReset
   :: Env.Parser Env.Error OffsetReset
@@ -84,7 +83,7 @@ envKafkaConsumerConfig
 envKafkaConsumerConfig = do
   brokerAddresses <- envKafkaBrokerAddresses
   consumerGroupId <- Env.var Env.nonempty "KAFKA_CONSUMER_GROUP_ID" mempty
-  kafkaTopics <- envKafkaTopics
+  kafkaTopic <- envKafkaTopic
   kafkaOffsetReset <- envKafkaOffsetReset
   kafkaExtraProps <-
     Env.var
@@ -95,7 +94,7 @@ envKafkaConsumerConfig = do
     KafkaConsumerConfig
       brokerAddresses
       consumerGroupId
-      kafkaTopics
+      kafkaTopic
       kafkaOffsetReset
       kafkaExtraProps
 
@@ -113,7 +112,7 @@ consumerProps KafkaConsumerConfig {..} =
 
 subscription :: KafkaConsumerConfig -> Subscription
 subscription KafkaConsumerConfig {..} =
-  topics (NE.toList kafkaConsumerConfigTopics)
+  topics [kafkaConsumerConfigTopic]
     <> offsetReset kafkaConsumerConfigOffsetReset
     <> extraSubscriptionProps kafkaConsumerConfigExtraSubscriptionProps
 
