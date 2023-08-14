@@ -1,11 +1,11 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.35.1.
+-- This file has been generated from package.yaml by hpack version 0.35.2.
 --
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.9.1.1
+version:        1.9.2.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -43,6 +43,8 @@ library
       Freckle.App.Http.Paginate
       Freckle.App.Http.Retry
       Freckle.App.Kafka
+      Freckle.App.Kafka.Consumer
+      Freckle.App.Kafka.Producer
       Freckle.App.Memcached
       Freckle.App.Memcached.CacheKey
       Freckle.App.Memcached.CacheTTL

@@ -28,21 +28,25 @@ module Freckle.App.Env
   , flag
 
     -- * Extensions
+  , Timeout (..)
   , kept
   , eitherReader
   , time
   , keyValues
+  , timeout
   ) where
 
 import Freckle.App.Prelude
 
 import Control.Error.Util (note)
+import Data.Char (isDigit)
 import qualified Data.Text as T
 import Data.Time (defaultTimeLocale, parseTimeM)
 import Env hiding (flag)
 import qualified Env
 import Env.Internal.Free (hoistAlt)
 import Env.Internal.Parser (Parser (..), VarF (..))
+import qualified Prelude as Unsafe (read)
 
 -- | Designates the value of a parameter when a flag is not provided.
 newtype Off a = Off a
@@ -139,3 +143,36 @@ keyValues = eitherReader $ traverse keyValue . T.splitOn "," . pack
     (k, v) | T.null v -> Left $ "Key " <> unpack k <> " has no value"
     (k, v) | T.null k -> Left $ "Value " <> unpack v <> " has no key"
     (k, v) -> Right (k, v)
+
+-- | Represents a timeout in seconds or milliseconds
+data Timeout
+  = TimeoutSeconds Int
+  | TimeoutMilliseconds Int
+  deriving stock (Show, Eq)
+
+-- | Read a timeout value as seconds or milliseconds
+--
+-- >>> var timeout "TIMEOUT" mempty `parsePure` [("TIMEOUT", "10")]
+-- Right (TimeoutSeconds 10)
+--
+-- >>> var timeout "TIMEOUT" mempty `parsePure` [("TIMEOUT", "10s")]
+-- Right (TimeoutSeconds 10)
+--
+-- >>> var timeout "TIMEOUT" mempty `parsePure` [("TIMEOUT", "10ms")]
+-- Right (TimeoutMilliseconds 10)
+--
+-- >>> var timeout "TIMEOUT" mempty `parsePure` [("TIMEOUT", "20m")]
+-- Left [("TIMEOUT",UnreadError "must be {digits}(s|ms): \"20m\"")]
+--
+-- >>> var timeout "TIMEOUT" mempty `parsePure` [("TIMEOUT", "2m0")]
+-- Left [("TIMEOUT",UnreadError "must be {digits}(s|ms): \"2m0\"")]
+timeout :: Reader Error Timeout
+timeout = eitherReader $ parseTimeout . span isDigit
+ where
+  parseTimeout = \case
+    ("", _) -> Left "must be {digits}(s|ms)"
+    (digits, "") -> Right $ TimeoutSeconds $ Unsafe.read digits
+    (digits, "s") -> Right $ TimeoutSeconds $ Unsafe.read digits
+    (digits, "ms") ->
+      Right $ TimeoutMilliseconds $ Unsafe.read digits
+    _ -> Left "must be {digits}(s|ms)"
