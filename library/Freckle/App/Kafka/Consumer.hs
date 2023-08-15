@@ -11,8 +11,10 @@ module Freckle.App.Kafka.Consumer
 import Freckle.App.Prelude
 
 import Blammo.Logging
+import Control.Concurrent
 import qualified Control.Immortal as Immortal
 import Control.Lens (Lens', view)
+import Control.Monad (forever)
 import Data.Aeson
 import qualified Data.List.NonEmpty as NE
 import qualified Data.Map.Strict as Map
@@ -142,22 +144,24 @@ runConsumer
   => Timeout
   -> (a -> m ())
   -> m ()
-runConsumer pollTimeout onMessage = void $ Immortal.create $ \thread -> Immortal.onUnexpectedFinish thread handleException $ do
-  consumer <- view kafkaConsumerL
-  eMessage <-
-    pollMessage consumer $ Kafka.Timeout $ timeoutMs pollTimeout
-  case eMessage of
-    Left (KafkaResponseError RdKafkaRespErrTimedOut) -> logDebug $ "Polling timeout"
-    Left err -> logError $ "Error polling for message from Kafka" :# ["error" .= show err]
-    Right m@(ConsumerRecord {..}) -> for_ crValue $ \bs -> do
-      case eitherDecodeStrict bs of
-        Left err -> logError $ "Could not decode message value" :# ["error" .= err]
-        Right a -> do
-          onMessage a
-          maybe
-            (logInfo "Committed offsets")
-            (\err -> logError $ "Error committing offsets" :# ["error" .= show err])
-            =<< commitOffsetMessage OffsetCommit consumer m
+runConsumer pollTimeout onMessage = do
+  void $ Immortal.create $ \thread -> Immortal.onUnexpectedFinish thread handleException $ do
+    consumer <- view kafkaConsumerL
+    eMessage <-
+      pollMessage consumer $ Kafka.Timeout $ timeoutMs pollTimeout
+    case eMessage of
+      Left (KafkaResponseError RdKafkaRespErrTimedOut) -> logDebug $ "Polling timeout"
+      Left err -> logError $ "Error polling for message from Kafka" :# ["error" .= show err]
+      Right m@(ConsumerRecord {..}) -> for_ crValue $ \bs -> do
+        case eitherDecodeStrict bs of
+          Left err -> logError $ "Could not decode message value" :# ["error" .= err]
+          Right a -> do
+            onMessage a
+            maybe
+              (logInfo "Committed offsets")
+              (\err -> logError $ "Error committing offsets" :# ["error" .= show err])
+              =<< commitOffsetMessage OffsetCommit consumer m
+  forever $ liftIO $ threadDelay maxBound
  where
   handleException = \case
     Left ex ->
