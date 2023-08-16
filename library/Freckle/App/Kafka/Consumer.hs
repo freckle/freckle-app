@@ -48,6 +48,11 @@ data KafkaConsumerConfig = KafkaConsumerConfig
   -- ^ The offset reset parameter used when there is no initial offset in Kafka.
   --
   -- This is the `auto.offset.reset` Kafka consumer configuration property.
+  , kafkaConsumerConfigAutoCommitInterval :: Millis
+  -- ^ The interval that offsets are auto-committed to Kafka.
+  --
+  -- This sets the `auto.commit.interval.ms` and `enable.auto.commit` Kafka
+  -- consumer configuration properties.
   , kafkaConsumerConfigExtraSubscriptionProps :: Map Text Text
   -- ^ Extra properties used to configure the Kafka consumer.
   }
@@ -87,6 +92,10 @@ envKafkaConsumerConfig = do
   consumerGroupId <- Env.var Env.nonempty "KAFKA_CONSUMER_GROUP_ID" mempty
   kafkaTopic <- envKafkaTopic
   kafkaOffsetReset <- envKafkaOffsetReset
+  kafkaAutoOffsetInterval <-
+    fromIntegral . timeoutMs <$$> Env.var timeout "KAFKA_AUTO_COMMIT_INTERVAL" $
+      Env.def $
+        TimeoutMilliseconds 5000
   kafkaExtraProps <-
     Env.var
       (fmap Map.fromList . keyValues)
@@ -98,6 +107,7 @@ envKafkaConsumerConfig = do
       consumerGroupId
       kafkaTopic
       kafkaOffsetReset
+      kafkaAutoOffsetInterval
       kafkaExtraProps
 
 class HasKafkaConsumer env where
@@ -107,7 +117,7 @@ consumerProps :: KafkaConsumerConfig -> ConsumerProperties
 consumerProps KafkaConsumerConfig {..} =
   brokersList brokers
     <> groupId kafkaConsumerConfigGroupId
-    <> noAutoCommit
+    <> autoCommit kafkaConsumerConfigAutoCommitInterval
     <> logLevel KafkaLogInfo
  where
   brokers = NE.toList kafkaConsumerConfigBrokerAddresses
@@ -152,15 +162,10 @@ runConsumer pollTimeout onMessage = do
     case eMessage of
       Left (KafkaResponseError RdKafkaRespErrTimedOut) -> logDebug $ "Polling timeout"
       Left err -> logError $ "Error polling for message from Kafka" :# ["error" .= show err]
-      Right m@(ConsumerRecord {..}) -> for_ crValue $ \bs -> do
+      Right ConsumerRecord {..} -> for_ crValue $ \bs ->
         case eitherDecodeStrict bs of
           Left err -> logError $ "Could not decode message value" :# ["error" .= err]
-          Right a -> do
-            onMessage a
-            maybe
-              (logInfo "Committed offsets")
-              (\err -> logError $ "Error committing offsets" :# ["error" .= show err])
-              =<< commitOffsetMessage OffsetCommit consumer m
+          Right a -> onMessage a
   forever $ liftIO $ threadDelay maxBound
  where
   handleException = \case
