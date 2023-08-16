@@ -160,7 +160,7 @@ runConsumer pollTimeout onMessage = do
     eMessage <-
       pollMessage consumer $ Kafka.Timeout $ timeoutMs pollTimeout
     case eMessage of
-      Left (KafkaResponseError RdKafkaRespErrTimedOut) -> logDebug $ "Polling timeout"
+      Left (KafkaResponseError RdKafkaRespErrTimedOut) -> logDebug "Polling timeout"
       Left err -> logError $ "Error polling for message from Kafka" :# ["error" .= show err]
       Right ConsumerRecord {..} -> for_ crValue $ \bs ->
         case eitherDecodeStrict bs of
