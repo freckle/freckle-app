@@ -1,5 +1,9 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.1.1...main)
 
+## [v1.9.3.0](https://github.com/freckle/freckle-app/compare/v1.9.2.1...v1.9.3.0)
+
+- Auto-commit offset when consuming Kafka events.
+
 ## [v1.9.2.1](https://github.com/freckle/freckle-app/compare/v1.9.2.0...v1.9.2.1)
 
 - Fixed segfault bug in `Freckle.App.Kafka.Consumer`.
