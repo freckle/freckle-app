@@ -14,7 +14,7 @@ build reproducibility and being able to utilize the nix binary cache for speed.
 */
 { nixpkgs }:
 let
-  haskellPackages = nixpkgs.ghc926.haskellPackages.override {
+  haskellPackages = nixpkgs.ghc927.haskellPackages.override {
     inherit (nixpkgs.unstable) all-cabal-hashes;
     overrides = import ./haskell-package-overrides.nix
       { inherit nixpkgs; };

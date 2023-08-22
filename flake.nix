@@ -9,8 +9,8 @@
       "github:nixos/nixpkgs/nixos-unstable";
 
     /* Hash obtained from https://www.nixhub.io/packages/ghc */
-    ghc926.url =
-      "github:nixos/nixpkgs/796b4a3c1d903c4b9270cd2548fe46f524eeb886";
+    ghc927.url =
+      "github:nixos/nixpkgs/16b3b0c53b1ee8936739f8c588544e7fcec3fc60";
 
     flake-utils.url = "github:numtide/flake-utils";
   };
@@ -30,7 +30,7 @@
         nixpkgs = {
           stable = import inputs.stable nixpkgsArgs;
           unstable = import inputs.unstable nixpkgsArgs;
-          ghc926 = import inputs.ghc926 nixpkgsArgs;
+          ghc927 = import inputs.ghc927 nixpkgsArgs;
         };
 
       in
