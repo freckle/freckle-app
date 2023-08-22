@@ -37,5 +37,7 @@
       {
         devShells.default =
           import ./nix/shell.nix { inherit nixpkgs; };
+        packages =
+          import ./nix { inherit nixpkgs; };
       });
 }

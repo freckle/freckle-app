@@ -2,13 +2,13 @@
 nixpkgs.stable.mkShell {
   name = "freckle-app-shell";
   buildInputs =
-    map (x: import x { inherit nixpkgs; })
-      [
-        ./cabal.nix
-        ./fourmolu.nix
-        ./ghc-with-packages.nix
-        ./haskell-language-server.nix
-        ./haskell-native-dependencies.nix
-        ./stack.nix
-      ];
+    with (import ./. { inherit nixpkgs; });
+    [
+      cabal
+      fourmolu
+      ghc-with-packages
+      haskell-language-server
+      haskell-native-dependencies
+      stack
+    ];
 }
