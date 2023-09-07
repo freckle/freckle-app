@@ -1,4 +1,9 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.1.1...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.4.0...main)
+
+## [v1.9.4.0](https://github.com/freckle/freckle-app/compare/v1.9.3.0...v1.9.4.0)
+
+- Add `Freckle.App.Async` (primarily) for correctly managing thread context when
+  spawning new threads.
 
 ## [v1.9.3.0](https://github.com/freckle/freckle-app/compare/v1.9.2.1...v1.9.3.0)
 
