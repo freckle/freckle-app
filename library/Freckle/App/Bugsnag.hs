@@ -22,8 +22,8 @@ module Freckle.App.Bugsnag
 
 import Freckle.App.Prelude
 
-import Control.Concurrent (forkIO)
 import Control.Lens (Lens', view)
+import Control.Monad.Catch (MonadMask)
 import Control.Monad.Reader (runReaderT)
 import Data.Bugsnag
 import Data.Bugsnag.Settings
@@ -31,6 +31,7 @@ import qualified Data.ByteString.Char8 as BS8
 import Data.List (isInfixOf)
 import Database.PostgreSQL.Simple (SqlError (..))
 import Database.PostgreSQL.Simple.Errors
+import Freckle.App.Async (async)
 import qualified Freckle.App.Env as Env
 import Network.Bugsnag hiding (notifyBugsnag, notifyBugsnagWith)
 import qualified Network.Bugsnag as Bugsnag
@@ -64,10 +65,11 @@ instance HasBugsnagSettings site => HasBugsnagSettings (HandlerData child site) 
 
 -- | Notify Bugsnag of an exception
 --
--- The notification is made asynchronously via a simple @'forkIO'@. This is
+-- The notification is made asynchronously via a simple @'async'@. This is
 -- best-effort and we don't care to keep track of the spawned threads.
 notifyBugsnag
-  :: ( MonadIO m
+  :: ( MonadMask m
+     , MonadUnliftIO m
      , MonadReader env m
      , HasBugsnagSettings env
      , Exception.Exception e
@@ -78,7 +80,8 @@ notifyBugsnag = notifyBugsnagWith mempty
 
 -- | 'notifyBugsnag' with a 'BeforeNotify'
 notifyBugsnagWith
-  :: ( MonadIO m
+  :: ( MonadMask m
+     , MonadUnliftIO m
      , MonadReader env m
      , HasBugsnagSettings env
      , Exception.Exception e
@@ -88,7 +91,7 @@ notifyBugsnagWith
   -> m ()
 notifyBugsnagWith f ex = do
   settings <- view bugsnagSettingsL
-  void $ liftIO $ forkIO $ Bugsnag.notifyBugsnagWith f settings ex
+  void $ async $ liftIO $ Bugsnag.notifyBugsnagWith f settings ex
 
 asSqlError :: SqlError -> BeforeNotify
 asSqlError err@SqlError {..} = toSqlGrouping <> toSqlException
