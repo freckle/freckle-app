@@ -22,9 +22,9 @@ import qualified Data.List.NonEmpty as NE
 import Data.Pool (Pool)
 import qualified Data.Pool as Pool
 import qualified Data.Text as T
+import Freckle.App.Async (async)
 import qualified Freckle.App.Env as Env
 import Kafka.Producer
-import UnliftIO.Async (async)
 import UnliftIO.Exception (throwString)
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
@@ -101,12 +101,12 @@ createKafkaProducerPool addresses KafkaProducerPoolConfig {..} =
   throw err = throwString $ "Failed to open kafka producer: " <> show err
 
 produceKeyedOn
-  :: ( ToJSON value
-     , ToJSON key
+  :: ( MonadUnliftIO m
      , MonadLogger m
      , MonadReader env m
      , HasKafkaProducerPool env
-     , MonadUnliftIO m
+     , ToJSON key
+     , ToJSON value
      )
   => TopicName
   -> NonEmpty value
@@ -139,12 +139,13 @@ produceKeyedOn prTopic values keyF = do
       }
 
 produceKeyedOnAsync
-  :: ( ToJSON value
-     , ToJSON key
+  :: ( MonadMask m
+     , MonadUnliftIO m
      , MonadLogger m
      , MonadReader env m
      , HasKafkaProducerPool env
-     , MonadUnliftIO m
+     , ToJSON key
+     , ToJSON value
      )
   => TopicName
   -> NonEmpty value

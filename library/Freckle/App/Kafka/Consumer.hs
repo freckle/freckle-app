@@ -11,15 +11,13 @@ module Freckle.App.Kafka.Consumer
 import Freckle.App.Prelude
 
 import Blammo.Logging
-import Control.Concurrent
-import qualified Control.Immortal as Immortal
 import Control.Lens (Lens', view)
-import Control.Monad (forever)
 import Data.Aeson
 import qualified Data.List.NonEmpty as NE
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
 import qualified Env
+import Freckle.App.Async
 import Freckle.App.Env
 import Freckle.App.Kafka.Producer (envKafkaBrokerAddresses)
 import Kafka.Consumer hiding
@@ -30,7 +28,7 @@ import Kafka.Consumer hiding
   , subscription
   )
 import qualified Kafka.Consumer as Kafka
-import UnliftIO.Exception (bracket, displayException, throwIO)
+import UnliftIO.Exception (bracket, throwIO)
 
 data KafkaConsumerConfig = KafkaConsumerConfig
   { kafkaConsumerConfigBrokerAddresses :: NonEmpty BrokerAddress
@@ -145,7 +143,8 @@ timeoutMs = \case
   TimeoutMilliseconds ms -> ms
 
 runConsumer
-  :: ( MonadUnliftIO m
+  :: ( MonadMask m
+     , MonadUnliftIO m
      , MonadReader env m
      , MonadLogger m
      , HasKafkaConsumer env
@@ -154,22 +153,14 @@ runConsumer
   => Timeout
   -> (a -> m ())
   -> m ()
-runConsumer pollTimeout onMessage = do
-  void $ Immortal.create $ \thread -> Immortal.onUnexpectedFinish thread handleException $ do
-    consumer <- view kafkaConsumerL
-    eMessage <-
-      pollMessage consumer $ Kafka.Timeout $ timeoutMs pollTimeout
-    case eMessage of
-      Left (KafkaResponseError RdKafkaRespErrTimedOut) -> logDebug "Polling timeout"
-      Left err -> logError $ "Error polling for message from Kafka" :# ["error" .= show err]
-      Right ConsumerRecord {..} -> for_ crValue $ \bs ->
-        case eitherDecodeStrict bs of
-          Left err -> logError $ "Could not decode message value" :# ["error" .= err]
-          Right a -> onMessage a
-  forever $ liftIO $ threadDelay maxBound
- where
-  handleException = \case
-    Left ex ->
-      logError $
-        "Exception occurred in runConsumer" :# ["exception" .= displayException ex]
-    Right () -> pure ()
+runConsumer pollTimeout onMessage = immortalCreateLogged $ do
+  consumer <- view kafkaConsumerL
+  eMessage <-
+    pollMessage consumer $ Kafka.Timeout $ timeoutMs pollTimeout
+  case eMessage of
+    Left (KafkaResponseError RdKafkaRespErrTimedOut) -> logDebug "Polling timeout"
+    Left err -> logError $ "Error polling for message from Kafka" :# ["error" .= show err]
+    Right ConsumerRecord {..} -> for_ crValue $ \bs ->
+      case eitherDecodeStrict bs of
+        Left err -> logError $ "Could not decode message value" :# ["error" .= err]
+        Right a -> onMessage a

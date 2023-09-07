@@ -30,6 +30,7 @@ library
       Configuration.Dotenv.Compat
       Freckle.App
       Freckle.App.Aeson
+      Freckle.App.Async
       Freckle.App.Bugsnag
       Freckle.App.Bugsnag.MetaData
       Freckle.App.Csv
