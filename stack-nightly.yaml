@@ -1,6 +1,6 @@
 resolver: nightly-2023-02-27
 extra-deps:
-  - monad-validate-1.2.0.1
+  - monad-validate-1.3.0.0
 
   # For OTel
   - hs-opentelemetry-api-0.0.3.6
