@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.4.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.5.0...main)
+
+## [v1.9.5.0](https://github.com/freckle/freckle-app/compare/v1.9.4.0...v1.9.5.0)
+
+- Add module `Freckle.App.Test.Yesod`
 
 ## [v1.9.4.0](https://github.com/freckle/freckle-app/compare/v1.9.3.0...v1.9.4.0)
 

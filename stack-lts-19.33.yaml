@@ -24,3 +24,13 @@ extra-deps:
   - hs-opentelemetry-sdk-0.0.3.4
   - thread-utils-context-0.2.0.0
   - thread-utils-finalizers-0.1.0.0
+
+  # for bcp47
+  - bcp47-0.2.0.6
+  - country-0.2.2
+  - bytebuild-0.3.10.0
+  - bytehash-0.1.0.0
+  - byteslice-0.2.7.0
+  - contiguous-0.6.1.1
+  - run-st-0.1.1.0
+  - zigzag-0.0.1.0
