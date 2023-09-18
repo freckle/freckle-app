@@ -2,7 +2,7 @@
 {
   cabal = import ./cabal.nix { inherit nixpkgs; };
 
-  fourmolu = import ./fourmolu.nix { inherit nixpkgs; };
+  fourmolu = import ./fourmolu { inherit nixpkgs; };
 
   ghc-with-packages = import ./ghc-with-packages.nix { inherit nixpkgs; };
 
