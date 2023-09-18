@@ -9,7 +9,7 @@ justStaticExecutables
     overrides = self: super: {
       fourmolu =
         overrideCabal
-          (super.callHackage "fourmolu" "0.13.0.0" { })
+          (super.callPackage ./fourmolu.nix { })
           (drv: { doCheck = false; });
     };
   }).fourmolu
