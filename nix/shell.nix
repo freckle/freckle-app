@@ -1,7 +1,7 @@
 { nixpkgs }:
 nixpkgs.stable.mkShell {
   name = "freckle-app-shell";
-  buildInputs =
+  packages =
     with (import ./. { inherit nixpkgs; });
     [
       cabal
