@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.9.4.0
+version:        1.9.5.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -61,6 +61,7 @@ library
       Freckle.App.Test.Hspec.Runner
       Freckle.App.Test.Properties.JSON
       Freckle.App.Test.Properties.PathPiece
+      Freckle.App.Test.Yesod
       Freckle.App.Wai
       Freckle.App.Yesod
       Freckle.App.Yesod.Routes
@@ -105,7 +106,8 @@ library
     , aeson
     , aws-xray-client-persistent
     , aws-xray-client-wai
-    , base <5
+    , base
+    , bcp47
     , bugsnag
     , bytestring
     , case-insensitive
@@ -113,6 +115,7 @@ library
     , conduit
     , conduit-extra
     , containers
+    , cookie
     , datadog
     , doctest
     , dotenv
@@ -165,6 +168,7 @@ library
     , wai-extra
     , yaml
     , yesod-core
+    , yesod-test
   default-language: Haskell2010
   if impl(ghc >= 9.2)
     ghc-options: -Wno-missing-kind-signatures

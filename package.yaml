@@ -1,5 +1,5 @@
 name: freckle-app
-version: 1.9.4.0
+version: 1.9.5.0
 maintainer: Freckle Education
 category: Utils
 github: freckle/freckle-app
@@ -74,6 +74,8 @@ library:
     - aeson
     - aws-xray-client-persistent
     - aws-xray-client-wai
+    - base
+    - bcp47
     - bugsnag
     - bytestring
     - case-insensitive
@@ -81,6 +83,7 @@ library:
     - conduit
     - conduit-extra
     - containers
+    - cookie
     - datadog
     - doctest
     - dotenv
@@ -133,6 +136,7 @@ library:
     - wai-extra
     - yaml
     - yesod-core
+    - yesod-test
 
 tests:
   spec:

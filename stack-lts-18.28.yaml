@@ -5,6 +5,7 @@ extra-deps:
   - aws-xray-client-0.1.0.2
   - aws-xray-client-persistent-0.1.0.5
   - aws-xray-client-wai-0.1.0.2
+  - bcp47-0.2.0.6
   - bugsnag-1.0.0.0
   - bugsnag-wai-1.0.0.0
   - context-0.2.0.1
