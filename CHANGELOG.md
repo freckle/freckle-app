@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.5.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.9.5.1...main)
+
+## [v1.9.5.1](https://github.com/freckle/freckle-app/compare/v1.9.5.0...v1.9.5.1)
+
+- Fixed mistake in `Freckle.App.Test.Yesod.getResponse` producing nontermination
 
 ## [v1.9.5.0](https://github.com/freckle/freckle-app/compare/v1.9.4.0...v1.9.5.0)
 
