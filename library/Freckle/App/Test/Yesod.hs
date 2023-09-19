@@ -21,7 +21,7 @@ module Freckle.App.Test.Yesod
   , addGetParam
   , addPostParam
   , addRequestHeader
-  , jsonHeaders
+  , addJsonHeaders
   , setLanguage
   , addAcceptLanguage
   , addFile
@@ -187,8 +187,8 @@ addAcceptLanguage values =
   addRequestHeader (hAcceptLanguage, encodeUtf8 $ T.intercalate "," values)
 
 -- | Sets both @Content-Type@ and @Accept@ fields to @application/json@
-jsonHeaders :: RequestBuilder site ()
-jsonHeaders = do
+addJsonHeaders :: RequestBuilder site ()
+addJsonHeaders = do
   addRequestHeader (hContentType, "application/json")
   addRequestHeader (hAccept, "application/json")
 
