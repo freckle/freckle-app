@@ -73,7 +73,12 @@ where
 
 import Freckle.App.Prelude
 
+import Blammo.Logging (LoggingT)
+import Control.Monad.Except (ExceptT)
 import Control.Monad.State (StateT)
+import Control.Monad.Trans.Maybe (MaybeT)
+import Control.Monad.Trans.Resource (ResourceT)
+import Control.Monad.Validate (ValidateT)
 import Data.Aeson (FromJSON, eitherDecode)
 import Data.BCP47 (BCP47)
 import qualified Data.BCP47 as BCP47
@@ -118,6 +123,21 @@ instance MonadYesodExample site m => MonadYesodExample site (StateT s m) where
   liftYesodExample = lift . liftYesodExample
 
 instance MonadYesodExample site m => MonadYesodExample site (ReaderT r m) where
+  liftYesodExample = lift . liftYesodExample
+
+instance MonadYesodExample site m => MonadYesodExample site (ValidateT e m) where
+  liftYesodExample = lift . liftYesodExample
+
+instance MonadYesodExample site m => MonadYesodExample site (MaybeT m) where
+  liftYesodExample = lift . liftYesodExample
+
+instance MonadYesodExample site m => MonadYesodExample site (ExceptT e m) where
+  liftYesodExample = lift . liftYesodExample
+
+instance MonadYesodExample site m => MonadYesodExample site (ResourceT m) where
+  liftYesodExample = lift . liftYesodExample
+
+instance MonadYesodExample site m => MonadYesodExample site (LoggingT m) where
   liftYesodExample = lift . liftYesodExample
 
 -- | Assert the last response has the given text
