@@ -180,7 +180,7 @@ getRawBody =
 
 -- | Get the most recently provided response value, if available
 getResponse :: forall m site. MonadYesodExample site m => m (Maybe SResponse)
-getResponse = liftYesodExample getResponse
+getResponse = liftYesodExample Yesod.Test.getResponse
 
 -- | The general interface for performing requests
 --
