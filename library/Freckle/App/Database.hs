@@ -4,7 +4,9 @@
 
 -- | Database access for your @App@
 module Freckle.App.Database
-  ( HasSqlPool (..)
+  ( MonadTracer
+  , HasStatsClient
+  , HasSqlPool (..)
   , SqlPool
   , makePostgresPool
   , makePostgresPoolWith
@@ -17,10 +19,6 @@ module Freckle.App.Database
   , postgresStatementTimeoutMilliseconds
   , envParseDatabaseConf
   , envPostgresPasswordSource
-
-    -- * Re-exported constraints required to use 'runDB'
-  , MonadTracer
-  , HasStatsClient
   ) where
 
 import Freckle.App.Prelude

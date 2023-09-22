@@ -4,8 +4,20 @@
 -- | Legacy version of "Freckle.App.Database" that still uses XRay
 module Freckle.App.Database.XRay
   ( MonadTracer (..)
+  , HasStatsClient
+  , HasSqlPool (..)
+  , SqlPool
+  , makePostgresPool
+  , makePostgresPoolWith
   , runDB
-  , module Freckle.App.Database
+  , runDBSimple
+  , PostgresConnectionConf (..)
+  , PostgresPasswordSource (..)
+  , PostgresPassword (..)
+  , PostgresStatementTimeout
+  , postgresStatementTimeoutMilliseconds
+  , envParseDatabaseConf
+  , envPostgresPasswordSource
   ) where
 
 import Freckle.App.Prelude
