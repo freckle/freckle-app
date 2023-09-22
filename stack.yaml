@@ -1,20 +1,21 @@
 resolver: lts-20.20
 extra-deps:
   - monad-validate-1.3.0.0
-  - hs-opentelemetry-api-0.0.3.6
-  - hs-opentelemetry-instrumentation-persistent-0.0.1.0
-  - hs-opentelemetry-instrumentation-wai-0.0.1.3
-  - hs-opentelemetry-sdk-0.0.3.4
+  - hs-opentelemetry-api-0.1.0.0
+  - hs-opentelemetry-instrumentation-persistent-0.1.0.0
+  - hs-opentelemetry-instrumentation-wai-0.1.0.0
+  - hs-opentelemetry-sdk-0.0.3.6
 
   # for hs-opentelemetry-sdk
-  - hs-opentelemetry-exporter-otlp-0.0.1.4
-  - hs-opentelemetry-propagator-w3c-0.0.1.2
+  - hs-opentelemetry-exporter-otlp-0.0.1.5
+  - hs-opentelemetry-propagator-b3-0.0.1.1
+  - hs-opentelemetry-propagator-w3c-0.0.1.3
 
   # for hs-opentelemetry-exporter-otlp
   - hs-opentelemetry-otlp-0.0.1.0
 
   # for hs-opentelemetry-api
-  - thread-utils-context-0.2.0.0
+  - thread-utils-context-0.3.0.4
 
   # for thread-utils-context
-  - thread-utils-finalizers-0.1.0.0
+  - thread-utils-finalizers-0.1.1.0

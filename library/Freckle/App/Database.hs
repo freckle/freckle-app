@@ -102,7 +102,7 @@ runDB action = do
     inSpan "runDB" defaultSpanArguments $
       runSqlPoolWithExtensibleHooks action pool Nothing $
         setAlterBackend defaultSqlPoolHooks $
-          wrapSqlBackend []
+          wrapSqlBackend mempty
 
 runDBSimple
   :: (HasSqlPool app, MonadUnliftIO m, MonadReader app m)
