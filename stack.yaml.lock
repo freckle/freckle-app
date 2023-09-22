@@ -5,13 +5,6 @@
 
 packages:
 - completed:
-    hackage: bcp47-0.2.0.6@sha256:9071d1f97ef249ae62e4554e3cba892cd6059ac263271fd72635157c83743a30,2949
-    pantry-tree:
-      sha256: 3cd17d04bc9d13c8ba7e8e390973fce7d79003b18379533c8ce702f9ad3f82b3
-      size: 1498
-  original:
-    hackage: bcp47-0.2.0.6
-- completed:
     hackage: monad-validate-1.2.0.1@sha256:5a100da896f11ca4b7c123da85decbedeb46c37054a097f258ac911e715cb68d,2587
     pantry-tree:
       sha256: 034ee4de9765e38b763f5d73b236cc112205728e680cefbfe12d2882accc3264
