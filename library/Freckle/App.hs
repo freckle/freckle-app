@@ -67,6 +67,11 @@
 --
 -- == Database
 --
+-- @
+-- import "Freckle.App.Database"
+-- import "Freckle.App.OpenTelemetry"
+-- @
+--
 -- Adding Database access requires a few more instances on your @App@ type:
 --
 -- - @'HasSqlPool'@: so we can, you know, talk to a DB
@@ -170,8 +175,6 @@ module Freckle.App
   , runAppT
 
     -- * Re-exports
-  , module Freckle.App.Database
-  , module Freckle.App.OpenTelemetry
   , module Blammo.Logging
   , module Control.Monad.Reader
   ) where

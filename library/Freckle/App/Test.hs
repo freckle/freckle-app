@@ -20,7 +20,6 @@ module Freckle.App.Test
 import Freckle.App.Prelude as X
 
 import Data.Pool as X
-import Freckle.App.Database as X
 import Test.Hspec as X
   ( Expectation
   , Spec
@@ -46,6 +45,7 @@ import Control.Monad.Random (MonadRandom (..))
 import Control.Monad.Reader
 import Control.Monad.Trans.Control
 import Database.Persist.Sql (SqlPersistT, runSqlPool)
+import Freckle.App.Database (HasSqlPool (..))
 import qualified Freckle.App.Database.XRay as XRay
 import qualified Freckle.App.Dotenv as Dotenv
 import Freckle.App.OpenTelemetry
