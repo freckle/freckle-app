@@ -19,20 +19,6 @@ packages:
   original:
     hackage: hs-opentelemetry-api-0.0.3.6
 - completed:
-    hackage: hs-opentelemetry-awsxray-0.1.0.1@sha256:dec49a81296c91a64a5a7037ac967c0f952974eed6c92de56e58b0eef58561c1,3602
-    pantry-tree:
-      sha256: 0388ea8f8cb3761fb719316b69ebe663c7c978053de231a0aafc305ee43c3e06
-      size: 977
-  original:
-    hackage: hs-opentelemetry-awsxray-0.1.0.1
-- completed:
-    hackage: hs-opentelemetry-exporter-otlp-0.0.1.4@sha256:25fcf5c2173f1dd3fe4f288f3232da70e9d8398363430932b7e2a278f78c3765,2150
-    pantry-tree:
-      sha256: 6d2ae7125938614e10d01b317d10bfd4575bb62889360c4476dda2b904766cda
-      size: 400
-  original:
-    hackage: hs-opentelemetry-exporter-otlp-0.0.1.4
-- completed:
     hackage: hs-opentelemetry-instrumentation-persistent-0.0.1.0@sha256:5963e5bf98ccf73543955ebd523c2a4776f7e6a2edf0feabbc44664153662caf,1669
     pantry-tree:
       sha256: 0cf9da228de66c804c8f945cc90301aa76b85d872011afb0bcaf02569c7b0903
@@ -47,12 +33,19 @@ packages:
   original:
     hackage: hs-opentelemetry-instrumentation-wai-0.0.1.3
 - completed:
-    hackage: hs-opentelemetry-otlp-0.0.1.0@sha256:88bb6b68f172a336f78018b0823f47363fb7408eb19f7301489f81ad4d5c0f33,2307
+    hackage: hs-opentelemetry-sdk-0.0.3.4@sha256:b33cb9e705ea3c591df324976d47ae2b11087af6a0533221840cec2a929db331,3638
     pantry-tree:
-      sha256: e56292fc693805babed3c7ba7fc54e59d2e9adbc38de6bcc659009e8b10b9a1b
-      size: 2252
+      sha256: 7445b1dbd5c88677567712bb9cc4e2caa9ef3923662a2afcbad959c22c9b295e
+      size: 1430
   original:
-    hackage: hs-opentelemetry-otlp-0.0.1.0
+    hackage: hs-opentelemetry-sdk-0.0.3.4
+- completed:
+    hackage: hs-opentelemetry-exporter-otlp-0.0.1.4@sha256:25fcf5c2173f1dd3fe4f288f3232da70e9d8398363430932b7e2a278f78c3765,2150
+    pantry-tree:
+      sha256: 6d2ae7125938614e10d01b317d10bfd4575bb62889360c4476dda2b904766cda
+      size: 400
+  original:
+    hackage: hs-opentelemetry-exporter-otlp-0.0.1.4
 - completed:
     hackage: hs-opentelemetry-propagator-w3c-0.0.1.2@sha256:ba1e33ff73bec76ec53b049b0cb3d1a65a6849a60c0da08bbef308f0edc241d1,1751
     pantry-tree:
@@ -61,12 +54,12 @@ packages:
   original:
     hackage: hs-opentelemetry-propagator-w3c-0.0.1.2
 - completed:
-    hackage: hs-opentelemetry-sdk-0.0.3.4@sha256:b33cb9e705ea3c591df324976d47ae2b11087af6a0533221840cec2a929db331,3638
+    hackage: hs-opentelemetry-otlp-0.0.1.0@sha256:88bb6b68f172a336f78018b0823f47363fb7408eb19f7301489f81ad4d5c0f33,2307
     pantry-tree:
-      sha256: 7445b1dbd5c88677567712bb9cc4e2caa9ef3923662a2afcbad959c22c9b295e
-      size: 1430
+      sha256: e56292fc693805babed3c7ba7fc54e59d2e9adbc38de6bcc659009e8b10b9a1b
+      size: 2252
   original:
-    hackage: hs-opentelemetry-sdk-0.0.3.4
+    hackage: hs-opentelemetry-otlp-0.0.1.0
 - completed:
     hackage: thread-utils-context-0.2.0.0@sha256:7863e568c7a43cd21616342d20484d4c962aaa9710619f104c6fb7ee32273940,1883
     pantry-tree:
