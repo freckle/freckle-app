@@ -17,6 +17,7 @@ extra-deps:
   - memcache-0.3.0.1
   - monad-logger-aeson-0.3.0.2
   - monad-validate-1.2.0.1
+  - resource-pool-0.4.0.0
   - scientist-0.0.0.0
 
   # For OTel
