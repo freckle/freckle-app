@@ -89,12 +89,13 @@ createKafkaProducerPool
   -> KafkaProducerPoolConfig
   -> IO (Pool KafkaProducer)
 createKafkaProducerPool addresses KafkaProducerPoolConfig {..} =
-  Pool.createPool
-    mkProducer
-    closeProducer
-    kafkaProducerPoolConfigStripes
-    kafkaProducerPoolConfigIdleTimeout
-    kafkaProducerPoolConfigSize
+  Pool.newPool $
+    Pool.setNumStripes (Just kafkaProducerPoolConfigStripes) $
+      Pool.defaultPoolConfig
+        mkProducer
+        closeProducer
+        (realToFrac kafkaProducerPoolConfigIdleTimeout)
+        kafkaProducerPoolConfigSize
  where
   mkProducer =
     either throw pure =<< newProducer (brokersList $ toList addresses)
