@@ -131,6 +131,7 @@ library
     , hs-opentelemetry-api
     , hs-opentelemetry-instrumentation-persistent
     , hs-opentelemetry-instrumentation-wai
+    , hs-opentelemetry-propagator-datadog
     , hs-opentelemetry-sdk
     , hspec >=2.8.1
     , hspec-core >=2.8.1
@@ -240,7 +241,6 @@ test-suite spec
       Freckle.App.Test.Properties.JSONSpec
       Freckle.App.Test.Properties.PathPieceSpec
       Freckle.App.WaiSpec
-      Network.Wai.Middleware.OpenTelemetrySpec
       Spec
       Paths_freckle_app
   hs-source-dirs:
@@ -282,7 +282,6 @@ test-suite spec
     , conduit
     , errors
     , freckle-app
-    , hs-opentelemetry-api
     , hspec
     , http-types
     , lens
