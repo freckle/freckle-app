@@ -5,17 +5,13 @@
 - Full support for OpenTelemetry tracing, use it instead of XRay in `runDB`
 
   This replaces our bespoke, XRay-based `MonadTracer` class to be that of
-  hs-opentelemetry. This means `Freckle.App.Database.runDB` now traces using
+  `hs-opentelemetry.` This means `Freckle.App.Database.runDB` now traces using
   OpenTelemetry instead of XRay. A compilation error will indicate a missing
   `HasTracer` instance, which you should implement based on the
   `Freckle.App.OpenTelemetry` module documentation.
 
   Clients who wish to remain on XRay can still upgrade, but must adjust their
-  imports so they use `Freckle.App.Database.XRay` instead. The
-  `Freckle.App.Database` module is re-exported through `Freckle.App` and
-  `Freckle.App.Test`, so there may be some additional `hiding` required. A
-  compilation error indicating a missing `HasTracer` or `MonadTracer` instance
-  means your imports are not yet correct.
+  imports so they use `Freckle.App.Database.XRay`, not `Freckle.App.Database`.
 
 ## [v1.9.5.1](https://github.com/freckle/freckle-app/compare/v1.9.5.0...v1.9.5.1)
 
