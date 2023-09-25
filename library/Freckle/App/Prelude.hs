@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 -- | Those functions and types we can't do without!
 module Freckle.App.Prelude
   ( module Prelude
@@ -102,6 +104,9 @@ import Prelude hiding
   , read
   , tail
   , (!!)
+#if MIN_VERSION_base(4,18,0)
+  , liftA2
+#endif
   )
 
 -- Commonly used types (and their commonly used functions)
