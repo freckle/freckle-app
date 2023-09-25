@@ -31,7 +31,7 @@ openTelemetryMiddleware app request respond = do
   mTraceId <- getCurrentTraceId
   case mTraceId of
     Nothing -> app request respond
-    Just (traceId, _) -> do
+    Just traceId -> do
       let
         traceIdInt = convertOpenTelemetryTraceIdToDatadogTraceId traceId
         traceIdIntBS = BS8.pack $ show traceIdInt

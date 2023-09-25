@@ -35,6 +35,7 @@ module Freckle.App.OpenTelemetry
 
     -- * Querying
   , getCurrentTraceId
+  , getCurrentSpanContext
 
     -- * Setup
   , withTracerProvider
@@ -51,7 +52,7 @@ import OpenTelemetry.Context.ThreadLocal (getContext)
 import OpenTelemetry.Trace hiding (inSpan)
 import OpenTelemetry.Trace.Core (getSpanContext)
 import qualified OpenTelemetry.Trace.Core as Trace (SpanContext (..))
-import OpenTelemetry.Trace.Id (SpanId, TraceId)
+import OpenTelemetry.Trace.Id (TraceId)
 import OpenTelemetry.Trace.Monad
 import UnliftIO.Exception (bracket)
 
@@ -61,7 +62,10 @@ withTracerProvider =
     (liftIO initializeGlobalTracerProvider)
     (liftIO . shutdownTracerProvider)
 
-getCurrentTraceId :: MonadIO m => m (Maybe (TraceId, SpanId))
-getCurrentTraceId = do
+getCurrentTraceId :: MonadIO m => m (Maybe TraceId)
+getCurrentTraceId = fmap Trace.traceId <$> getCurrentSpanContext
+
+getCurrentSpanContext :: MonadIO m => m (Maybe SpanContext)
+getCurrentSpanContext = do
   mSpan <- lookupSpan <$> getContext
-  traverse (fmap (Trace.traceId &&& Trace.spanId) . getSpanContext) mSpan
+  traverse getSpanContext mSpan
