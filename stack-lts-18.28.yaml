@@ -33,3 +33,7 @@ extra-deps:
   - random-1.2.1
   - thread-utils-context-0.2.0.0
   - thread-utils-finalizers-0.1.0.0
+  - github:  iand675/hs-opentelemetry
+    commit: 8fcdc7323cf872abfcc02ff512429b2a3d617085
+    subdirs:
+      - propagators/datadog
