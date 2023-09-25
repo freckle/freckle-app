@@ -5,6 +5,13 @@
 
 packages:
 - completed:
+    hackage: bcp47-0.2.0.6@sha256:9071d1f97ef249ae62e4554e3cba892cd6059ac263271fd72635157c83743a30,2949
+    pantry-tree:
+      sha256: 3cd17d04bc9d13c8ba7e8e390973fce7d79003b18379533c8ce702f9ad3f82b3
+      size: 1498
+  original:
+    hackage: bcp47-0.2.0.6
+- completed:
     hackage: monad-validate-1.3.0.0@sha256:eb6ddd5c9cf72ff0563cba604fa00291376e96138fdb4932d00ff3a99d66706e,2605
     pantry-tree:
       sha256: 0b2a3a57be48fcc739708b214fca202f1e95b1cd773dd3bb9589d3007cf8cf5e
@@ -81,6 +88,19 @@ packages:
       size: 400
   original:
     hackage: thread-utils-finalizers-0.1.0.0
+- completed:
+    name: hs-opentelemetry-propagator-datadog
+    pantry-tree:
+      sha256: cab894439e1bbb20a9ef901c3ac14b519ccd74e2712789472564bccdaa67da78
+      size: 683
+    sha256: 53a6cd3a01447c9a41512de16c44a7f6ba3fde3fab61b765fcd22b6ac33a882e
+    size: 352144
+    subdir: propagators/datadog
+    url: https://github.com/iand675/hs-opentelemetry/archive/8fcdc7323cf872abfcc02ff512429b2a3d617085.tar.gz
+    version: 0.0.0.0
+  original:
+    subdir: propagators/datadog
+    url: https://github.com/iand675/hs-opentelemetry/archive/8fcdc7323cf872abfcc02ff512429b2a3d617085.tar.gz
 snapshots:
 - completed:
     sha256: 859c14182cd0c4d1f9b0f7ff8baaefb15c778278fb0ea2fa90cfea326bb4e62c

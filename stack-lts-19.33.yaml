@@ -24,6 +24,10 @@ extra-deps:
   - hs-opentelemetry-sdk-0.0.3.4
   - thread-utils-context-0.2.0.0
   - thread-utils-finalizers-0.1.0.0
+  - github:  iand675/hs-opentelemetry
+    commit: 8fcdc7323cf872abfcc02ff512429b2a3d617085
+    subdirs:
+      - propagators/datadog
 
   # for bcp47
   - bcp47-0.2.0.6

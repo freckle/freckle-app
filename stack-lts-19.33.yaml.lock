@@ -110,6 +110,13 @@ packages:
   original:
     hackage: hs-opentelemetry-instrumentation-persistent-0.0.1.0
 - completed:
+    hackage: hs-opentelemetry-instrumentation-wai-0.0.1.3@sha256:417c714052ee94b8b6a7f2b303ee92908c232f6d44a1a1c6232acf17434be753,1767
+    pantry-tree:
+      sha256: c1fa4fee66d3cb299276e2a32d1d027ac26ab9a354665e7bc95f6e163922194d
+      size: 411
+  original:
+    hackage: hs-opentelemetry-instrumentation-wai-0.0.1.3
+- completed:
     hackage: hs-opentelemetry-otlp-0.0.1.0@sha256:88bb6b68f172a336f78018b0823f47363fb7408eb19f7301489f81ad4d5c0f33,2307
     pantry-tree:
       sha256: e56292fc693805babed3c7ba7fc54e59d2e9adbc38de6bcc659009e8b10b9a1b
@@ -144,6 +151,75 @@ packages:
       size: 400
   original:
     hackage: thread-utils-finalizers-0.1.0.0
+- completed:
+    name: hs-opentelemetry-propagator-datadog
+    pantry-tree:
+      sha256: cab894439e1bbb20a9ef901c3ac14b519ccd74e2712789472564bccdaa67da78
+      size: 683
+    sha256: 53a6cd3a01447c9a41512de16c44a7f6ba3fde3fab61b765fcd22b6ac33a882e
+    size: 352144
+    subdir: propagators/datadog
+    url: https://github.com/iand675/hs-opentelemetry/archive/8fcdc7323cf872abfcc02ff512429b2a3d617085.tar.gz
+    version: 0.0.0.0
+  original:
+    subdir: propagators/datadog
+    url: https://github.com/iand675/hs-opentelemetry/archive/8fcdc7323cf872abfcc02ff512429b2a3d617085.tar.gz
+- completed:
+    hackage: bcp47-0.2.0.6@sha256:9071d1f97ef249ae62e4554e3cba892cd6059ac263271fd72635157c83743a30,2949
+    pantry-tree:
+      sha256: 3cd17d04bc9d13c8ba7e8e390973fce7d79003b18379533c8ce702f9ad3f82b3
+      size: 1498
+  original:
+    hackage: bcp47-0.2.0.6
+- completed:
+    hackage: country-0.2.2@sha256:681aabb9e0a8d2f94051d0ae566128458be3de4d0e0b6a9cf5875ce12ed403f5,3393
+    pantry-tree:
+      sha256: e2222a7733da6f09432d1ddc688d7b30e95e77692527be6e15840d985aef0706
+      size: 1396
+  original:
+    hackage: country-0.2.2
+- completed:
+    hackage: bytebuild-0.3.10.0@sha256:c0f3bdbb92cfb48193756366c50193cde23aa7f8292994a9e3a744f5307c6fc1,3213
+    pantry-tree:
+      sha256: 00da63e842faa2758fa08e1554f30f7cf69b4b1fc4ce84ebedff64542f1fd00f
+      size: 1135
+  original:
+    hackage: bytebuild-0.3.10.0
+- completed:
+    hackage: bytehash-0.1.0.0@sha256:0f7b097d08aed28fa8ede710c73e3da86283f47af23b8d5afff8c9e94b05042d,2109
+    pantry-tree:
+      sha256: 2db58d7929aed9f1cf31dd5b25fb613dd80bc06365fe83fffabd278d3339a372
+      size: 587
+  original:
+    hackage: bytehash-0.1.0.0
+- completed:
+    hackage: byteslice-0.2.7.0@sha256:c8fb65f507badda00bbb260433a9ccc439a5f694eedeaeed750b531a3b38a6bc,2514
+    pantry-tree:
+      sha256: cacdc01255a549372ad8a58bfba4d559ce1e740d5228b3c60242152342184145
+      size: 1546
+  original:
+    hackage: byteslice-0.2.7.0
+- completed:
+    hackage: contiguous-0.6.1.1@sha256:10922abbdf6c61cb4a9e493609871c4fd0c47dcde17dba3a6b6c420ef76fc212,1871
+    pantry-tree:
+      sha256: e17834983b11be7cf05fca6a139987bf970634bf8bcf31621cf09d92aaecdd85
+      size: 600
+  original:
+    hackage: contiguous-0.6.1.1
+- completed:
+    hackage: run-st-0.1.1.0@sha256:a1d0b946fe13ce2dab9efc0e79fab4ed8674363566dd2894501a1194f6279595,927
+    pantry-tree:
+      sha256: b60bed7032d1cacbb53d86759fe7fbd0811bfe249f7a53a2ef51d61fec7ba8a5
+      size: 269
+  original:
+    hackage: run-st-0.1.1.0
+- completed:
+    hackage: zigzag-0.0.1.0@sha256:54baa181badcb470386af790e148483bd1d43951bb2b02ed0684d70aeb4c7395,1130
+    pantry-tree:
+      sha256: 1da8b2de56acc92f20eca121c89bccbca472794603ca1152572b0ac51a8639f4
+      size: 321
+  original:
+    hackage: zigzag-0.0.1.0
 snapshots:
 - completed:
     sha256: 6d1532d40621957a25bad5195bfca7938e8a06d923c91bc52aa0f3c41181f2d4
