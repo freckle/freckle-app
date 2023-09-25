@@ -101,6 +101,13 @@ packages:
   original:
     subdir: propagators/datadog
     url: https://github.com/iand675/hs-opentelemetry/archive/8fcdc7323cf872abfcc02ff512429b2a3d617085.tar.gz
+- completed:
+    hackage: hw-kafka-client-4.0.3@sha256:20e3614454d5afd2a6acfc0709b9bf00bd6ee9a9bc646c2e2e4ccec1d16831a1,4861
+    pantry-tree:
+      sha256: 709ea6818b3b3beb8eed6f79ea76b8dc13cce9ae165870c17986d5de2d695447
+      size: 2057
+  original:
+    hackage: hw-kafka-client-4.0.3
 snapshots:
 - completed:
     sha256: 859c14182cd0c4d1f9b0f7ff8baaefb15c778278fb0ea2fa90cfea326bb4e62c
