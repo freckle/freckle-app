@@ -117,6 +117,13 @@ packages:
   original:
     hackage: monad-validate-1.2.0.1
 - completed:
+    hackage: resource-pool-0.4.0.0@sha256:9c1e448a159875e21a7e68697feee2b61a4e584720974fa465a2fa1bc0776c73,1342
+    pantry-tree:
+      sha256: 1008fbb9b6bd9d12925989f2708af612daa3a8ebf3a56763016231461d9e314f
+      size: 406
+  original:
+    hackage: resource-pool-0.4.0.0
+- completed:
     hackage: scientist-0.0.0.0@sha256:058c629a6805668f3a16c386dbc5dd90c1ce55ff2c7cf5672f0410bdb873d04c,2999
     pantry-tree:
       sha256: 370ee941c6ce59486e5c27a1ce294e50ea47aa36a5bdd4f4eee0cd4834d8b763
