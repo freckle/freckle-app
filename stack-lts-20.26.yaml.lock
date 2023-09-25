@@ -40,6 +40,13 @@ packages:
   original:
     hackage: hs-opentelemetry-sdk-0.0.3.6
 - completed:
+    hackage: resource-pool-0.4.0.0@sha256:9c1e448a159875e21a7e68697feee2b61a4e584720974fa465a2fa1bc0776c73,1342
+    pantry-tree:
+      sha256: 1008fbb9b6bd9d12925989f2708af612daa3a8ebf3a56763016231461d9e314f
+      size: 406
+  original:
+    hackage: resource-pool-0.4.0.0
+- completed:
     hackage: hs-opentelemetry-exporter-otlp-0.0.1.5@sha256:89b0a6481096a338fa6383fbdf08ccaa0eb7bb009c4cbb340894eac33e55c5de,2214
     pantry-tree:
       sha256: 744146043f5818ad2b7577a32862affcbf6ed400b097723eae9f6941d739365e
@@ -96,7 +103,7 @@ packages:
     url: https://github.com/iand675/hs-opentelemetry/archive/8fcdc7323cf872abfcc02ff512429b2a3d617085.tar.gz
 snapshots:
 - completed:
-    sha256: 8017c7970c2a8a9510c60cc70ac245d59e0c34eb932b91d37af09fe59855d854
-    size: 640038
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/21/13.yaml
-  original: lts-21.13
+    sha256: 126fa33ceb11f5e85ceb4e86d434756bd9a8439e2e5776d306a15fbc63b01e89
+    size: 650041
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/20.yaml
+  original: lts-20.20
