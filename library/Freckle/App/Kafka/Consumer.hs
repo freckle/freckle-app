@@ -20,6 +20,7 @@ import qualified Env
 import Freckle.App.Async
 import Freckle.App.Env
 import Freckle.App.Kafka.Producer (envKafkaBrokerAddresses)
+import Freckle.App.OpenTelemetry (withTraceIdContext)
 import Kafka.Consumer hiding
   ( Timeout
   , closeConsumer
@@ -153,14 +154,15 @@ runConsumer
   => Timeout
   -> (a -> m ())
   -> m ()
-runConsumer pollTimeout onMessage = immortalCreateLogged $ do
-  consumer <- view kafkaConsumerL
-  eMessage <-
-    pollMessage consumer $ Kafka.Timeout $ timeoutMs pollTimeout
-  case eMessage of
-    Left (KafkaResponseError RdKafkaRespErrTimedOut) -> logDebug "Polling timeout"
-    Left err -> logError $ "Error polling for message from Kafka" :# ["error" .= show err]
-    Right ConsumerRecord {..} -> for_ crValue $ \bs ->
-      case eitherDecodeStrict bs of
-        Left err -> logError $ "Could not decode message value" :# ["error" .= err]
-        Right a -> onMessage a
+runConsumer pollTimeout onMessage =
+  withTraceIdContext $ immortalCreateLogged $ do
+    consumer <- view kafkaConsumerL
+    eMessage <-
+      pollMessage consumer $ Kafka.Timeout $ timeoutMs pollTimeout
+    case eMessage of
+      Left (KafkaResponseError RdKafkaRespErrTimedOut) -> logDebug "Polling timeout"
+      Left err -> logError $ "Error polling for message from Kafka" :# ["error" .= show err]
+      Right ConsumerRecord {..} -> for_ crValue $ \bs ->
+        case eitherDecodeStrict bs of
+          Left err -> logError $ "Could not decode message value" :# ["error" .= err]
+          Right a -> onMessage a
