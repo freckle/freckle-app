@@ -1,4 +1,11 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.1.0...main)
+
+## [v1.10.0.1](https://github.com/freckle/freckle-app/compare/v1.10.0.0...v1.10.1.0)
+
+- Use `withTraceIdContext` in `Freckle.App.Kafka.Consumer.runConsumer`, ensuring
+  all logging contains the `trace_id` in context.
+- Add `getCurrentTraceIdAsDatadog` and `withTraceIdContext` to
+  `Freckle.App.OpenTelemetry`.
 
 ## [v1.10.0.0](https://github.com/freckle/freckle-app/compare/v1.9.5.1...v1.10.0.0)
 
