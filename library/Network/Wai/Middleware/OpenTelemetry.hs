@@ -5,15 +5,11 @@ module Network.Wai.Middleware.OpenTelemetry
 
 import Freckle.App.Prelude
 
-import Blammo.Logging (withThreadContext, (.=))
 import qualified Data.ByteString.Char8 as BS8
 import Freckle.App.OpenTelemetry
 import Network.Wai
 import Network.Wai.Middleware.AddHeaders
 import qualified OpenTelemetry.Instrumentation.Wai as Trace
-import OpenTelemetry.Propagator.Datadog
-  ( convertOpenTelemetryTraceIdToDatadogTraceId
-  )
 
 newOpenTelemetryWaiMiddleware :: IO Middleware
 newOpenTelemetryWaiMiddleware = do
@@ -27,18 +23,13 @@ newOpenTelemetryWaiMiddleware = do
 --
 -- This is added automatically by our 'newOpenTelemetryWaiMiddleware'.
 openTelemetryMiddleware :: Middleware
-openTelemetryMiddleware app request respond = do
-  mTraceId <- getCurrentTraceId
-  case mTraceId of
-    Nothing -> app request respond
-    Just traceId -> do
-      let
-        traceIdInt = convertOpenTelemetryTraceIdToDatadogTraceId traceId
-        traceIdIntBS = BS8.pack $ show traceIdInt
+openTelemetryMiddleware app request respond =
+  withTraceIdContext $ addTraceIdHeader app request respond
 
-      withThreadContext ["trace_id" .= traceIdInt] $
-        addHeaders
-          [("X-Datadog-Trace-Id", traceIdIntBS)]
-          app
-          request
-          respond
+addTraceIdHeader :: Middleware
+addTraceIdHeader app request respond = do
+  mTraceId <- getCurrentTraceIdAsDatadog
+  maybe id addHeader mTraceId app request respond
+ where
+  addHeader traceId =
+    addHeaders [("X-Datadog-Trace-Id", BS8.pack $ show traceId)]
