@@ -34,7 +34,9 @@ module Freckle.App.OpenTelemetry
   , defaultSpanArguments
 
     -- * Querying
+  , withTraceIdContext
   , getCurrentTraceId
+  , getCurrentTraceIdAsDatadog
   , getCurrentSpanContext
 
     -- * Setup
@@ -47,8 +49,13 @@ module Freckle.App.OpenTelemetry
 
 import Freckle.App.Prelude
 
+import Blammo.Logging (MonadMask, withThreadContext, (.=))
+import Data.Word (Word64)
 import OpenTelemetry.Context (lookupSpan)
 import OpenTelemetry.Context.ThreadLocal (getContext)
+import OpenTelemetry.Propagator.Datadog
+  ( convertOpenTelemetryTraceIdToDatadogTraceId
+  )
 import OpenTelemetry.Trace hiding (inSpan)
 import OpenTelemetry.Trace.Core (getSpanContext)
 import qualified OpenTelemetry.Trace.Core as Trace (SpanContext (..))
@@ -65,7 +72,16 @@ withTracerProvider =
 getCurrentTraceId :: MonadIO m => m (Maybe TraceId)
 getCurrentTraceId = fmap Trace.traceId <$> getCurrentSpanContext
 
+getCurrentTraceIdAsDatadog :: MonadIO m => m (Maybe Word64)
+getCurrentTraceIdAsDatadog =
+  fmap convertOpenTelemetryTraceIdToDatadogTraceId <$> getCurrentTraceId
+
 getCurrentSpanContext :: MonadIO m => m (Maybe SpanContext)
 getCurrentSpanContext = do
   mSpan <- lookupSpan <$> getContext
   traverse getSpanContext mSpan
+
+withTraceIdContext :: (MonadIO m, MonadMask m) => m a -> m a
+withTraceIdContext f = do
+  mTraceId <- getCurrentTraceIdAsDatadog
+  maybe f (\traceId -> withThreadContext ["trace_id" .= traceId] f) mTraceId
