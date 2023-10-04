@@ -1,0 +1,7 @@
+packages: .
+allow-newer: hs-opentelemetry-propagator-datadog:text
+
+documentation: True
+
+package *
+  documentation: True
