@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+read -r cabal_file < <(ls ./*.cabal)
+package=$(sed '/^name: *\(.*\) *$/!d; s//\1/' "$cabal_file")
+version=$(sed '/^version: *\(.*\) *$/!d; s//\1/' "$cabal_file")
+
+docker run \
+  --rm \
+  --volume "$PWD:/build" \
+  --workdir /build \
+  haskell:9.4.7 sh -c '
+apt-get update &&
+apt-get install --assume-yes librdkafka-dev &&
+cabal update &&
+cabal build &&
+cabal haddock \
+  --haddock-for-hackage \
+  --haddock-hyperlink-source \
+  --haddock-quickjump
+'
+
+echo "Uploading documentation..."
+curl \
+  --request PUT \
+  --header 'accept: application/json' \
+  --header 'content-type: application/x-tar' \
+  --header 'content-encoding: gzip' \
+  --header "authorization: X-ApiKey $HACKAGE_API_KEY" \
+  --data-binary "@dist-newstyle/$package-$version-docs.tar.gz" \
+  --write-out 'Status: %{http_code}\n' \
+  --output /dev/null \
+  "https://hackage.haskell.org/package/$package-$version/docs"
