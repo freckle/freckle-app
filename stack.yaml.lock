@@ -33,6 +33,13 @@ packages:
   original:
     hackage: hs-opentelemetry-instrumentation-wai-0.1.0.0
 - completed:
+    hackage: hs-opentelemetry-propagator-datadog-0.0.0.0@sha256:2a35a6505460dd4d972ff4d58520c8ea2eacd410c262927849076374e3266571,3136
+    pantry-tree:
+      sha256: 684eddafcd8c6b143062951948bc890252ecf29739c3b81f1ec80e21d8710d09
+      size: 781
+  original:
+    hackage: hs-opentelemetry-propagator-datadog-0.0.0.0
+- completed:
     hackage: hs-opentelemetry-sdk-0.0.3.6@sha256:6776705a4e0c06c6a4bfa16a9bed3ba353901f52d214ac737f57ea7f8e1ed465,3746
     pantry-tree:
       sha256: 154663d933a44c350db6c98d2c14db192c14fd04a10c17d0ebb8090707bd359b
@@ -81,19 +88,6 @@ packages:
       size: 400
   original:
     hackage: thread-utils-finalizers-0.1.1.0
-- completed:
-    name: hs-opentelemetry-propagator-datadog
-    pantry-tree:
-      sha256: cab894439e1bbb20a9ef901c3ac14b519ccd74e2712789472564bccdaa67da78
-      size: 683
-    sha256: 53a6cd3a01447c9a41512de16c44a7f6ba3fde3fab61b765fcd22b6ac33a882e
-    size: 352144
-    subdir: propagators/datadog
-    url: https://github.com/iand675/hs-opentelemetry/archive/8fcdc7323cf872abfcc02ff512429b2a3d617085.tar.gz
-    version: 0.0.0.0
-  original:
-    subdir: propagators/datadog
-    url: https://github.com/iand675/hs-opentelemetry/archive/8fcdc7323cf872abfcc02ff512429b2a3d617085.tar.gz
 snapshots:
 - completed:
     sha256: 8017c7970c2a8a9510c60cc70ac245d59e0c34eb932b91d37af09fe59855d854

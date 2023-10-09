@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#
+# NOTE: even though this project is typically developed with Stack, this script
+# uses cabal (because cabal-haddock can do things that stack-haddock cannot). If
+# you don't have a non-Stack Haskell tool-chain installed of the appropriate
+# version (ghc >= 9.4), we recommend using nix:
+#
+# % {install/configure nix}
+# % nix develop --command docs/upload
+#
+set -euo pipefail
+
+cabal build
+
+cabal haddock \
+  --haddock-for-hackage \
+  --haddock-hyperlink-source \
+  --haddock-quickjump
+
+cabal upload \
+  --publish \
+  --documentation ./dist-newstyle/*-docs.tar.gz
