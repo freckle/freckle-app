@@ -1,33 +1,22 @@
 #!/usr/bin/env bash
+#
+# NOTE: even though this project is typically developed with Stack, this script
+# uses cabal (because cabal-haddock can do things that stack-haddock cannot). If
+# you don't have a non-Stack Haskell tool-chain installed of the appropriate
+# version (ghc >= 9.4), we recommend using nix:
+#
+# % {install/configure nix}
+# % nix develop --command docs/upload
+#
 set -euo pipefail
 
-read -r cabal_file < <(ls ./*.cabal)
-package=$(sed '/^name: *\(.*\) *$/!d; s//\1/' "$cabal_file")
-version=$(sed '/^version: *\(.*\) *$/!d; s//\1/' "$cabal_file")
+cabal build
 
-docker run \
-  --rm \
-  --volume "$PWD:/build" \
-  --workdir /build \
-  haskell:9.4.7 sh -c '
-apt-get update &&
-apt-get install --assume-yes librdkafka-dev &&
-cabal update &&
-cabal build &&
 cabal haddock \
   --haddock-for-hackage \
   --haddock-hyperlink-source \
   --haddock-quickjump
-'
 
-echo "Uploading documentation..."
-curl \
-  --request PUT \
-  --header 'accept: application/json' \
-  --header 'content-type: application/x-tar' \
-  --header 'content-encoding: gzip' \
-  --header "authorization: X-ApiKey $HACKAGE_API_KEY" \
-  --data-binary "@dist-newstyle/$package-$version-docs.tar.gz" \
-  --write-out 'Status: %{http_code}\n' \
-  --output /dev/null \
-  "https://hackage.haskell.org/package/$package-$version/docs"
+cabal upload \
+  --publish \
+  --documentation ./dist-newstyle/*-docs.tar.gz
