@@ -1,6 +1,12 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.1.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.2.0...main)
 
-## [v1.10.0.1](https://github.com/freckle/freckle-app/compare/v1.10.0.0...v1.10.1.0)
+## [v1.10.2.0](https://github.com/freckle/freckle-app/compare/v1.10.1.0...v1.10.2.0)
+
+- Add module `Freckle.App.Memcached.MD5`
+- Add `fiveMinuteTTL` to module `Freckle.App.Memcached.CacheTTL`
+- Add `cachingAsCBOR` to module `Freckle.App.Memcached`
+
+## [v1.10.1.1](https://github.com/freckle/freckle-app/compare/v1.10.0.0...v1.10.1.0)
 
 - Use `withTraceIdContext` in `Freckle.App.Kafka.Consumer.runConsumer`, ensuring
   all logging contains the `trace_id` in context.

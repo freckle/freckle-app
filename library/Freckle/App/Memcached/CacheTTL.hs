@@ -2,6 +2,7 @@ module Freckle.App.Memcached.CacheTTL
   ( CacheTTL
   , cacheTTL
   , fromCacheTTL
+  , fiveMinuteTTL
   ) where
 
 import Freckle.App.Prelude
@@ -27,3 +28,7 @@ fromCacheTTL (CacheTTL i)
 
   maxWord :: Word32
   maxWord = maxBound
+
+-- | Standard 5 minute time to live
+fiveMinuteTTL :: CacheTTL
+fiveMinuteTTL = cacheTTL $ 5 * 60

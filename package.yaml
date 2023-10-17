@@ -121,12 +121,14 @@ library:
     - persistent-postgresql
     - postgresql-simple
     - primitive
+    - pureMD5
     - resource-pool >= 0.4.0.0 # defaultPoolConfig, etc
     - resourcet
     - retry >= 0.8.1.0 # retryingDynamic
     - safe
     - scientist
     - semigroupoids
+    - serialise
     - template-haskell
     - text
     - time
