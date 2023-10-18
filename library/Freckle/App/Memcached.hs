@@ -13,16 +13,19 @@ module Freckle.App.Memcached
   , caching
   , cachingAs
   , cachingAsJSON
+  , cachingAsCBOR
 
     -- * Re-exports
   , module Freckle.App.Memcached.Client
   , module Freckle.App.Memcached.CacheKey
   , module Freckle.App.Memcached.CacheTTL
+  , module Freckle.App.Memcached.MD5
   ) where
 
 import Freckle.App.Prelude
 
 import Blammo.Logging
+import Codec.Serialise (Serialise, deserialiseOrFail, serialise)
 import Data.Aeson
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Lazy as BSL
@@ -31,6 +34,7 @@ import Data.Text.Encoding.Error (lenientDecode)
 import Freckle.App.Memcached.CacheKey
 import Freckle.App.Memcached.CacheTTL
 import Freckle.App.Memcached.Client (HasMemcachedClient (..))
+import Freckle.App.Memcached.MD5
 import qualified Freckle.App.Memcached.Client as Memcached
 import UnliftIO.Exception (Exception (..), handleAny)
 
@@ -109,6 +113,23 @@ cachingAsJSON
   -> m a
   -> m a
 cachingAsJSON = cachingAs eitherDecodeStrict encodeStrict
+
+-- | Cache data in memcached in CBOR format
+cachingAsCBOR
+  :: ( MonadUnliftIO m
+     , MonadLogger m
+     , MonadReader env m
+     , HasMemcachedClient env
+     , Serialise a
+     )
+  => CacheKey
+  -> CacheTTL
+  -> m a
+  -> m a
+cachingAsCBOR =
+  cachingAs
+    (first show . deserialiseOrFail . BSL.fromStrict)
+    (BSL.toStrict . serialise)
 
 handleCachingError
   :: (MonadUnliftIO m, MonadLogger m) => a -> Text -> m a -> m a

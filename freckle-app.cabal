@@ -51,6 +51,7 @@ library
       Freckle.App.Memcached.CacheKey
       Freckle.App.Memcached.CacheTTL
       Freckle.App.Memcached.Client
+      Freckle.App.Memcached.MD5
       Freckle.App.Memcached.Servers
       Freckle.App.OpenTelemetry
       Freckle.App.Prelude
@@ -155,12 +156,14 @@ library
     , persistent-postgresql
     , postgresql-simple
     , primitive
+    , pureMD5
     , resource-pool >=0.4.0.0
     , resourcet
     , retry >=0.8.1.0
     , safe
     , scientist
     , semigroupoids
+    , serialise
     , template-haskell
     , text
     , time
