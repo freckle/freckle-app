@@ -40,6 +40,8 @@ jobs:
       - uses: freckle/stack-action@v4
         with:
           stack-yaml: ${{ matrix.stack-yaml }}
+        env:
+          OTEL_TRACES_EXPORTER: none
 
   lint:
     runs-on: ubuntu-latest
