@@ -13,6 +13,7 @@ import Freckle.App.Prelude
 import Blammo.Logging
 import Control.Lens (Lens', view)
 import Data.Aeson
+import Data.ByteString (ByteString)
 import qualified Data.List.NonEmpty as NE
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
@@ -20,7 +21,7 @@ import qualified Env
 import Freckle.App.Async
 import Freckle.App.Env
 import Freckle.App.Kafka.Producer (envKafkaBrokerAddresses)
-import Freckle.App.OpenTelemetry (withTraceIdContext)
+import Freckle.App.OpenTelemetry
 import Kafka.Consumer hiding
   ( Timeout
   , closeConsumer
@@ -29,7 +30,13 @@ import Kafka.Consumer hiding
   , subscription
   )
 import qualified Kafka.Consumer as Kafka
-import UnliftIO.Exception (bracket, throwIO)
+import UnliftIO.Exception
+  ( Exception (..)
+  , Handler (..)
+  , bracket
+  , catches
+  , throwIO
+  )
 
 data KafkaConsumerConfig = KafkaConsumerConfig
   { kafkaConsumerConfigBrokerAddresses :: NonEmpty BrokerAddress
@@ -143,11 +150,26 @@ timeoutMs = \case
   TimeoutSeconds s -> s * 1000
   TimeoutMilliseconds ms -> ms
 
+data KafkaMessageDecodeError = KafkaMessageDecodeError
+  { input :: ByteString
+  , errors :: String
+  }
+  deriving stock (Show)
+
+instance Exception KafkaMessageDecodeError where
+  displayException KafkaMessageDecodeError {..} =
+    mconcat
+      [ "Unable to decode JSON"
+      , "\n  input:  " <> unpack (decodeUtf8 input)
+      , "\n  errors: " <> errors
+      ]
+
 runConsumer
   :: ( MonadMask m
      , MonadUnliftIO m
      , MonadReader env m
      , MonadLogger m
+     , MonadTracer m
      , HasKafkaConsumer env
      , FromJSON a
      )
@@ -157,12 +179,29 @@ runConsumer
 runConsumer pollTimeout onMessage =
   withTraceIdContext $ immortalCreateLogged $ do
     consumer <- view kafkaConsumerL
-    eMessage <-
-      pollMessage consumer $ Kafka.Timeout $ timeoutMs pollTimeout
-    case eMessage of
-      Left (KafkaResponseError RdKafkaRespErrTimedOut) -> logDebug "Polling timeout"
-      Left err -> logError $ "Error polling for message from Kafka" :# ["error" .= show err]
-      Right ConsumerRecord {..} -> for_ crValue $ \bs ->
-        case eitherDecodeStrict bs of
-          Left err -> logError $ "Could not decode message value" :# ["error" .= err]
-          Right a -> onMessage a
+
+    flip catches handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
+      ConsumerRecord {..} <-
+        either throwIO pure =<< pollMessage consumer kTimeout
+
+      for_ crValue $ \bs -> do
+        a <-
+          inSpan "kafka.consumer.message.decode" defaultSpanArguments $
+            either (throwIO . KafkaMessageDecodeError bs) pure $
+              eitherDecodeStrict bs
+        inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
+ where
+  kTimeout = Kafka.Timeout $ timeoutMs pollTimeout
+
+  handlers =
+    [ Handler $ \case
+        KafkaResponseError RdKafkaRespErrTimedOut -> logDebug "Polling timeout"
+        err ->
+          logError $
+            "Error polling for message from Kafka"
+              :# ["error" .= displayException err]
+    , Handler $ \err@KafkaMessageDecodeError {} ->
+        logError $
+          "Could not decode message value"
+            :# ["error" .= displayException err]
+    ]
