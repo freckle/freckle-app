@@ -11,4 +11,7 @@ nixpkgs.stable.mkShell {
       haskell-native-dependencies
       stack
     ];
+  shellHook = ''
+    export STACK_YAML=stack-lts-20.26.yaml
+  '';
 }
