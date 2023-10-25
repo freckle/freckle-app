@@ -97,7 +97,7 @@ runDB
 runDB action = do
   pool <- asks getSqlPool
   Stats.withGauge Stats.dbConnections $
-    inSpan "runDB" defaultSpanArguments $
+    inSpan "runDB" clientSpanArguments $
       runSqlPoolWithExtensibleHooks action pool Nothing $
         setAlterBackend defaultSqlPoolHooks $
           wrapSqlBackend mempty
