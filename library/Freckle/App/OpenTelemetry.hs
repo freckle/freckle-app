@@ -6,21 +6,21 @@
 --   , appTracer :: Tracer
 --   }
 --
--- instance HasTracer App where
+-- instance 'HasTracer' App where
 --   tracerL = lens appTracer $ \x y -> x { appTracer = y }
 --
 -- loadApp f = do
 --   -- ...
---   withTracerProvider $ \tracerProvider -> do
---     let appTracer = makeTracer tracerProvider "my-app" tracerOptions
+--   'withTracerProvider' $ \tracerProvider -> do
+--     let appTracer = 'makeTracer' tracerProvider "my-app" 'tracerOptions'
 --     f App {..}
 -- @
 --
--- You may need to do this even if you don't plan to manually trace things, in order to
--- satisfy the 'MonadTracer' constraint required by functions like 'runDB'. If
--- you don't need this feature, and don't plan on running an otel-collector, set
--- @OTEL_TRACES_EXPORTER=none@ in the environment, which makes all tracing a
--- no-op.
+-- You may need to do this even if you don't plan to manually trace things, in
+-- order to satisfy the 'MonadTracer' constraint required by functions like
+-- 'runDB'. If you don't need this feature, and don't plan on running an
+-- otel-collector, set @OTEL_TRACES_EXPORTER=none@ in the environment, which
+-- makes all tracing a no-op.
 --
 -- In the future, it should be possible to use @OTEL_SDK_DISABLED@ for the same
 -- purpose. See <https://github.com/iand675/hs-opentelemetry/issues/60>.
