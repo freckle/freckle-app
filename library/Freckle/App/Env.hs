@@ -33,6 +33,7 @@ module Freckle.App.Env
   , eitherReader
   , time
   , keyValues
+  , splitOnParse
   , timeout
   ) where
 
@@ -129,20 +130,35 @@ time fmt =
 -- Value-less keys are not supported:
 --
 -- >>> var keyValues "TAGS" mempty `parsePure` [("TAGS", "foo,baz:bat")]
--- Left [("TAGS",UnreadError "Key foo has no value: \"foo,baz:bat\"")]
+-- Left [("TAGS",UnreadError "Key foo has no value: \"foo\"")]
 --
 -- Nor are key-less values:
 --
 -- >>> var keyValues "TAGS" mempty `parsePure` [("TAGS", "foo:bar,:bat")]
--- Left [("TAGS",UnreadError "Value bat has no key: \"foo:bar,:bat\"")]
+-- Left [("TAGS",UnreadError "Value bat has no key: \":bat\"")]
 keyValues :: Reader Error [(Text, Text)]
-keyValues = eitherReader $ traverse keyValue . T.splitOn "," . pack
+keyValues = splitOnParse ',' $ eitherReader keyValue
  where
-  keyValue :: Text -> Either String (Text, Text)
-  keyValue t = case second (T.drop 1) $ T.breakOn ":" t of
+  keyValue :: String -> Either String (Text, Text)
+  keyValue s = case second (T.drop 1) $ T.breakOn ":" $ pack s of
     (k, v) | T.null v -> Left $ "Key " <> unpack k <> " has no value"
     (k, v) | T.null k -> Left $ "Value " <> unpack v <> " has no key"
     (k, v) -> Right (k, v)
+
+-- | Use 'splitOn' then call the given 'Reader' on each element
+--
+-- @
+-- 'splitOnParse' c pure == 'splitOn' c
+-- @
+--
+-- >>> var (splitOnParse @Error ',' nonempty) "X" mempty `parsePure` [("X", "a,b")]
+-- Right ["a","b"]
+--
+-- >>> var (splitOnParse @Error ',' nonempty) "X" mempty `parsePure` [("X", ",,")]
+-- Left [("X",EmptyError)]
+--
+splitOnParse :: Char -> Reader e a -> Reader e [a]
+splitOnParse c p = traverse p <=< splitOn c
 
 -- | Represents a timeout in seconds or milliseconds
 data Timeout
