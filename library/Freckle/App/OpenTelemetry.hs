@@ -32,6 +32,10 @@ module Freckle.App.OpenTelemetry
   , MonadTracer (..)
   , inSpan
   , defaultSpanArguments
+  , serverSpanArguments
+  , clientSpanArguments
+  , producerSpanArguments
+  , consumerSpanArguments
 
     -- * Querying
   , withTraceIdContext
@@ -62,6 +66,39 @@ import qualified OpenTelemetry.Trace.Core as Trace (SpanContext (..))
 import OpenTelemetry.Trace.Id (TraceId)
 import OpenTelemetry.Trace.Monad
 import UnliftIO.Exception (bracket)
+
+-- | 'defaultSpanArguments' with 'kind' set to 'Server'
+--
+-- Indicates that the span covers server-side handling of a synchronous RPC or
+-- other remote request. This span is the child of a remote @Client@ span that
+-- was expected to wait for a response.
+serverSpanArguments :: SpanArguments
+serverSpanArguments = defaultSpanArguments {kind = Server}
+
+-- | 'defaultSpanArguments' with 'kind' set to 'Kind'
+--
+-- Indicates that the span describes a synchronous request to some remote
+-- service. This span is the parent of a remote @Server@ span and waits for its
+-- response.
+clientSpanArguments :: SpanArguments
+clientSpanArguments = defaultSpanArguments {kind = Client}
+
+-- | 'defaultSpanArguments' with 'kind' set to 'Producer'
+--
+-- Indicates that the span describes the parent of an asynchronous request. This
+-- parent span is expected to end before the corresponding child @Producer@
+-- span, possibly even before the child span starts. In messaging scenarios with
+-- batching, tracing individual messages requires a new @Producer@ span per
+-- message to be created.
+producerSpanArguments :: SpanArguments
+producerSpanArguments = defaultSpanArguments {kind = Producer}
+
+-- | 'defaultSpanArguments' with 'kind' set to 'Consumer'
+--
+-- Indicates that the span describes the child of an asynchronous @Producer@
+-- request.
+consumerSpanArguments :: SpanArguments
+consumerSpanArguments = defaultSpanArguments {kind = Consumer}
 
 withTracerProvider :: MonadUnliftIO m => (TracerProvider -> m a) -> m a
 withTracerProvider =
