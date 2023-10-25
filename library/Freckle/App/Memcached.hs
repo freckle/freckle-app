@@ -34,8 +34,8 @@ import Data.Text.Encoding.Error (lenientDecode)
 import Freckle.App.Memcached.CacheKey
 import Freckle.App.Memcached.CacheTTL
 import Freckle.App.Memcached.Client (HasMemcachedClient (..))
-import Freckle.App.Memcached.MD5
 import qualified Freckle.App.Memcached.Client as Memcached
+import Freckle.App.Memcached.MD5
 import UnliftIO.Exception (Exception (..), handleAny)
 
 class Cachable a where
