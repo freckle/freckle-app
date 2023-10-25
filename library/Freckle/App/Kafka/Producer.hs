@@ -18,13 +18,16 @@ import Blammo.Logging
 import Control.Lens (Lens', view)
 import Data.Aeson (ToJSON, encode)
 import Data.ByteString.Lazy (toStrict)
+import qualified Data.HashMap.Strict as HashMap
 import qualified Data.List.NonEmpty as NE
 import Data.Pool (Pool)
 import qualified Data.Pool as Pool
 import qualified Data.Text as T
 import Freckle.App.Async (async)
 import qualified Freckle.App.Env as Env
+import Freckle.App.OpenTelemetry
 import Kafka.Producer
+import qualified OpenTelemetry.Trace as Trace
 import UnliftIO.Exception (throwString)
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
@@ -104,6 +107,7 @@ createKafkaProducerPool addresses KafkaProducerPoolConfig {..} =
 produceKeyedOn
   :: ( MonadUnliftIO m
      , MonadLogger m
+     , MonadTracer m
      , MonadReader env m
      , HasKafkaProducerPool env
      , ToJSON key
@@ -113,7 +117,7 @@ produceKeyedOn
   -> NonEmpty value
   -> (value -> key)
   -> m ()
-produceKeyedOn prTopic values keyF = do
+produceKeyedOn prTopic values keyF = traced $ do
   logDebugNS "kafka" $ "Producing Kafka events" :# ["events" .= values]
   view kafkaProducerPoolL >>= \case
     NullKafkaProducerPool -> pure ()
@@ -139,10 +143,20 @@ produceKeyedOn prTopic values keyF = do
               encode value
       }
 
+  traced =
+    inSpan
+      "kafka.produce"
+      producerSpanArguments
+        { Trace.attributes =
+            HashMap.fromList
+              [("topic", Trace.toAttribute $ unTopicName prTopic)]
+        }
+
 produceKeyedOnAsync
   :: ( MonadMask m
      , MonadUnliftIO m
      , MonadLogger m
+     , MonadTracer m
      , MonadReader env m
      , HasKafkaProducerPool env
      , ToJSON key
