@@ -33,6 +33,7 @@ module Freckle.App.Env
   , eitherReader
   , time
   , keyValues
+  , keyValue
   , splitOnParse
   , timeout
   ) where
@@ -137,10 +138,13 @@ time fmt =
 -- >>> var keyValues "TAGS" mempty `parsePure` [("TAGS", "foo:bar,:bat")]
 -- Left [("TAGS",UnreadError "Value bat has no key: \":bat\"")]
 keyValues :: Reader Error [(Text, Text)]
-keyValues = splitOnParse ',' $ eitherReader keyValue
+keyValues = splitOnParse ',' $ keyValue ':'
+
+keyValue :: Char -> Reader Error (Text, Text)
+keyValue c =
+  eitherReader $ go . second (T.drop 1) . T.breakOn (T.singleton c) . pack
  where
-  keyValue :: String -> Either String (Text, Text)
-  keyValue s = case second (T.drop 1) $ T.breakOn ":" $ pack s of
+  go = \case
     (k, v) | T.null v -> Left $ "Key " <> unpack k <> " has no value"
     (k, v) | T.null k -> Left $ "Value " <> unpack v <> " has no key"
     (k, v) -> Right (k, v)
