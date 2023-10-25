@@ -9,10 +9,14 @@ import Freckle.App.Prelude
 
 import Data.Word (Word32)
 import Database.Memcache.Types (Expiration)
+import OpenTelemetry.Trace (ToAttribute (..))
 
 newtype CacheTTL = CacheTTL Int
   deriving stock (Show)
   deriving newtype (Eq, Ord, Enum, Num, Real, Integral)
+
+instance ToAttribute CacheTTL where
+  toAttribute (CacheTTL x) = toAttribute x
 
 cacheTTL :: Int -> CacheTTL
 cacheTTL = CacheTTL

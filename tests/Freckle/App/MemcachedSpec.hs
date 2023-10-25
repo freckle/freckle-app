@@ -17,6 +17,7 @@ import Freckle.App.Memcached
 import Freckle.App.Memcached.Client (MemcachedClient, withMemcachedClient)
 import qualified Freckle.App.Memcached.Client as Memcached
 import Freckle.App.Memcached.Servers
+import Freckle.App.OpenTelemetry
 
 data ExampleValue
   = A
@@ -39,6 +40,7 @@ instance Cachable ExampleValue where
 data App = App
   { appMemcachedClient :: MemcachedClient
   , appLogger :: Logger
+  , appTracer :: Tracer
   }
 
 instance HasMemcachedClient App where
@@ -47,6 +49,9 @@ instance HasMemcachedClient App where
 
 instance HasLogger App where
   loggerL = lens appLogger $ \x y -> x {appLogger = y}
+
+instance HasTracer App where
+  tracerL = lens appTracer $ \x y -> x {appTracer = y}
 
 loadApp :: (App -> IO a) -> IO a
 loadApp f = do
@@ -57,8 +62,10 @@ loadApp f = do
         "MEMCACHED_SERVERS"
         (Env.def defaultMemcachedServers)
   appLogger <- newTestLogger defaultLogSettings
-  withMemcachedClient servers $ \appMemcachedClient -> do
-    f App {..}
+  withTracerProvider $ \tp -> do
+    let appTracer = makeTracer tp "freckle-app" tracerOptions
+    withMemcachedClient servers $ \appMemcachedClient -> do
+      f App {..}
 
 spec :: Spec
 spec = withApp loadApp $ do

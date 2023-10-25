@@ -36,6 +36,7 @@ import Freckle.App.Memcached.CacheTTL
 import Freckle.App.Memcached.Client (HasMemcachedClient (..))
 import qualified Freckle.App.Memcached.Client as Memcached
 import Freckle.App.Memcached.MD5
+import Freckle.App.OpenTelemetry
 import UnliftIO.Exception (Exception (..), handleAny)
 
 class Cachable a where
@@ -63,6 +64,7 @@ data Cached a
 caching
   :: ( MonadUnliftIO m
      , MonadLogger m
+     , MonadTracer m
      , MonadReader env m
      , HasMemcachedClient env
      , Cachable a
@@ -75,7 +77,12 @@ caching = cachingAs fromCachable toCachable
 
 -- | Like 'caching', but with explicit conversion functions
 cachingAs
-  :: (MonadUnliftIO m, MonadLogger m, MonadReader env m, HasMemcachedClient env)
+  :: ( MonadUnliftIO m
+     , MonadLogger m
+     , MonadTracer m
+     , MonadReader env m
+     , HasMemcachedClient env
+     )
   => (ByteString -> Either String a)
   -> (a -> ByteString)
   -> CacheKey
@@ -103,6 +110,7 @@ cachingAs from to key ttl f = do
 cachingAsJSON
   :: ( MonadUnliftIO m
      , MonadLogger m
+     , MonadTracer m
      , MonadReader env m
      , HasMemcachedClient env
      , FromJSON a
@@ -118,6 +126,7 @@ cachingAsJSON = cachingAs eitherDecodeStrict encodeStrict
 cachingAsCBOR
   :: ( MonadUnliftIO m
      , MonadLogger m
+     , MonadTracer m
      , MonadReader env m
      , HasMemcachedClient env
      , Serialise a

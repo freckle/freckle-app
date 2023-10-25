@@ -11,11 +11,14 @@ module Freckle.App.Memcached.Client
 import Freckle.App.Prelude
 
 import Control.Lens (Lens', view, _1)
+import qualified Data.HashMap.Strict as HashMap
 import qualified Database.Memcache.Client as Memcache
 import Database.Memcache.Types (Value)
 import Freckle.App.Memcached.CacheKey
 import Freckle.App.Memcached.CacheTTL
 import Freckle.App.Memcached.Servers
+import Freckle.App.OpenTelemetry
+import qualified OpenTelemetry.Trace as Trace
 import UnliftIO.Exception (finally)
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
@@ -48,23 +51,30 @@ memcachedClientDisabled :: MemcachedClient
 memcachedClientDisabled = MemcachedClientDisabled
 
 get
-  :: (MonadIO m, MonadReader env m, HasMemcachedClient env)
+  :: (MonadUnliftIO m, MonadTracer m, MonadReader env m, HasMemcachedClient env)
   => CacheKey
   -> m (Maybe Value)
-get k = with $ \case
+get k = traced $ with $ \case
   MemcachedClient mc -> liftIO $ view _1 <$$> Memcache.get mc (fromCacheKey k)
   MemcachedClientDisabled -> pure Nothing
+ where
+  traced =
+    inSpan
+      "cache.get"
+      clientSpanArguments
+        { Trace.attributes = HashMap.fromList [("key", Trace.toAttribute k)]
+        }
 
 -- | Set a value to expire in the given seconds
 --
 -- Pass @0@ to set a value that never expires.
 set
-  :: (MonadIO m, MonadReader env m, HasMemcachedClient env)
+  :: (MonadUnliftIO m, MonadTracer m, MonadReader env m, HasMemcachedClient env)
   => CacheKey
   -> Value
   -> CacheTTL
   -> m ()
-set k v expiration = with $ \case
+set k v expiration = traced $ with $ \case
   MemcachedClient mc ->
     void $
       liftIO $
@@ -72,6 +82,18 @@ set k v expiration = with $ \case
           fromCacheTTL
             expiration
   MemcachedClientDisabled -> pure ()
+ where
+  traced =
+    inSpan
+      "cache.set"
+      clientSpanArguments
+        { Trace.attributes =
+            HashMap.fromList
+              [ ("key", Trace.toAttribute k)
+              , ("value", Trace.toAttribute $ decodeUtf8 v)
+              , ("expiration", Trace.toAttribute expiration)
+              ]
+        }
 
 quitClient :: MonadIO m => MemcachedClient -> m ()
 quitClient = \case
