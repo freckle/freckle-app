@@ -181,10 +181,9 @@ runConsumer pollTimeout onMessage =
     consumer <- view kafkaConsumerL
 
     flip catches handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
-      ConsumerRecord {..} <-
-        either throwIO pure =<< pollMessage consumer kTimeout
+      mRecord <- fromKafkaError =<< pollMessage consumer kTimeout
 
-      for_ crValue $ \bs -> do
+      for_ (crValue =<< mRecord) $ \bs -> do
         a <-
           inSpan "kafka.consumer.message.decode" defaultSpanArguments $
             either (throwIO . KafkaMessageDecodeError bs) pure $
@@ -194,14 +193,23 @@ runConsumer pollTimeout onMessage =
   kTimeout = Kafka.Timeout $ timeoutMs pollTimeout
 
   handlers =
-    [ Handler $ \case
-        KafkaResponseError RdKafkaRespErrTimedOut -> logDebug "Polling timeout"
-        err ->
-          logError $
-            "Error polling for message from Kafka"
-              :# ["error" .= displayException err]
-    , Handler $ \err@KafkaMessageDecodeError {} ->
+    [ Handler $ \err ->
+        logError $
+          "Error polling for message from Kafka"
+            :# ["error" .= displayException @KafkaError err]
+    , Handler $ \err ->
         logError $
           "Could not decode message value"
-            :# ["error" .= displayException err]
+            :# ["error" .= displayException @KafkaMessageDecodeError err]
     ]
+
+fromKafkaError
+  :: (MonadIO m, MonadLogger m) => Either KafkaError a -> m (Maybe a)
+fromKafkaError =
+  either
+    ( \case
+        KafkaResponseError RdKafkaRespErrTimedOut ->
+          Nothing <$ logDebug "Polling timeout"
+        err -> throwIO err
+    )
+    $ pure . Just
