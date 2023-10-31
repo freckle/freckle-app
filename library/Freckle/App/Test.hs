@@ -45,7 +45,12 @@ import Control.Monad.Random (MonadRandom (..))
 import Control.Monad.Reader
 import Control.Monad.Trans.Control
 import Database.Persist.Sql (SqlPersistT, runSqlPool)
-import Freckle.App.Database (HasSqlPool (..))
+import Freckle.App.Database
+  ( HasSqlPool (..)
+  , HasStatsClient
+  , MonadSqlTx (..)
+  , runDB
+  )
 import qualified Freckle.App.Database.XRay as XRay
 import qualified Freckle.App.Dotenv as Dotenv
 import Freckle.App.OpenTelemetry
@@ -124,6 +129,12 @@ instance HasTracer app => MonadTracer (AppExample app) where
 
 instance XRay.MonadTracer (AppExample app) where
   getVaultData = pure Nothing
+
+instance
+  (HasSqlPool app, HasStatsClient app, HasTracer app)
+  => MonadSqlTx (SqlPersistT (AppExample app)) (AppExample app)
+  where
+  runSqlTx = runDB
 
 -- | A type restricted version of id
 --

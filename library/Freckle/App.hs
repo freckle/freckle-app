@@ -251,6 +251,12 @@ instance (Monad m, HasTracer app) => MonadTracer (AppT app m) where
 instance Applicative m => XRay.MonadTracer (AppT app m) where
   getVaultData = pure Nothing
 
+instance
+  (MonadUnliftIO m, HasSqlPool app, HasStatsClient app, HasTracer app)
+  => MonadSqlTx (ReaderT SqlBackend (AppT app m)) (AppT app m)
+  where
+  runSqlTx = runDB
+
 runAppT :: (MonadUnliftIO m, HasLogger app) => AppT app m a -> app -> m a
 runAppT action app =
   runResourceT $ runLoggerLoggingT app $ runReaderT (unAppT action) app
