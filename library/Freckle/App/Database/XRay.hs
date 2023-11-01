@@ -3,14 +3,28 @@
 
 -- | Legacy version of "Freckle.App.Database" that still uses XRay
 module Freckle.App.Database.XRay
-  ( MonadTracer (..)
+  ( -- * Running transactions
+    MonadSqlTx (..)
+  , runDB
+  , runDBSimple
+
+    -- * Running queries
+  , SqlBackend
+  , HasSqlBackend (..)
+  , MonadSqlBackend (..)
+  , liftSql
+
+    -- * Telemetry
+  , MonadTracer (..)
   , HasStatsClient
+
+    -- * Connection pools
   , HasSqlPool (..)
   , SqlPool
   , makePostgresPool
   , makePostgresPoolWith
-  , runDB
-  , runDBSimple
+
+    -- * Setup
   , PostgresConnectionConf (..)
   , PostgresPasswordSource (..)
   , PostgresPassword (..)
@@ -25,12 +39,7 @@ import Freckle.App.Prelude
 import Control.Monad.IO.Unlift (MonadUnliftIO (..))
 import Control.Monad.Reader
 import Data.Pool
-import Database.Persist.Postgresql
-  ( SqlBackend
-  , SqlPersistT
-  , runSqlConn
-  , runSqlPool
-  )
+import Database.Persist.Postgresql (SqlPersistT, runSqlConn, runSqlPool)
 import Freckle.App.Database hiding (MonadTracer, runDB)
 import qualified Freckle.App.Stats as Stats
 import Network.AWS.XRayClient.Persistent

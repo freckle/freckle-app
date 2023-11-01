@@ -1,17 +1,32 @@
 {-# LANGUAGE ApplicativeDo #-}
+{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TypeOperators #-}
 
 -- | Database access for your @App@
 module Freckle.App.Database
-  ( MonadTracer
+  ( -- * Running transactions
+    MonadSqlTx (..)
+  , runDB
+  , runDBSimple
+
+    -- * Running queries
+  , SqlBackend
+  , HasSqlBackend (..)
+  , MonadSqlBackend (..)
+  , liftSql
+
+    -- * Telemetry
+  , MonadTracer
   , HasStatsClient
+
+    -- * Connection pools
   , HasSqlPool (..)
   , SqlPool
   , makePostgresPool
   , makePostgresPoolWith
-  , runDB
-  , runDBSimple
+
+    -- * Setup
   , PostgresConnectionConf (..)
   , PostgresPasswordSource (..)
   , PostgresPassword (..)
@@ -59,6 +74,32 @@ import UnliftIO.Concurrent (threadDelay)
 import UnliftIO.Exception (displayException)
 import UnliftIO.IORef
 import Yesod.Core.Types (HandlerData (..), RunHandlerEnv (..))
+
+-- | A monadic context in which a SQL backend is available
+--   for running database queries
+class MonadIO m => MonadSqlBackend m where
+  getSqlBackendM :: m SqlBackend
+
+instance (HasSqlBackend r, MonadIO m) => MonadSqlBackend (ReaderT r m) where
+  getSqlBackendM = asks getSqlBackend
+
+-- | Generalize from 'SqlPersistT' to 'MonadSqlBackend'
+liftSql :: MonadSqlBackend m => ReaderT SqlBackend m a -> m a
+liftSql (ReaderT f) = getSqlBackendM >>= f
+
+-- | The constraint @'MonadSqlTx' db m@ indicates that @m@ is a monadic
+--   context that can run @db@ actions, usually as a SQL transaction.
+--   Typically, this means that @db@ needs a connection and @m@ can
+--   provide one, e.g. from a connection pool.
+class (MonadSqlBackend db, MonadUnliftIO m) => MonadSqlTx db m | m -> db where
+  -- | Runs the action in a SQL transaction
+  runSqlTx :: HasCallStack => db a -> m a
+
+class HasSqlBackend a where
+  getSqlBackend :: a -> SqlBackend
+
+instance HasSqlBackend SqlBackend where
+  getSqlBackend = id
 
 type SqlPool = Pool SqlBackend
 

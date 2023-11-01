@@ -1,4 +1,9 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.2.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.3.0...main)
+
+## [v1.10.3.0](https://github.com/freckle/freckle-app/compare/v1.10.2.0...v1.10.3.0)
+
+- Add classes `MonadSqlBackend` and `MonadSqlTx` for being quite nonspecific about the
+  context in which you interact with a SQL database.
 
 ## [v1.10.2.0](https://github.com/freckle/freckle-app/compare/v1.10.1.0...v1.10.2.0)
 
