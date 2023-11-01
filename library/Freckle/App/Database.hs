@@ -83,14 +83,14 @@ class MonadIO m => MonadSqlBackend m where
 instance (HasSqlBackend r, MonadIO m) => MonadSqlBackend (ReaderT r m) where
   getSqlBackendM = asks getSqlBackend
 
--- | Can be used e.g. to generalized from 'SqlPersistT' to 'MonadSqlBackend'
+-- | Generalize from 'SqlPersistT' to 'MonadSqlBackend'
 liftSql :: MonadSqlBackend m => ReaderT SqlBackend m a -> m a
 liftSql (ReaderT f) = getSqlBackendM >>= f
 
 -- | The constraint @'MonadSqlTx' db m@ indicates that @m@ is a monadic
---   context that can run @db@ actions within a SQL transaction.
---   Typically this means that @m@ has access to a connection pool and
---   @db@ has access to a connection.
+--   context that can run @db@ actions, usually as a SQL transaction.
+--   Typically, this means that @db@ needs a connection and @m@ can
+--   provide one, e.g. from a connection pool.
 class (MonadSqlBackend db, MonadUnliftIO m) => MonadSqlTx db m | m -> db where
   -- | Runs the action in a SQL transaction
   runSqlTx :: HasCallStack => db a -> m a
