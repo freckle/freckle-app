@@ -16,6 +16,7 @@ import Test.Hspec.JUnit
   ( configWithJUnitAvailable
   , defaultJUnitConfig
   , setJUnitConfigOutputFile
+  , setJUnitConfigSourcePathPrefix
   )
 import Test.Hspec.Runner
   ( Config
@@ -74,7 +75,10 @@ runSpecJUnitAvailable spec (path, name) config =
  where
   filePath = path <> "/" <> name <> "/test_results.xml"
   junitConfig =
-    setJUnitConfigOutputFile filePath $ defaultJUnitConfig $ pack name
+    setJUnitConfigSourcePathPrefix name $
+      setJUnitConfigOutputFile filePath $
+        defaultJUnitConfig $
+          pack name
 
 makeParallelConfig :: Config -> IO Config
 makeParallelConfig config = do
