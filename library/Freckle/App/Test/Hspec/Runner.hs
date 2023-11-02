@@ -13,11 +13,11 @@ import Data.List (isInfixOf)
 import System.Environment (getArgs, lookupEnv)
 import Test.Hspec (Spec)
 import Test.Hspec.JUnit
-  ( configWithJUnitAvailable
-  , defaultJUnitConfig
+  ( configWithJUnit
   , setJUnitConfigOutputFile
   , setJUnitConfigSourcePathPrefix
   )
+import Test.Hspec.JUnit.Config.Env (envJUnitConfig, envJUnitEnabled)
 import Test.Hspec.Runner
   ( Config
   , Path
@@ -26,8 +26,8 @@ import Test.Hspec.Runner
   , configSkipPredicate
   , defaultConfig
   , evaluateSummary
+  , hspecWithResult
   , readConfig
-  , runSpec
   )
 import qualified Prelude as Unsafe (read)
 
@@ -66,19 +66,20 @@ runWith config name spec = do
  where
   load = flip readConfig
   runner filename changeConfig =
-    (spec `runSpecJUnitAvailable` ("/tmp/junit", filename)) . changeConfig
+    (spec `runWithJUnit` ("/tmp/junit", filename)) . changeConfig
   noConcurrency x = x {configConcurrentJobs = Just 1}
 
-runSpecJUnitAvailable :: Spec -> (FilePath, String) -> Config -> IO Summary
-runSpecJUnitAvailable spec (path, name) config =
-  spec `runSpec` configWithJUnitAvailable junitConfig config
+runWithJUnit :: Spec -> (FilePath, String) -> Config -> IO Summary
+runWithJUnit spec (path, name) config = do
+  junitEnabled <- envJUnitEnabled
+  baseJUnitConfig <- envJUnitConfig
+  let modify = if junitEnabled then configWithJUnit $ withOverride baseJUnitConfig else id
+  spec `runSpec` modify config
  where
+  runSpec = flip hspecWithResult
   filePath = path <> "/" <> name <> "/test_results.xml"
-  junitConfig =
-    setJUnitConfigSourcePathPrefix name $
-      setJUnitConfigOutputFile filePath $
-        defaultJUnitConfig $
-          pack name
+  withOverride =
+    setJUnitConfigSourcePathPrefix name . setJUnitConfigOutputFile filePath
 
 makeParallelConfig :: Config -> IO Config
 makeParallelConfig config = do
