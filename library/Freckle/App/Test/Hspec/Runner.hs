@@ -13,7 +13,7 @@ import Data.List (isInfixOf)
 import System.Environment (getArgs, lookupEnv)
 import Test.Hspec (Spec)
 import Test.Hspec.JUnit
-  ( configWithJUnit
+  ( configWithJUnitAvailable
   , defaultJUnitConfig
   , setJUnitConfigOutputFile
   )
@@ -41,8 +41,6 @@ runParConfig name spec = do
 runWith :: Config -> String -> Spec -> IO ()
 runWith config name spec = do
   args <- getArgs
-  isCircle <- isJust <$> lookupEnv "CIRCLECI"
-  let runner = if isCircle then junit else hspec
 
   -- Run unreliable tests first, so local dev errors are reported for reliable
   -- specs at the end
@@ -66,14 +64,13 @@ runWith config name spec = do
   evaluateSummary $ reliableSummary <> isolatedSummary
  where
   load = flip readConfig
-  junit filename changeConfig =
-    (spec `runJUnitSpec` ("/tmp/junit", filename)) . changeConfig
-  hspec _ changeConfig = runSpec spec . changeConfig
+  runner filename changeConfig =
+    (spec `runSpecJUnitAvailable` ("/tmp/junit", filename)) . changeConfig
   noConcurrency x = x {configConcurrentJobs = Just 1}
 
-runJUnitSpec :: Spec -> (FilePath, String) -> Config -> IO Summary
-runJUnitSpec spec (path, name) config =
-  spec `runSpec` configWithJUnit junitConfig config
+runSpecJUnitAvailable :: Spec -> (FilePath, String) -> Config -> IO Summary
+runSpecJUnitAvailable spec (path, name) config =
+  spec `runSpec` configWithJUnitAvailable junitConfig config
  where
   filePath = path <> "/" <> name <> "/test_results.xml"
   junitConfig =
