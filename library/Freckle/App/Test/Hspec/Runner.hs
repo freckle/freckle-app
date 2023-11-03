@@ -14,9 +14,10 @@ import System.Environment (getArgs, lookupEnv)
 import Test.Hspec (Spec)
 import Test.Hspec.JUnit
   ( configWithJUnit
-  , defaultJUnitConfig
   , setJUnitConfigOutputFile
+  , setJUnitConfigSourcePathPrefix
   )
+import Test.Hspec.JUnit.Config.Env (envJUnitConfig, envJUnitEnabled)
 import Test.Hspec.Runner
   ( Config
   , Path
@@ -25,8 +26,8 @@ import Test.Hspec.Runner
   , configSkipPredicate
   , defaultConfig
   , evaluateSummary
+  , hspecWithResult
   , readConfig
-  , runSpec
   )
 import qualified Prelude as Unsafe (read)
 
@@ -41,8 +42,6 @@ runParConfig name spec = do
 runWith :: Config -> String -> Spec -> IO ()
 runWith config name spec = do
   args <- getArgs
-  isCircle <- isJust <$> lookupEnv "CIRCLECI"
-  let runner = if isCircle then junit else hspec
 
   -- Run unreliable tests first, so local dev errors are reported for reliable
   -- specs at the end
@@ -66,18 +65,21 @@ runWith config name spec = do
   evaluateSummary $ reliableSummary <> isolatedSummary
  where
   load = flip readConfig
-  junit filename changeConfig =
-    (spec `runJUnitSpec` ("/tmp/junit", filename)) . changeConfig
-  hspec _ changeConfig = runSpec spec . changeConfig
+  runner filename changeConfig =
+    (spec `runWithJUnit` ("/tmp/junit", filename)) . changeConfig
   noConcurrency x = x {configConcurrentJobs = Just 1}
 
-runJUnitSpec :: Spec -> (FilePath, String) -> Config -> IO Summary
-runJUnitSpec spec (path, name) config =
-  spec `runSpec` configWithJUnit junitConfig config
+runWithJUnit :: Spec -> (FilePath, String) -> Config -> IO Summary
+runWithJUnit spec (path, name) config = do
+  junitEnabled <- envJUnitEnabled
+  baseJUnitConfig <- envJUnitConfig
+  let modify = if junitEnabled then configWithJUnit $ withOverride baseJUnitConfig else id
+  spec `runSpec` modify config
  where
+  runSpec = flip hspecWithResult
   filePath = path <> "/" <> name <> "/test_results.xml"
-  junitConfig =
-    setJUnitConfigOutputFile filePath $ defaultJUnitConfig $ pack name
+  withOverride =
+    setJUnitConfigSourcePathPrefix name . setJUnitConfigOutputFile filePath
 
 makeParallelConfig :: Config -> IO Config
 makeParallelConfig config = do
