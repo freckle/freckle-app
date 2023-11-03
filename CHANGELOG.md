@@ -1,4 +1,14 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.3.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.11.0.0...main)
+
+## [v1.11.0.0](https://github.com/freckle/freckle-app/compare/v1.10.3.0...v1.11.0.0)
+
+- Use JUnit formatting for test output when `JUNIT_ENABLED` environment
+  variable is set.
+- Use environment variables to [configure JUnit][junit-env]; always prefix
+  source paths with test suite `name` and output tests to `/tmp/junit`.
+- Remove using `CIRCLECI` environment variable.
+
+[junit-env]: https://github.com/freckle/hspec-junit-formatter/blob/main/library/Test/Hspec/JUnit/Config/Env.hs
 
 ## [v1.10.3.0](https://github.com/freckle/freckle-app/compare/v1.10.2.0...v1.10.3.0)
 
