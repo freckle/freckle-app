@@ -1,6 +1,6 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.11.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.4.0...main)
 
-## [v1.11.0.0](https://github.com/freckle/freckle-app/compare/v1.10.3.0...v1.11.0.0)
+## [v1.10.4.0](https://github.com/freckle/freckle-app/compare/v1.10.3.0...v1.10.4.0)
 
 - Use JUnit formatting for test output when `JUNIT_ENABLED` environment
   variable is set.
