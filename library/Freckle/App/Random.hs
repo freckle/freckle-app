@@ -3,6 +3,7 @@
 module Freckle.App.Random
   ( smallRandomSubsetOfLargeIntegerRange
   , Range (..)
+  , NonEmptyRange (..)
   , inclusiveRange
   ) where
 
@@ -17,10 +18,16 @@ import Numeric.Natural (Natural)
 
 import qualified Data.Set as Set
 
--- | A contiguous range of integers
-data Range i = Range
+-- | A possibly-empty contiguous range of integers
+data Range i
+  = RangeEmpty
+  | RangeNonEmpty (NonEmptyRange i)
+
+-- | A nonempty contiguous range of integers
+data NonEmptyRange i = NonEmptyRange
   { inclusiveMinBound :: i
-  , size :: Natural
+  , offset :: Natural
+  -- ^ The size of the range minus one
   }
 
 inclusiveRange
@@ -30,7 +37,10 @@ inclusiveRange
   -> i
   -- ^ Upper bound, inclusive
   -> Range i
-inclusiveRange a b = if a <= b then Range a (fromIntegral (b - a + 1)) else Range a 0
+inclusiveRange a b =
+  if a <= b
+    then RangeNonEmpty (NonEmptyRange a (fromIntegral (b - a)))
+    else RangeEmpty
 
 -- | Select a fixed number of items uniformly at random
 --   from a contiguous range of integers
@@ -42,22 +52,24 @@ inclusiveRange a b = if a <= b then Range a (fromIntegral (b - a + 1)) else Rang
 -- If the requested size is greater than or equal to the range, the entire
 -- range is returned.
 --
--- e.g. @smallRandomSubsetOfLargeIntegerRange 10 (inclusiveRange 30 70)@ may
--- produce something like @fromList [32,34,45,54,56,58,62,63,64,65]@.
+-- e.g. @smallRandomSubsetOfLargeIntegerRange 10 (inclusiveRange 30 70)@
+-- may produce something like @fromList [32,34,45,54,56,58,62,63,64,65]@.
 smallRandomSubsetOfLargeIntegerRange
   :: (MonadRandom m, Random i, Integral i)
   => Natural
   -- ^ How many items are wanted
   -> Range i
   -> m (Set i)
-smallRandomSubsetOfLargeIntegerRange n r =
-  fmap gaps $
-    flip execStateT (RangeWithGaps r Set.empty) $
-      for_ [1 .. n] $ \_ -> do
-        get >>= (lift . randomlyRemove) >>= put
+smallRandomSubsetOfLargeIntegerRange n = \case
+  RangeEmpty -> pure Set.empty
+  RangeNonEmpty r ->
+    fmap gaps $
+      flip execStateT (RangeWithGaps r Set.empty) $
+        for_ [1 .. n] $ \_ -> do
+          get >>= (lift . randomlyRemove) >>= put
 
 data RangeWithGaps i = RangeWithGaps
-  { rangeWithoutGaps :: Range i
+  { rangeWithoutGaps :: NonEmptyRange i
   , gaps :: Set i
   -- ^ The set of items that has been removed from the larger range
   }
@@ -86,16 +98,16 @@ randomFromRangeWithGaps
 randomFromRangeWithGaps rg =
   let
     RangeWithGaps {rangeWithoutGaps, gaps} = rg
-    Range {inclusiveMinBound, size} = rangeWithoutGaps
+    NonEmptyRange {inclusiveMinBound, offset} = rangeWithoutGaps
   in
-    if fromIntegral (Set.size gaps) == size
+    if fromIntegral (Set.size gaps) == offset + 1
       then pure Nothing
       else
         Just
           <$> do
             r <-
               (inclusiveMinBound +)
-                <$> getRandomR (0, fromIntegral size - fromIntegral (Set.size gaps) - 1)
+                <$> getRandomR (0, fromIntegral offset - fromIntegral (Set.size gaps))
             pure $ runST $ do
               xRef <- newSTRef r
               gapQueue <- newSTRef $ Set.toAscList gaps
