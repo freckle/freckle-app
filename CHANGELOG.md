@@ -1,5 +1,7 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.4.0...main)
 
+- Add `Freckle.App.Random`
+
 ## [v1.10.4.0](https://github.com/freckle/freckle-app/compare/v1.10.3.0...v1.10.4.0)
 
 - Use JUnit formatting for test output when `JUNIT_ENABLED` environment
