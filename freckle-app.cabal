@@ -55,6 +55,7 @@ library
       Freckle.App.Memcached.Servers
       Freckle.App.OpenTelemetry
       Freckle.App.Prelude
+      Freckle.App.Random
       Freckle.App.Scientist
       Freckle.App.Stats
       Freckle.App.Stats.Rts
