@@ -13,7 +13,6 @@ import Data.Aeson
 import Data.List.Extra (dropPrefix)
 import Freckle.App.Http
 import System.Environment (lookupEnv)
-import UnliftIO.Exception (Exception (..))
 
 data EcsMetadata = EcsMetadata
   { emContainerMetadata :: EcsContainerMetadata

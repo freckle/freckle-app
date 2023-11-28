@@ -1,5 +1,5 @@
 name: freckle-app
-version: 1.10.4.0
+version: 1.11.0.0
 maintainer: Freckle Education
 category: Utils
 github: freckle/freckle-app
@@ -72,6 +72,7 @@ library:
     - Glob
     - MonadRandom
     - aeson
+    - annotated-exception
     - aws-xray-client-persistent
     - aws-xray-client-wai
     - base
@@ -168,7 +169,6 @@ tests:
       - postgresql-simple
       - monad-validate
       - nonempty-containers
-      - unliftio
       - vector
       - wai
       - wai-extra

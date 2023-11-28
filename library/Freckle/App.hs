@@ -183,7 +183,6 @@ import Freckle.App.Prelude
 
 import Blammo.Logging
 import Control.Lens (view)
-import Control.Monad.Catch (MonadCatch, MonadThrow)
 import Control.Monad.IO.Unlift (MonadUnliftIO (..))
 import Control.Monad.Primitive (PrimMonad (..))
 import Control.Monad.Reader

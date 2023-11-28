@@ -137,7 +137,6 @@ import Network.HTTP.Types.Status
   , statusIsServerError
   , statusIsSuccessful
   )
-import UnliftIO.Exception (Exception (..), throwIO)
 
 data HttpDecodeError = HttpDecodeError
   { hdeBody :: ByteString
@@ -213,7 +212,10 @@ addBearerAuthorizationHeader = addRequestHeader hAuthorization . ("Bearer " <>)
 -- error response bodies too, you'll want to use 'setRequestCheckStatus' so that
 -- you see status-code exceptions before 'HttpDecodeError's.
 getResponseBodyUnsafe
-  :: (MonadIO m, Exception e) => Response (Either e a) -> m a
+  :: (MonadIO m, Exception e)
+  => HasCallStack
+  => Response (Either e a)
+  -> m a
 getResponseBodyUnsafe = either throwIO pure . getResponseBody
 
 httpExceptionIsInformational :: HttpException -> Bool

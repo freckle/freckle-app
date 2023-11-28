@@ -12,7 +12,6 @@ import Network.HTTP.Client (Request (..))
 import Network.HTTP.Simple
 import Network.HTTP.Types.Status (status429)
 import Text.Read (readMaybe)
-import UnliftIO.Exception (Exception (..), throwIO)
 
 -- | Thrown if we exhaust our retries limit and still see a @429@
 --
@@ -78,7 +77,8 @@ suppressRetryStatusError req =
  where
   originalCheckResponse = checkResponse req
 
-checkRetriesExhausted :: MonadIO m => Int -> Response body -> m (Response body)
+checkRetriesExhausted
+  :: MonadIO m => HasCallStack => Int -> Response body -> m (Response body)
 checkRetriesExhausted retryLimit resp
   | getResponseStatus resp == status429 =
       throwIO $

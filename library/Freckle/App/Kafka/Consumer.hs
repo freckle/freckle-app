@@ -30,13 +30,7 @@ import Kafka.Consumer hiding
   , subscription
   )
 import qualified Kafka.Consumer as Kafka
-import UnliftIO.Exception
-  ( Exception (..)
-  , Handler (..)
-  , bracket
-  , catches
-  , throwIO
-  )
+import UnliftIO.Exception (bracket)
 
 data KafkaConsumerConfig = KafkaConsumerConfig
   { kafkaConsumerConfigBrokerAddresses :: NonEmpty BrokerAddress
@@ -136,6 +130,7 @@ subscription KafkaConsumerConfig {..} =
 
 withKafkaConsumer
   :: MonadUnliftIO m
+  => HasCallStack
   => KafkaConsumerConfig
   -> (KafkaConsumer -> m a)
   -> m a
@@ -173,6 +168,7 @@ runConsumer
      , HasKafkaConsumer env
      , FromJSON a
      )
+  => HasCallStack
   => Timeout
   -> (a -> m ())
   -> m ()
@@ -180,7 +176,7 @@ runConsumer pollTimeout onMessage =
   withTraceIdContext $ immortalCreateLogged $ do
     consumer <- view kafkaConsumerL
 
-    flip catches handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
+    catchIO handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
       mRecord <- fromKafkaError =<< pollMessage consumer kTimeout
 
       for_ (crValue =<< mRecord) $ \bs -> do
@@ -193,18 +189,21 @@ runConsumer pollTimeout onMessage =
   kTimeout = Kafka.Timeout $ timeoutMs pollTimeout
 
   handlers =
-    [ Handler $ \err ->
+    [ ExceptionHandler $ \err ->
         logError $
           "Error polling for message from Kafka"
             :# ["error" .= displayException @KafkaError err]
-    , Handler $ \err ->
+    , ExceptionHandler $ \err ->
         logError $
           "Could not decode message value"
             :# ["error" .= displayException @KafkaMessageDecodeError err]
     ]
 
 fromKafkaError
-  :: (MonadIO m, MonadLogger m) => Either KafkaError a -> m (Maybe a)
+  :: (MonadIO m, MonadLogger m)
+  => HasCallStack
+  => Either KafkaError a
+  -> m (Maybe a)
 fromKafkaError =
   either
     ( \case

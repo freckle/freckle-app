@@ -101,8 +101,10 @@ createKafkaProducerPool addresses KafkaProducerPoolConfig {..} =
         kafkaProducerPoolConfigSize
  where
   mkProducer =
-    either throw pure =<< newProducer (brokersList $ toList addresses)
-  throw err = throwString $ "Failed to open kafka producer: " <> show err
+    either
+      (\err -> throwString ("Failed to open kafka producer: " <> show err))
+      pure
+      =<< newProducer (brokersList $ toList addresses)
 
 produceKeyedOn
   :: ( MonadUnliftIO m
