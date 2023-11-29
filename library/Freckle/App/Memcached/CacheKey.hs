@@ -11,7 +11,6 @@ import Data.Char (isControl, isSpace)
 import qualified Data.Text as T
 import Database.Memcache.Types (Key)
 import OpenTelemetry.Trace (ToAttribute (..))
-import UnliftIO.Exception (throwString)
 
 newtype CacheKey = CacheKey Text
   deriving stock (Show)

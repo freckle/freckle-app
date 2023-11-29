@@ -1,5 +1,6 @@
 module Freckle.App.Exception.MonadThrow
   ( throw
+  , throwString
   , catches
   , try
   , checkpointCallStack
@@ -15,7 +16,9 @@ import Freckle.App.Exception.Types
 
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Data.Either (Either (..))
+import Data.Function ((.))
 import Data.Functor (fmap)
+import Data.String (String)
 
 import qualified Control.Exception.Annotated as Annotated
 
@@ -30,16 +33,23 @@ throw
   -> m a
 throw = Annotated.throw
 
+throwString
+  :: forall m a
+   . HasCallStack
+  => MonadThrow m
+  => String
+  -> m a
+throwString = throw . StringException
+
 catches
   :: (HasCallStack, MonadCatch m)
-  =>
-  m a
+  => m a
   -- ^ Action to run
   -> [ExceptionHandler m a]
   -- ^ Recovery actions to run if the first action throws an exception
   --   with a type of either @e@ or @'AnnotatedException' e@
   -> m a
-catches action handlers  =
+catches action handlers =
   Annotated.catches
     action
     (fmap (\case (ExceptionHandler f) -> Annotated.Handler f) handlers)

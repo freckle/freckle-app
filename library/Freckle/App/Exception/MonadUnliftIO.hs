@@ -1,5 +1,6 @@
 module Freckle.App.Exception.MonadUnliftIO
   ( throw
+  , throwString
   , catches
   , try
   , checkpointCallStack
@@ -14,7 +15,9 @@ module Freckle.App.Exception.MonadUnliftIO
 import Freckle.App.Exception.Types
 
 import Data.Either (Either (..))
+import Data.Function ((.))
 import Data.Functor (fmap)
+import Data.String (String)
 import System.IO (IO)
 import UnliftIO (MonadIO, MonadUnliftIO)
 
@@ -30,6 +33,14 @@ throw
   -- ^ Exception to throw; see 'StringException' or 'Impossible' if you need an idea
   -> m a
 throw = Annotated.throw
+
+throwString
+  :: forall m a
+   . HasCallStack
+  => MonadIO m
+  => String
+  -> m a
+throwString = throw . StringException
 
 catches
   :: forall m a

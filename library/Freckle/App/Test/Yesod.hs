@@ -92,7 +92,6 @@ import qualified Data.Vector as V
 import Network.HTTP.Types.Header (hAccept, hAcceptLanguage, hContentType)
 import Network.Wai.Test (SResponse (..))
 import Test.Hspec.Expectations.Lifted (expectationFailure)
-import UnliftIO.Exception (throwString)
 import Web.Cookie (SetCookie)
 import Yesod.Core (RedirectUrl, Yesod)
 import Yesod.Test

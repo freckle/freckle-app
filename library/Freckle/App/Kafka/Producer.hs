@@ -28,7 +28,6 @@ import qualified Freckle.App.Env as Env
 import Freckle.App.OpenTelemetry
 import Kafka.Producer
 import qualified OpenTelemetry.Trace as Trace
-import UnliftIO.Exception (throwString)
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
 
