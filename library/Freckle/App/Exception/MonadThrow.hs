@@ -2,6 +2,7 @@ module Freckle.App.Exception.MonadThrow
   ( throw
   , throwString
   , fromJustNoteM
+  , impossible
   , catch
   , catches
   , try
@@ -36,6 +37,9 @@ throwString = throw . userError
 
 fromJustNoteM :: (HasCallStack, MonadThrow m) => String -> Maybe a -> m a
 fromJustNoteM err = maybe (throwString err) pure
+
+impossible :: (HasCallStack, MonadThrow m) => m a
+impossible = throwString "Impossible"
 
 catch :: (HasCallStack, Exception e, MonadCatch m) => m a -> (e -> m a) -> m a
 catch = Annotated.catch
