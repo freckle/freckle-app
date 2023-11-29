@@ -1,6 +1,7 @@
 module Freckle.App.Exception.MonadThrow
   ( throw
   , throwString
+  , fromJustNoteM
   , catches
   , try
   , checkpointCallStack
@@ -14,10 +15,12 @@ module Freckle.App.Exception.MonadThrow
 
 import Freckle.App.Exception.Types
 
+import Control.Applicative (pure)
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Data.Either (Either (..))
 import Data.Function ((.))
 import Data.Functor (fmap)
+import Data.Maybe (Maybe, maybe)
 import Data.String (String)
 
 import qualified Control.Exception.Annotated as Annotated
@@ -40,6 +43,9 @@ throwString
   => String
   -> m a
 throwString = throw . StringException
+
+fromJustNoteM :: (HasCallStack, MonadThrow m) => String -> Maybe a -> m a
+fromJustNoteM err = maybe (throwString err) pure
 
 catches
   :: (HasCallStack, MonadCatch m)

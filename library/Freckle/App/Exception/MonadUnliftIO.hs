@@ -1,6 +1,7 @@
 module Freckle.App.Exception.MonadUnliftIO
   ( throw
   , throwString
+  , fromJustNoteM
   , catches
   , try
   , checkpointCallStack
@@ -14,11 +15,13 @@ module Freckle.App.Exception.MonadUnliftIO
 
 import Freckle.App.Exception.Types
 
+import Control.Applicative (pure)
 import Data.Either (Either (..))
 import Data.Function ((.))
 import Data.Functor (fmap)
 import Data.String (String)
 import System.IO (IO)
+import Data.Maybe (Maybe, maybe)
 import UnliftIO (MonadIO, MonadUnliftIO)
 
 import qualified Control.Exception.Annotated.UnliftIO as Annotated
@@ -41,6 +44,9 @@ throwString
   => String
   -> m a
 throwString = throw . StringException
+
+fromJustNoteM :: (HasCallStack, MonadIO m) => String -> Maybe a -> m a
+fromJustNoteM err = maybe (throwString err) pure
 
 catches
   :: forall m a

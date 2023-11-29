@@ -91,6 +91,7 @@ module Freckle.App.Prelude
    -- * Exceptions
   , throw
   , throwString
+  , fromJustNoteM
   , catches
   , try
   , StringException (..)
