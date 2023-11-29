@@ -23,27 +23,16 @@ import Data.Function ((.))
 import Data.Functor (fmap)
 import Data.Maybe (Maybe, maybe)
 import Data.String (String)
+import GHC.IO.Exception (userError)
 
 import qualified Control.Exception.Annotated as Annotated
 
 -- Throws an exception, wrapped in 'AnnotatedException' which includes a call stack
-throw
-  :: forall e m a
-   . HasCallStack
-  => MonadThrow m
-  => Exception e
-  => e
-  -- ^ Exception to throw; see 'StringException' or 'Impossible' if you need an idea
-  -> m a
+throw :: forall e m a  . HasCallStack => MonadThrow m => Exception e => e -> m a
 throw = Annotated.throw
 
-throwString
-  :: forall m a
-   . HasCallStack
-  => MonadThrow m
-  => String
-  -> m a
-throwString = throw . StringException
+throwString :: forall m a  . HasCallStack => MonadThrow m => String -> m a
+throwString = throw . userError
 
 fromJustNoteM :: (HasCallStack, MonadThrow m) => String -> Maybe a -> m a
 fromJustNoteM err = maybe (throwString err) pure
