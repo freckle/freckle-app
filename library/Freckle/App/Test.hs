@@ -37,7 +37,8 @@ import Test.Hspec.Expectations.Lifted as X hiding (expectationFailure)
 import Blammo.Logging
 import Control.Lens (view)
 import Control.Monad.Base
-import Control.Monad.Catch
+import Control.Monad.Catch (ExitCase (..), MonadCatch, MonadThrow, mask)
+import qualified Control.Monad.Catch
 import qualified Control.Monad.Fail as Fail
 import Control.Monad.IO.Unlift (MonadUnliftIO (..))
 import Control.Monad.Primitive
@@ -53,6 +54,7 @@ import Freckle.App.Database
   )
 import qualified Freckle.App.Database.XRay as XRay
 import qualified Freckle.App.Dotenv as Dotenv
+import qualified Freckle.App.Exception.MonadThrow as MonadThrow
 import Freckle.App.OpenTelemetry
 import qualified Test.Hspec as Hspec hiding (expectationFailure)
 import Test.Hspec.Core.Spec (Arg, Example, SpecWith, evaluateExample)
@@ -99,10 +101,10 @@ instance MonadMask (AppExample app) where
   generalBracket acquire release use = mask $ \unmasked -> do
     resource <- acquire
     b <-
-      catchIO
+      MonadThrow.catch
         [ ExceptionHandler $ \e -> do
             _ <- release resource (ExitCaseException e)
-            throwM e
+            MonadThrow.throw e
         ]
         $ unmasked (use resource)
     c <- release resource (ExitCaseSuccess b)

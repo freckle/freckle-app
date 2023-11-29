@@ -4,7 +4,7 @@ module Freckle.App.CsvSpec
 
 import Freckle.App.Prelude
 
-import Conduit (ConduitT, ResourceT, yieldMany)
+import Conduit (ConduitT, MonadThrow, ResourceT, yieldMany)
 import Control.Monad.Validate (Validate, refute, runValidate)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS

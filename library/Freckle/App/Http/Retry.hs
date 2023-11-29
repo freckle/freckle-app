@@ -81,7 +81,7 @@ checkRetriesExhausted
   :: MonadIO m => HasCallStack => Int -> Response body -> m (Response body)
 checkRetriesExhausted retryLimit resp
   | getResponseStatus resp == status429 =
-      throwIO $
+      throw $
         RetriesExhausted {reLimit = retryLimit, reResponse = void resp}
   | otherwise = pure resp
 

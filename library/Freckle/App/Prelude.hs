@@ -13,11 +13,8 @@ module Freckle.App.Prelude
   , HashSet
   , Int64
   , Map
-  , MonadCatch
   , MonadIO
-  , MonadMask
   , MonadReader
-  , MonadThrow
   , MonadUnliftIO
   , NominalDiffTime
   , NonEmpty
@@ -92,7 +89,14 @@ module Freckle.App.Prelude
   , getCurrentTime
 
    -- * Exceptions
-  , throw, throwIO, catch, catchIO, try, tryIO, StringException(..), Impossible(..), ExceptionHandler(..), Exception (displayException), SomeException(..)
+  , throw
+  , catch
+  , try
+  , StringException (..)
+  , Impossible (..)
+  , ExceptionHandler (..)
+  , Exception (displayException)
+  , SomeException (..)
   ) where
 
 -- Use 'Prelude' as the starting point, removing common partial functions
@@ -127,7 +131,7 @@ import Data.Int (Int64)
 import Data.List.NonEmpty (NonEmpty)
 import Data.Map.Strict (Map)
 import Data.Set (Set)
-import Freckle.App.Exception
+import Freckle.App.Exception.MonadUnliftIO
 import Data.Text (Text, pack, unpack)
 import Data.Time (NominalDiffTime, UTCTime, getCurrentTime)
 import Data.Vector (Vector)

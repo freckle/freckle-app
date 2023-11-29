@@ -39,7 +39,9 @@ library
       Freckle.App.Dotenv
       Freckle.App.Ecs
       Freckle.App.Env
-      Freckle.App.Exception
+      Freckle.App.Exception.MonadThrow
+      Freckle.App.Exception.MonadUnliftIO
+      Freckle.App.Exception.Types
       Freckle.App.Ghci
       Freckle.App.GlobalCache
       Freckle.App.Http

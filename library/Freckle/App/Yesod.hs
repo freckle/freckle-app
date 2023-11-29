@@ -27,7 +27,7 @@ respondQueryCanceledHeaders
   => ResponseHeaders
   -> HandlerFor site res
   -> HandlerFor site res
-respondQueryCanceledHeaders headers = catchIO [handler]
+respondQueryCanceledHeaders headers = catch [handler]
  where
   handler = ExceptionHandler $ \ex ->
     if sqlState ex == "57014"
@@ -35,4 +35,4 @@ respondQueryCanceledHeaders headers = catchIO [handler]
         logError $ "Query canceled" :# ["exception" .= displayException ex]
         Stats.increment "query_canceled"
         sendWaiResponse $ W.responseLBS status503 headers "Query canceled"
-      else throwIO ex
+      else throw ex

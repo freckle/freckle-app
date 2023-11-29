@@ -141,7 +141,7 @@ runCsvConduit
    . MonadUnliftIO m
   => ConduitT () Void (ValidateT (Seq (CsvException err)) (ResourceT m)) r
   -> m (Either (Seq (CsvException err)) r)
-runCsvConduit = catchIO [nonUtf8] . runResourceT . runValidateT . runConduit
+runCsvConduit = catch [nonUtf8] . runResourceT . runValidateT . runConduit
  where
   nonUtf8 :: ExceptionHandler m (Either (Seq (CsvException err)) r)
   nonUtf8 = ExceptionHandler $ \(_ :: Conduit.TextException) ->
