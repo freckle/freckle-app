@@ -141,7 +141,7 @@ cachingAsCBOR =
 
 handleCachingError
   :: (MonadUnliftIO m, MonadLogger m) => a -> Text -> m a -> m a
-handleCachingError value action = catch [handler]
+handleCachingError value action = flip catches [handler]
  where
   handler = ExceptionHandler $ \(ex :: SomeException) -> do
     logCachingError action $ pack $ displayException ex

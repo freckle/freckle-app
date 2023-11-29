@@ -90,7 +90,7 @@ module Freckle.App.Prelude
 
    -- * Exceptions
   , throw
-  , catch
+  , catches
   , try
   , StringException (..)
   , Impossible (..)

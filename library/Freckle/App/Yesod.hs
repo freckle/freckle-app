@@ -27,7 +27,7 @@ respondQueryCanceledHeaders
   => ResponseHeaders
   -> HandlerFor site res
   -> HandlerFor site res
-respondQueryCanceledHeaders headers = catch [handler]
+respondQueryCanceledHeaders headers = flip catches [handler]
  where
   handler = ExceptionHandler $ \ex ->
     if sqlState ex == "57014"

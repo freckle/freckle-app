@@ -101,12 +101,12 @@ instance MonadMask (AppExample app) where
   generalBracket acquire release use = mask $ \unmasked -> do
     resource <- acquire
     b <-
-      MonadThrow.catch
+      MonadThrow.catches
+        (unmasked $ use resource)
         [ ExceptionHandler $ \e -> do
             _ <- release resource (ExitCaseException e)
             MonadThrow.throw e
         ]
-        $ unmasked (use resource)
     c <- release resource (ExitCaseSuccess b)
     pure (b, c)
 

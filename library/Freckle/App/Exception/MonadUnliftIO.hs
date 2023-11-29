@@ -1,6 +1,6 @@
 module Freckle.App.Exception.MonadUnliftIO
   ( throw
-  , catch
+  , catches
   , try
   , checkpointCallStack
 
@@ -31,17 +31,17 @@ throw
   -> m a
 throw = Annotated.throw
 
-catch
+catches
   :: forall m a
    . MonadUnliftIO m
   => HasCallStack
-  => [ExceptionHandler m a]
+  => m a
+  -- ^ Action to run
+  -> [ExceptionHandler m a]
   -- ^ Recovery actions to run if the first action throws an exception
   --   with a type of either @e@ or @'AnnotatedException' e@
   -> m a
-  -- ^ Action to run
-  -> m a
-catch handlers action =
+catches action handlers =
   Annotated.catches
     action
     (fmap (\case (ExceptionHandler f) -> Annotated.Handler f) handlers)

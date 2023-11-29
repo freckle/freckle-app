@@ -176,7 +176,7 @@ runConsumer pollTimeout onMessage =
   withTraceIdContext $ immortalCreateLogged $ do
     consumer <- view kafkaConsumerL
 
-    catch handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
+    flip catches handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
       mRecord <- fromKafkaError =<< pollMessage consumer kTimeout
 
       for_ (crValue =<< mRecord) $ \bs -> do
