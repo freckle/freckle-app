@@ -6,7 +6,7 @@
   `annotated-exception` package.
 
 - The Prelude module is expanded to reexport from `Freckle.App.Exception.MonadUnliftIO`
-  the following: `throw`, `throwString`, `fromJustNoteM`, `catch`, `catches`, `try`,
+  the following: `throwM`, `throwString`, `fromJustNoteM`, `catch`, `catches`, `try`,
   `impossible`, `ExceptionHandler`, `Exception`, `SomeException`.
   These should be used in place of their relevant counterparts from packages
   `base`, `exceptions`, `safe-exceptions`, or `unliftio`.

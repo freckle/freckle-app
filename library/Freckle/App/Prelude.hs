@@ -89,7 +89,7 @@ module Freckle.App.Prelude
   , getCurrentTime
 
    -- * Exceptions
-  , throw
+  , throwM
   , throwString
   , fromJustNoteM
   , catch

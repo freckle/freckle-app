@@ -105,7 +105,7 @@ instance MonadMask (AppExample app) where
         (unmasked $ use resource)
         [ ExceptionHandler $ \e -> do
             _ <- release resource (ExitCaseException e)
-            MonadThrow.throw e
+            MonadThrow.throwM e
         ]
     c <- release resource (ExitCaseSuccess b)
     pure (b, c)

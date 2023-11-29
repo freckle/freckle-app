@@ -137,8 +137,8 @@ withKafkaConsumer
 withKafkaConsumer config = bracket newConsumer closeConsumer
  where
   (props, sub) = (consumerProps &&& subscription) config
-  newConsumer = either throw pure =<< Kafka.newConsumer props sub
-  closeConsumer = maybe (pure ()) throw <=< Kafka.closeConsumer
+  newConsumer = either throwM pure =<< Kafka.newConsumer props sub
+  closeConsumer = maybe (pure ()) throwM <=< Kafka.closeConsumer
 
 timeoutMs :: Timeout -> Int
 timeoutMs = \case
@@ -182,7 +182,7 @@ runConsumer pollTimeout onMessage =
       for_ (crValue =<< mRecord) $ \bs -> do
         a <-
           inSpan "kafka.consumer.message.decode" defaultSpanArguments $
-            either (throw . KafkaMessageDecodeError bs) pure $
+            either (throwM . KafkaMessageDecodeError bs) pure $
               eitherDecodeStrict bs
         inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
  where
@@ -209,6 +209,6 @@ fromKafkaError =
     ( \case
         KafkaResponseError RdKafkaRespErrTimedOut ->
           Nothing <$ logDebug "Polling timeout"
-        err -> throw err
+        err -> throwM err
     )
     $ pure . Just

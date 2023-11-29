@@ -1,5 +1,5 @@
 module Freckle.App.Exception.MonadUnliftIO
-  ( throw
+  ( throwM
   , throwString
   , fromJustNoteM
   , impossible
@@ -30,11 +30,11 @@ import GHC.IO.Exception (userError)
 import qualified Control.Exception.Annotated.UnliftIO as Annotated
 
 -- Throws an exception, wrapped in 'AnnotatedException' which includes a call stack
-throw :: forall e m a  . HasCallStack => MonadIO m => Exception e => e -> m a
-throw = Annotated.throw
+throwM :: forall e m a  . HasCallStack => MonadIO m => Exception e => e -> m a
+throwM = Annotated.throw
 
 throwString :: forall m a  . HasCallStack => MonadIO m => String -> m a
-throwString = throw . userError
+throwString = throwM . userError
 
 fromJustNoteM :: (HasCallStack, MonadIO m) => String -> Maybe a -> m a
 fromJustNoteM err = maybe (throwString err) pure

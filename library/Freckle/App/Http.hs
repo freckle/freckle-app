@@ -216,7 +216,7 @@ getResponseBodyUnsafe
   => HasCallStack
   => Response (Either e a)
   -> m a
-getResponseBodyUnsafe = either throw pure . getResponseBody
+getResponseBodyUnsafe = either throwM pure . getResponseBody
 
 httpExceptionIsInformational :: HttpException -> Bool
 httpExceptionIsInformational = filterStatusException statusIsInformational

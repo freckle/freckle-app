@@ -35,4 +35,4 @@ respondQueryCanceledHeaders headers = flip catch handler
         logError $ "Query canceled" :# ["exception" .= displayException ex]
         Stats.increment "query_canceled"
         sendWaiResponse $ W.responseLBS status503 headers "Query canceled"
-      else throw ex
+      else throwM ex
