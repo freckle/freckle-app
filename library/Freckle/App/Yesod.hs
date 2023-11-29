@@ -27,9 +27,9 @@ respondQueryCanceledHeaders
   => ResponseHeaders
   -> HandlerFor site res
   -> HandlerFor site res
-respondQueryCanceledHeaders headers = flip catches [handler]
+respondQueryCanceledHeaders headers = flip catch handler
  where
-  handler = ExceptionHandler $ \ex ->
+  handler ex =
     if sqlState ex == "57014"
       then do
         logError $ "Query canceled" :# ["exception" .= displayException ex]

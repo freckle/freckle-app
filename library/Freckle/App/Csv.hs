@@ -141,10 +141,9 @@ runCsvConduit
    . MonadUnliftIO m
   => ConduitT () Void (ValidateT (Seq (CsvException err)) (ResourceT m)) r
   -> m (Either (Seq (CsvException err)) r)
-runCsvConduit = flip catches [nonUtf8] . runResourceT . runValidateT . runConduit
+runCsvConduit = flip catch nonUtf8 . runResourceT . runValidateT . runConduit
  where
-  nonUtf8 :: ExceptionHandler m (Either (Seq (CsvException err)) r)
-  nonUtf8 = ExceptionHandler $ \(_ :: Conduit.TextException) ->
+  nonUtf8 (_ :: Conduit.TextException) =
     pure $ Left $ pure CsvUnknownFileEncoding
 
 -- | Stream in 'ByteString's and parse records in constant space
