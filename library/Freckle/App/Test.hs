@@ -100,13 +100,10 @@ instance MonadMask (AppExample app) where
   uninterruptibleMask = UnliftIO.uninterruptibleMask
   generalBracket acquire release use = mask $ \unmasked -> do
     resource <- acquire
-    b <-
-      MonadThrow.catches
-        (unmasked $ use resource)
-        [ ExceptionHandler $ \e -> do
-            _ <- release resource (ExitCaseException e)
-            MonadThrow.throwM e
-        ]
+    b <- unmasked (use resource) `catch` \e -> do
+      _ <- release resource (ExitCaseException e)
+      MonadThrow.throwM e
+
     c <- release resource (ExitCaseSuccess b)
     pure (b, c)
 
