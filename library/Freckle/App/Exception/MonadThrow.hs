@@ -7,6 +7,7 @@ module Freckle.App.Exception.MonadThrow
   , catchJust
   , catches
   , try
+  , tryJust
   , checkpointCallStack
 
     -- * Miscellany
@@ -22,7 +23,7 @@ import Control.Applicative (pure)
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Data.Either (Either (..))
 import Data.Function (($), (.))
-import Data.Functor (fmap)
+import Data.Functor (fmap, (<$>))
 import Data.Maybe (Maybe, maybe)
 import Data.String (String)
 import GHC.IO.Exception (userError)
@@ -60,7 +61,8 @@ catchJust test action handler =
     maybe (Control.Monad.Catch.throwM e) handler (test e)
 
 catches
-  :: (HasCallStack, MonadCatch m)
+  :: forall m a
+   . (HasCallStack, MonadCatch m)
   => m a
   -- ^ Action to run
   -> [ExceptionHandler m a]
@@ -73,7 +75,8 @@ catches action handlers =
     (fmap (\case (ExceptionHandler f) -> Annotated.Handler f) handlers)
 
 try
-  :: Exception e
+  :: forall e m a
+   . Exception e
   => MonadCatch m
   => m a
   -- ^ Action to run
@@ -81,6 +84,18 @@ try
   -- ^ Returns 'Left' if the action throws an exception with a type
   --   of either @e@ or @'AnnotatedException' e@
 try = Annotated.try
+
+tryJust
+  :: forall e b m a
+   . Exception e
+  => MonadCatch m
+  => (e -> Maybe b)
+  -> m a
+  -- ^ Action to run
+  -> m (Either b a)
+tryJust test action =
+  withFrozenCallStack Annotated.catch (Right <$> action) $ \e ->
+    maybe (Control.Monad.Catch.throwM e) (pure . Left) (test e)
 
 -- | When dealing with a library that does not use 'AnnotatedException',
 --   apply this function to augment its exceptions with call stacks.

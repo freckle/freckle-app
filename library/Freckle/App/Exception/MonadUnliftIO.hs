@@ -7,6 +7,7 @@ module Freckle.App.Exception.MonadUnliftIO
   , catchJust
   , catches
   , try
+  , tryJust
   , checkpointCallStack
 
     -- * Miscellany
@@ -21,7 +22,7 @@ import Freckle.App.Exception.Types
 import Control.Applicative (pure)
 import Data.Either (Either (..))
 import Data.Function (($), (.))
-import Data.Functor (fmap)
+import Data.Functor (fmap, (<$>))
 import Data.Maybe (Maybe, maybe)
 import Data.String (String)
 import GHC.IO.Exception (userError)
@@ -89,6 +90,18 @@ try
   -- ^ Returns 'Left' if the action throws an exception with a type
   --   of either @e@ or @'AnnotatedException' e@
 try = Annotated.try
+
+tryJust
+  :: forall e b m a
+   . Exception e
+  => MonadUnliftIO m
+  => (e -> Maybe b)
+  -> m a
+  -- ^ Action to run
+  -> m (Either b a)
+tryJust test action =
+  withFrozenCallStack Annotated.catch (Right <$> action) $ \e ->
+    maybe (UnliftIO.Exception.throwIO e) (pure . Left) (test e)
 
 -- | When dealing with a library that does not use 'AnnotatedException',
 --   apply this function to augment its exceptions with call stacks.

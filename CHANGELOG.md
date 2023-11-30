@@ -7,9 +7,9 @@
 
 - The Prelude module is expanded to reexport from `Freckle.App.Exception.MonadUnliftIO`
   the following: `throwM`, `throwString`, `fromJustNoteM`, `catch`, `catchJust`,
-  `catches`, `try`, `impossible`, `ExceptionHandler`, `Exception`, `SomeException`.
-  These should be used in place of their relevant counterparts from packages
-  `base`, `exceptions`, `safe-exceptions`, or `unliftio`.
+  `catches`, `try`, `tryJust`, `impossible`, `ExceptionHandler`, `Exception`,
+  `SomeException`. These should be used in place of their relevant counterparts from
+  packages `base`, `exceptions`, `safe-exceptions`, or `unliftio`.
 
 - Add `Freckle.App.Random`
 
