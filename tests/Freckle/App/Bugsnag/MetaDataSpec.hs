@@ -11,7 +11,6 @@ import Freckle.App.Bugsnag
 import Freckle.App.Bugsnag.MetaData
 import Freckle.App.Stats
 import qualified Freckle.App.Stats as Stats
-import UnliftIO.Exception (SomeException)
 
 spec :: Spec
 spec = do

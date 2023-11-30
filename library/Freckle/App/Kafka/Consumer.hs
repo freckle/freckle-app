@@ -30,13 +30,7 @@ import Kafka.Consumer hiding
   , subscription
   )
 import qualified Kafka.Consumer as Kafka
-import UnliftIO.Exception
-  ( Exception (..)
-  , Handler (..)
-  , bracket
-  , catches
-  , throwIO
-  )
+import UnliftIO.Exception (bracket)
 
 data KafkaConsumerConfig = KafkaConsumerConfig
   { kafkaConsumerConfigBrokerAddresses :: NonEmpty BrokerAddress
@@ -135,15 +129,15 @@ subscription KafkaConsumerConfig {..} =
     <> extraSubscriptionProps kafkaConsumerConfigExtraSubscriptionProps
 
 withKafkaConsumer
-  :: MonadUnliftIO m
+  :: (MonadUnliftIO m, HasCallStack)
   => KafkaConsumerConfig
   -> (KafkaConsumer -> m a)
   -> m a
 withKafkaConsumer config = bracket newConsumer closeConsumer
  where
   (props, sub) = (consumerProps &&& subscription) config
-  newConsumer = either throwIO pure =<< Kafka.newConsumer props sub
-  closeConsumer = maybe (pure ()) throwIO <=< Kafka.closeConsumer
+  newConsumer = either throwM pure =<< Kafka.newConsumer props sub
+  closeConsumer = maybe (pure ()) throwM <=< Kafka.closeConsumer
 
 timeoutMs :: Timeout -> Int
 timeoutMs = \case
@@ -172,6 +166,7 @@ runConsumer
      , MonadTracer m
      , HasKafkaConsumer env
      , FromJSON a
+     , HasCallStack
      )
   => Timeout
   -> (a -> m ())
@@ -186,30 +181,32 @@ runConsumer pollTimeout onMessage =
       for_ (crValue =<< mRecord) $ \bs -> do
         a <-
           inSpan "kafka.consumer.message.decode" defaultSpanArguments $
-            either (throwIO . KafkaMessageDecodeError bs) pure $
+            either (throwM . KafkaMessageDecodeError bs) pure $
               eitherDecodeStrict bs
         inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
  where
   kTimeout = Kafka.Timeout $ timeoutMs pollTimeout
 
   handlers =
-    [ Handler $ \err ->
+    [ ExceptionHandler $ \err ->
         logError $
           "Error polling for message from Kafka"
             :# ["error" .= displayException @KafkaError err]
-    , Handler $ \err ->
+    , ExceptionHandler $ \err ->
         logError $
           "Could not decode message value"
             :# ["error" .= displayException @KafkaMessageDecodeError err]
     ]
 
 fromKafkaError
-  :: (MonadIO m, MonadLogger m) => Either KafkaError a -> m (Maybe a)
+  :: (MonadIO m, MonadLogger m, HasCallStack)
+  => Either KafkaError a
+  -> m (Maybe a)
 fromKafkaError =
   either
     ( \case
         KafkaResponseError RdKafkaRespErrTimedOut ->
           Nothing <$ logDebug "Polling timeout"
-        err -> throwIO err
+        err -> throwM err
     )
     $ pure . Just

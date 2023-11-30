@@ -6,12 +6,11 @@ module Freckle.App.Prelude
 
     -- * Commonly imported types
   , Alternative
-  , Exception
   , Generic
   , HasCallStack
+  , Hashable
   , HashMap
   , HashSet
-  , Hashable
   , Int64
   , Map
   , MonadIO
@@ -88,6 +87,20 @@ module Freckle.App.Prelude
 
     -- ** 'UTCTime'
   , getCurrentTime
+
+   -- * Exceptions
+  , throwM
+  , throwString
+  , fromJustNoteM
+  , catch
+  , catchJust
+  , catches
+  , try
+  , tryJust
+  , impossible
+  , ExceptionHandler (..)
+  , Exception (displayException)
+  , SomeException (..)
   ) where
 
 -- Use 'Prelude' as the starting point, removing common partial functions
@@ -112,7 +125,7 @@ import Prelude hiding
 -- Commonly used types (and their commonly used functions)
 
 import Control.Applicative (Alternative, liftA2, optional, (<|>))
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Primitive (PrimMonad)
 import Control.Monad.Reader (MonadReader, ReaderT)
 import Data.HashMap.Strict (HashMap)
@@ -122,13 +135,11 @@ import Data.Int (Int64)
 import Data.List.NonEmpty (NonEmpty)
 import Data.Map.Strict (Map)
 import Data.Set (Set)
+import Freckle.App.Exception.MonadUnliftIO
 import Data.Text (Text, pack, unpack)
 import Data.Time (NominalDiffTime, UTCTime, getCurrentTime)
 import Data.Vector (Vector)
 import GHC.Generics (Generic)
-import GHC.Stack (HasCallStack)
-import UnliftIO (MonadUnliftIO)
-import UnliftIO.Exception (Exception)
 
 -- Safe alternatives to prelude functions
 

@@ -71,7 +71,6 @@ import qualified Freckle.App.Stats as Stats
 import OpenTelemetry.Instrumentation.Persistent
 import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
-import UnliftIO.Exception (displayException)
 import UnliftIO.IORef
 import Yesod.Core.Types (HandlerData (..), RunHandlerEnv (..))
 

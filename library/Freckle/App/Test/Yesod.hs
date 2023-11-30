@@ -92,7 +92,6 @@ import qualified Data.Vector as V
 import Network.HTTP.Types.Header (hAccept, hAcceptLanguage, hContentType)
 import Network.Wai.Test (SResponse (..))
 import Test.Hspec.Expectations.Lifted (expectationFailure)
-import UnliftIO.Exception (throwString)
 import Web.Cookie (SetCookie)
 import Yesod.Core (RedirectUrl, Yesod)
 import Yesod.Test
@@ -217,7 +216,7 @@ addJsonHeaders = do
 -- If the status code doesn't match, a portion of the body is also
 -- printed to aid in debugging.
 statusIs
-  :: forall m site. (HasCallStack, MonadYesodExample site m) => Int -> m ()
+  :: forall m site. (MonadYesodExample site m, HasCallStack) => Int -> m ()
 statusIs = liftYesodExample . Yesod.Test.statusIs
 
 -- | Assert that the given header field's value satisfied some predicate

@@ -37,7 +37,8 @@ import Test.Hspec.Expectations.Lifted as X hiding (expectationFailure)
 import Blammo.Logging
 import Control.Lens (view)
 import Control.Monad.Base
-import Control.Monad.Catch
+import Control.Monad.Catch (ExitCase (..), MonadCatch, MonadThrow, mask)
+import qualified Control.Monad.Catch
 import qualified Control.Monad.Fail as Fail
 import Control.Monad.IO.Unlift (MonadUnliftIO (..))
 import Control.Monad.Primitive
@@ -53,6 +54,7 @@ import Freckle.App.Database
   )
 import qualified Freckle.App.Database.XRay as XRay
 import qualified Freckle.App.Dotenv as Dotenv
+import qualified Freckle.App.Exception.MonadThrow as MonadThrow
 import Freckle.App.OpenTelemetry
 import qualified Test.Hspec as Hspec hiding (expectationFailure)
 import Test.Hspec.Core.Spec (Arg, Example, SpecWith, evaluateExample)
@@ -99,9 +101,10 @@ instance MonadMask (AppExample app) where
   generalBracket acquire release use = mask $ \unmasked -> do
     resource <- acquire
     b <-
-      unmasked (use resource) `UnliftIO.catch` \e -> do
+      unmasked (use resource) `catch` \e -> do
         _ <- release resource (ExitCaseException e)
-        throwM e
+        MonadThrow.throwM e
+
     c <- release resource (ExitCaseSuccess b)
     pure (b, c)
 
@@ -175,7 +178,7 @@ withAppSql f run = withApp run . beforeSql f
 beforeSql :: HasSqlPool app => SqlPersistT IO a -> SpecWith app -> SpecWith app
 beforeSql f = beforeWith $ \app -> app <$ runSqlPool f (getSqlPool app)
 
-expectationFailure :: (HasCallStack, MonadIO m) => String -> m a
+expectationFailure :: (MonadIO m, HasCallStack) => String -> m a
 expectationFailure msg = Hspec.expectationFailure msg >> error "unreachable"
 
 pending :: MonadIO m => m ()

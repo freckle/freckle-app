@@ -53,7 +53,8 @@ module Freckle.App.OpenTelemetry
 
 import Freckle.App.Prelude
 
-import Blammo.Logging (MonadMask, withThreadContext, (.=))
+import Blammo.Logging (withThreadContext, (.=))
+import Control.Monad.Catch (MonadMask)
 import Data.Word (Word64)
 import OpenTelemetry.Context (lookupSpan)
 import OpenTelemetry.Context.ThreadLocal (getContext)

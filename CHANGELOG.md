@@ -1,4 +1,15 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.4.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.5.0...main)
+
+## [v1.10.5.0](https://github.com/freckle/freckle-app/compare/v1.10.4.0...v1.10.5.0)
+
+- Add `Freckle.App.Exception...` modules with exception utilities based on the
+  `annotated-exception` package.
+
+- The Prelude module is expanded to reexport from `Freckle.App.Exception.MonadUnliftIO`
+  the following: `throwM`, `throwString`, `fromJustNoteM`, `catch`, `catchJust`,
+  `catches`, `try`, `tryJust`, `impossible`, `ExceptionHandler`, `Exception`,
+  `SomeException`. These should be used in place of their relevant counterparts from
+  packages `base`, `exceptions`, `safe-exceptions`, or `unliftio`.
 
 - Add `Freckle.App.Random`
 

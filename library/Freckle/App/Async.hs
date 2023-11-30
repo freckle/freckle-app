@@ -14,7 +14,6 @@ import qualified Data.Aeson.Compat as KeyMap
 import UnliftIO.Async (Async)
 import qualified UnliftIO.Async as UnliftIO
 import UnliftIO.Concurrent (threadDelay)
-import UnliftIO.Exception (SomeException, displayException)
 
 -- | 'UnliftIO.Async.async' but passing the thread context along
 async :: (MonadMask m, MonadUnliftIO m) => m a -> m (Async a)

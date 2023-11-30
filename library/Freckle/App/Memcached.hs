@@ -37,7 +37,6 @@ import Freckle.App.Memcached.Client (HasMemcachedClient (..))
 import qualified Freckle.App.Memcached.Client as Memcached
 import Freckle.App.Memcached.MD5
 import Freckle.App.OpenTelemetry
-import UnliftIO.Exception (Exception (..), handleAny)
 
 class Cachable a where
   toCachable :: a -> ByteString
@@ -142,9 +141,11 @@ cachingAsCBOR =
 
 handleCachingError
   :: (MonadUnliftIO m, MonadLogger m) => a -> Text -> m a -> m a
-handleCachingError value action = handleAny $ \ex -> do
-  logCachingError action $ pack $ displayException ex
-  pure value
+handleCachingError value action = flip catch handler
+ where
+  handler (ex :: SomeException) = do
+    logCachingError action $ pack $ displayException ex
+    pure value
 
 logCachingError :: MonadLogger m => Text -> Text -> m ()
 logCachingError action message =

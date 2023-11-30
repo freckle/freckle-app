@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.10.4.0
+version:        1.10.5.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -39,6 +39,9 @@ library
       Freckle.App.Dotenv
       Freckle.App.Ecs
       Freckle.App.Env
+      Freckle.App.Exception.MonadThrow
+      Freckle.App.Exception.MonadUnliftIO
+      Freckle.App.Exception.Types
       Freckle.App.Ghci
       Freckle.App.GlobalCache
       Freckle.App.Http
@@ -108,6 +111,7 @@ library
     , Glob
     , MonadRandom
     , aeson
+    , annotated-exception
     , aws-xray-client-persistent
     , aws-xray-client-wai
     , base
@@ -294,7 +298,6 @@ test-suite spec
     , monad-validate
     , nonempty-containers
     , postgresql-simple
-    , unliftio
     , vector
     , wai
     , wai-extra

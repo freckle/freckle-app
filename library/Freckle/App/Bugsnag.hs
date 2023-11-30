@@ -33,10 +33,10 @@ import Database.PostgreSQL.Simple (SqlError (..))
 import Database.PostgreSQL.Simple.Errors
 import Freckle.App.Async (async)
 import qualified Freckle.App.Env as Env
+import qualified Freckle.App.Exception.MonadUnliftIO as Exception
 import Network.Bugsnag hiding (notifyBugsnag, notifyBugsnagWith)
 import qualified Network.Bugsnag as Bugsnag
 import Network.HTTP.Client (HttpException (..), host, method)
-import qualified UnliftIO.Exception as Exception
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
 

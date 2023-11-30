@@ -1,6 +1,7 @@
 resolver: lts-19.33
 
 extra-deps:
+  - annotated-exception-0.2.0.5
   - Blammo-1.0.2.2
   - bugsnag-1.0.0.1
   - bugsnag-wai-1.0.0.1
@@ -25,7 +26,7 @@ extra-deps:
   - hs-opentelemetry-sdk-0.0.3.6
   - thread-utils-context-0.3.0.4
   - thread-utils-finalizers-0.1.1.0
-  - github:  iand675/hs-opentelemetry
+  - github: iand675/hs-opentelemetry
     commit: 8fcdc7323cf872abfcc02ff512429b2a3d617085
     subdirs:
       - propagators/datadog

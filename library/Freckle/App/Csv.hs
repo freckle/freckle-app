@@ -64,7 +64,6 @@ import Data.Sequence.NonEmpty (NESeq)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Data.Vector as V
-import UnliftIO.Exception (handle)
 
 -- | Treat CSV header line as 1
 --
@@ -142,10 +141,10 @@ runCsvConduit
    . MonadUnliftIO m
   => ConduitT () Void (ValidateT (Seq (CsvException err)) (ResourceT m)) r
   -> m (Either (Seq (CsvException err)) r)
-runCsvConduit = handle nonUtf8 . runResourceT . runValidateT . runConduit
+runCsvConduit = flip catch nonUtf8 . runResourceT . runValidateT . runConduit
  where
-  nonUtf8 :: Conduit.TextException -> m (Either (Seq (CsvException err)) r)
-  nonUtf8 = const $ pure $ Left $ pure CsvUnknownFileEncoding
+  nonUtf8 (_ :: Conduit.TextException) =
+    pure $ Left $ pure CsvUnknownFileEncoding
 
 -- | Stream in 'ByteString's and parse records in constant space
 decodeCsv

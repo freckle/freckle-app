@@ -11,7 +11,6 @@ import Data.Char (isControl, isSpace)
 import qualified Data.Text as T
 import Database.Memcache.Types (Key)
 import OpenTelemetry.Trace (ToAttribute (..))
-import UnliftIO.Exception (throwString)
 
 newtype CacheKey = CacheKey Text
   deriving stock (Show)
@@ -43,7 +42,7 @@ cacheKey t
     Left $ "Not a valid memcached key:\n  " <> unpack t <> "\n\n" <> msg
 
 -- | Build a 'CacheKey' and throw if invalid
-cacheKeyThrow :: (HasCallStack, MonadIO m) => Text -> m CacheKey
+cacheKeyThrow :: (MonadIO m, HasCallStack) => Text -> m CacheKey
 cacheKeyThrow = either throwString pure . cacheKey
 
 fromCacheKey :: CacheKey -> Key
