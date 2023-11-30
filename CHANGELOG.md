@@ -1,6 +1,6 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.11.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.5.0...main)
 
-## [v1.11.0.0](https://github.com/freckle/freckle-app/compare/v1.10.4.0...v1.11.0.0)
+## [v1.10.5.0](https://github.com/freckle/freckle-app/compare/v1.10.4.0...v1.10.5.0)
 
 - Add `Freckle.App.Exception...` modules with exception utilities based on the
   `annotated-exception` package.
