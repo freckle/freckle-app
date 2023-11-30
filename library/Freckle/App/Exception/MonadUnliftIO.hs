@@ -4,6 +4,7 @@ module Freckle.App.Exception.MonadUnliftIO
   , fromJustNoteM
   , impossible
   , catch
+  , catchJust
   , catches
   , try
   , checkpointCallStack
@@ -19,21 +20,23 @@ import Freckle.App.Exception.Types
 
 import Control.Applicative (pure)
 import Data.Either (Either (..))
-import Data.Function ((.))
+import Data.Function (($), (.))
 import Data.Functor (fmap)
+import Data.Maybe (Maybe, fromMaybe, maybe)
 import Data.String (String)
-import System.IO (IO)
-import Data.Maybe (Maybe, maybe)
-import UnliftIO (MonadIO, MonadUnliftIO)
 import GHC.IO.Exception (userError)
+import GHC.Stack (withFrozenCallStack)
+import System.IO (IO)
+import UnliftIO (MonadIO, MonadUnliftIO)
+import qualified UnliftIO.Exception
 
 import qualified Control.Exception.Annotated.UnliftIO as Annotated
 
 -- Throws an exception, wrapped in 'AnnotatedException' which includes a call stack
-throwM :: forall e m a  . HasCallStack => MonadIO m => Exception e => e -> m a
+throwM :: forall e m a. HasCallStack => MonadIO m => Exception e => e -> m a
 throwM = Annotated.throw
 
-throwString :: forall m a  . HasCallStack => MonadIO m => String -> m a
+throwString :: forall m a. HasCallStack => MonadIO m => String -> m a
 throwString = throwM . userError
 
 fromJustNoteM :: (HasCallStack, MonadIO m) => String -> Maybe a -> m a
@@ -42,8 +45,23 @@ fromJustNoteM err = maybe (throwString err) pure
 impossible :: (HasCallStack, MonadIO m) => m a
 impossible = throwString "Impossible"
 
-catch :: forall e m a. (MonadUnliftIO m, Exception e, HasCallStack) => m a -> (e -> m a) -> m a
+catch
+  :: forall e m a
+   . (MonadUnliftIO m, Exception e, HasCallStack)
+  => m a
+  -> (e -> m a)
+  -> m a
 catch = Annotated.catch
+
+catchJust
+  :: forall e m a
+   . (HasCallStack, Exception e, MonadUnliftIO m)
+  => m a
+  -> (e -> Maybe (m a))
+  -> m a
+catchJust action f =
+  withFrozenCallStack Annotated.catch action $ \e ->
+    fromMaybe (UnliftIO.Exception.throwIO e) (f e)
 
 catches
   :: forall m a

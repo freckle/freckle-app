@@ -27,12 +27,11 @@ respondQueryCanceledHeaders
   => ResponseHeaders
   -> HandlerFor site res
   -> HandlerFor site res
-respondQueryCanceledHeaders headers = flip catch handler
+respondQueryCanceledHeaders headers = flip catchJust handler
  where
-  handler ex =
-    if sqlState ex == "57014"
-      then do
-        logError $ "Query canceled" :# ["exception" .= displayException ex]
-        Stats.increment "query_canceled"
-        sendWaiResponse $ W.responseLBS status503 headers "Query canceled"
-      else throwM ex
+  handler ex = do
+    guard (sqlState ex == "57014")
+    Just $ do
+      logError $ "Query canceled" :# ["exception" .= displayException ex]
+      Stats.increment "query_canceled"
+      sendWaiResponse $ W.responseLBS status503 headers "Query canceled"

@@ -92,7 +92,7 @@ module Freckle.App.Http
     -- error-handling specific to exceptions caused by 4XX responses:
     --
     -- @
-    -- 'handleJust' (guarded 'httpExceptionIsClientError') handle4XXError $ do
+    -- flip 'catchJust' (guard 'httpExceptionIsClientError' *> handle4XXError) $ do
     --   resp <- 'httpJson' $ 'setRequestCheckStatus' $ parseRequest_ "http://..."
     --   body <- 'getResponseBodyUnsafe' resp
     --
