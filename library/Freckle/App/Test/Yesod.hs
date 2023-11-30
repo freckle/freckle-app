@@ -216,7 +216,7 @@ addJsonHeaders = do
 -- If the status code doesn't match, a portion of the body is also
 -- printed to aid in debugging.
 statusIs
-  :: forall m site. (HasCallStack, MonadYesodExample site m) => Int -> m ()
+  :: forall m site. (MonadYesodExample site m, HasCallStack) => Int -> m ()
 statusIs = liftYesodExample . Yesod.Test.statusIs
 
 -- | Assert that the given header field's value satisfied some predicate

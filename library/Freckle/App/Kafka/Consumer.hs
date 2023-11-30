@@ -129,8 +129,7 @@ subscription KafkaConsumerConfig {..} =
     <> extraSubscriptionProps kafkaConsumerConfigExtraSubscriptionProps
 
 withKafkaConsumer
-  :: MonadUnliftIO m
-  => HasCallStack
+  :: (MonadUnliftIO m, HasCallStack)
   => KafkaConsumerConfig
   -> (KafkaConsumer -> m a)
   -> m a
@@ -167,8 +166,8 @@ runConsumer
      , MonadTracer m
      , HasKafkaConsumer env
      , FromJSON a
+     , HasCallStack
      )
-  => HasCallStack
   => Timeout
   -> (a -> m ())
   -> m ()
@@ -200,8 +199,7 @@ runConsumer pollTimeout onMessage =
     ]
 
 fromKafkaError
-  :: (MonadIO m, MonadLogger m)
-  => HasCallStack
+  :: (MonadIO m, MonadLogger m, HasCallStack)
   => Either KafkaError a
   -> m (Maybe a)
 fromKafkaError =

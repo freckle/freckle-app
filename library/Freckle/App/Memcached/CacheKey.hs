@@ -42,7 +42,7 @@ cacheKey t
     Left $ "Not a valid memcached key:\n  " <> unpack t <> "\n\n" <> msg
 
 -- | Build a 'CacheKey' and throw if invalid
-cacheKeyThrow :: (HasCallStack, MonadIO m) => Text -> m CacheKey
+cacheKeyThrow :: (MonadIO m, HasCallStack) => Text -> m CacheKey
 cacheKeyThrow = either throwString pure . cacheKey
 
 fromCacheKey :: CacheKey -> Key

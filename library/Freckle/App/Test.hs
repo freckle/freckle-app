@@ -100,9 +100,10 @@ instance MonadMask (AppExample app) where
   uninterruptibleMask = UnliftIO.uninterruptibleMask
   generalBracket acquire release use = mask $ \unmasked -> do
     resource <- acquire
-    b <- unmasked (use resource) `catch` \e -> do
-      _ <- release resource (ExitCaseException e)
-      MonadThrow.throwM e
+    b <-
+      unmasked (use resource) `catch` \e -> do
+        _ <- release resource (ExitCaseException e)
+        MonadThrow.throwM e
 
     c <- release resource (ExitCaseSuccess b)
     pure (b, c)
@@ -177,7 +178,7 @@ withAppSql f run = withApp run . beforeSql f
 beforeSql :: HasSqlPool app => SqlPersistT IO a -> SpecWith app -> SpecWith app
 beforeSql f = beforeWith $ \app -> app <$ runSqlPool f (getSqlPool app)
 
-expectationFailure :: (HasCallStack, MonadIO m) => String -> m a
+expectationFailure :: (MonadIO m, HasCallStack) => String -> m a
 expectationFailure msg = Hspec.expectationFailure msg >> error "unreachable"
 
 pending :: MonadIO m => m ()

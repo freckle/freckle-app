@@ -78,7 +78,7 @@ suppressRetryStatusError req =
   originalCheckResponse = checkResponse req
 
 checkRetriesExhausted
-  :: MonadIO m => HasCallStack => Int -> Response body -> m (Response body)
+  :: (MonadIO m, HasCallStack) => Int -> Response body -> m (Response body)
 checkRetriesExhausted retryLimit resp
   | getResponseStatus resp == status429 =
       throwM $
