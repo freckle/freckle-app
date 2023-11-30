@@ -22,7 +22,7 @@ import Control.Applicative (pure)
 import Data.Either (Either (..))
 import Data.Function (($), (.))
 import Data.Functor (fmap)
-import Data.Maybe (Maybe, fromMaybe, maybe)
+import Data.Maybe (Maybe, maybe)
 import Data.String (String)
 import GHC.IO.Exception (userError)
 import GHC.Stack (withFrozenCallStack)
@@ -54,14 +54,15 @@ catch
 catch = Annotated.catch
 
 catchJust
-  :: forall e m a
+  :: forall e b m a
    . (HasCallStack, Exception e, MonadUnliftIO m)
-  => m a
-  -> (e -> Maybe (m a))
+  => (e -> Maybe b)
   -> m a
-catchJust action f =
+  -> (b -> m a)
+  -> m a
+catchJust test action handler =
   withFrozenCallStack Annotated.catch action $ \e ->
-    fromMaybe (UnliftIO.Exception.throwIO e) (f e)
+    maybe (UnliftIO.Exception.throwIO e) handler (test e)
 
 catches
   :: forall m a

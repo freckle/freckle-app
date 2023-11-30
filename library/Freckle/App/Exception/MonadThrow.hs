@@ -23,7 +23,7 @@ import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Data.Either (Either (..))
 import Data.Function (($), (.))
 import Data.Functor (fmap)
-import Data.Maybe (Maybe, fromMaybe, maybe)
+import Data.Maybe (Maybe, maybe)
 import Data.String (String)
 import GHC.IO.Exception (userError)
 import GHC.Stack (withFrozenCallStack)
@@ -49,10 +49,15 @@ catch :: (HasCallStack, Exception e, MonadCatch m) => m a -> (e -> m a) -> m a
 catch = Annotated.catch
 
 catchJust
-  :: (HasCallStack, Exception e, MonadCatch m) => m a -> (e -> Maybe (m a)) -> m a
-catchJust action f =
+  :: forall e b m a
+   . (HasCallStack, Exception e, MonadCatch m)
+  => (e -> Maybe b)
+  -> m a
+  -> (b -> m a)
+  -> m a
+catchJust test action handler =
   withFrozenCallStack Annotated.catch action $ \e ->
-    fromMaybe (Control.Monad.Catch.throwM e) (f e)
+    maybe (Control.Monad.Catch.throwM e) handler (test e)
 
 catches
   :: (HasCallStack, MonadCatch m)
