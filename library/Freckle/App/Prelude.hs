@@ -96,6 +96,7 @@ module Freckle.App.Prelude
   , catchJust
   , catches
   , try
+  , tryJust
   , impossible
   , ExceptionHandler (..)
   , Exception (displayException)
