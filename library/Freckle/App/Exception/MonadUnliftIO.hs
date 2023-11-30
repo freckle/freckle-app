@@ -34,21 +34,22 @@ import qualified UnliftIO.Exception
 import qualified Control.Exception.Annotated.UnliftIO as Annotated
 
 -- Throws an exception, wrapped in 'AnnotatedException' which includes a call stack
-throwM :: forall e m a. HasCallStack => MonadIO m => Exception e => e -> m a
+throwM :: forall e m a. (Exception e, MonadIO m, HasCallStack) => e -> m a
 throwM = Annotated.throw
 
-throwString :: forall m a. HasCallStack => MonadIO m => String -> m a
+throwString :: forall m a. (MonadIO m, HasCallStack) => String -> m a
 throwString = throwM . userError
 
-fromJustNoteM :: (HasCallStack, MonadIO m) => String -> Maybe a -> m a
+fromJustNoteM
+  :: forall m a. (MonadIO m, HasCallStack) => String -> Maybe a -> m a
 fromJustNoteM err = maybe (throwString err) pure
 
-impossible :: (HasCallStack, MonadIO m) => m a
+impossible :: forall m a. (MonadIO m, HasCallStack) => m a
 impossible = throwString "Impossible"
 
 catch
   :: forall e m a
-   . (MonadUnliftIO m, Exception e, HasCallStack)
+   . (Exception e, MonadUnliftIO m, HasCallStack)
   => m a
   -> (e -> m a)
   -> m a
@@ -56,7 +57,7 @@ catch = withFrozenCallStack Annotated.catch
 
 catchJust
   :: forall e b m a
-   . (HasCallStack, Exception e, MonadUnliftIO m)
+   . (Exception e, MonadUnliftIO m, HasCallStack)
   => (e -> Maybe b)
   -> m a
   -> (b -> m a)
@@ -67,8 +68,7 @@ catchJust test action handler =
 
 catches
   :: forall m a
-   . MonadUnliftIO m
-  => HasCallStack
+   . (MonadUnliftIO m, HasCallStack)
   => m a
   -- ^ Action to run
   -> [ExceptionHandler m a]
@@ -83,8 +83,7 @@ catches action handlers =
 
 try
   :: forall e m a
-   . Exception e
-  => MonadUnliftIO m
+   . (Exception e, MonadUnliftIO m, HasCallStack)
   => m a
   -- ^ Action to run
   -> m (Either e a)
@@ -94,8 +93,7 @@ try = withFrozenCallStack Annotated.try
 
 tryJust
   :: forall e b m a
-   . Exception e
-  => MonadUnliftIO m
+   . (Exception e, MonadUnliftIO m, HasCallStack)
   => (e -> Maybe b)
   -> m a
   -- ^ Action to run
@@ -108,8 +106,7 @@ tryJust test action =
 --   apply this function to augment its exceptions with call stacks.
 checkpointCallStack
   :: forall m a
-   . MonadUnliftIO m
-  => HasCallStack
+   . (MonadUnliftIO m, HasCallStack)
   => m a
   -- ^ Action that might throw whatever types of exceptions
   -> m a
