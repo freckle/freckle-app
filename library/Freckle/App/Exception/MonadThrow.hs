@@ -47,7 +47,7 @@ impossible :: (HasCallStack, MonadThrow m) => m a
 impossible = throwString "Impossible"
 
 catch :: (HasCallStack, Exception e, MonadCatch m) => m a -> (e -> m a) -> m a
-catch = Annotated.catch
+catch = withFrozenCallStack Annotated.catch
 
 catchJust
   :: forall e b m a
@@ -57,7 +57,7 @@ catchJust
   -> (b -> m a)
   -> m a
 catchJust test action handler =
-  withFrozenCallStack Annotated.catch action $ \e ->
+  withFrozenCallStack $ Annotated.catch action $ \e ->
     maybe (Control.Monad.Catch.throwM e) handler (test e)
 
 catches
@@ -70,9 +70,10 @@ catches
   --   with a type of either @e@ or @'AnnotatedException' e@
   -> m a
 catches action handlers =
-  Annotated.catches
-    action
-    (fmap (\case (ExceptionHandler f) -> Annotated.Handler f) handlers)
+  withFrozenCallStack $
+    Annotated.catches
+      action
+      (fmap (\case (ExceptionHandler f) -> Annotated.Handler f) handlers)
 
 try
   :: forall e m a
@@ -83,7 +84,7 @@ try
   -> m (Either e a)
   -- ^ Returns 'Left' if the action throws an exception with a type
   --   of either @e@ or @'AnnotatedException' e@
-try = Annotated.try
+try = withFrozenCallStack Annotated.try
 
 tryJust
   :: forall e b m a
@@ -94,7 +95,7 @@ tryJust
   -- ^ Action to run
   -> m (Either b a)
 tryJust test action =
-  withFrozenCallStack Annotated.catch (Right <$> action) $ \e ->
+  withFrozenCallStack $ Annotated.catch (Right <$> action) $ \e ->
     maybe (Control.Monad.Catch.throwM e) (pure . Left) (test e)
 
 -- | When dealing with a library that does not use 'AnnotatedException',
@@ -108,4 +109,4 @@ checkpointCallStack
   -- ^ Action that only throws 'AnnotatedException',
   --   where the annotations include a call stack
 checkpointCallStack =
-  Annotated.checkpointCallStack
+  withFrozenCallStack Annotated.checkpointCallStack
