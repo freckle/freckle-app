@@ -1,43 +1,73 @@
 {
   inputs = {
-    /* The most recent stable channel */
-    stable.url =
-      "github:nixos/nixpkgs/nixos-23.05";
-
-    /* The unstable channel, the very latest of everything */
-    unstable.url =
-      "github:nixos/nixpkgs/nixos-unstable";
-
-    /* Hash obtained from https://www.nixhub.io/packages/ghc */
-    ghc927.url =
-      "github:nixos/nixpkgs/16b3b0c53b1ee8936739f8c588544e7fcec3fc60";
-
+    stable.url = "github:nixos/nixpkgs/nixos-23.11";
+    freckle.url = "git+ssh://git@github.com/freckle/flakes?dir=main";
     flake-utils.url = "github:numtide/flake-utils";
   };
   outputs = inputs:
     inputs.flake-utils.lib.eachDefaultSystem (system:
       let
-        nixpkgsArgs = {
-          inherit system;
-          config = { };
-        };
-
-        /* An attribute set containing various historic versions of the huge Nix
-        package database. This is passed as an argument to functions in the
-        ./nix directory which can then select which versions they want to pull
-        each dependency from. */
+        nixpkgsArgs = { inherit system; config = { }; };
 
         nixpkgs = {
           stable = import inputs.stable nixpkgsArgs;
-          unstable = import inputs.unstable nixpkgsArgs;
-          ghc927 = import inputs.ghc927 nixpkgsArgs;
         };
+        freckle = inputs.freckle.packages.${system};
+        freckleLib = inputs.freckle.lib.${system};
 
       in
-      {
-        devShells.default =
-          import ./nix/shell.nix { inherit nixpkgs; };
-        packages =
-          import ./nix { inherit nixpkgs; };
+      rec {
+        packages = {
+          fourmolu = freckle.fourmolu-0-13-x;
+
+          ghc = freckleLib.haskellBundle {
+            ghcVersion = "ghc-9-4-8";
+            enableHLS = true;
+            packageSelection = p: [
+              p.aeson
+              p.conduit
+              p.conduit-extra
+              p.doctest
+              p.extra
+              p.hspec
+              p.hspec-core
+              p.http-client
+              p.http-conduit
+              p.hs-opentelemetry-api
+              p.immortal
+              p.lens
+              p.lens-aeson
+              p.hw-kafka-client
+              p.persistent
+              p.persistent-postgresql
+              p.postgresql-simple
+              p.safe
+              p.unliftio
+              p.unliftio-core
+              p.yaml
+              p.yesod-core
+            ];
+          };
+        };
+
+        devShells.default = nixpkgs.stable.mkShell {
+          buildInputs = with (nixpkgs.stable); [
+            pcre
+            pcre.dev
+            postgresql
+            rdkafka
+            zlib
+            zlib.dev
+          ];
+
+          nativeBuildInputs = with (packages); [
+            fourmolu
+            ghc
+          ];
+
+          shellHook = ''
+            export STACK_YAML=stack-lts-21.25.yaml
+          '';
+        };
       });
 }
