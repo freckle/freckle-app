@@ -34,6 +34,9 @@ import Database.PostgreSQL.Simple.Errors
 import Freckle.App.Async (async)
 import qualified Freckle.App.Env as Env
 import qualified Freckle.App.Exception.MonadUnliftIO as Exception
+import Freckle.App.Exception.Types (AnnotatedException)
+import qualified Freckle.App.Exception.Types as Annotated
+import Freckle.App.Exception.Utilities (fromExceptionAnnotated)
 import Network.Bugsnag hiding (notifyBugsnag, notifyBugsnagWith)
 import qualified Network.Bugsnag as Bugsnag
 import Network.HTTP.Client (HttpException (..), host, method)
@@ -164,6 +167,19 @@ envParseBugsnagSettings =
 
 globalBeforeNotify :: BeforeNotify
 globalBeforeNotify =
-  updateEventFromOriginalException asSqlError
-    <> updateEventFromOriginalException asHttpException
+  updateEventFromOriginalExceptionAnnotated (asSqlError . Annotated.exception)
+    <> updateEventFromOriginalExceptionAnnotated
+      (asHttpException . Annotated.exception)
     <> maskErrorHelpers
+
+-- | Like 'updateEventFromOriginalException', but can handle either
+--   @e@ or @'AnnotatedException' e@
+updateEventFromOriginalExceptionAnnotated
+  :: forall e
+   . Exception.Exception e
+  => (AnnotatedException e -> BeforeNotify)
+  -> BeforeNotify
+updateEventFromOriginalExceptionAnnotated f =
+  beforeNotify $ \e event ->
+    let bn = maybe mempty f $ fromExceptionAnnotated @e $ Exception.toException e
+    in  runBeforeNotify bn e event

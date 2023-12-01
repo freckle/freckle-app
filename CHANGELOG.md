@@ -1,5 +1,9 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.5.1...main)
 
+- Add `Freckle.App.Exception.Utilties` module, containing `fromExceptionAnnotated`
+- The Bugsnag settings created by `envParseBugsnagSettings` now has a `BeforeNotify`
+  that appropriately handles `AnnotatedException`.
+
 ## [v1.10.5.1](https://github.com/freckle/freckle-app/compare/v1.10.5.0...v1.10.5.1)
 
 - Fix decoding bug when caching non-UTF-8 values

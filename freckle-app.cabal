@@ -42,6 +42,7 @@ library
       Freckle.App.Exception.MonadThrow
       Freckle.App.Exception.MonadUnliftIO
       Freckle.App.Exception.Types
+      Freckle.App.Exception.Utilities
       Freckle.App.Ghci
       Freckle.App.GlobalCache
       Freckle.App.Http
