@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.5.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.5.1...main)
+
+## [v1.10.5.1](https://github.com/freckle/freckle-app/compare/v1.10.5.0...v1.10.5.1)
+
+- Fix decoding bug when caching non-UTF-8 values
 
 ## [v1.10.5.0](https://github.com/freckle/freckle-app/compare/v1.10.4.0...v1.10.5.0)
 
