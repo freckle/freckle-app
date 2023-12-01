@@ -90,7 +90,7 @@ set k v expiration = traced $ with $ \case
         { Trace.attributes =
             HashMap.fromList
               [ ("key", Trace.toAttribute k)
-              , ("value", Trace.toAttribute $ decodeUtf8 v)
+              , ("value", byteStringToAttribute v)
               , ("expiration", Trace.toAttribute expiration)
               ]
         }
