@@ -49,12 +49,20 @@ module Freckle.App.OpenTelemetry
     -- ** 'Tracer'
   , makeTracer
   , tracerOptions
+
+    -- ** Utilities
+  , byteStringToAttribute
+  , attributeValueLimit
   ) where
 
 import Freckle.App.Prelude
 
 import Blammo.Logging (withThreadContext, (.=))
 import Control.Monad.Catch (MonadMask)
+import Data.ByteString (ByteString)
+import qualified Data.Text as T
+import Data.Text.Encoding (decodeUtf8With)
+import Data.Text.Encoding.Error (lenientDecode)
 import Data.Word (Word64)
 import OpenTelemetry.Context (lookupSpan)
 import OpenTelemetry.Context.ThreadLocal (getContext)
@@ -123,3 +131,29 @@ withTraceIdContext :: (MonadIO m, MonadMask m) => m a -> m a
 withTraceIdContext f = do
   mTraceId <- getCurrentTraceIdAsDatadog
   maybe f (\traceId -> withThreadContext ["trace_id" .= traceId] f) mTraceId
+
+-- | Convert a 'ByteString' to an 'Attribute' safely
+--
+-- - Decodes it as UTF-8 leniently,
+-- - Truncates to fit within 'attributeValueLimit'
+byteStringToAttribute :: ByteString -> Attribute
+byteStringToAttribute =
+  toAttribute
+    . truncateText attributeValueLimit
+    . decodeUtf8With lenientDecode
+
+-- | Character limit for 'Attribute' values
+--
+-- OTel the spec doesn't specify a limit, but says that SDKs should decide
+-- some limit. It's not clear what the Haskell SDK does, if anything. New
+-- Relic applies a limit of 4095 characters on all metrics it handles,
+-- including those coming from OTel. Seems reasonable enough.
+--
+-- <https://docs.newrelic.com/docs/more-integrations/open-source-telemetry-integrations/opentelemetry/best-practices/opentelemetry-best-practices-attributes/>
+attributeValueLimit :: Int
+attributeValueLimit = 4095
+
+truncateText :: Int -> Text -> Text
+truncateText l t
+  | T.length t <= l = t
+  | otherwise = T.take (l - 3) t <> "..."
