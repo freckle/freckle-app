@@ -1,6 +1,10 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.5.1...main)
 
 - Add `Freckle.App.Exception.Utilties` module, containing `fromExceptionAnnotated`
+
+- Add `Freckle.App.Bugsnag.CallStack`, containing `callStackToBugsnag` for turning
+  GHC call stack information into a Bugsnag trace
+
 - The Bugsnag settings created by `envParseBugsnagSettings` now has a `BeforeNotify`
   that appropriately handles `AnnotatedException`.
 

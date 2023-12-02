@@ -32,6 +32,7 @@ library
       Freckle.App.Aeson
       Freckle.App.Async
       Freckle.App.Bugsnag
+      Freckle.App.Bugsnag.CallStack
       Freckle.App.Bugsnag.MetaData
       Freckle.App.Csv
       Freckle.App.Database
