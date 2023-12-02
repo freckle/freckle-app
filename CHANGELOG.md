@@ -1,17 +1,9 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.5.1...main)
 
-- Add `Freckle.App.Exception.Utilties` module, containing `fromExceptionAnnotated`
-
-- Add `Freckle.App.Bugsnag.CallStack`, containing `callStackToBugsnag` for turning
-  GHC call stack information into a Bugsnag trace
-
 - The Bugsnag settings created by `envParseBugsnagSettings` now has a `BeforeNotify`
-  that appropriately handles `AnnotatedException`:
-
-  - Its special handling of `SqlError` and `HttpException` now works in the presence
-    of annotations.
-  - If a `CallStack` annotation is present, that will be used as the stacktrace for
-    events reported to Bugsnag.
+  that appropriately handles `AnnotatedException`. Its special handling of `SqlError`
+  and `HttpException` now works in the presence of annotations. If a `CallStack`
+  annotation is present, that will be used as the stacktrace for reported events.
 
 ## [v1.10.5.1](https://github.com/freckle/freckle-app/compare/v1.10.5.0...v1.10.5.1)
 

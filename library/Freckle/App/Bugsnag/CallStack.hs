@@ -1,14 +1,35 @@
 module Freckle.App.Bugsnag.CallStack
-  ( callStackToBugsnag
+  ( callStackBeforeNotify
+  , attachCallStack
+  , callStackToBugsnag
+  , callSiteToBugsnag
+
+    -- * Re-exports
+  , CallStack
+  , SrcLoc
+  , StackFrame
   ) where
 
-import Data.Bugsnag (StackFrame (..), defaultStackFrame)
-import Data.Function (($), (.))
-import Data.Functor (fmap)
-import Data.Maybe (Maybe (..))
-import Data.String (String)
+import Freckle.App.Prelude
+
+import Control.Exception.Annotated (annotatedExceptionCallStack)
+import Data.Bugsnag (Exception (..), StackFrame (..), defaultStackFrame)
 import qualified Data.Text as T
+import Freckle.App.Exception.Types (AnnotatedException)
 import GHC.Stack (CallStack, SrcLoc (..), getCallStack)
+import Network.Bugsnag (BeforeNotify, updateExceptions)
+import Network.Bugsnag.BeforeNotify (updateEventFromOriginalException)
+
+-- | Copy the call stack from an AnnotatedException
+callStackBeforeNotify :: BeforeNotify
+callStackBeforeNotify =
+  updateEventFromOriginalException @(AnnotatedException SomeException) $ \e ->
+    foldMap attachCallStack $ annotatedExceptionCallStack e
+
+attachCallStack :: CallStack -> BeforeNotify
+attachCallStack cs =
+  updateExceptions $ \ex ->
+    ex {exception_stacktrace = callStackToBugsnag cs}
 
 -- | Converts a GHC call stack to a list of stack frames suitable
 --   for use as the stacktrace in a Bugsnag exception

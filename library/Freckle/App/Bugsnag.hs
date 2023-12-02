@@ -11,9 +11,6 @@ module Freckle.App.Bugsnag
     -- * Loading settings
   , envParseBugsnagSettings
 
-    -- * Exported for testing
-  , sqlErrorGroupingHash
-
     -- * Re-exports
   , MonadReader
   , runReaderT
@@ -22,28 +19,21 @@ module Freckle.App.Bugsnag
 
 import Freckle.App.Prelude
 
-import Control.Exception.Annotated (annotatedExceptionCallStack)
+import qualified Control.Exception as Base (Exception)
 import Control.Lens (Lens', view)
 import Control.Monad.Catch (MonadMask)
 import Control.Monad.Reader (runReaderT)
-import Data.Bugsnag
-import Data.Bugsnag.Settings
-import qualified Data.ByteString.Char8 as BS8
+import Data.Bugsnag (App (..), Event (..), defaultApp)
+import Data.Bugsnag.Settings (Settings (..), defaultSettings)
 import Data.List (isInfixOf)
-import Database.PostgreSQL.Simple (SqlError (..))
-import Database.PostgreSQL.Simple.Errors
 import Freckle.App.Async (async)
-import Freckle.App.Bugsnag.CallStack (callStackToBugsnag)
+import Freckle.App.Bugsnag.CallStack (callStackBeforeNotify)
+import Freckle.App.Bugsnag.HttpException (httpExceptionBeforeNotify)
+import Freckle.App.Bugsnag.SqlError (sqlErrorBeforeNotify)
 import qualified Freckle.App.Env as Env
-import qualified Freckle.App.Exception.MonadUnliftIO as Exception
-import Freckle.App.Exception.Types (AnnotatedException)
-import qualified Freckle.App.Exception.Types as Annotated
-import Freckle.App.Exception.Utilities (fromExceptionAnnotated)
-import GHC.Stack (CallStack)
 import Network.Bugsnag hiding (notifyBugsnag, notifyBugsnagWith)
 import qualified Network.Bugsnag as Bugsnag
-import Network.HTTP.Client (HttpException (..), host, method)
-import Yesod.Core.Lens
+import Yesod.Core.Lens (envL, siteL)
 import Yesod.Core.Types (HandlerData)
 
 class HasAppVersion env where
@@ -78,7 +68,7 @@ notifyBugsnag
      , MonadUnliftIO m
      , MonadReader env m
      , HasBugsnagSettings env
-     , Exception.Exception e
+     , Base.Exception e
      )
   => e
   -> m ()
@@ -90,7 +80,7 @@ notifyBugsnagWith
      , MonadUnliftIO m
      , MonadReader env m
      , HasBugsnagSettings env
-     , Exception.Exception e
+     , Base.Exception e
      )
   => BeforeNotify
   -> e
@@ -99,71 +89,12 @@ notifyBugsnagWith f ex = do
   settings <- view bugsnagSettingsL
   void $ async $ liftIO $ Bugsnag.notifyBugsnagWith f settings ex
 
-asSqlError :: SqlError -> BeforeNotify
-asSqlError err@SqlError {..} = toSqlGrouping <> toSqlException
- where
-  toSqlGrouping = maybe mempty setGroupingHash (sqlErrorGroupingHash err)
-  toSqlException = updateExceptions $ \ex ->
-    ex
-      { exception_errorClass = decodeUtf8 $ "SqlError-" <> sqlState
-      , exception_message =
-          Just $
-            decodeUtf8 $
-              sqlErrorMsg
-                <> ": "
-                <> sqlErrorDetail
-                <> " ("
-                <> sqlErrorHint
-                <> ")"
-      }
-
-sqlErrorGroupingHash :: SqlError -> Maybe Text
-sqlErrorGroupingHash err = do
-  violation <- constraintViolation err
-  decodeUtf8 <$> case violation of
-    ForeignKeyViolation table constraint -> pure $ table <> "." <> constraint
-    UniqueViolation constraint -> pure constraint
-    _ -> Nothing
-
-asHttpException :: HttpException -> BeforeNotify
-asHttpException (HttpExceptionRequest req content) =
-  setGroupingHash (decodeUtf8 $ host req) <> update
- where
-  update = updateExceptions $ \ex ->
-    ex
-      { exception_errorClass = "HttpExceptionRequest"
-      , exception_message =
-          Just
-            . decodeUtf8
-            $ method req
-              <> " request to "
-              <> host req
-              <> " failed: "
-              <> BS8.pack (show content)
-      }
-asHttpException (InvalidUrlException url msg) = updateExceptions $ \ex ->
-  ex
-    { exception_errorClass = "InvalidUrlException"
-    , exception_message = Just $ pack $ url <> " is invalid: " <> msg
-    }
-
-asAnnotatedWithCallStack :: AnnotatedException SomeException -> BeforeNotify
-asAnnotatedWithCallStack =
-  foldMap attachCallStack . annotatedExceptionCallStack
-
-attachCallStack :: CallStack -> BeforeNotify
-attachCallStack cs =
-  updateExceptions $ \ex ->
-    ex {exception_stacktrace = callStackToBugsnag cs}
-
 -- | Set StackFrame's InProject to @'False'@ for Error Helper modules
 --
 -- We want exceptions grouped by the the first stack-frame that is /not/ them.
 -- Marking them as not in-project does this, with little downside.
 maskErrorHelpers :: BeforeNotify
 maskErrorHelpers = setStackFramesInProjectByFile (`isInfixOf` "Exceptions")
-
--- brittany-disable-next-binding
 
 envParseBugsnagSettings :: Env.Parser Env.Error Settings
 envParseBugsnagSettings =
@@ -179,20 +110,7 @@ envParseBugsnagSettings =
 
 globalBeforeNotify :: BeforeNotify
 globalBeforeNotify =
-  updateEventFromOriginalExceptionAnnotated asAnnotatedWithCallStack
-    <> updateEventFromOriginalExceptionAnnotated (asSqlError . Annotated.exception)
-    <> updateEventFromOriginalExceptionAnnotated
-      (asHttpException . Annotated.exception)
+  callStackBeforeNotify
+    <> sqlErrorBeforeNotify
+    <> httpExceptionBeforeNotify
     <> maskErrorHelpers
-
--- | Like 'updateEventFromOriginalException', but can handle either
---   @e@ or @'AnnotatedException' e@
-updateEventFromOriginalExceptionAnnotated
-  :: forall e
-   . Exception.Exception e
-  => (AnnotatedException e -> BeforeNotify)
-  -> BeforeNotify
-updateEventFromOriginalExceptionAnnotated f =
-  beforeNotify $ \e event ->
-    let bn = maybe mempty f $ fromExceptionAnnotated @e $ Exception.toException e
-    in  runBeforeNotify bn e event
