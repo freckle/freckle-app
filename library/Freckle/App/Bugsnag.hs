@@ -22,6 +22,7 @@ module Freckle.App.Bugsnag
 
 import Freckle.App.Prelude
 
+import Control.Exception.Annotated (annotatedExceptionCallStack)
 import Control.Lens (Lens', view)
 import Control.Monad.Catch (MonadMask)
 import Control.Monad.Reader (runReaderT)
@@ -32,11 +33,13 @@ import Data.List (isInfixOf)
 import Database.PostgreSQL.Simple (SqlError (..))
 import Database.PostgreSQL.Simple.Errors
 import Freckle.App.Async (async)
+import Freckle.App.Bugsnag.CallStack (callStackToBugsnag)
 import qualified Freckle.App.Env as Env
 import qualified Freckle.App.Exception.MonadUnliftIO as Exception
 import Freckle.App.Exception.Types (AnnotatedException)
 import qualified Freckle.App.Exception.Types as Annotated
 import Freckle.App.Exception.Utilities (fromExceptionAnnotated)
+import GHC.Stack (CallStack)
 import Network.Bugsnag hiding (notifyBugsnag, notifyBugsnagWith)
 import qualified Network.Bugsnag as Bugsnag
 import Network.HTTP.Client (HttpException (..), host, method)
@@ -144,6 +147,15 @@ asHttpException (InvalidUrlException url msg) = updateExceptions $ \ex ->
     , exception_message = Just $ pack $ url <> " is invalid: " <> msg
     }
 
+asAnnotatedWithCallStack :: AnnotatedException SomeException -> BeforeNotify
+asAnnotatedWithCallStack =
+  foldMap attachCallStack . annotatedExceptionCallStack
+
+attachCallStack :: CallStack -> BeforeNotify
+attachCallStack cs =
+  updateExceptions $ \ex ->
+    ex {exception_stacktrace = callStackToBugsnag cs}
+
 -- | Set StackFrame's InProject to @'False'@ for Error Helper modules
 --
 -- We want exceptions grouped by the the first stack-frame that is /not/ them.
@@ -167,7 +179,8 @@ envParseBugsnagSettings =
 
 globalBeforeNotify :: BeforeNotify
 globalBeforeNotify =
-  updateEventFromOriginalExceptionAnnotated (asSqlError . Annotated.exception)
+  updateEventFromOriginalExceptionAnnotated asAnnotatedWithCallStack
+    <> updateEventFromOriginalExceptionAnnotated (asSqlError . Annotated.exception)
     <> updateEventFromOriginalExceptionAnnotated
       (asHttpException . Annotated.exception)
     <> maskErrorHelpers
