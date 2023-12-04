@@ -1,6 +1,6 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.6.0...main)
 
-## [v1.10.5.1](https://github.com/freckle/freckle-app/compare/v1.10.5.0...v1.10.6.0)
+## [v1.10.6.0](https://github.com/freckle/freckle-app/compare/v1.10.5.0...v1.10.6.0)
 
 - The Bugsnag settings created by `envParseBugsnagSettings` now has a `BeforeNotify`
   that appropriately handles `AnnotatedException`. Its special handling of `SqlError`
