@@ -1,8 +1,8 @@
 module Freckle.App.Bugsnag.CallStack
   ( callStackBeforeNotify
   , attachCallStack
-  , callStackToBugsnag
-  , callSiteToBugsnag
+  , callStackToStackFrames
+  , callSiteToStackFrame
 
     -- * Re-exports
   , CallStack
@@ -29,15 +29,15 @@ callStackBeforeNotify =
 attachCallStack :: CallStack -> BeforeNotify
 attachCallStack cs =
   updateExceptions $ \ex ->
-    ex {exception_stacktrace = callStackToBugsnag cs}
+    ex {exception_stacktrace = callStackToStackFrames cs}
 
 -- | Converts a GHC call stack to a list of stack frames suitable
 --   for use as the stacktrace in a Bugsnag exception
-callStackToBugsnag :: CallStack -> [StackFrame]
-callStackToBugsnag = fmap callSiteToBugsnag . getCallStack
+callStackToStackFrames :: CallStack -> [StackFrame]
+callStackToStackFrames = fmap callSiteToStackFrame . getCallStack
 
-callSiteToBugsnag :: (String, SrcLoc) -> StackFrame
-callSiteToBugsnag (str, loc) =
+callSiteToStackFrame :: (String, SrcLoc) -> StackFrame
+callSiteToStackFrame (str, loc) =
   defaultStackFrame
     { stackFrame_method = T.pack str
     , stackFrame_file = T.pack $ srcLocFile loc
