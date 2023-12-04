@@ -27,9 +27,8 @@ import Network.Bugsnag
 
 sqlErrorBeforeNotify :: BeforeNotify
 sqlErrorBeforeNotify =
-  updateEventFromOriginalException @SqlError asSqlError
-    <> updateEventFromOriginalException @(AnnotatedException SqlError)
-      (asSqlError . Annotated.exception)
+  updateEventFromOriginalException @(AnnotatedException SqlError)
+    (asSqlError . Annotated.exception)
 
 asSqlError :: SqlError -> BeforeNotify
 asSqlError err@SqlError {..} = toSqlGrouping <> toSqlException

@@ -21,9 +21,8 @@ import Network.HTTP.Client (HttpException (..), host, method)
 
 httpExceptionBeforeNotify :: BeforeNotify
 httpExceptionBeforeNotify =
-  updateEventFromOriginalException @HttpException asHttpException
-    <> updateEventFromOriginalException @(AnnotatedException HttpException)
-      (asHttpException . Annotated.exception)
+  updateEventFromOriginalException @(AnnotatedException HttpException)
+    (asHttpException . Annotated.exception)
 
 asHttpException :: HttpException -> BeforeNotify
 asHttpException (HttpExceptionRequest req content) =
