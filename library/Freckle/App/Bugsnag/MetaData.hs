@@ -17,11 +17,11 @@ import Freckle.App.Prelude
 
 import Blammo.Logging (Pair, myThreadContext)
 import Control.Lens (Lens', lens, to, view, (<>~))
-import Data.Aeson
+import Data.Aeson (KeyValue ((.=)), Object, Value (..), object)
 import Data.Bugsnag (Event (..))
 import Data.String (fromString)
 import qualified Freckle.App.Aeson as Aeson
-import Freckle.App.Bugsnag
+import Freckle.App.Bugsnag (BeforeNotify, updateEvent)
 import Freckle.App.Stats (HasStatsClient (..), tagsL)
 
 newtype MetaData = MetaData
