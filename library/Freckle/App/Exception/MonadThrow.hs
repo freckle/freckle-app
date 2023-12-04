@@ -8,6 +8,8 @@ module Freckle.App.Exception.MonadThrow
   , catches
   , try
   , tryJust
+  , checkpoint
+  , checkpointMany
   , checkpointCallStack
 
     -- * Miscellany
@@ -20,6 +22,7 @@ module Freckle.App.Exception.MonadThrow
 import Freckle.App.Exception.Types
 
 import Control.Applicative (pure)
+import Control.Exception.Annotated (checkpoint, checkpointMany)
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Data.Either (Either (..))
 import Data.Function (($), (.))

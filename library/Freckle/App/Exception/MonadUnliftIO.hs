@@ -8,6 +8,8 @@ module Freckle.App.Exception.MonadUnliftIO
   , catches
   , try
   , tryJust
+  , checkpoint
+  , checkpointMany
   , checkpointCallStack
 
     -- * Miscellany
@@ -20,6 +22,7 @@ module Freckle.App.Exception.MonadUnliftIO
 import Freckle.App.Exception.Types
 
 import Control.Applicative (pure)
+import Control.Exception.Annotated.UnliftIO (checkpoint, checkpointMany)
 import Data.Either (Either (..))
 import Data.Function (($), (.))
 import Data.Functor (fmap, (<$>))
@@ -29,9 +32,9 @@ import GHC.IO.Exception (userError)
 import GHC.Stack (withFrozenCallStack)
 import System.IO (IO)
 import UnliftIO (MonadIO, MonadUnliftIO)
-import qualified UnliftIO.Exception
 
 import qualified Control.Exception.Annotated.UnliftIO as Annotated
+import qualified UnliftIO.Exception
 
 -- Throws an exception, wrapped in 'AnnotatedException' which includes a call stack
 throwM :: forall e m a. (Exception e, MonadIO m, HasCallStack) => e -> m a

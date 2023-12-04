@@ -1,4 +1,13 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.6.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.7.0...main)
+
+## [v1.10.7.0](https://github.com/freckle/freckle-app/compare/v1.10.6.0...v1.10.7.0)
+
+- Any Bugsnag `MetaData` in an `AnnotatedException`'s annotations will now be copied
+  into the Bugsnag event. This means you can use the `checkpoint` function to add
+  context to an action, and this information will be visible in the bug report for
+  any unhandled exception thrown from that action.
+
+  e.g. `checkpoint (metaData "tab name" ["key" .= _value]) $ _action`
 
 ## [v1.10.6.0](https://github.com/freckle/freckle-app/compare/v1.10.5.0...v1.10.6.0)
 
