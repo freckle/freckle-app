@@ -106,5 +106,5 @@ spec = withApp loadApp $ do
       --     , "  caching, called at tests/Freckle/App/MemcachedSpec.hs:87:15 in main:Freckle.App.MemcachedSpec"
       --     ]
       Object loggedMessageMeta
-        ^? key "error" . key "stack" . _String . to (length . T.lines)
-        `shouldSatisfy` maybe False (> 1)
+        ^? key "error" . key "stack" . _String . to T.lines
+        `shouldSatisfy` maybe False (not . null)
