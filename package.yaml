@@ -167,9 +167,10 @@ tests:
       - lens
       - lens-aeson
       - memcache
-      - postgresql-simple
       - monad-validate
       - nonempty-containers
+      - postgresql-simple
+      - text
       - vector
       - wai
       - wai-extra
