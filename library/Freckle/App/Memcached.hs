@@ -83,6 +83,7 @@ caching
      , MonadReader env m
      , HasMemcachedClient env
      , Cachable a
+     , HasCallStack
      )
   => CacheKey
   -> CacheTTL
@@ -97,6 +98,7 @@ cachingAs
      , MonadTracer m
      , MonadReader env m
      , HasMemcachedClient env
+     , HasCallStack
      )
   => (ByteString -> Either String a)
   -> (a -> ByteString)
@@ -125,6 +127,7 @@ cachingAsJSON
      , HasMemcachedClient env
      , FromJSON a
      , ToJSON a
+     , HasCallStack
      )
   => CacheKey
   -> CacheTTL
@@ -140,6 +143,7 @@ cachingAsCBOR
      , MonadReader env m
      , HasMemcachedClient env
      , Serialise a
+     , HasCallStack
      )
   => CacheKey
   -> CacheTTL
