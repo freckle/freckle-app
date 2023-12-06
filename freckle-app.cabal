@@ -42,6 +42,7 @@ library
       Freckle.App.Dotenv
       Freckle.App.Ecs
       Freckle.App.Env
+      Freckle.App.Exception
       Freckle.App.Exception.MonadThrow
       Freckle.App.Exception.MonadUnliftIO
       Freckle.App.Exception.Types
@@ -155,6 +156,7 @@ library
     , lens
     , memcache
     , monad-control
+    , monad-logger-aeson
     , monad-validate
     , mtl
     , network-uri

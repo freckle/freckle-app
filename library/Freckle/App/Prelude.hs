@@ -135,7 +135,7 @@ import Data.Int (Int64)
 import Data.List.NonEmpty (NonEmpty)
 import Data.Map.Strict (Map)
 import Data.Set (Set)
-import Freckle.App.Exception.MonadUnliftIO
+import Freckle.App.Exception
 import Data.Text (Text, pack, unpack)
 import Data.Time (NominalDiffTime, UTCTime, getCurrentTime)
 import Data.Vector (Vector)
