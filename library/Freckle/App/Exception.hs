@@ -16,7 +16,7 @@ import qualified Control.Exception.Annotated as AnnotatedException
 import Control.Monad.Logger.Aeson (Message (..), (.=))
 import Data.Aeson (object)
 import Freckle.App.Exception.MonadUnliftIO
-import GHC.Exception (prettyCallStackLines)
+import GHC.Exception (prettyCallStack)
 
 -- | Construct a log 'Message' for any @'AnnotatedException' exception@
 --
@@ -27,7 +27,7 @@ import GHC.Exception (prettyCallStackLines)
 -- @
 -- Exception
 --    error.message: {displayException on underlying exception}
---    error.stack: [{pretty stack trace, if available}]
+--    error.stack: {prettyCallStack from the annotation, if available}
 -- @
 --
 -- You are expected to call this with a @TypeApplication@, for example:
@@ -49,5 +49,5 @@ annotatedExceptionMessageFrom f ann = case f ex of
   errorObject =
     object
       [ "message" .= displayException ex
-      , "stack" .= (prettyCallStackLines <$> annotatedExceptionCallStack ann)
+      , "stack" .= (prettyCallStack <$> annotatedExceptionCallStack ann)
       ]

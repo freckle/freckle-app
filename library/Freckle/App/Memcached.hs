@@ -31,6 +31,7 @@ import Data.ByteString (ByteString)
 import qualified Data.ByteString.Lazy as BSL
 import Data.Text.Encoding (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
+import Freckle.App.Exception (annotatedExceptionMessage)
 import Freckle.App.Memcached.CacheKey
 import Freckle.App.Memcached.CacheTTL
 import Freckle.App.Memcached.Client (HasMemcachedClient (..))
@@ -54,10 +55,25 @@ instance Cachable Text where
   toCachable = encodeUtf8
   fromCachable = Right . decodeUtf8With lenientDecode
 
-data Cached a
-  = CacheFound a
-  | CacheNotFound
-  | CacheError Text
+data CachingError
+  = CacheGetError SomeException
+  | CacheSetError SomeException
+  | CacheDeserializeError String
+  deriving stock (Show)
+
+instance Exception CachingError where
+  displayException = \case
+    CacheGetError ex -> "Unable to get: " <> displayException ex
+    CacheSetError ex -> "Unable to set: " <> displayException ex
+    CacheDeserializeError err -> "Unable to deserialize: " <> err
+
+-- | Log any thrown 'CachingError's as warnings and return the given value
+warnOnCachingError :: (MonadUnliftIO m, MonadLogger m) => a -> m a -> m a
+warnOnCachingError val =
+  flip catch $
+    (val <$)
+      . logWarnNS "caching"
+      . annotatedExceptionMessage @CachingError
 
 -- | Memoize an action using Memcached and 'Cachable'
 caching
@@ -89,21 +105,16 @@ cachingAs
   -> m a
   -> m a
 cachingAs from to key ttl f = do
-  result <-
-    fmap (maybe CacheNotFound (either (CacheError . pack) CacheFound . from)) $
-      handleCachingError Nothing "getting" $
-        Memcached.get key
-
-  case result of
-    CacheFound a -> pure a
-    CacheNotFound -> store
-    CacheError e -> do
-      logCachingError "deserializing" e
-      store
+  mCached <- warnOnCachingError Nothing $ traverse cacheDeserialize =<< cacheGet
+  maybe store pure mCached
  where
   store = do
     a <- f
-    a <$ handleCachingError () "setting" (Memcached.set key (to a) ttl)
+    a <$ warnOnCachingError () (cacheSet a)
+
+  cacheGet = flip catch (throwM . CacheGetError) $ Memcached.get key
+  cacheSet a = flip catch (throwM . CacheSetError) $ Memcached.set key (to a) ttl
+  cacheDeserialize = either (throwM . CacheDeserializeError) pure . from
 
 -- | Like 'caching', but de/serializing the value as JSON
 cachingAsJSON
@@ -138,21 +149,6 @@ cachingAsCBOR =
   cachingAs
     (first show . deserialiseOrFail . BSL.fromStrict)
     (BSL.toStrict . serialise)
-
-handleCachingError
-  :: (MonadUnliftIO m, MonadLogger m) => a -> Text -> m a -> m a
-handleCachingError value action = flip catch handler
- where
-  handler (ex :: SomeException) = do
-    logCachingError action $ pack $ displayException ex
-    pure value
-
-logCachingError :: MonadLogger m => Text -> Text -> m ()
-logCachingError action message =
-  logErrorNS "caching" $
-    "Error "
-      <> action
-      :# ["action" .= action, "message" .= message]
 
 encodeStrict :: ToJSON a => a -> ByteString
 encodeStrict = BSL.toStrict . encode
