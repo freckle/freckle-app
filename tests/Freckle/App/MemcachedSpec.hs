@@ -8,10 +8,11 @@ import Freckle.App.Test
 
 import Blammo.Logging.LogSettings
 import Blammo.Logging.Logger
-import Control.Lens (lens, (^?))
+import Control.Lens (lens, to, (^?))
 import Data.Aeson (Value (..))
 import Data.Aeson.Lens
 import qualified Data.List.NonEmpty as NE
+import qualified Data.Text as T
 import qualified Freckle.App.Env as Env
 import Freckle.App.Memcached
 import Freckle.App.Memcached.Client (MemcachedClient, withMemcachedClient)
@@ -94,3 +95,16 @@ spec = withApp loadApp $ do
       let Just LoggedMessage {..} = NE.last <$> NE.nonEmpty msgs
       Object loggedMessageMeta ^? key "error" . key "message" . _String
         `shouldBe` Just "Unable to deserialize: invalid: \"Broken\""
+
+      -- This assertion is far too brittle, but can be useful to un-comment if
+      -- you intend to work on this logic specifically
+      -- Object loggedMessageMeta ^? key "error" . key "stack" . _String . to T.lines
+      --   `shouldBe` Just
+      --     [ "CallStack (from HasCallStack):"
+      --     , "  throwM, called at library/Freckle/App/Memcached.hs:121:30 in freckle-app-1.10.8.0-1ebuZKUCQVI9sAWTLATGfO:Freckle.App.Memcached"
+      --     , "  cachingAs, called at library/Freckle/App/Memcached.hs:92:11 in freckle-app-1.10.8.0-1ebuZKUCQVI9sAWTLATGfO:Freckle.App.Memcached"
+      --     , "  caching, called at tests/Freckle/App/MemcachedSpec.hs:87:15 in main:Freckle.App.MemcachedSpec"
+      --     ]
+      Object loggedMessageMeta
+        ^? key "error" . key "stack" . _String . to (length . T.lines)
+        `shouldSatisfy` maybe False (> 1)
