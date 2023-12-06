@@ -8,9 +8,9 @@ import Freckle.App.Test
 
 import Blammo.Logging.LogSettings
 import Blammo.Logging.Logger
-import Control.Lens (lens)
+import Control.Lens (lens, (^?))
 import Data.Aeson (Value (..))
-import Data.Aeson.Compat as KeyMap
+import Data.Aeson.Lens
 import qualified Data.List.NonEmpty as NE
 import qualified Freckle.App.Env as Env
 import Freckle.App.Memcached
@@ -92,9 +92,5 @@ spec = withApp loadApp $ do
 
       msgs <- getLoggedMessagesLenient
       let Just LoggedMessage {..} = NE.last <$> NE.nonEmpty msgs
-      loggedMessageText `shouldBe` "Error deserializing"
-      loggedMessageMeta
-        `shouldBe` KeyMap.fromList
-          [ ("action", String "deserializing")
-          , ("message", String "invalid: \"Broken\"")
-          ]
+      Object loggedMessageMeta ^? key "error" . key "message" . _String
+        `shouldBe` Just "Unable to deserialize: invalid: \"Broken\""
