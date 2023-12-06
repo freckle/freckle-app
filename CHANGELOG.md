@@ -1,5 +1,9 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.7.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.8.0...main)
 
+## [v1.10.8.0](https://github.com/freckle/freckle-app/compare/v1.10.7.0...v1.10.8.0)
+
+- Reduce logged caching errors to `WARN` and add `error.stack` to them
+- Add `Freckle.App.Exception` with `annotatedExceptionMessage` helpers
 - Use `withFrozenCallStack` on more exception utilities to reduce noise in call stacks
 
 ## [v1.10.7.0](https://github.com/freckle/freckle-app/compare/v1.10.6.0...v1.10.7.0)
