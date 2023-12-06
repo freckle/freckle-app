@@ -5,6 +5,8 @@
 - Reduce logged caching errors to `WARN` and add `error.stack` to them
 - Add `Freckle.App.Exception` with `annotatedExceptionMessage` helpers
 - Use `withFrozenCallStack` on more exception utilities to reduce noise in call stacks
+- Add `MonadUnliftIO` superclass to `MonadSqlBackend`
+- Use `checkpointCallStack` in `liftSql` to help grab more stack frames
 
 ## [v1.10.7.0](https://github.com/freckle/freckle-app/compare/v1.10.6.0...v1.10.7.0)
 
