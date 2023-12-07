@@ -10,6 +10,10 @@
 #
 set -euo pipefail
 
+rm ./dist-newstyle/*-docs.tar.gz
+
+cabal update
+
 cabal build
 
 cabal haddock \
