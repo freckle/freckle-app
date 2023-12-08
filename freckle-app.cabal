@@ -35,6 +35,7 @@ library
       Freckle.App.Bugsnag.CallStack
       Freckle.App.Bugsnag.ErrorClass
       Freckle.App.Bugsnag.HttpException
+      Freckle.App.Bugsnag.Message
       Freckle.App.Bugsnag.MetaData
       Freckle.App.Bugsnag.SqlError
       Freckle.App.Csv

@@ -2,10 +2,16 @@
 
 ## [v1.11.0.0](https://github.com/freckle/freckle-app/compare/v1.11.0.0...v1.11.1.0)
 
-- Add `Freckle.App.Bugsnag.ErrorClass`
-- "AnnotatedException" no longer appears in the error class for Bugsnag exceptions;
+- Add modules `Freckle.App.Bugsnag.ErrorClass` and `Freckle.App.Bugsnag.Message`
+
+- "AnnotatedException" no longer appears in the error class for a Bugsnag exception;
   if the exception is `AnnotatedException e`, the annotated exception is unwrapped
-  to display only the name of the original exception without the annotation wrapper.
+  to display only the name of the original `e` without the annotation wrapper.
+
+- The annotations of an `AnnotatedException` are no longer included in the message
+  of a Bugsnag exception; if the exception is `AnnotatedException e`, the annotated
+  exception is unwrapped to display only the output from applying `displayException`
+  on the underlying exception `e`.
 
 ## [v1.11.0.0](https://github.com/freckle/freckle-app/compare/v1.10.8.0...v1.11.0.0)
 
