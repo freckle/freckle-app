@@ -28,6 +28,7 @@ import Data.Bugsnag.Settings (Settings (..), defaultSettings)
 import Data.List (isInfixOf)
 import Freckle.App.Async (async)
 import Freckle.App.Bugsnag.CallStack (callStackBeforeNotify)
+import Freckle.App.Bugsnag.ErrorClass (errorClassBeforeNotify)
 import Freckle.App.Bugsnag.HttpException (httpExceptionBeforeNotify)
 import Freckle.App.Bugsnag.MetaData (metaDataAnnotationsBeforeNotify)
 import Freckle.App.Bugsnag.SqlError (sqlErrorBeforeNotify)
@@ -116,3 +117,4 @@ globalBeforeNotify =
     <> sqlErrorBeforeNotify
     <> httpExceptionBeforeNotify
     <> maskErrorHelpers
+    <> errorClassBeforeNotify

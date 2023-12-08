@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.11.0.0
+version:        1.11.1.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -33,6 +33,7 @@ library
       Freckle.App.Async
       Freckle.App.Bugsnag
       Freckle.App.Bugsnag.CallStack
+      Freckle.App.Bugsnag.ErrorClass
       Freckle.App.Bugsnag.HttpException
       Freckle.App.Bugsnag.MetaData
       Freckle.App.Bugsnag.SqlError

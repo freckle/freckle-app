@@ -1,4 +1,11 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.11.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.11.1.0...main)
+
+## [v1.11.0.0](https://github.com/freckle/freckle-app/compare/v1.11.0.0...v1.11.1.0)
+
+- Add `Freckle.App.Bugsnag.ErrorClass`
+- "AnnotatedException" no longer appears in the error class for Bugsnag exceptions;
+  if the exception is `AnnotatedException e`, the annotated exception is unwrapped
+  to display only the name of the original exception without the annotation wrapper.
 
 ## [v1.11.0.0](https://github.com/freckle/freckle-app/compare/v1.10.8.0...v1.11.0.0)
 
