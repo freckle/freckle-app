@@ -1,4 +1,13 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.11.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.12.0.0...main)
+
+## [v1.12.0.0](https://github.com/freckle/freckle-app/compare/v1.11.0.0...v1.12.0.0)
+
+- Support `bugsnag-1.1` which now handles `AnnotatedException` well, so we've now
+  removed some `BeforeNotify` handlers from this package that are no longer needed.
+- Removed `Freckle.App.Bugsnag.MetaData.metaDataAnnotationsBeforeNotify`; what it
+  did is now redundant to the default behavior of the `bugsnag` library.
+- Removed module `Freckle.App.Bugsnag.CallStack`; what it provided is now redundant
+  to the default behavior of the `bugsnag` library.
 
 ## [v1.11.0.0](https://github.com/freckle/freckle-app/compare/v1.10.8.0...v1.11.0.0)
 
