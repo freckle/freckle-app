@@ -75,7 +75,6 @@ library:
     - annotated-exception
     - aws-xray-client-persistent
     - aws-xray-client-wai
-    - base
     - bcp47
     - bugsnag
     - bytestring

@@ -1,6 +1,6 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.36.0.
+-- This file has been generated from package.yaml by hpack version 0.35.2.
 --
 -- see: https://github.com/sol/hpack
 
@@ -117,7 +117,7 @@ library
     , annotated-exception
     , aws-xray-client-persistent
     , aws-xray-client-wai
-    , base
+    , base <5
     , bcp47
     , bugsnag
     , bytestring
