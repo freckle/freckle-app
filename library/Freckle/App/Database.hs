@@ -56,6 +56,7 @@ import Database.Persist.Postgresql
   , runSqlPoolWithExtensibleHooks
   )
 import Database.Persist.SqlBackend.SqlPoolHooks
+import Database.Persist.SqlBackend.Internal.SqlPoolHooks(SqlPoolHooks(..))
 import Database.PostgreSQL.Simple
   ( Connection
   , Only (..)
@@ -137,11 +138,41 @@ runDB
   -> m a
 runDB action = do
   pool <- asks getSqlPool
-  Stats.withGauge Stats.dbConnections $
+  gauge <- Stats.lookupGauge Stats.dbConnections
+  let
+    hooks = setAlterBackend defaultSqlPoolHooks $ wrapSqlBackend mempty
+    -- Setting the SqlPoolHooks for metrics collection:
+    -- You may be wondering if this code contains a "double-decrement" bug, because
+    -- perhaps when an exception occurs, both runAfter and runOnException are
+    -- executed. The documentation isn't terribly clear to me on this point, but
+    -- notice:
+    -- https://hackage.haskell.org/package/persistent-2.14.6.0/docs/Database-Persist-SqlBackend-Internal-SqlPoolHooks.html#t:SqlPoolHooks
+    -- especially this part regarding runOnException:
+    -- > This action is performed when an exception is received. The exception is
+    -- > provided as a convenience - it is rethrown once this cleanup function is
+    -- > complete.
+    -- Given that the exception is rethrown, then then typical runAfter handler
+    -- is very likely to not run. Looking at the code to validate:
+    -- https://hackage.haskell.org/package/persistent-2.14.6.0/docs/src/Database.Persist.Sql.Run.html#runSqlPoolWithExtensibleHooks
+    -- we can see that this is indeed how the code operates today -- the
+    -- exception is rethrown, and there aren't any other spots where other code
+    -- might catch the exception that we need to worry about, so in the case of
+    -- an exception, runAfter would not be executed.
+    -- So, this appears to be the intended interpretation.
+    hooks' = hooks
+      { runBefore = \conn mi -> do
+          Stats.incGauge gauge
+          runBefore hooks conn mi
+      , runAfter = \conn mi -> do
+          Stats.decGauge gauge
+          runAfter hooks conn mi
+      , runOnException = \conn mi e -> do
+          Stats.decGauge gauge
+          runOnException hooks conn mi e
+      }
+  Stats.withGauge Stats.dbEnqueuedAndProcessing $
     inSpan "runDB" clientSpanArguments $
-      runSqlPoolWithExtensibleHooks action pool Nothing $
-        setAlterBackend defaultSqlPoolHooks $
-          wrapSqlBackend mempty
+      runSqlPoolWithExtensibleHooks action pool Nothing hooks'
 
 runDBSimple
   :: (HasSqlPool app, MonadUnliftIO m, MonadReader app m)
