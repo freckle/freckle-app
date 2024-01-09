@@ -65,6 +65,7 @@ import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import Freckle.App.Env (Timeout (..))
 import qualified Freckle.App.Env as Env
+import Freckle.App.Exception.MonadUnliftIO
 import Freckle.App.OpenTelemetry
 import Freckle.App.Stats (HasStatsClient)
 import qualified Freckle.App.Stats as Stats
@@ -76,15 +77,15 @@ import Yesod.Core.Types (HandlerData (..), RunHandlerEnv (..))
 
 -- | A monadic context in which a SQL backend is available
 --   for running database queries
-class MonadIO m => MonadSqlBackend m where
+class MonadUnliftIO m => MonadSqlBackend m where
   getSqlBackendM :: m SqlBackend
 
-instance (HasSqlBackend r, MonadIO m) => MonadSqlBackend (ReaderT r m) where
+instance (HasSqlBackend r, MonadUnliftIO m) => MonadSqlBackend (ReaderT r m) where
   getSqlBackendM = asks getSqlBackend
 
 -- | Generalize from 'SqlPersistT' to 'MonadSqlBackend'
-liftSql :: MonadSqlBackend m => ReaderT SqlBackend m a -> m a
-liftSql (ReaderT f) = getSqlBackendM >>= f
+liftSql :: (MonadSqlBackend m, HasCallStack) => ReaderT SqlBackend m a -> m a
+liftSql (ReaderT f) = checkpointCallStack $ getSqlBackendM >>= f
 
 -- | The constraint @'MonadSqlTx' db m@ indicates that @m@ is a monadic
 --   context that can run @db@ actions, usually as a SQL transaction.

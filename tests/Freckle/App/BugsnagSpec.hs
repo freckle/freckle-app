@@ -6,7 +6,7 @@ import Freckle.App.Prelude
 
 import Data.ByteString (ByteString)
 import Database.PostgreSQL.Simple (ExecStatus (..), SqlError (..))
-import Freckle.App.Bugsnag
+import Freckle.App.Bugsnag.SqlError (sqlErrorGroupingHash)
 import Test.Hspec
 
 spec :: Spec

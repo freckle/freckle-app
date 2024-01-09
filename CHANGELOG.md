@@ -1,4 +1,40 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.10.5.1...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.12.0.0...main)
+
+## [v1.12.0.0](https://github.com/freckle/freckle-app/compare/v1.11.0.0...v1.12.0.0)
+
+- Support `bugsnag-1.1` which now handles `AnnotatedException` well, so we've now
+  removed some `BeforeNotify` handlers from this package that are no longer needed.
+- Removed `Freckle.App.Bugsnag.MetaData.metaDataAnnotationsBeforeNotify`; what it
+  did is now redundant to the default behavior of the `bugsnag` library.
+- Removed module `Freckle.App.Bugsnag.CallStack`; what it provided is now redundant
+  to the default behavior of the `bugsnag` library.
+
+## [v1.11.0.0](https://github.com/freckle/freckle-app/compare/v1.10.8.0...v1.11.0.0)
+
+- Add `MonadUnliftIO` superclass to `MonadSqlBackend`
+- Use `checkpointCallStack` in `liftSql` to help grab more stack frames
+
+## [v1.10.8.0](https://github.com/freckle/freckle-app/compare/v1.10.7.0...v1.10.8.0)
+
+- Reduce logged caching errors to `WARN` and add `error.stack` to them
+- Add `Freckle.App.Exception` with `annotatedExceptionMessage` helpers
+- Use `withFrozenCallStack` on more exception utilities to reduce noise in call stacks
+
+## [v1.10.7.0](https://github.com/freckle/freckle-app/compare/v1.10.6.0...v1.10.7.0)
+
+- Any Bugsnag `MetaData` in an `AnnotatedException`'s annotations will now be copied
+  into the Bugsnag event. This means you can use the `checkpoint` function to add
+  context to an action, and this information will be visible in the bug report for
+  any unhandled exception thrown from that action.
+
+  e.g. `checkpoint (metaData "tab name" ["key" .= _value]) $ _action`
+
+## [v1.10.6.0](https://github.com/freckle/freckle-app/compare/v1.10.5.0...v1.10.6.0)
+
+- The Bugsnag settings created by `envParseBugsnagSettings` now has a `BeforeNotify`
+  that appropriately handles `AnnotatedException`. Its special handling of `SqlError`
+  and `HttpException` now works in the presence of annotations. If a `CallStack`
+  annotation is present, that will be used as the stacktrace for reported events.
 
 ## [v1.10.5.1](https://github.com/freckle/freckle-app/compare/v1.10.5.0...v1.10.5.1)
 

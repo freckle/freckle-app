@@ -1,5 +1,5 @@
 name: freckle-app
-version: 1.10.5.1
+version: 1.12.0.0
 maintainer: Freckle Education
 category: Utils
 github: freckle/freckle-app
@@ -75,7 +75,6 @@ library:
     - annotated-exception
     - aws-xray-client-persistent
     - aws-xray-client-wai
-    - base
     - bcp47
     - bugsnag
     - bytestring
@@ -113,6 +112,7 @@ library:
     - lens
     - memcache
     - monad-control
+    - monad-logger-aeson
     - monad-validate
     - mtl
     - network-uri
@@ -166,9 +166,10 @@ tests:
       - lens
       - lens-aeson
       - memcache
-      - postgresql-simple
       - monad-validate
       - nonempty-containers
+      - postgresql-simple
+      - text
       - vector
       - wai
       - wai-extra

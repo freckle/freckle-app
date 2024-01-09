@@ -7,7 +7,7 @@ extra-deps:
   - aws-xray-client-persistent-0.1.0.5
   - aws-xray-client-wai-0.1.0.2
   - bcp47-0.2.0.6
-  - bugsnag-1.0.0.0
+  - bugsnag-1.1.0.0
   - bugsnag-wai-1.0.0.0
   - context-0.2.0.1
   - envparse-0.5.0
@@ -20,6 +20,7 @@ extra-deps:
   - monad-validate-1.2.0.1
   - resource-pool-0.4.0.0
   - scientist-0.0.0.0
+  - ua-parser-0.7.7.0
 
   # For OTel
   - hs-opentelemetry-api-0.1.0.0

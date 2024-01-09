@@ -8,6 +8,8 @@ module Freckle.App.Exception.MonadThrow
   , catches
   , try
   , tryJust
+  , checkpoint
+  , checkpointMany
   , checkpointCallStack
 
     -- * Miscellany
@@ -20,6 +22,7 @@ module Freckle.App.Exception.MonadThrow
 import Freckle.App.Exception.Types
 
 import Control.Applicative (pure)
+import Control.Exception.Annotated (checkpoint, checkpointMany)
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Data.Either (Either (..))
 import Data.Function (($), (.))
@@ -34,17 +37,17 @@ import qualified Control.Monad.Catch
 
 -- Throws an exception, wrapped in 'AnnotatedException' which includes a call stack
 throwM :: forall e m a. (Exception e, MonadThrow m, HasCallStack) => e -> m a
-throwM = Annotated.throw
+throwM e = withFrozenCallStack $ Annotated.throw e
 
 throwString :: forall m a. (MonadThrow m, HasCallStack) => String -> m a
-throwString = throwM . userError
+throwString s = withFrozenCallStack $ throwM $ userError s
 
 fromJustNoteM
   :: forall m a. (MonadThrow m, HasCallStack) => String -> Maybe a -> m a
-fromJustNoteM err = maybe (throwString err) pure
+fromJustNoteM err = withFrozenCallStack $ maybe (throwString err) pure
 
 impossible :: forall m a. (MonadThrow m, HasCallStack) => m a
-impossible = throwString "Impossible"
+impossible = withFrozenCallStack $ throwString "Impossible"
 
 catch
   :: forall e m a
@@ -52,7 +55,7 @@ catch
   => m a
   -> (e -> m a)
   -> m a
-catch = withFrozenCallStack Annotated.catch
+catch action handler = withFrozenCallStack $ Annotated.catch action handler
 
 catchJust
   :: forall e b m a
@@ -88,7 +91,7 @@ try
   -> m (Either e a)
   -- ^ Returns 'Left' if the action throws an exception with a type
   --   of either @e@ or @'AnnotatedException' e@
-try = withFrozenCallStack Annotated.try
+try action = withFrozenCallStack $ Annotated.try action
 
 tryJust
   :: forall e b m a
@@ -111,5 +114,5 @@ checkpointCallStack
   -> m a
   -- ^ Action that only throws 'AnnotatedException',
   --   where the annotations include a call stack
-checkpointCallStack =
-  withFrozenCallStack Annotated.checkpointCallStack
+checkpointCallStack action =
+  withFrozenCallStack $ Annotated.checkpointCallStack action

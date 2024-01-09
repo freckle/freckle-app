@@ -147,7 +147,7 @@ bodyContains = liftYesodExample . Yesod.Test.bodyContains
 
 -- | Clears the current cookies
 testClearCookies :: forall m site. MonadYesodExample site m => m ()
-testClearCookies = liftYesodExample $ Yesod.Test.testClearCookies
+testClearCookies = liftYesodExample Yesod.Test.testClearCookies
 
 -- | Deletes the cookie of the given name
 testDeleteCookie
