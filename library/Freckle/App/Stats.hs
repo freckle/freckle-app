@@ -17,7 +17,11 @@ module Freckle.App.Stats
   , Gauges
   , Gauge
   , dbConnections
+  , dbEnqueuedAndProcessing
   , withGauge
+  , lookupGauge
+  , incGauge
+  , decGauge
 
     -- * Reporting
   , tagged
@@ -93,9 +97,11 @@ envParseStatsSettings =
       ]
       <> tags
 
-newtype Gauges = Gauges
+data Gauges = Gauges
   { gdbConnections :: Gauge
   -- ^ Track open db connections
+  , gdbEnqueuedAndProcessing :: Gauge
+  -- ^ Track enqueued and processing queries
   }
 
 data Gauge = Gauge
@@ -105,6 +111,9 @@ data Gauge = Gauge
 
 dbConnections :: Gauges -> Gauge
 dbConnections = gdbConnections
+
+dbEnqueuedAndProcessing :: Gauges -> Gauge
+dbEnqueuedAndProcessing = gdbEnqueuedAndProcessing
 
 data StatsClient = StatsClient
   { scClient :: Datadog.StatsClient
@@ -135,6 +144,7 @@ withStatsClient
 withStatsClient StatsSettings {..} f = do
   gauges <- liftIO $ do
     gdbConnections <- Gauge "active_pool_connections" <$> EKG.new
+    gdbEnqueuedAndProcessing <- Gauge "queries_enqueued_and_processing" <$> EKG.new
     pure Gauges {..}
 
   if amsEnabled
@@ -165,20 +175,41 @@ withGauge
   -> m a
   -> m a
 withGauge getGauge f = do
-  gauge' <- view $ statsClientL . gaugesL . to getGauge
+  gauge' <- lookupGauge getGauge
   bracket_ (inc gauge') (dec gauge') f
- where
-  inc g@Gauge {..} = do
-    liftIO $ EKG.inc gGauge
-    publish g
+  where
+    inc = incGauge
+    dec = decGauge
 
-  dec g@Gauge {..} = do
-    liftIO $ EKG.dec gGauge
-    publish g
+lookupGauge
+  :: (MonadReader app m, HasStatsClient app)
+  => (Gauges -> Gauge)
+  -> m Gauge
+lookupGauge accessor = view $ statsClientL . gaugesL . to accessor
 
-  publish Gauge {..} = do
-    n <- liftIO $ EKG.read gGauge
-    gauge gName $ fromIntegral n
+incGauge
+  :: (MonadReader app m, HasStatsClient app, MonadUnliftIO m)
+  => Gauge
+  -> m ()
+incGauge g@Gauge {..} = do
+  liftIO $ EKG.inc gGauge
+  publishGauge g
+
+decGauge
+  :: (MonadReader app m, HasStatsClient app, MonadUnliftIO m)
+  => Gauge
+  -> m ()
+decGauge g@Gauge {..} = do
+  liftIO $ EKG.dec gGauge
+  publishGauge g
+
+publishGauge
+  :: (MonadReader app m, HasStatsClient app, MonadUnliftIO m)
+  => Gauge
+  -> m ()
+publishGauge Gauge {..} = do
+  n <- liftIO $ EKG.read gGauge
+  gauge gName $ fromIntegral n
 
 -- | Include the given tags on all metrics emitted from a block
 tagged
