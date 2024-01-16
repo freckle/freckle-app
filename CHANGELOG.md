@@ -1,4 +1,9 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.12.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.12.0.1...main)
+
+## [v1.12.0.1](https://github.com/freckle/freckle-app/compare/v1.12.0.0...v1.12.0.1)
+
+- Change how `active_pool_connections` metric is calculated.
+- Add `queries_enqueued_and_processing` metric.
 
 ## [v1.12.0.0](https://github.com/freckle/freckle-app/compare/v1.11.0.0...v1.12.0.0)
 
