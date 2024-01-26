@@ -1,4 +1,4 @@
-resolver: nightly-2023-09-25
+resolver: nightly-2024-03-07
 extra-deps:
   - bcp47-0.2.0.6
   - bugsnag-1.1.0.0
@@ -22,3 +22,65 @@ extra-deps:
 
   # Will need to manage the breaking changes in 5.0
   - hw-kafka-client-4.0.3
+
+  # These are me just adding what Stack told me to
+  - Cabal-3.10.2.1
+  - Cabal-syntax-3.10.2.0
+  - binary-0.8.9.1
+  - buffer-builder-0.2.4.8
+  - bytebuild-0.3.15.0
+  - bytehash-0.1.1.1
+  - byteslice-0.2.13.0
+  - bytestring-0.11.5.3
+  - contiguous-0.6.4.0
+  - country-0.2.4.1
+  - datadog-0.3.0.0
+  - deepseq-1.4.8.1
+  - ekg-core-0.1.1.7
+  - parsec-3.1.17.0
+  - pretty-1.1.3.6
+  - primitive-0.9.0.0
+  - primitive-unlifted-2.1.0.0
+  - process-1.6.18.0
+  - proto-lens-0.7.1.4
+  - proto-lens-runtime-0.7.0.5
+  - run-st-0.1.3.2
+  - time-1.12.2
+
+  # This I had to hold back because buffer-builder's imports are wrong for 2.1
+  - text-2.0
+
+  # This I had to hold back because 2.8.5.0 doesn't build
+  - unix-2.8.4.0
+
+  # These I had to futz with to get everyone happy with unix-2.8.4.0
+  - containers-0.6.8
+  - directory-1.3.8.1
+  - filepath-1.4.200.1
+
+allow-newer: true
+allow-newer-deps:
+  - Cabal
+  - Cabal-syntax
+  - aeson
+  - binary
+  - country
+  - deepseq
+  - ekg-core
+  - entropy
+  - http-api-data
+  - http2
+  - indexed-traversable
+  - integer-conversion
+  - lens
+  - lens-family
+  - lens-family-core
+  - parsec
+  - postgresql-simple
+  - proto-lens
+  - proto-lens-runtime
+  - scientific
+  - semialign
+  - text
+  - time
+  - witherable
