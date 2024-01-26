@@ -2,6 +2,7 @@
 module Freckle.App.Yesod
   ( respondQueryCanceled
   , respondQueryCanceledHeaders
+  , logExceptionsMiddleware
   ) where
 
 import Freckle.App.Prelude
@@ -11,12 +12,15 @@ import Database.PostgreSQL.Simple (SqlError (..))
 import Freckle.App.Exception
   ( AnnotatedException (..)
   , annotatedExceptionMessageFrom
+  , fromException
+  , withException
   )
 import Freckle.App.Stats (HasStatsClient)
 import qualified Freckle.App.Stats as Stats
 import Network.HTTP.Types (ResponseHeaders, status503)
 import qualified Network.Wai as W
 import Yesod.Core.Handler (HandlerFor, sendWaiResponse)
+import Yesod.Core.Types (HandlerContents)
 
 -- | Catch 'SqlError' when queries are canceled due to timeout and respond 503
 --
@@ -36,6 +40,16 @@ respondQueryCanceledHeaders headers handler =
     logErrorNS "yesod" $ annotatedExceptionMessageFrom (const "Query canceled") ex
     Stats.increment "query_canceled"
     sendWaiResponse $ W.responseLBS status503 headers "Query canceled"
+
+logExceptionsMiddleware :: (MonadUnliftIO m, MonadLogger m) => m a -> m a
+logExceptionsMiddleware f =
+  f `withException` \ex ->
+    unless (isHandlerContents ex) $
+      logErrorNS "yesod" $
+        annotatedExceptionMessageFrom (const "Handler exception") ex
+
+isHandlerContents :: AnnotatedException SomeException -> Bool
+isHandlerContents = isJust . fromException @HandlerContents . exception
 
 queryCanceled
   :: AnnotatedException SqlError -> Maybe (AnnotatedException SqlError)
