@@ -20,6 +20,7 @@ import qualified Data.Text as T
 import qualified Env
 import Freckle.App.Async
 import Freckle.App.Env
+import Freckle.App.Exception (annotatedExceptionMessageFrom)
 import Freckle.App.Kafka.Producer (envKafkaBrokerAddresses)
 import Freckle.App.OpenTelemetry
 import Kafka.Consumer hiding
@@ -188,14 +189,14 @@ runConsumer pollTimeout onMessage =
   kTimeout = Kafka.Timeout $ timeoutMs pollTimeout
 
   handlers =
-    [ ExceptionHandler $ \err ->
-        logError $
-          "Error polling for message from Kafka"
-            :# ["error" .= displayException @KafkaError err]
-    , ExceptionHandler $ \err ->
-        logError $
-          "Could not decode message value"
-            :# ["error" .= displayException @KafkaMessageDecodeError err]
+    [ ExceptionHandler $
+        logErrorNS "kafka"
+          . annotatedExceptionMessageFrom @KafkaError
+            (const "Error polling for message from Kafka")
+    , ExceptionHandler $
+        logErrorNS "kafka"
+          . annotatedExceptionMessageFrom @KafkaMessageDecodeError
+            (const "Could not decode message value")
     ]
 
 fromKafkaError
