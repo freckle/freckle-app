@@ -8,6 +8,7 @@ module Freckle.App.Exception.MonadThrow
   , catches
   , try
   , tryJust
+  , withException
   , checkpoint
   , checkpointMany
   , checkpointCallStack
@@ -23,6 +24,7 @@ import Freckle.App.Exception.Types
 
 import Control.Applicative (pure)
 import Control.Exception.Annotated (checkpoint, checkpointMany)
+import Control.Monad (void)
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Data.Either (Either (..))
 import Data.Function (($), (.))
@@ -103,6 +105,17 @@ tryJust
 tryJust test action =
   withFrozenCallStack $ Annotated.catch (Right <$> action) $ \e ->
     maybe (Control.Monad.Catch.throwM e) (pure . Left) (test e)
+
+withException
+  :: forall e a m b
+   . (Exception e, MonadCatch m, HasCallStack)
+  => m a
+  -> (e -> m b)
+  -> m a
+withException action onException =
+  withFrozenCallStack $ Annotated.catch action $ \e -> do
+    void $ onException e
+    Control.Monad.Catch.throwM e
 
 -- | When dealing with a library that does not use 'AnnotatedException',
 --   apply this function to augment its exceptions with call stacks.
