@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE CPP #-}
 
 -- | Stream, parse, and validate CSVs
 --
@@ -196,7 +197,15 @@ instance ToJSON a => ToJSON (CsvException a) where
   toEncoding = csvExceptionPairs (pairs . mconcat) toEncoding
 
 csvExceptionPairs
-  :: KeyValue kv => ([kv] -> r) -> (a -> r) -> CsvException a -> r
+#if MIN_VERSION_aeson(2,2,0)
+  :: KeyValue e kv
+#else
+  :: KeyValue kv
+#endif
+  => ([kv] -> r)
+  -> (a -> r)
+  -> CsvException a
+  -> r
 csvExceptionPairs done extend = \case
   CsvMissingColumn column ->
     done
