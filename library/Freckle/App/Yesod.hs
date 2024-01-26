@@ -8,6 +8,10 @@ import Freckle.App.Prelude
 
 import Blammo.Logging
 import Database.PostgreSQL.Simple (SqlError (..))
+import Freckle.App.Exception
+  ( AnnotatedException (..)
+  , annotatedExceptionMessageFrom
+  )
 import Freckle.App.Stats (HasStatsClient)
 import qualified Freckle.App.Stats as Stats
 import Network.HTTP.Types (ResponseHeaders, status503)
@@ -29,9 +33,10 @@ respondQueryCanceledHeaders
   -> HandlerFor site res
 respondQueryCanceledHeaders headers handler =
   catchJust queryCanceled handler $ \ex -> do
-    logError $ "Query canceled" :# ["exception" .= displayException ex]
+    logErrorNS "yesod" $ annotatedExceptionMessageFrom (const "Query canceled") ex
     Stats.increment "query_canceled"
     sendWaiResponse $ W.responseLBS status503 headers "Query canceled"
 
-queryCanceled :: SqlError -> Maybe SqlError
-queryCanceled ex = ex <$ guard (sqlState ex == "57014")
+queryCanceled
+  :: AnnotatedException SqlError -> Maybe (AnnotatedException SqlError)
+queryCanceled ex = ex <$ guard (sqlState (exception ex) == "57014")
