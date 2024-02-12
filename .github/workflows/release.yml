@@ -5,17 +5,29 @@ on:
     branches: main
 
 jobs:
-  release:
+  tag:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
+      - uses: actions/checkout@v4
       - id: tag
         uses: freckle/haskell-tag-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
 
-      - if: steps.tag.outputs.tag
-        uses: freckle/stack-upload-action@v2
+  release:
+    needs: tag
+    if: needs.tag.outputs.tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install --assume-yes --no-install-recommends librdkafka-dev
+      - uses: freckle/stack-action@v5
+        with:
+          test: false
+          stack-build-arguments: --haddock --haddock-for-hackage
+
+      - run: |
+          stack --stack-yaml stack-lts-18.28.yaml upload --pvp-bounds lower .
+          stack upload --documentation .
         env:
-          HACKAGE_API_KEY: ${{ secrets.HACKAGE_UPLOAD_API_KEY }}
+          HACKAGE_KEY: ${{ secrets.HACKAGE_UPLOAD_API_KEY }}
