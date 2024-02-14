@@ -5,6 +5,13 @@
 
 packages:
 - completed:
+    hackage: annotated-exception-0.2.0.5@sha256:d8d343f556e67ac38c8b5c8b9a1d551dd8005f6d28fe9c2accd606c5f9070e24,1785
+    pantry-tree:
+      sha256: 7e8f91d0899402a6ede549e6a47b169fdc9bb9877f4fe52471c2f43ef05eb167
+      size: 776
+  original:
+    hackage: annotated-exception-0.2.0.5
+- completed:
     hackage: Blammo-1.0.2.2@sha256:ffa21d4b43dbd871e9b97918412581bc7b34d95b1fe0ce058afe925d44b641e1,4166
     pantry-tree:
       sha256: 45eadbef288fdfd99dcf8090d65a05ad7d6126103397e88d13210fb2aff2b4c2
@@ -40,12 +47,12 @@ packages:
   original:
     hackage: bcp47-0.2.0.6
 - completed:
-    hackage: bugsnag-1.0.0.0@sha256:0b5454bbf8527fc6e7f6fdbd4f21e0c1ce0387b690ee59175470d648f49a8cdc,4434
+    hackage: bugsnag-1.1.0.0@sha256:9723af13b09e7aed7e5855fcbcd7f89a904df80324f21d32480f01aabd8d035b,4565
     pantry-tree:
-      sha256: 219c6dc7aa9f1f24c2d80994cff0a60c039480da48e04368fb7ea34283164f86
-      size: 1527
+      sha256: 1c23c30271a5b136a165f817c6db2828b95b5d37399fe052f02d80049a464575
+      size: 1664
   original:
-    hackage: bugsnag-1.0.0.0
+    hackage: bugsnag-1.1.0.0
 - completed:
     hackage: bugsnag-wai-1.0.0.0@sha256:ddac5c4fd3cf6b810de6d97459a7e84e4adedb31e01def748f16949e2768dccb,3196
     pantry-tree:
@@ -130,6 +137,13 @@ packages:
       size: 1061
   original:
     hackage: scientist-0.0.0.0
+- completed:
+    hackage: ua-parser-0.7.7.0@sha256:c79b871fe57109afe988c965fddfeaf21892afbe38b5644519d898768f742cb2,2651
+    pantry-tree:
+      sha256: 6f38f1c6aa6130c23847be326ab50bbdb257bd347c74b61ffc95981facf692f9
+      size: 1390
+  original:
+    hackage: ua-parser-0.7.7.0
 - completed:
     hackage: hs-opentelemetry-api-0.1.0.0@sha256:8af01d0c81dd1af6d3293b105178fd9bfa0057c9eb88ac24d3c440bff660abe3,3705
     pantry-tree:
