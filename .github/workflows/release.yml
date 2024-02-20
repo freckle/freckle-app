@@ -17,7 +17,12 @@ jobs:
   release:
     needs: tag
     if: needs.tag.outputs.tag
+
     runs-on: ubuntu-latest
+
+    env:
+      HACKAGE_KEY: ${{ secrets.HACKAGE_UPLOAD_API_KEY }}
+
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt-get install --assume-yes --no-install-recommends librdkafka-dev
@@ -26,8 +31,9 @@ jobs:
           test: false
           stack-build-arguments: --haddock --haddock-for-hackage
 
-      - run: |
-          stack --stack-yaml stack-lts-18.28.yaml upload --pvp-bounds lower .
-          stack upload --documentation .
-        env:
-          HACKAGE_KEY: ${{ secrets.HACKAGE_UPLOAD_API_KEY }}
+      # Upload using our oldest, tested resolver, to set the lowest lower bounds
+      - name: "Release to Hackage"
+        run: stack --stack-yaml stack-lts-18.28.yaml upload --pvp-bounds lower .
+
+      - name: "Upload documentation"
+        run: stack upload --documentation .
