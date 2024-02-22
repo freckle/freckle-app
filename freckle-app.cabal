@@ -1,6 +1,6 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.2.
 --
 -- see: https://github.com/sol/hpack
 
@@ -50,6 +50,7 @@ library
       Freckle.App.Http
       Freckle.App.Http.Paginate
       Freckle.App.Http.Retry
+      Freckle.App.Json.Empty
       Freckle.App.Kafka
       Freckle.App.Kafka.Consumer
       Freckle.App.Kafka.Producer
@@ -92,6 +93,7 @@ library
       DeriveGeneric
       DeriveLift
       DeriveTraversable
+      DerivingVia
       DerivingStrategies
       FlexibleContexts
       FlexibleInstances
@@ -113,8 +115,11 @@ library
       Blammo
     , Glob
     , MonadRandom
+    , QuickCheck
     , aeson
     , annotated-exception
+    , autodocodec
+    , autodocodec-openapi3
     , aws-xray-client-persistent
     , aws-xray-client-wai
     , base <5
@@ -160,6 +165,7 @@ library
     , mtl
     , network-uri
     , nonempty-containers
+    , openapi3
     , path-pieces
     , persistent
     , persistent-postgresql
@@ -212,6 +218,7 @@ test-suite doctest
       DeriveGeneric
       DeriveLift
       DeriveTraversable
+      DerivingVia
       DerivingStrategies
       FlexibleContexts
       FlexibleInstances
@@ -266,6 +273,7 @@ test-suite spec
       DeriveGeneric
       DeriveLift
       DeriveTraversable
+      DerivingVia
       DerivingStrategies
       FlexibleContexts
       FlexibleInstances

@@ -2,6 +2,8 @@ resolver: lts-18.28
 
 extra-deps:
   - annotated-exception-0.2.0.5
+  - autodocodec-0.2.2.0
+  - autodocodec-openapi3-0.2.1.1
   - Blammo-1.0.2.2
   - aws-xray-client-0.1.0.2
   - aws-xray-client-persistent-0.1.0.5

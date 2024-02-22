@@ -1,5 +1,7 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.12.0.1...main)
 
+- Add `Freckle.App.Json.Empty` with the `Empty` type.
+
 ## [v1.12.0.1](https://github.com/freckle/freckle-app/compare/v1.12.0.0...v1.12.0.1)
 
 - Change how `active_pool_connections` metric is calculated.

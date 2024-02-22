@@ -48,6 +48,7 @@ default-extensions:
   - DeriveGeneric
   - DeriveLift
   - DeriveTraversable
+  - DerivingVia
   - DerivingStrategies
   - FlexibleContexts
   - FlexibleInstances
@@ -71,6 +72,9 @@ library:
     - Blammo
     - Glob
     - MonadRandom
+    - QuickCheck
+    - autodocodec
+    - autodocodec-openapi3
     - aeson
     - annotated-exception
     - aws-xray-client-persistent
@@ -117,6 +121,7 @@ library:
     - mtl
     - network-uri
     - nonempty-containers
+    - openapi3
     - path-pieces
     - persistent
     - persistent-postgresql
