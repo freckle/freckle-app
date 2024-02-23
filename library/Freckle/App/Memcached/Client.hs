@@ -1,5 +1,5 @@
 module Freckle.App.Memcached.Client
-  ( MemcachedClient
+  ( MemcachedClient (..)
   , newMemcachedClient
   , withMemcachedClient
   , memcachedClientDisabled
