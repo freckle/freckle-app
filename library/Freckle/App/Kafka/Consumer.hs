@@ -166,22 +166,10 @@ runConsumer
   => Timeout
   -> (a -> m ())
   -> m ()
-runConsumer pollTimeout onMessage = do
-  consumer <- view kafkaConsumerL
-
-  let
-    onFinish finishResult = do
-      logExMay "Unable to commit offsets" $ commitAllOffsets OffsetCommit consumer
-      either (logEx "Unexpected finish") pure finishResult
-
-    logExMay msg f = maybe (pure ()) (logEx msg) =<< f
-
-    logEx msg =
-      logError
-        . annotatedExceptionMessageFrom (const msg)
-        . AnnotatedException []
-
+runConsumer pollTimeout onMessage =
   withTraceIdContext $ immortalCreate onFinish $ do
+    consumer <- view kafkaConsumerL
+
     flip catches handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
       mRecord <- fromKafkaError =<< pollMessage consumer kTimeout
 
@@ -211,6 +199,18 @@ runConsumer pollTimeout onMessage = do
           . annotatedExceptionMessageFrom @KafkaMessageDecodeError
             (const "Could not decode message value")
     ]
+
+  onFinish finishResult = do
+    consumer <- view kafkaConsumerL
+    logExMay "Unable to commit offsets" $ commitAllOffsets OffsetCommit consumer
+    either (logEx "Unexpected finish") pure finishResult
+
+  logExMay msg f = maybe (pure ()) (logEx msg) =<< f
+
+  logEx msg =
+    logErrorNS "kafka"
+      . annotatedExceptionMessageFrom (const msg)
+      . AnnotatedException []
 
 fromKafkaError
   :: (MonadIO m, MonadLogger m, HasCallStack)
