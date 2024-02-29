@@ -1,5 +1,6 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.12.0.1...main)
 
+- Handle committing offsets more intelligently in `Kafka.Consumer` [breaking]
 - Add `Freckle.App.Json.Empty` with the `Empty` type.
 - Expose data constructors for `Freckle.App.Memcached.Client.MemcachedClient`.
 
