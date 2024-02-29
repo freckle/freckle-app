@@ -20,7 +20,11 @@ import qualified Data.Text as T
 import qualified Env
 import Freckle.App.Async
 import Freckle.App.Env
-import Freckle.App.Exception (annotatedExceptionMessageFrom)
+import Freckle.App.Exception
+  ( AnnotatedException (..)
+  , annotatedExceptionMessageFrom
+  )
+import Freckle.App.Kafka.Consumer.Offsets
 import Freckle.App.Kafka.Producer (envKafkaBrokerAddresses)
 import Freckle.App.OpenTelemetry
 import Kafka.Consumer hiding
@@ -172,19 +176,38 @@ runConsumer
   => Timeout
   -> (a -> m ())
   -> m ()
-runConsumer pollTimeout onMessage =
-  withTraceIdContext $ immortalCreateLogged $ do
-    consumer <- view kafkaConsumerL
+runConsumer pollTimeout onMessage = do
+  ref <- newLastMessageByPartition
+  consumer <- view kafkaConsumerL
 
+  let
+    onFinish finishResult = do
+      commitResult <- commitOffsetsSync ref consumer
+      either (logEx "Unexpected finish") pure finishResult
+      maybe (pure ()) (logEx "Unable to commit offsets") commitResult
+
+    logEx msg =
+      logError
+        . annotatedExceptionMessageFrom (const msg)
+        . AnnotatedException []
+
+  withTraceIdContext $ immortalCreate onFinish $ do
     flip catches handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
       mRecord <- fromKafkaError =<< pollMessage consumer kTimeout
 
-      for_ (crValue =<< mRecord) $ \bs -> do
-        a <-
-          inSpan "kafka.consumer.message.decode" defaultSpanArguments $
-            either (throwM . KafkaMessageDecodeError bs) pure $
-              eitherDecodeStrict bs
-        inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
+      for_ mRecord $ \r -> do
+        for_ (crValue r) $ \bs -> do
+          a <-
+            inSpan "kafka.consumer.message.decode" defaultSpanArguments $
+              either (throwM . KafkaMessageDecodeError bs) pure $
+                eitherDecodeStrict bs
+          inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
+
+        -- Commit this message's offset async
+        void $ commitOffsetMessage OffsetCommitAsync consumer r
+
+        -- But also track it for the synchronous commit at shutdown
+        updateLastMessageByPartition ref r
  where
   kTimeout = Kafka.Timeout $ timeoutMs pollTimeout
 
