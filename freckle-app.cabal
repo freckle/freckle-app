@@ -1,6 +1,6 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.35.2.
+-- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -53,6 +53,7 @@ library
       Freckle.App.Json.Empty
       Freckle.App.Kafka
       Freckle.App.Kafka.Consumer
+      Freckle.App.Kafka.Consumer.Offsets
       Freckle.App.Kafka.Producer
       Freckle.App.Memcached
       Freckle.App.Memcached.CacheKey
