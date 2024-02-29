@@ -14,7 +14,7 @@ import Kafka.Consumer
 import UnliftIO.IORef
 
 newtype LastMessageByPartition = LastMessageByPartition
-  { _unLastMessageByPartition :: IORef (Map PartitionId (ConsumerRecord () ()))
+  { _unLastMessageByPartition :: IORef (Map PartitionId TopicPartition)
   }
 
 newLastMessageByPartition :: MonadIO m => m LastMessageByPartition
@@ -26,10 +26,9 @@ updateLastMessageByPartition
   -> ConsumerRecord k v
   -> m ()
 updateLastMessageByPartition (LastMessageByPartition ref) record =
-  atomicModifyIORef' ref $ (,()) . Map.insert (crPartition record') record'
+  atomicModifyIORef' ref $ (,()) . Map.insert (crPartition record) topicPartition
  where
-  record' :: ConsumerRecord () ()
-  record' = bimap (const ()) (const ()) record
+  topicPartition = topicPartitionFromMessageForCommit record
 
 commitOffsetsSync
   :: MonadIO m
@@ -38,9 +37,7 @@ commitOffsetsSync
   -> m (Maybe KafkaError)
 commitOffsetsSync (LastMessageByPartition ref) consumer = do
   m <- readIORef ref
-  commitPartitionsOffsets OffsetCommit consumer
-    . map topicPartitionFromMessageForCommit
-    $ Map.elems m
+  commitPartitionsOffsets OffsetCommit consumer $ Map.elems m
 
 -- | Creates a topic partition message for use with the offset commit message.
 --
