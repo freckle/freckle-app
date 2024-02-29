@@ -181,11 +181,12 @@ runConsumer pollTimeout onMessage =
                 eitherDecodeStrict bs
           inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
 
-        -- Store the offset of this record, then do a best-offort commit to the
-        -- broker. If this fails and we crash or shutdown, the commit in the
-        -- onFinish handler will pick it up.
-        logExMay "Unable to store offset" $ storeOffsetMessage consumer r
-        void $ commitAllOffsets OffsetCommitAsync consumer
+        inSpan "kafka.consumer.message.commit" defaultSpanArguments $ do
+          -- Store the offset of this record, then do a best-offort commit to
+          -- the broker. If this fails and we crash or shutdown, the commit in
+          -- the onFinish handler will pick it up.
+          logExMay "Unable to store offset" $ storeOffsetMessage consumer r
+          void $ commitAllOffsets OffsetCommitAsync consumer
  where
   kTimeout = Kafka.Timeout $ timeoutMs pollTimeout
 
