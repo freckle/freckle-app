@@ -53,7 +53,6 @@ library
       Freckle.App.Json.Empty
       Freckle.App.Kafka
       Freckle.App.Kafka.Consumer
-      Freckle.App.Kafka.Consumer.Offsets
       Freckle.App.Kafka.Producer
       Freckle.App.Memcached
       Freckle.App.Memcached.CacheKey

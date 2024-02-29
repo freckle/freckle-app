@@ -24,7 +24,6 @@ import Freckle.App.Exception
   ( AnnotatedException (..)
   , annotatedExceptionMessageFrom
   )
-import Freckle.App.Kafka.Consumer.Offsets
 import Freckle.App.Kafka.Producer (envKafkaBrokerAddresses)
 import Freckle.App.OpenTelemetry
 import Kafka.Consumer hiding
@@ -112,7 +111,8 @@ consumerProps :: KafkaConsumerConfig -> ConsumerProperties
 consumerProps KafkaConsumerConfig {..} =
   brokersList brokers
     <> groupId kafkaConsumerConfigGroupId
-    <> noAutoCommit -- we handle commits ourselves
+    <> noAutoCommit -- we handle offsets
+    <> noAutoOffsetStore
     <> logLevel KafkaLogInfo
  where
   brokers = NE.toList kafkaConsumerConfigBrokerAddresses
@@ -167,14 +167,14 @@ runConsumer
   -> (a -> m ())
   -> m ()
 runConsumer pollTimeout onMessage = do
-  ref <- newLastMessageByPartition
   consumer <- view kafkaConsumerL
 
   let
     onFinish finishResult = do
-      commitResult <- commitOffsetsSync ref consumer
+      logExMay "Unable to commit offsets" $ commitAllOffsets OffsetCommit consumer
       either (logEx "Unexpected finish") pure finishResult
-      maybe (pure ()) (logEx "Unable to commit offsets") commitResult
+
+    logExMay msg f = maybe (pure ()) (logEx msg) =<< f
 
     logEx msg =
       logError
@@ -193,11 +193,11 @@ runConsumer pollTimeout onMessage = do
                 eitherDecodeStrict bs
           inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
 
-        -- Commit this message's offset async
+        -- Best-effort commit the offset now
         void $ commitOffsetMessage OffsetCommitAsync consumer r
 
-        -- But also track it for the synchronous commit at shutdown
-        updateLastMessageByPartition ref r
+        -- And store it for the more robust shutdown handler, just in case
+        logExMay "Unable to store offset" $ storeOffsetMessage consumer r
  where
   kTimeout = Kafka.Timeout $ timeoutMs pollTimeout
 
