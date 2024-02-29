@@ -53,11 +53,6 @@ data KafkaConsumerConfig = KafkaConsumerConfig
   -- ^ The offset reset parameter used when there is no initial offset in Kafka.
   --
   -- This is the `auto.offset.reset` Kafka consumer configuration property.
-  , kafkaConsumerConfigAutoCommitInterval :: Millis
-  -- ^ The interval that offsets are auto-committed to Kafka.
-  --
-  -- This sets the `auto.commit.interval.ms` and `enable.auto.commit` Kafka
-  -- consumer configuration properties.
   , kafkaConsumerConfigExtraSubscriptionProps :: Map Text Text
   -- ^ Extra properties used to configure the Kafka consumer.
   }
@@ -97,10 +92,6 @@ envKafkaConsumerConfig = do
   consumerGroupId <- Env.var Env.nonempty "KAFKA_CONSUMER_GROUP_ID" mempty
   kafkaTopic <- envKafkaTopic
   kafkaOffsetReset <- envKafkaOffsetReset
-  kafkaAutoOffsetInterval <-
-    fromIntegral . timeoutMs <$$> Env.var timeout "KAFKA_AUTO_COMMIT_INTERVAL" $
-      Env.def $
-        TimeoutMilliseconds 5000
   kafkaExtraProps <-
     Env.var
       (fmap Map.fromList . keyValues)
@@ -112,7 +103,6 @@ envKafkaConsumerConfig = do
       consumerGroupId
       kafkaTopic
       kafkaOffsetReset
-      kafkaAutoOffsetInterval
       kafkaExtraProps
 
 class HasKafkaConsumer env where
@@ -122,7 +112,7 @@ consumerProps :: KafkaConsumerConfig -> ConsumerProperties
 consumerProps KafkaConsumerConfig {..} =
   brokersList brokers
     <> groupId kafkaConsumerConfigGroupId
-    <> autoCommit kafkaConsumerConfigAutoCommitInterval
+    <> noAutoCommit -- we handle commits ourselves
     <> logLevel KafkaLogInfo
  where
   brokers = NE.toList kafkaConsumerConfigBrokerAddresses
