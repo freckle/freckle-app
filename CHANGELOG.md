@@ -1,6 +1,13 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.12.0.1...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.12.0.0...main)
+
+## [v1.13.0.0](https://github.com/freckle/freckle-app/compare/v1.12.0.1...v1.13.0.0)
 
 - Handle committing offsets more intelligently in `Kafka.Consumer` [breaking]
+
+  The autocommit configuration and behavior was removed. Instead, we store and
+  commit offsets explicitly such that at-least-once processing is ensured and
+  duplicate processing (during deploy scaling) is minimized.
+
 - Add `Freckle.App.Json.Empty` with the `Empty` type.
 - Expose data constructors for `Freckle.App.Memcached.Client.MemcachedClient`.
 
