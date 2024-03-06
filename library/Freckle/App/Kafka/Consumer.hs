@@ -12,6 +12,7 @@ import Freckle.App.Prelude
 
 import Blammo.Logging
 import Control.Lens (Lens', view)
+import Control.Monad (forever)
 import Data.Aeson
 import Data.ByteString (ByteString)
 import qualified Data.List.NonEmpty as NE
@@ -167,9 +168,7 @@ runConsumer
   -> (a -> m ())
   -> m ()
 runConsumer pollTimeout onMessage =
-  withTraceIdContext $ immortalCreate onFinish messageLoop
- where
-  messageLoop = do
+  withTraceIdContext $ immortalCreate onFinish $ forever $ do
     consumer <- view kafkaConsumerL
 
     flip catches handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
@@ -189,8 +188,7 @@ runConsumer pollTimeout onMessage =
           -- the onFinish handler will pick it up.
           logExMay "Unable to store offset" $ storeOffsetMessage consumer r
           void $ commitAllOffsets OffsetCommitAsync consumer
-    messageLoop
-
+ where
   kTimeout = Kafka.Timeout $ timeoutMs pollTimeout
 
   handlers =
