@@ -167,7 +167,9 @@ runConsumer
   -> (a -> m ())
   -> m ()
 runConsumer pollTimeout onMessage =
-  withTraceIdContext $ immortalCreate onFinish $ do
+  withTraceIdContext $ immortalCreate onFinish messageLoop
+ where
+  messageLoop = do
     consumer <- view kafkaConsumerL
 
     flip catches handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
@@ -187,7 +189,8 @@ runConsumer pollTimeout onMessage =
           -- the onFinish handler will pick it up.
           logExMay "Unable to store offset" $ storeOffsetMessage consumer r
           void $ commitAllOffsets OffsetCommitAsync consumer
- where
+    messageLoop
+
   kTimeout = Kafka.Timeout $ timeoutMs pollTimeout
 
   handlers =
@@ -203,7 +206,9 @@ runConsumer pollTimeout onMessage =
 
   onFinish finishResult = do
     consumer <- view kafkaConsumerL
-    logExMay "Unable to commit offsets" $ commitAllOffsets OffsetCommit consumer
+    logExMay
+      "Unable to commit offsets"
+      (silenceNoOffsetError <$> commitAllOffsets OffsetCommit consumer)
     either (logEx "Unexpected finish") pure finishResult
 
   logExMay msg f = maybe (pure ()) (logEx msg) =<< f
@@ -212,6 +217,12 @@ runConsumer pollTimeout onMessage =
     logErrorNS "kafka"
       . annotatedExceptionMessageFrom (const msg)
       . AnnotatedException []
+
+  -- It should not be considered an error if we have no offsets to commit
+  silenceNoOffsetError :: Maybe KafkaError -> Maybe KafkaError
+  silenceNoOffsetError = \case
+    Just (KafkaResponseError RdKafkaRespErrNoOffset) -> Nothing
+    e -> e
 
 fromKafkaError
   :: (MonadIO m, MonadLogger m, HasCallStack)
