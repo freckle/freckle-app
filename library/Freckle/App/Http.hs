@@ -1,61 +1,20 @@
--- | Centralized module for making HTTP requests from the backend
+-- | Centralized module for making HTTP requests
 --
 -- These functions:
 --
 -- - Do not throw exceptions on non-200
 -- - May throw for other 'HttpException' cases (e.g. 'ConnectionTimeout')
--- - Handle 429-@Retry-In@ for you
 -- - Capture decoding failures with 'Either' values as the 'Response' body
---
--- == Examples
---
--- Make request, retry on 429s, and parse the body as JSON.
---
--- @
--- -- Throws, but only on a complete failure to perform the request
--- resp <- 'httpJson' $ 'parseRequest_' "https://example.com"
---
--- -- Safe access
--- 'getResponseBody' resp :: Either 'HttpDecodeError' a
---
--- -- Unsafe access (throws on Left)
--- 'getResponseBodyUnsafe' resp :: m a
--- @
---
--- 'httpLbs' can be used to get a raw response (without risk of decoding
--- errors), and 'httpDecode' can be used to supply your own decoding function
--- (e.g. for CSV).
---
--- Interact with a paginated endpoint that uses @Link@, combining all the pages
--- monoidally (e.g. concat) and throwing on any decoding errors.
---
--- @
--- 'httpPaginated' 'httpJson' 'getResponseBodyUnsafe' $ 'parseRequest_' "https://..."
--- @
---
--- Decoding errors can be handled differently by adjusting what 'Monoid' you
--- convert each page's response into:
---
--- @
--- 'httpPaginated' 'httpJson' fromResponseLenient $ 'parseRequest_' "https://..."
---
--- fromResponseLenient
---   :: MonadLogger m
---   => Response (Either e [MyJsonThing])
---   -> m [MyJsonThing]
--- fromResponseLenient r = case getResponseBody r of
---      Left _ -> [] <$ logWarn "..."
---      Right a -> pure a
--- @
---
--- See "Freckle.Http.App.Paginate" to process requested pages in a streaming
--- fashion, or perform pagination based on somethign other than @Link@.
+-- - Handle 429-@Retry-In@ for you (if using an 'IO'-based instance)
 module Freckle.App.Http
-  ( httpJson
+  ( MonadHttp (..)
+
+    -- * Decoding responses
+  , httpJson
   , HttpDecodeError (..)
   , httpDecode
-  , httpLbs
-  , httpNoBody
+
+    -- * Pagination
   , httpPaginated
   , sourcePaginated
 
@@ -138,6 +97,34 @@ import Network.HTTP.Types.Status
   , statusIsSuccessful
   )
 
+-- | Type-class for making HTTP requests
+--
+-- Functions of this module require the 'MonadHttp' constraint. This type class
+-- allows us to instantiate differently in different contexts, most usefully
+-- with stubbed responses in test. (See "Freckle.App.Test.Http".)
+--
+-- The 'IO' instance does what you would expect, and can be used to either build
+-- your own instances:
+--
+-- @
+-- instance MonadIO m => MonadHttp (AppT m) where
+--   httpLbs = liftIO . httpLbs
+--
+-- instance MonadHttp (HandlerFor App) where
+--   httpLbs = liftIO . httpLbs
+-- @
+--
+-- Or directly,
+--
+-- @
+-- resp <- liftIO $ httpLbs ...
+-- @
+class Monad m => MonadHttp m where
+  httpLbs :: Request -> m (Response ByteString)
+
+instance MonadHttp IO where
+  httpLbs = rateLimited HTTP.httpLbs
+
 data HttpDecodeError = HttpDecodeError
   { hdeBody :: ByteString
   , hdeErrors :: NonEmpty String
@@ -155,18 +142,31 @@ instance Exception HttpDecodeError where
       errs -> "Errors:" : map bullet (NE.toList errs)
     bullet = (" • " <>)
 
--- | Request and decode a response as JSON
+-- | Make a request and parse the body as JSON
+--
+-- @
+-- -- Throws, but only on a complete failure to perform the request
+-- resp <- 'httpJson' $ 'parseRequest_' "https://example.com"
+--
+-- -- Safe access
+-- 'getResponseBody' resp :: Either 'HttpDecodeError' a
+--
+-- -- Unsafe access (throws on Left)
+-- 'getResponseBodyUnsafe' resp :: m a
+-- @
 httpJson
-  :: (MonadIO m, FromJSON a)
+  :: (MonadHttp m, FromJSON a)
   => Request
   -> m (Response (Either HttpDecodeError a))
 httpJson =
   httpDecode (first pure . Aeson.eitherDecode)
     . addAcceptHeader "application/json"
 
--- | Request and decode a response
+-- | Make a request and decode the body using the given function
+--
+-- This be used to request other formats, e.g. CSV.
 httpDecode
-  :: MonadIO m
+  :: MonadHttp m
   => (ByteString -> Either (NonEmpty String) a)
   -> Request
   -> m (Response (Either HttpDecodeError a))
@@ -175,24 +175,44 @@ httpDecode decode req = do
   let body = getResponseBody resp
   pure $ first (HttpDecodeError body) . decode <$> resp
 
--- | Request a lazy 'ByteString', handling 429 retries
-httpLbs :: MonadIO m => Request -> m (Response ByteString)
-httpLbs = rateLimited httpLBS
-
--- | Make a Request ignoring the response, but handling 429 retries
-httpNoBody :: MonadIO m => Request -> m (Response ())
-httpNoBody = rateLimited HTTP.httpNoBody
-
--- | Request all pages of a paginated endpoint into a big list
+-- | Request all pages of a paginated endpoint into some 'Monoid'
+--
+-- For example,
+--
+-- Interact with a paginated endpoint where each page is a JSON list, combining
+-- all the pages into one list (i.e. 'concat') and throw on any decoding errors:
+--
+-- @
+-- 'httpPaginated' 'httpJson' 'getResponseBodyUnsafe' $ 'parseRequest_' "https://..."
+-- @
 --
 -- This uses 'sourcePaginated', and so reads a @Link@ header. To do otherwise,
 -- drop down to 'sourcePaginatedBy' directly.
 --
 -- The second argument is used to extract the data to combine out of the
 -- response. This is particularly useful for 'Either' values, like you may get
--- from 'httpJson'. It lives in @m@ to support functions such as 'getResponseBodyUnsafe'.
+-- from 'httpJson'. It lives in @m@ to support functions such as
+-- 'getResponseBodyUnsafe'.
+--
+-- Decoding errors can be handled differently by adjusting what 'Monoid' you
+-- convert each page's response into:
+--
+-- @
+-- 'httpPaginated' 'httpJson' fromResponseLenient $ 'parseRequest_' "https://..."
+--
+-- fromResponseLenient
+--   :: MonadLogger m
+--   => Response (Either e [MyJsonThing])
+--   -> m [MyJsonThing]
+-- fromResponseLenient r = case getResponseBody r of
+--      Left _ -> [] <$ logWarn "..."
+--      Right a -> pure a
+-- @
+--
+-- See "Freckle.Http.App.Paginate" to process requested pages in a streaming
+-- fashion, or perform pagination based on somethign other than @Link@.
 httpPaginated
-  :: (MonadIO m, Monoid b)
+  :: (MonadHttp m, Monoid b)
   => (Request -> m (Response a))
   -> (Response a -> m b)
   -> Request

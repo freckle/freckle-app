@@ -2,7 +2,8 @@
 
 -- | An intentionally-leaky StatsD interface to Datadog
 module Freckle.App.Stats
-  ( StatsSettings
+  ( -- $docs
+    StatsSettings
   , defaultStatsSettings
   , setStatsSettingsTags
   , envParseStatsSettings
@@ -316,8 +317,9 @@ getEcsMetadataTags = do
     , ("task_version", ectmRevision)
     ]
 
--- $usage
--- Usage:
+-- $docs
+--
+-- == Usage
 --
 -- - Use 'envParseStatsSettings' to configure things
 --

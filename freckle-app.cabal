@@ -69,6 +69,8 @@ library
       Freckle.App.Test
       Freckle.App.Test.DocTest
       Freckle.App.Test.Hspec.Runner
+      Freckle.App.Test.Http
+      Freckle.App.Test.Http.MatchRequest
       Freckle.App.Test.Properties.JSON
       Freckle.App.Test.Properties.PathPiece
       Freckle.App.Test.Yesod
@@ -133,6 +135,7 @@ library
     , containers
     , cookie
     , datadog
+    , directory
     , doctest
     , dotenv
     , ekg-core
@@ -257,6 +260,7 @@ test-suite spec
       Freckle.App.HttpSpec
       Freckle.App.Memcached.ServersSpec
       Freckle.App.MemcachedSpec
+      Freckle.App.Test.Http.MatchRequestSpec
       Freckle.App.Test.Properties.JSONSpec
       Freckle.App.Test.Properties.PathPieceSpec
       Freckle.App.WaiSpec

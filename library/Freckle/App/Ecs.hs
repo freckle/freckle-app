@@ -78,7 +78,7 @@ makeContainerMetadataRequest uri = do
   req <-
     mapEither (EcsMetadataErrorInvalidURI . displayException) $
       parseRequest uri
-  resp <- httpJson req
+  resp <- liftIO $ httpJson req
 
   let status = getResponseStatus resp
 
