@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.12.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.13.0.1...main)
+
+## [v1.13.0.1](https://github.com/freckle/freckle-app/compare/v1.13.0.0...v1.13.0.1)
+
+- Fixed issue with `runConsumer` synchronously committing offsets after every event
 
 ## [v1.13.0.0](https://github.com/freckle/freckle-app/compare/v1.12.0.1...v1.13.0.0)
 
