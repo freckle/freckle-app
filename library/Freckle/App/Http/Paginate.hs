@@ -65,7 +65,7 @@ import Network.HTTP.Simple
 
 -- | Stream pages of a paginated response, using @Link@ to find next pages
 sourcePaginated
-  :: MonadIO m
+  :: Monad m
   => (Request -> m (Response body))
   -- ^ Run one request
   -> Request
@@ -75,7 +75,7 @@ sourcePaginated = sourcePaginatedBy linkHeader
 
 -- | Stream pages of a paginated response, using a custom /find next/
 sourcePaginatedBy
-  :: MonadIO m
+  :: Monad m
   => (Request -> Response body -> Maybe Request)
   -- ^ How to get the next page from each request
   -> (Request -> m (Response body))

@@ -89,6 +89,7 @@ library:
     - containers
     - cookie
     - datadog
+    - directory
     - doctest
     - dotenv
     - ekg-core
