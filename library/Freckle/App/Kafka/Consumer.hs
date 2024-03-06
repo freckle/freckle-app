@@ -12,6 +12,7 @@ import Freckle.App.Prelude
 
 import Blammo.Logging
 import Control.Lens (Lens', view)
+import Control.Monad (forever)
 import Data.Aeson
 import Data.ByteString (ByteString)
 import qualified Data.List.NonEmpty as NE
@@ -167,7 +168,7 @@ runConsumer
   -> (a -> m ())
   -> m ()
 runConsumer pollTimeout onMessage =
-  withTraceIdContext $ immortalCreate onFinish $ do
+  withTraceIdContext $ immortalCreate onFinish $ forever $ do
     consumer <- view kafkaConsumerL
 
     flip catches handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
@@ -203,7 +204,9 @@ runConsumer pollTimeout onMessage =
 
   onFinish finishResult = do
     consumer <- view kafkaConsumerL
-    logExMay "Unable to commit offsets" $ commitAllOffsets OffsetCommit consumer
+    logExMay
+      "Unable to commit offsets"
+      (silenceNoOffsetError <$> commitAllOffsets OffsetCommit consumer)
     either (logEx "Unexpected finish") pure finishResult
 
   logExMay msg f = maybe (pure ()) (logEx msg) =<< f
@@ -212,6 +215,12 @@ runConsumer pollTimeout onMessage =
     logErrorNS "kafka"
       . annotatedExceptionMessageFrom (const msg)
       . AnnotatedException []
+
+  -- It should not be considered an error if we have no offsets to commit
+  silenceNoOffsetError :: Maybe KafkaError -> Maybe KafkaError
+  silenceNoOffsetError = \case
+    Just (KafkaResponseError RdKafkaRespErrNoOffset) -> Nothing
+    e -> e
 
 fromKafkaError
   :: (MonadIO m, MonadLogger m, HasCallStack)
