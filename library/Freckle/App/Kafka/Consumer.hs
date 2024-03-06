@@ -164,31 +164,39 @@ runConsumer
      , HasCallStack
      )
   => Timeout
+  -> Int
   -> (a -> m ())
   -> m ()
-runConsumer pollTimeout onMessage =
+runConsumer pollTimeout batchSize onMessage =
   withTraceIdContext $ immortalCreate onFinish $ do
     consumer <- view kafkaConsumerL
 
     flip catches handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
-      mRecord <- fromKafkaError =<< pollMessage consumer kTimeout
+      mRecords <-
+        traverse fromKafkaError
+          =<< pollMessageBatch consumer kTimeout kBatchSize
 
-      for_ mRecord $ \r -> do
-        for_ (crValue r) $ \bs -> do
-          a <-
-            inSpan "kafka.consumer.message.decode" defaultSpanArguments $
-              either (throwM . KafkaMessageDecodeError bs) pure $
-                eitherDecodeStrict bs
-          inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
+      for_ mRecords $ \mRecord -> do
+        for_ mRecord $ \r -> do
+          for_ (crValue r) $ \bs -> do
+            a <-
+              inSpan "kafka.consumer.message.decode" defaultSpanArguments $
+                either (throwM . KafkaMessageDecodeError bs) pure $
+                  eitherDecodeStrict bs
+            inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
+            logExMay
+              "Unable to store offset"
+              (silenceNoOffsetError <$> storeOffsetMessage consumer r)
 
-        inSpan "kafka.consumer.message.commit" defaultSpanArguments $ do
-          -- Store the offset of this record, then do a best-offort commit to
-          -- the broker. If this fails and we crash or shutdown, the commit in
-          -- the onFinish handler will pick it up.
-          logExMay "Unable to store offset" $ storeOffsetMessage consumer r
-          void $ commitAllOffsets OffsetCommitAsync consumer
+      inSpan "kafka.consumer.message.commit" defaultSpanArguments $
+        -- Do a best-effort commit to the broker. If this fails and
+        -- we crash or shutdown, the commit in the onFinish handler
+        -- will pick it up.
+        void $
+          commitAllOffsets OffsetCommitAsync consumer
  where
   kTimeout = Kafka.Timeout $ timeoutMs pollTimeout
+  kBatchSize = BatchSize batchSize
 
   handlers =
     [ ExceptionHandler $
@@ -212,6 +220,12 @@ runConsumer pollTimeout onMessage =
     logErrorNS "kafka"
       . annotatedExceptionMessageFrom (const msg)
       . AnnotatedException []
+
+  -- It should not be considered an error if we have no offsets to commit
+  silenceNoOffsetError :: Maybe KafkaError -> Maybe KafkaError
+  silenceNoOffsetError = \case
+    Just (KafkaResponseError RdKafkaRespErrNoOffset) -> Nothing
+    e -> e
 
 fromKafkaError
   :: (MonadIO m, MonadLogger m, HasCallStack)
