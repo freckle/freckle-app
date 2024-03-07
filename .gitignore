@@ -1,4 +1,5 @@
 .stack-work
+.stack-work*
 *.hie
 .hiedb
 dist-newstyle
