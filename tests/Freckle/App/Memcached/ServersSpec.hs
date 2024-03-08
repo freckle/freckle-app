@@ -1,5 +1,3 @@
-{-# LANGUAGE CPP #-}
-
 module Freckle.App.Memcached.ServersSpec
   ( spec
   ) where
@@ -29,21 +27,21 @@ spec = do
       let mServer = readServerSpec "memcached://my-host"
 
       fmap Memcache.ssHost mServer `shouldBe` Just "my-host"
-      fmap (portServiceName . Memcache.ssPort) mServer `shouldBe` Just "11211"
+      fmap Memcache.ssPort mServer `shouldBe` Just "11211"
       fmap Memcache.ssAuth mServer `shouldBe` Just Memcache.NoAuth
 
     it "can set port" $ example $ do
       let mServer = readServerSpec "memcached://:11212"
 
       fmap Memcache.ssHost mServer `shouldBe` Just defaultHost
-      fmap (portServiceName . Memcache.ssPort) mServer `shouldBe` Just "11212"
+      fmap Memcache.ssPort mServer `shouldBe` Just "11212"
       fmap Memcache.ssAuth mServer `shouldBe` Just Memcache.NoAuth
 
     it "can set auth" $ example $ do
       let mServer = readServerSpec "memcached://user:password@"
 
       fmap Memcache.ssHost mServer `shouldBe` Just defaultHost
-      fmap (portServiceName . Memcache.ssPort) mServer `shouldBe` Just "11211"
+      fmap Memcache.ssPort mServer `shouldBe` Just "11211"
       fmap Memcache.ssAuth mServer
         `shouldBe` Just (Memcache.Auth "user" "password")
 
@@ -59,7 +57,7 @@ spec = do
       let mServer = readServerSpec "memcached://user:password@my-host:11212"
 
       fmap Memcache.ssHost mServer `shouldBe` Just "my-host"
-      fmap (portServiceName . Memcache.ssPort) mServer `shouldBe` Just "11212"
+      fmap Memcache.ssPort mServer `shouldBe` Just "11212"
       fmap Memcache.ssAuth mServer
         `shouldBe` Just (Memcache.Auth "user" "password")
 
@@ -70,7 +68,7 @@ spec = do
 
       fmap (map Memcache.ssHost) mServerSpecs
         `shouldBe` Just ["a-host", "b-host", defaultHost]
-      fmap (map (portServiceName . Memcache.ssPort)) mServerSpecs
+      fmap (map Memcache.ssPort) mServerSpecs
         `shouldBe` Just ["11211", "11212", "11213"]
       fmap (map Memcache.ssAuth) mServerSpecs
         `shouldBe` Just
@@ -84,11 +82,3 @@ readServerSpecs = fmap toServerSpecs . hush . readMemcachedServers
 
 defaultHost :: String
 defaultHost = Memcache.ssHost Memcache.def
-
-#if MIN_VERSION_memcache(0,3,0)
-portServiceName :: String -> String
-portServiceName = id
-#else
-portServiceName :: Show a => a -> String
-portServiceName = show
-#endif
