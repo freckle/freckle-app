@@ -60,8 +60,9 @@ import Freckle.App.Prelude
 
 import Conduit
 import Control.Error.Util (hush)
-import Network.HTTP.Link.Compat hiding (linkHeader)
+import Network.HTTP.Link hiding (linkHeader)
 import Network.HTTP.Simple
+import Network.URI (URI)
 
 -- | Stream pages of a paginated response, using @Link@ to find next pages
 sourcePaginated
@@ -91,6 +92,6 @@ sourcePaginatedBy mNextRequest runRequest req = do
 linkHeader :: Request -> Response body -> Maybe Request
 linkHeader _req resp = do
   header <- listToMaybe $ getResponseHeader "Link" resp
-  links <- hush $ parseLinkURI $ decodeUtf8 header
+  links <- hush $ parseLinkHeader' @URI $ decodeUtf8 header
   uri <- href <$> find (((Rel, "next") `elem`) . linkParams) links
   parseRequest $ show uri
