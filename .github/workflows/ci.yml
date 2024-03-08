@@ -29,8 +29,6 @@ jobs:
           - stack-nightly.yaml # ghc-9.6
           - stack.yaml # ghc-9.4
           - stack-lts-20.26.yaml # ghc-9.2
-          - stack-lts-19.33.yaml # ghc-9.0
-          - stack-lts-18.28.yaml # ghc-8.10
       fail-fast: false
 
     steps:
