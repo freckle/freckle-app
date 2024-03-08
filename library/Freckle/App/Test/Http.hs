@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedRecordDot #-}
@@ -118,6 +119,9 @@ toResponse req stub =
     , HTTP.responseCookieJar = mempty
     , HTTP.responseClose' = HTTP.ResponseClose $ pure ()
     , HTTP.responseOriginalRequest = req
+#if MIN_VERSION_http_client(0,7,16)
+    , HTTP.responseEarlyHints = []
+#endif
     }
 
 rstatusL :: Lens' HttpStubResponse Status
