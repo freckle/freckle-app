@@ -1,5 +1,3 @@
-{-# LANGUAGE CPP #-}
-
 module Freckle.App.Yesod.Routes
   ( mkRouteNameCaseExp
   ) where
@@ -37,19 +35,12 @@ mkMatches (ResourceParent name _checkOverlap params children) = do
   matches <- fold <$> traverse mkMatches children
   pure
     [ TH.Match
-        (conP constName paramVars)
+        (TH.ConP constName [] paramVars)
         (TH.NormalB $ TH.CaseE (TH.VarE caseVar) matches)
         []
     ]
  where
   constName = TH.mkName name
-
-conP :: TH.Name -> [TH.Pat] -> TH.Pat
-#if MIN_VERSION_template_haskell(2,18,0)
-conP x = TH.ConP x []
-#else
-conP = TH.ConP
-#endif
 
 isDynamic :: Piece a -> Bool
 isDynamic = \case
