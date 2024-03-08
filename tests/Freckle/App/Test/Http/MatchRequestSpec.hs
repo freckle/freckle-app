@@ -9,6 +9,7 @@ import Freckle.App.Http
   , addAcceptHeader
   , addRequestHeader
   , parseRequest_
+  , setRequestPath
   )
 import Freckle.App.Test.Http.MatchRequest
 import Network.HTTP.Types.Header (hAccept)
@@ -24,6 +25,10 @@ spec = do
 
       it "matches the same request" $ do
         mr `shouldMatchRequest` parseRequest_ url
+
+      it "matches on path, even if built relative" $ do
+        let req = parseRequest_ "https://localhost:3000/world?world"
+        mr `shouldMatchRequest` setRequestPath "hello" req
 
       it "matches on method" $ do
         mr `shouldNotMatchRequest` parseRequest_ ("POST " <> url)

@@ -133,7 +133,7 @@ buildMismatch req = \case
   MatchSecure s -> propMismatch "!=" (==) "secure" s HTTP.secure req
   MatchHost h -> propMismatch "!=" (==) "host" h HTTP.host req
   MatchPort p -> propMismatch "!=" (==) "port" p HTTP.port req
-  MatchPath p -> propMismatch "!=" (==) "path" p HTTP.path req
+  MatchPath p -> propMismatch "!=" (==) "path" p (ensureLeadingSlash . HTTP.path) req
   MatchQuery q -> propMismatch "!=" (==) "query" q HTTP.queryString req
   MatchHeaders hs -> propMismatch "!=" (==) "headers" hs HTTP.requestHeaders req
   MatchHeader h -> propMismatch "not in" elem "header" h HTTP.requestHeaders req
@@ -175,3 +175,8 @@ simplifyRequestBody = go . HTTP.requestBody
     RequestBodyLBS lbs -> BSL.toStrict lbs
     RequestBodyBS bs -> bs
     _ -> ""
+
+ensureLeadingSlash :: ByteString -> ByteString
+ensureLeadingSlash bs
+  | Just ('/', _) <- BS8.uncons bs = bs
+  | otherwise = BS8.cons '/' bs
