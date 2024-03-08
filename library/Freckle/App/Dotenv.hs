@@ -7,7 +7,7 @@ module Freckle.App.Dotenv
 
 import Freckle.App.Prelude
 
-import qualified Configuration.Dotenv.Compat as Dotenv
+import qualified Configuration.Dotenv as Dotenv
 import System.FilePath (takeDirectory, (</>))
 import UnliftIO.Directory (doesFileExist, getCurrentDirectory)
 

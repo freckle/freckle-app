@@ -27,7 +27,6 @@ source-repository head
 
 library
   exposed-modules:
-      Configuration.Dotenv.Compat
       Freckle.App
       Freckle.App.Aeson
       Freckle.App.Async
