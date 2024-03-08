@@ -79,7 +79,7 @@ library:
     - aws-xray-client-persistent
     - aws-xray-client-wai
     - bcp47
-    - bugsnag
+    - bugsnag >= 1.1.0.0 # Network.Bugsnag.MetaData
     - bytestring
     - case-insensitive
     - cassava

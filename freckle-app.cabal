@@ -123,7 +123,7 @@ library
     , aws-xray-client-wai
     , base <5
     , bcp47
-    , bugsnag
+    , bugsnag >=1.1.0.0
     , bytestring
     , case-insensitive
     , cassava
