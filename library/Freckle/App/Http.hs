@@ -75,6 +75,11 @@ module Freckle.App.Http
 import Freckle.App.Prelude
 
 import Conduit (foldC, mapMC, runConduit, (.|))
+import Control.Monad.Except (ExceptT)
+import Control.Monad.State (StateT)
+import Control.Monad.Trans.Maybe (MaybeT)
+import Control.Monad.Validate (ValidateT)
+import Control.Monad.Writer (WriterT)
 import Data.Aeson (FromJSON)
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString as BS
@@ -124,6 +129,24 @@ class Monad m => MonadHttp m where
 
 instance MonadHttp IO where
   httpLbs = rateLimited HTTP.httpLbs
+
+instance MonadHttp m => MonadHttp (MaybeT m) where
+  httpLbs = lift . httpLbs
+
+instance MonadHttp m => MonadHttp (ReaderT r m) where
+  httpLbs = lift . httpLbs
+
+instance (Monoid w, MonadHttp m) => MonadHttp (WriterT w m) where
+  httpLbs = lift . httpLbs
+
+instance MonadHttp m => MonadHttp (StateT s m) where
+  httpLbs = lift . httpLbs
+
+instance MonadHttp m => MonadHttp (ExceptT e m) where
+  httpLbs = lift . httpLbs
+
+instance MonadHttp m => MonadHttp (ValidateT e m) where
+  httpLbs = lift . httpLbs
 
 data HttpDecodeError = HttpDecodeError
   { hdeBody :: ByteString
