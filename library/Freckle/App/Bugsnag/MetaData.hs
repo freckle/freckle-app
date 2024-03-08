@@ -18,9 +18,9 @@ import Freckle.App.Prelude
 import Blammo.Logging (myThreadContext)
 import Control.Lens (Lens', lens, to, view, (<>~))
 import Data.Aeson (Value (..))
+import qualified Data.Aeson.KeyMap as KeyMap
 import Data.Bugsnag (Event (..))
 import Data.String (fromString)
-import qualified Freckle.App.Aeson as Aeson
 import Freckle.App.Stats (HasStatsClient (..), tagsL)
 import Network.Bugsnag (BeforeNotify, updateEvent)
 import Network.Bugsnag.MetaData
@@ -48,7 +48,7 @@ collectMetaDataFromStatsClient = view $ statsClientL . tagsL . to toMetaData
 
 collectMetaDataFromThreadContext :: MonadIO m => m MetaData
 collectMetaDataFromThreadContext =
-  liftIO $ metaData "context" . Aeson.toList <$> myThreadContext
+  liftIO $ metaData "context" . KeyMap.toList <$> myThreadContext
 
 -- | Merge 'MetaData' into the 'Event'
 --

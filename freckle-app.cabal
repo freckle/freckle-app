@@ -28,7 +28,6 @@ source-repository head
 library
   exposed-modules:
       Freckle.App
-      Freckle.App.Aeson
       Freckle.App.Async
       Freckle.App.Bugsnag
       Freckle.App.Bugsnag.HttpException
