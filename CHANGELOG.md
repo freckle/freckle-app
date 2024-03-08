@@ -1,5 +1,15 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.14.0.0...main)
 
+- Compile with GHC 9.8 on CI
+- Support `aeson-2.2`
+- Support `http-client-0.7.16`
+- Assume minimum bounds as of `lts-19.33` [breaking]
+  - `aeson-2.0`
+  - `dotenv-0.10`
+  - `envparse-0.5`
+  - `http-link-header-1.2`
+  - `mecache-0.3.0`
+  - `template-haskell-2.18.0`
 - Introduce `MonadHttp` [breaking]
 
 ## [v1.14.0.0](https://github.com/freckle/freckle-app/compare/v1.13.0.1...v1.14.0.1)
