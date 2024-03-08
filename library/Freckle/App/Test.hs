@@ -7,7 +7,6 @@ module Freckle.App.Test
   ( AppExample (..)
   , appExample
   , withApp
-  , withAppSql
   , beforeSql
   , expectationFailure
   , pending
@@ -160,19 +159,6 @@ appExample = id
 -- use any @'MonadReader' app@ (including 'runDB', if the app 'HasSqlPool').
 withApp :: ((app -> IO ()) -> IO ()) -> SpecWith app -> Spec
 withApp run = beforeAll Dotenv.loadTest . Hspec.aroundAll run
-
--- | 'withApp', with custom DB 'Pool' initialization
---
--- Runs the given function on the pool before every spec item. For example, to
--- truncate tables.
-withAppSql
-  :: HasSqlPool app
-  => SqlPersistT IO a
-  -> ((app -> IO ()) -> IO ())
-  -> SpecWith app
-  -> Spec
-withAppSql f run = withApp run . beforeSql f
-{-# DEPRECATED withAppSql "Replace `withAppSql f g` with `withApp g . beforeSql f`" #-}
 
 -- | Run the given SQL action before every spec item
 beforeSql :: HasSqlPool app => SqlPersistT IO a -> SpecWith app -> SpecWith app
