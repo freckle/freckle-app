@@ -12,7 +12,6 @@ import Freckle.App.Prelude
 
 import Blammo.Logging
 import Control.Lens (Lens', view)
-import Control.Monad (forever)
 import Data.Aeson
 import Data.ByteString (ByteString)
 import qualified Data.List.NonEmpty as NE
@@ -21,10 +20,7 @@ import qualified Data.Text as T
 import qualified Env
 import Freckle.App.Async
 import Freckle.App.Env
-import Freckle.App.Exception
-  ( AnnotatedException (..)
-  , annotatedExceptionMessageFrom
-  )
+import Freckle.App.Exception (annotatedExceptionMessageFrom)
 import Freckle.App.Kafka.Producer (envKafkaBrokerAddresses)
 import Freckle.App.OpenTelemetry
 import Kafka.Consumer hiding
@@ -53,6 +49,11 @@ data KafkaConsumerConfig = KafkaConsumerConfig
   -- ^ The offset reset parameter used when there is no initial offset in Kafka.
   --
   -- This is the `auto.offset.reset` Kafka consumer configuration property.
+  , kafkaConsumerConfigAutoCommitInterval :: Millis
+  -- ^ The interval that offsets are auto-committed to Kafka.
+  --
+  -- This sets the `auto.commit.interval.ms` and `enable.auto.commit` Kafka
+  -- consumer configuration properties.
   , kafkaConsumerConfigExtraSubscriptionProps :: Map Text Text
   -- ^ Extra properties used to configure the Kafka consumer.
   }
@@ -92,6 +93,10 @@ envKafkaConsumerConfig = do
   consumerGroupId <- Env.var Env.nonempty "KAFKA_CONSUMER_GROUP_ID" mempty
   kafkaTopic <- envKafkaTopic
   kafkaOffsetReset <- envKafkaOffsetReset
+  kafkaAutoOffsetInterval <-
+    fromIntegral . timeoutMs <$$> Env.var timeout "KAFKA_AUTO_COMMIT_INTERVAL" $
+      Env.def $
+        TimeoutMilliseconds 5000
   kafkaExtraProps <-
     Env.var
       (fmap Map.fromList . keyValues)
@@ -103,6 +108,7 @@ envKafkaConsumerConfig = do
       consumerGroupId
       kafkaTopic
       kafkaOffsetReset
+      kafkaAutoOffsetInterval
       kafkaExtraProps
 
 class HasKafkaConsumer env where
@@ -112,8 +118,7 @@ consumerProps :: KafkaConsumerConfig -> ConsumerProperties
 consumerProps KafkaConsumerConfig {..} =
   brokersList brokers
     <> groupId kafkaConsumerConfigGroupId
-    <> noAutoCommit -- we handle offsets
-    <> noAutoOffsetStore
+    <> autoCommit kafkaConsumerConfigAutoCommitInterval
     <> logLevel KafkaLogInfo
  where
   brokers = NE.toList kafkaConsumerConfigBrokerAddresses
@@ -168,26 +173,18 @@ runConsumer
   -> (a -> m ())
   -> m ()
 runConsumer pollTimeout onMessage =
-  withTraceIdContext $ immortalCreate onFinish $ forever $ do
+  withTraceIdContext $ immortalCreateLogged $ do
     consumer <- view kafkaConsumerL
 
     flip catches handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
       mRecord <- fromKafkaError =<< pollMessage consumer kTimeout
 
-      for_ mRecord $ \r -> do
-        for_ (crValue r) $ \bs -> do
-          a <-
-            inSpan "kafka.consumer.message.decode" defaultSpanArguments $
-              either (throwM . KafkaMessageDecodeError bs) pure $
-                eitherDecodeStrict bs
-          inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
-
-        inSpan "kafka.consumer.message.commit" defaultSpanArguments $ do
-          -- Store the offset of this record, then do a best-offort commit to
-          -- the broker. If this fails and we crash or shutdown, the commit in
-          -- the onFinish handler will pick it up.
-          logExMay "Unable to store offset" $ storeOffsetMessage consumer r
-          void $ commitAllOffsets OffsetCommitAsync consumer
+      for_ (crValue =<< mRecord) $ \bs -> do
+        a <-
+          inSpan "kafka.consumer.message.decode" defaultSpanArguments $
+            either (throwM . KafkaMessageDecodeError bs) pure $
+              eitherDecodeStrict bs
+        inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
  where
   kTimeout = Kafka.Timeout $ timeoutMs pollTimeout
 
@@ -201,26 +198,6 @@ runConsumer pollTimeout onMessage =
           . annotatedExceptionMessageFrom @KafkaMessageDecodeError
             (const "Could not decode message value")
     ]
-
-  onFinish finishResult = do
-    consumer <- view kafkaConsumerL
-    logExMay
-      "Unable to commit offsets"
-      (silenceNoOffsetError <$> commitAllOffsets OffsetCommit consumer)
-    either (logEx "Unexpected finish") pure finishResult
-
-  logExMay msg f = maybe (pure ()) (logEx msg) =<< f
-
-  logEx msg =
-    logErrorNS "kafka"
-      . annotatedExceptionMessageFrom (const msg)
-      . AnnotatedException []
-
-  -- It should not be considered an error if we have no offsets to commit
-  silenceNoOffsetError :: Maybe KafkaError -> Maybe KafkaError
-  silenceNoOffsetError = \case
-    Just (KafkaResponseError RdKafkaRespErrNoOffset) -> Nothing
-    e -> e
 
 fromKafkaError
   :: (MonadIO m, MonadLogger m, HasCallStack)
