@@ -39,7 +39,6 @@ import Control.Monad.Base
 import Control.Monad.Catch (ExitCase (..), MonadCatch, MonadThrow, mask)
 import qualified Control.Monad.Catch
 import qualified Control.Monad.Fail as Fail
-import Control.Monad.IO.Unlift (MonadUnliftIO (..))
 import Control.Monad.Primitive
 import Control.Monad.Random (MonadRandom (..))
 import Control.Monad.Reader
@@ -77,22 +76,12 @@ newtype AppExample app a = AppExample
     , MonadBaseControl IO
     , MonadCatch
     , MonadIO
+    , MonadUnliftIO
     , MonadReader app
     , MonadThrow
     , MonadLogger
     , Fail.MonadFail
     )
-
--- We could derive this in newer versions of unliftio-core, but defining it by
--- hand supports a few resolvers back, without CPP. This is just a copy of the
--- ReaderT instance,
---
--- https://hackage.haskell.org/package/unliftio-core-0.2.0.1/docs/src/Control.Monad.IO.Unlift.html#line-64
---
-instance MonadUnliftIO (AppExample app) where
-  {-# INLINE withRunInIO #-}
-  withRunInIO inner =
-    AppExample $ withRunInIO $ \run -> inner (run . unAppExample)
 
 instance MonadMask (AppExample app) where
   mask = UnliftIO.mask

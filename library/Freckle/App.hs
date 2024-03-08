@@ -184,7 +184,6 @@ import Freckle.App.Prelude
 import Blammo.Logging
 import Control.Lens (view)
 import Control.Monad.Catch (MonadCatch, MonadThrow)
-import Control.Monad.IO.Unlift (MonadUnliftIO (..))
 import Control.Monad.Primitive (PrimMonad (..))
 import Control.Monad.Reader
 import Control.Monad.Trans.Resource (MonadResource, ResourceT, runResourceT)
@@ -220,6 +219,7 @@ newtype AppT app m a = AppT
     , Applicative
     , Monad
     , MonadIO
+    , MonadUnliftIO
     , MonadThrow
     , MonadCatch
     , MonadMask
@@ -228,12 +228,6 @@ newtype AppT app m a = AppT
     , MonadResource
     , MonadReader app
     )
-
--- Just copies ReaderT's definition. This can be newtype-derived in GHC 8.10+,
--- but we do it by hand while we want to support older.
-instance MonadUnliftIO m => MonadUnliftIO (AppT app m) where
-  withRunInIO inner = AppT $ withRunInIO $ \run -> inner $ run . unAppT
-  {-# INLINE withRunInIO #-}
 
 instance PrimMonad m => PrimMonad (AppT app m) where
   type PrimState (AppT app m) = PrimState m
