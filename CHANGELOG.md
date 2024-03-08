@@ -1,5 +1,7 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.14.0.0...main)
 
+- Introduce `MonadHttp` [breaking]
+
 ## [v1.14.0.0](https://github.com/freckle/freckle-app/compare/v1.13.0.1...v1.14.0.1)
 
 - Reverted changes for explicit offset committing in `runConsumer` back to the auto-commit strategy [breaking]
