@@ -55,8 +55,8 @@ import Database.Persist.Postgresql
   , runSqlPool
   , runSqlPoolWithExtensibleHooks
   )
+import Database.Persist.SqlBackend.Internal.SqlPoolHooks (SqlPoolHooks (..))
 import Database.Persist.SqlBackend.SqlPoolHooks
-import Database.Persist.SqlBackend.Internal.SqlPoolHooks(SqlPoolHooks(..))
 import Database.PostgreSQL.Simple
   ( Connection
   , Only (..)
@@ -116,8 +116,8 @@ instance HasSqlPool site => HasSqlPool (HandlerData child site) where
 makePostgresPool :: (MonadUnliftIO m, MonadLoggerIO m) => m SqlPool
 makePostgresPool = do
   conf <- liftIO $ do
-    postgresPasswordSource <- Env.parse id $ Env.kept envPostgresPasswordSource
-    Env.parse id $ Env.kept $ envParseDatabaseConf postgresPasswordSource
+    postgresPasswordSource <- Env.parse id envPostgresPasswordSource
+    Env.parse id $ envParseDatabaseConf postgresPasswordSource
   makePostgresPoolWith conf
 
 -- | Run a Database action with connection stats and tracing
@@ -159,17 +159,18 @@ runDB action = do
     -- might catch the exception that we need to worry about, so in the case of
     -- an exception, runAfter would not be executed.
     -- So, this appears to be the intended interpretation.
-    hooks' = hooks
-      { runBefore = \conn mi -> do
-          Stats.incGauge gauge
-          runBefore hooks conn mi
-      , runAfter = \conn mi -> do
-          Stats.decGauge gauge
-          runAfter hooks conn mi
-      , runOnException = \conn mi e -> do
-          Stats.decGauge gauge
-          runOnException hooks conn mi e
-      }
+    hooks' =
+      hooks
+        { runBefore = \conn mi -> do
+            Stats.incGauge gauge
+            runBefore hooks conn mi
+        , runAfter = \conn mi -> do
+            Stats.decGauge gauge
+            runAfter hooks conn mi
+        , runOnException = \conn mi e -> do
+            Stats.decGauge gauge
+            runOnException hooks conn mi e
+        }
   Stats.withGauge Stats.dbEnqueuedAndProcessing $
     inSpan "runDB" clientSpanArguments $
       runSqlPoolWithExtensibleHooks action pool Nothing hooks'
