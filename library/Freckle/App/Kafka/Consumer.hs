@@ -12,6 +12,7 @@ import Freckle.App.Prelude
 
 import Blammo.Logging
 import Control.Lens (Lens', view)
+import Control.Monad (forever)
 import Data.Aeson
 import Data.ByteString (ByteString)
 import qualified Data.List.NonEmpty as NE
@@ -173,7 +174,7 @@ runConsumer
   -> (a -> m ())
   -> m ()
 runConsumer pollTimeout onMessage =
-  withTraceIdContext $ immortalCreateLogged $ do
+  withTraceIdContext $ immortalCreateLogged $ forever $ do
     consumer <- view kafkaConsumerL
 
     flip catches handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
