@@ -190,6 +190,7 @@ import Control.Monad.Reader
 import Control.Monad.Trans.Resource (MonadResource, ResourceT, runResourceT)
 import Freckle.App.Database
 import qualified Freckle.App.Database.XRay as XRay
+import Freckle.App.Http (MonadHttp (..))
 import Freckle.App.OpenTelemetry
 import System.IO (BufferMode (..), hSetBuffering, stderr, stdout)
 
@@ -244,6 +245,9 @@ instance PrimMonad m => PrimMonad (AppT app m) where
   --
   primitive = AppT . lift . lift . lift . primitive
   {-# INLINE primitive #-}
+
+instance MonadIO m => MonadHttp (AppT app m) where
+  httpLbs = liftIO . httpLbs
 
 instance (Monad m, HasTracer app) => MonadTracer (AppT app m) where
   getTracer = view tracerL
