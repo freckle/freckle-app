@@ -1,5 +1,3 @@
-{-# LANGUAGE CPP #-}
-
 -- | Parse the shell environment for configuration
 --
 -- A minor extension of [envparse](https://hackage.haskell.org/package/envparse).
@@ -29,7 +27,6 @@ module Freckle.App.Env
 
     -- * Extensions
   , Timeout (..)
-  , kept
   , eitherReader
   , time
   , keyValues
@@ -46,8 +43,6 @@ import qualified Data.Text as T
 import Data.Time (defaultTimeLocale, parseTimeM)
 import Env hiding (flag)
 import qualified Env
-import Env.Internal.Free (hoistAlt)
-import Env.Internal.Parser (Parser (..), VarF (..))
 import qualified Prelude as Unsafe (read)
 
 -- | Designates the value of a parameter when a flag is not provided.
@@ -81,26 +76,6 @@ newtype On a = On a
 -- Right LevelDebug
 flag :: Off a -> On a -> String -> Mod Flag a -> Parser Error a
 flag (Off f) (On t) n m = Env.flag f t n m
-
--- | Modify a 'Parser' so variables are never removed after reading
---
--- In @envparse-0.4@, read variables are removed from the environment by
--- default. This is often problematic (e.g. in tests that repeatedly load an app
--- and re-read the environment), and the security benefits are minor. This
--- function will make them all behave as if @keep@ was used.
---
--- In @envparse-0.5@, the default is reversed and @sensitive@ can be used to
--- explicitly unset read variables, and so this function will instead make them
--- all behave as if @sensitive@ was /not/ used.
-kept :: Parser e a -> Parser e a
-kept = Parser . hoistAlt go . unParser
- where
-  go v =
-#if MIN_VERSION_envparse(0,5,0)
-    v { varfSensitive = False }
-#else
-    v { varfKeep = True }
-#endif
 
 -- | Create a 'Reader' from a simple parser function
 --
@@ -160,7 +135,6 @@ keyValue c =
 --
 -- >>> var (splitOnParse @Error ',' nonempty) "X" mempty `parsePure` [("X", ",,")]
 -- Left [("X",EmptyError)]
---
 splitOnParse :: Char -> Reader e a -> Reader e [a]
 splitOnParse c p = traverse p <=< splitOn c
 
