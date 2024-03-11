@@ -33,6 +33,7 @@ module Freckle.App.Http
   , setRequestBodyURLEncoded
   , setRequestCheckStatus
   , setRequestPath
+  , disableRequestDecompress
 
     -- * Response accessors
   , Response
@@ -88,6 +89,7 @@ import qualified Data.ByteString.Lazy.Char8 as BSL8
 import qualified Data.List.NonEmpty as NE
 import Freckle.App.Http.Paginate
 import Freckle.App.Http.Retry
+import qualified Network.HTTP.Client as HTTP (Request (..))
 import Network.HTTP.Conduit (HttpExceptionContent (..))
 import Network.HTTP.Simple hiding (httpLbs, httpNoBody)
 import qualified Network.HTTP.Simple as HTTP
@@ -248,6 +250,12 @@ addAcceptHeader = addRequestHeader hAccept
 
 addBearerAuthorizationHeader :: BS.ByteString -> Request -> Request
 addBearerAuthorizationHeader = addRequestHeader hAuthorization . ("Bearer " <>)
+
+disableRequestDecompress :: Request -> Request
+disableRequestDecompress req =
+  req
+    { HTTP.decompress = const False
+    }
 
 -- | Read an 'Either' response body, throwing any 'Left' as an exception
 --

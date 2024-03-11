@@ -35,7 +35,7 @@ cacheKey :: Text -> Either String CacheKey
 cacheKey t
   | T.length t > 250 = invalid "Must be fewer than 250 characters"
   | T.any isControl t = invalid "Cannot contain control characters"
-  | T.any isSpace t = invalid "Cannot container whitespace"
+  | T.any isSpace t = invalid "Cannot contain whitespace"
   | otherwise = Right $ CacheKey t
  where
   invalid msg =
