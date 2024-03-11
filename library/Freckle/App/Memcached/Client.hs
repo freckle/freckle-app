@@ -6,6 +6,7 @@ module Freckle.App.Memcached.Client
   , HasMemcachedClient (..)
   , get
   , set
+  , delete
   ) where
 
 import Freckle.App.Prelude
@@ -13,7 +14,7 @@ import Freckle.App.Prelude
 import Control.Lens (Lens', view, _1)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Database.Memcache.Client as Memcache
-import Database.Memcache.Types (Value)
+import Database.Memcache.Types (Value, Version)
 import Freckle.App.Memcached.CacheKey
 import Freckle.App.Memcached.CacheTTL
 import Freckle.App.Memcached.Servers
@@ -100,6 +101,22 @@ set k v expiration = traced $ with $ \case
               ]
         }
 
+-- | Delete a key
+delete
+  :: (MonadUnliftIO m, MonadTracer m, MonadReader env m, HasMemcachedClient env)
+  => CacheKey
+  -> m ()
+delete k = traced $ with $ \case
+  MemcachedClient mc -> void $ liftIO $ Memcache.delete mc (fromCacheKey k) bypassCAS
+  MemcachedClientDisabled -> pure ()
+ where
+  traced =
+    inSpan
+      "cache.delete"
+      clientSpanArguments
+        { Trace.attributes = HashMap.fromList [("key", Trace.toAttribute k)]
+        }
+
 quitClient :: MonadIO m => MemcachedClient -> m ()
 quitClient = \case
   MemcachedClient mc -> void $ liftIO $ Memcache.quit mc
@@ -112,3 +129,7 @@ with
 with f = do
   c <- view memcachedClientL
   f c
+
+-- | The sentinal version @0@ means to not perform CAS checking
+bypassCAS :: Version
+bypassCAS = 0

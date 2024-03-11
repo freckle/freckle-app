@@ -116,6 +116,7 @@ library:
     - lens
     - memcache
     - monad-control
+    - monad-logger
     - monad-logger-aeson
     - monad-validate
     - mtl
@@ -167,17 +168,23 @@ tests:
       - errors
       - freckle-app
       - hspec
+      - hspec-expectations-json
+      - hspec-expectations-lifted
       - http-types
       - lens
       - lens-aeson
       - memcache
       - monad-validate
+      - mtl
       - nonempty-containers
       - postgresql-simple
       - text
+      - time
+      - unordered-containers
       - vector
       - wai
       - wai-extra
+      - zlib
 
   doctest:
     main: Main.hs
