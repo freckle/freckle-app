@@ -1,16 +1,45 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.14.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.15.0.0...main)
 
-- Compile with GHC 9.8 on CI
+## [v1.15.0.0](https://github.com/freckle/freckle-app/compare/v1.14.0.0...v1.15.0.0)
+
 - Support `aeson-2.2`
 - Support `http-client-0.7.16`
-- Assume minimum bounds as of `lts-19.33` [breaking]
-  - `aeson-2.0`
-  - `dotenv-0.10`
-  - `envparse-0.5`
-  - `http-link-header-1.2`
-  - `mecache-0.3.0`
-  - `template-haskell-2.18.0`
-- Introduce `MonadHttp` [breaking]
+
+- Drop support for GHC < 9.2, add CI for GHC 9.8
+
+  **BREAKING**. Things may still compile, but we've stopped testing with
+  resolvers lower than `lts-20`. Accordingly, `CPP` branches supporting
+  dependencies from below that resolver were also removed, and the following
+  minimum bounds were raised:
+
+  - `aeson > 2.0`
+  - `dotenv > 0.10`
+  - `envparse > 0.5`
+  - `http-link-header >1.2`
+  - `mecache > 0.3.0`
+  - `template-haskell > 2.18.0`
+
+- Introduce `MonadHttp`
+
+  **BREAKING**. `Freckle.App.Http` now uses a custom `MonadHttp` class instead
+  of `MonadIO`. This allows customizing the behavior of HTTP centrally for your
+  entire application stack, including stubbing HTTP requests in tests.
+
+  An `IO` instance exists, so users can either add:
+
+  ```hs
+  instance MonadHttp AppM where
+    httpLbs = liftIO httpLbs
+  ```
+
+  Or replace call-sites,
+
+  ```diff
+  - resp <- httpLbs req
+  + resp <- liftIO $ httpLbs req
+  ```
+
+  To maintain behavior across this upgrade.
 
 ## [v1.14.0.0](https://github.com/freckle/freckle-app/compare/v1.13.0.1...v1.14.0.1)
 
