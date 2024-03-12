@@ -35,7 +35,7 @@ jobs:
 
       # Upload using our oldest, tested resolver, to set the lowest lower bounds
       - name: "Release to Hackage"
-        run: stack --stack-yaml stack-lts-18.28.yaml upload --pvp-bounds lower .
+        run: stack --stack-yaml stack-lts-20.26.yaml upload --pvp-bounds lower .
 
       - name: "Upload documentation"
         run: stack upload --documentation .
