@@ -44,6 +44,7 @@ import Control.Monad.Reader
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS8
 import qualified Data.ByteString.Lazy as BSL
+import qualified Data.HashMap.Strict as HashMap
 import Data.Pool
 import qualified Data.Text as T
 import Database.Persist.Postgresql
@@ -71,6 +72,7 @@ import Freckle.App.OpenTelemetry
 import Freckle.App.Stats (HasStatsClient)
 import qualified Freckle.App.Stats as Stats
 import OpenTelemetry.Instrumentation.Persistent
+import qualified OpenTelemetry.Trace as Trace
 import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
 import UnliftIO.IORef
@@ -140,7 +142,7 @@ runDB action = do
   pool <- asks getSqlPool
   gauge <- Stats.lookupGauge Stats.dbConnections
   let
-    hooks = setAlterBackend defaultSqlPoolHooks $ wrapSqlBackend mempty
+    hooks = setAlterBackend defaultSqlPoolHooks $ wrapSqlBackend dbAttributes
     -- Setting the SqlPoolHooks for metrics collection:
     -- You may be wondering if this code contains a "double-decrement" bug, because
     -- perhaps when an exception occurs, both runAfter and runOnException are
@@ -172,8 +174,10 @@ runDB action = do
             runOnException hooks conn mi e
         }
   Stats.withGauge Stats.dbEnqueuedAndProcessing $
-    inSpan "runDB" clientSpanArguments $
+    inSpan "runDB" (clientSpanArguments {Trace.attributes = dbAttributes}) $
       runSqlPoolWithExtensibleHooks action pool Nothing hooks'
+ where
+  dbAttributes = HashMap.fromList [("service.name", "database")]
 
 runDBSimple
   :: (HasSqlPool app, MonadUnliftIO m, MonadReader app m)
