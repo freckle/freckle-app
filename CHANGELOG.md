@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.15.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.15.0.1...main)
+
+## [v1.15.0.1](https://github.com/freckle/freckle-app/compare/v1.15.0.0...v1.15.0.1)
+
+- Set `service.name` when tracing Database, Memcached, and Kafka functions.
 
 ## [v1.15.0.0](https://github.com/freckle/freckle-app/compare/v1.14.0.0...v1.15.0.0)
 
