@@ -62,7 +62,11 @@ get k = traced $ with $ \case
     inSpan
       "cache.get"
       clientSpanArguments
-        { Trace.attributes = HashMap.fromList [("key", Trace.toAttribute k)]
+        { Trace.attributes =
+            HashMap.fromList
+              [ ("service.name", "memcached")
+              , ("key", Trace.toAttribute k)
+              ]
         }
 
 -- | Set a value to expire in the given seconds
@@ -89,7 +93,8 @@ set k v expiration = traced $ with $ \case
       clientSpanArguments
         { Trace.attributes =
             HashMap.fromList
-              [ ("key", Trace.toAttribute k)
+              [ ("service.name", "memcached")
+              , ("key", Trace.toAttribute k)
               , ("value", byteStringToAttribute v)
               , ("expiration", Trace.toAttribute expiration)
               ]

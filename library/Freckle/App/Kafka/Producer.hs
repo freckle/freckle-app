@@ -150,7 +150,9 @@ produceKeyedOn prTopic values keyF = traced $ do
       producerSpanArguments
         { Trace.attributes =
             HashMap.fromList
-              [("topic", Trace.toAttribute $ unTopicName prTopic)]
+              [ ("service.name", "kafka")
+              , ("topic", Trace.toAttribute $ unTopicName prTopic)
+              ]
         }
 
 produceKeyedOnAsync
