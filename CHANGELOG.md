@@ -1,4 +1,9 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.15.0.1...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.15.1.0...main)
+
+## [v1.15.1.0](https://github.com/freckle/freckle-app/compare/v1.15.0.1...v1.15.1.0)
+
+- Add `Freckle.App.Http.Cache`
+- Add `disableRequestDecompress`
 
 ## [v1.15.0.1](https://github.com/freckle/freckle-app/compare/v1.15.0.0...v1.15.0.1)
 
