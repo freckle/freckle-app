@@ -96,6 +96,7 @@ library:
     - errors
     - exceptions
     - extra
+    - faktory
     - filepath
     - hashable
     - hs-opentelemetry-api

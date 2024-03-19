@@ -43,6 +43,7 @@ library
       Freckle.App.Exception.MonadThrow
       Freckle.App.Exception.MonadUnliftIO
       Freckle.App.Exception.Types
+      Freckle.App.Faktory.ProducerPool
       Freckle.App.Ghci
       Freckle.App.GlobalCache
       Freckle.App.Http
@@ -145,6 +146,7 @@ library
     , errors
     , exceptions
     , extra
+    , faktory
     , filepath
     , hashable
     , hs-opentelemetry-api
