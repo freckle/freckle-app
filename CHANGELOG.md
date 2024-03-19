@@ -9,8 +9,6 @@
 - Add `Freckle.App.Http.Cache`
 - Add `disableRequestDecompress`
 
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.15.2.0...main)
-
 ## [v1.15.0.1](https://github.com/freckle/freckle-app/compare/v1.15.0.0...v1.15.0.1)
 
 - Set `service.name` when tracing Database, Memcached, and Kafka functions.
