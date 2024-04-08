@@ -86,6 +86,9 @@ class MonadUnliftIO m => MonadSqlBackend m where
 instance (HasSqlBackend r, MonadUnliftIO m) => MonadSqlBackend (ReaderT r m) where
   getSqlBackendM = asks getSqlBackend
 
+instance MonadSqlBackend m => MonadSqlBackend (ExceptT e m) where
+  getSqlBackendM = lift getSqlBackendM
+
 -- | Generalize from 'SqlPersistT' to 'MonadSqlBackend'
 liftSql :: (MonadSqlBackend m, HasCallStack) => ReaderT SqlBackend m a -> m a
 liftSql (ReaderT f) = checkpointCallStack $ getSqlBackendM >>= f
