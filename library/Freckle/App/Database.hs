@@ -40,6 +40,7 @@ import Freckle.App.Prelude
 
 import Blammo.Logging
 import qualified Control.Immortal as Immortal
+import Control.Monad.Except (ExceptT)
 import Control.Monad.Reader
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS8
