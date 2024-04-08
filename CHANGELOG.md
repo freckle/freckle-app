@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.15.2.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.15.3.0...main)
+
+## [v1.15.3.0](https://github.com/freckle/freckle-app/compare/v1.15.2.0...v1.15.3.0)
+
+- Add instance `MonadSqlBackend m => MonadSqlBackend (ExceptT e m)`
 
 ## [v1.15.2.0](https://github.com/freckle/freckle-app/compare/v1.15.1.0...v1.15.2.0)
 
