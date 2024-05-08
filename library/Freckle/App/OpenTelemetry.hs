@@ -43,6 +43,10 @@ module Freckle.App.OpenTelemetry
   , getCurrentTraceIdAsDatadog
   , getCurrentSpanContext
 
+    -- * Attributes
+  , ToAttribute (..)
+  , addCurrentSpanAttributes
+
     -- * Setup
   , withTracerProvider
 
@@ -123,9 +127,15 @@ getCurrentTraceIdAsDatadog =
   fmap convertOpenTelemetryTraceIdToDatadogTraceId <$> getCurrentTraceId
 
 getCurrentSpanContext :: MonadIO m => m (Maybe SpanContext)
-getCurrentSpanContext = do
+getCurrentSpanContext = withCurrentSpan getSpanContext
+
+addCurrentSpanAttributes :: MonadIO m => HashMap Text Attribute -> m ()
+addCurrentSpanAttributes attrs = void $ withCurrentSpan (`addAttributes` attrs)
+
+withCurrentSpan :: MonadIO m => (Span -> m b) -> m (Maybe b)
+withCurrentSpan f = do
   mSpan <- lookupSpan <$> getContext
-  traverse getSpanContext mSpan
+  traverse f mSpan
 
 withTraceIdContext :: (MonadIO m, MonadMask m) => m a -> m a
 withTraceIdContext f = do
