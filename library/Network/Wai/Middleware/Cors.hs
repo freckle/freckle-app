@@ -60,6 +60,7 @@ corsResponseHeaders validateOrigin extraExposedHeaders origin =
   , ("Access-Control-Allow-Credentials", "true")
   , ("Access-Control-Allow-Headers", "Content-Type, *")
   , ("Access-Control-Expose-Headers", BS.intercalate ", " exposedHeaders)
+  , ("Vary", "Origin")
   ]
  where
   validatedOrigin = if validateOrigin origin then origin else "BADORIGIN"
