@@ -1,26 +1,4 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.15.3.0...main)
-
--- | __DEPRECATED__
---
--- This module used to wrap
--- 'OpenTelemetry.Instrumentation.Wai.newOpenTelemetryWaiMiddleware' with
--- additional behaviors:
---
--- 1. Add an @X-Datadog-Trace-Id@ response header
--- 2. Add a 'Word64'-encoded @trace_id@ to logging context
---
--- (1) should be handled (better) by using an actual @datadog@ propagator. That
--- said, it's also not necessary to do. The default propagators add trace
--- context as thier own headers, which are sufficient to use.
---
--- (2) doesn't need to be 'Word64'-encoded. It seems Datadog can now work with
--- the more common 'Base16'-encoded (i.e. hex) values. This is what
--- 'addThreadContextFromTracing' will add for you.
---
--- Finally, wrapping only that remaining behavior together with the library
--- middleware is convoluted and just not very valuable. Therefore, if you were
--- previously doing:
---
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.15.4.0...main)
 
 ## [v1.15.4.0](https://github.com/freckle/freckle-app/compare/v1.15.3.0...v1.15.4.0)
 
