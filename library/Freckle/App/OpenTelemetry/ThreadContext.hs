@@ -21,7 +21,7 @@ import OpenTelemetry.Trace.TraceState (Key (..), TraceState (..), Value (..))
 
 -- | Add tracing context values to the logging context
 --
--- Values are encoded to 'Base16' (e.g. hex).
+-- Values are encoded to 'Base16' (i.e. hex).
 withTraceContext :: (MonadIO m, MonadMask m) => m a -> m a
 withTraceContext f = do
   mSpanContext <- getCurrentSpanContext
