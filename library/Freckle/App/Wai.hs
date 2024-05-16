@@ -12,12 +12,16 @@ module Freckle.App.Wai
 
     -- * Tracing
   , newOpenTelemetryWaiMiddleware
+  , addThreadContextFromTracing
 
     -- * Metrics
   , addThreadContextFromStatsTags
   , requestStats
   ) where
 
+import Freckle.App.Prelude
+
+import Freckle.App.OpenTelemetry.ThreadContext
 import Network.Wai
 import Network.Wai.Middleware.AddHeaders
 import Network.Wai.Middleware.Cors
@@ -33,3 +37,7 @@ noCacheMiddleware =
 -- | Middleware that adds header to deny all frame embedding
 denyFrameEmbeddingMiddleware :: Middleware
 denyFrameEmbeddingMiddleware = addHeaders [("X-Frame-Options", "DENY")]
+
+-- | Middleware that adds trace context to logging context
+addThreadContextFromTracing :: Middleware
+addThreadContextFromTracing app req = withTraceContext . app req

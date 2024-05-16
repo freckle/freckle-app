@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Network.Wai.Middleware.OpenTelemetry
   ( newOpenTelemetryWaiMiddleware
   , openTelemetryMiddleware
@@ -15,6 +17,10 @@ newOpenTelemetryWaiMiddleware :: IO Middleware
 newOpenTelemetryWaiMiddleware = do
   otel <- Trace.newOpenTelemetryWaiMiddleware
   pure $ otel . openTelemetryMiddleware
+{-# DEPRECATED
+  newOpenTelemetryWaiMiddleware
+  "Use OpenTelemetry.Instrumentation.Wai.newOpenTelemetryWaiMiddleware"
+  #-}
 
 -- | Add 'TraceId' information to context and responses
 --
@@ -25,6 +31,7 @@ newOpenTelemetryWaiMiddleware = do
 openTelemetryMiddleware :: Middleware
 openTelemetryMiddleware app request respond =
   withTraceIdContext $ addTraceIdHeader app request respond
+{-# DEPRECATED openTelemetryMiddleware "Use addThreadContextFromTracing" #-}
 
 addTraceIdHeader :: Middleware
 addTraceIdHeader app request respond = do

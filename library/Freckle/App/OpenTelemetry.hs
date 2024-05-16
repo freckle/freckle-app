@@ -125,6 +125,7 @@ getCurrentTraceId = fmap Trace.traceId <$> getCurrentSpanContext
 getCurrentTraceIdAsDatadog :: MonadIO m => m (Maybe Word64)
 getCurrentTraceIdAsDatadog =
   fmap convertOpenTelemetryTraceIdToDatadogTraceId <$> getCurrentTraceId
+{-# DEPRECATED getCurrentTraceIdAsDatadog "Datadog can operate with Base16 ids" #-}
 
 getCurrentSpanContext :: MonadIO m => m (Maybe SpanContext)
 getCurrentSpanContext = withCurrentSpan getSpanContext
@@ -141,6 +142,7 @@ withTraceIdContext :: (MonadIO m, MonadMask m) => m a -> m a
 withTraceIdContext f = do
   mTraceId <- getCurrentTraceIdAsDatadog
   maybe f (\traceId -> withThreadContext ["trace_id" .= traceId] f) mTraceId
+{-# DEPRECATED withTraceIdContext "Use Freckle.App.OpenTelemetry.ThreadContext" #-}
 
 -- | Convert a 'ByteString' to an 'Attribute' safely
 --

@@ -24,6 +24,7 @@ import Freckle.App.Env
 import Freckle.App.Exception (annotatedExceptionMessageFrom)
 import Freckle.App.Kafka.Producer (envKafkaBrokerAddresses)
 import Freckle.App.OpenTelemetry
+import Freckle.App.OpenTelemetry.ThreadContext
 import Kafka.Consumer hiding
   ( Timeout
   , closeConsumer
@@ -174,7 +175,7 @@ runConsumer
   -> (a -> m ())
   -> m ()
 runConsumer pollTimeout onMessage =
-  withTraceIdContext $ immortalCreateLogged $ forever $ do
+  withTraceContext $ immortalCreateLogged $ forever $ do
     consumer <- view kafkaConsumerL
 
     flip catches handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
