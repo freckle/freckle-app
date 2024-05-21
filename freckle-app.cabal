@@ -65,6 +65,7 @@ library
       Freckle.App.Memcached.MD5
       Freckle.App.Memcached.Servers
       Freckle.App.OpenTelemetry
+      Freckle.App.OpenTelemetry.Context
       Freckle.App.OpenTelemetry.ThreadContext
       Freckle.App.Prelude
       Freckle.App.Random
@@ -263,6 +264,7 @@ test-suite spec
       Freckle.App.HttpSpec
       Freckle.App.Memcached.ServersSpec
       Freckle.App.MemcachedSpec
+      Freckle.App.OpenTelemetry.ContextSpec
       Freckle.App.Test.Http.MatchRequestSpec
       Freckle.App.Test.Properties.JSONSpec
       Freckle.App.Test.Properties.PathPieceSpec
@@ -309,6 +311,7 @@ test-suite spec
     , conduit
     , errors
     , freckle-app
+    , hs-opentelemetry-api
     , hspec
     , hspec-expectations-json
     , hspec-expectations-lifted

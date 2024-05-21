@@ -31,6 +31,7 @@ module Freckle.App.OpenTelemetry
     -- * Effects
   , MonadTracer (..)
   , inSpan
+  , SpanArguments (..)
   , defaultSpanArguments
   , serverSpanArguments
   , clientSpanArguments
@@ -42,6 +43,12 @@ module Freckle.App.OpenTelemetry
   , getCurrentTraceId
   , getCurrentTraceIdAsDatadog
   , getCurrentSpanContext
+
+    -- * Ids
+  , TraceId
+  , traceIdToHex
+  , SpanId
+  , spanIdToHex
 
     -- * Attributes
   , ToAttribute (..)
@@ -76,7 +83,13 @@ import OpenTelemetry.Propagator.Datadog
 import OpenTelemetry.Trace hiding (inSpan)
 import OpenTelemetry.Trace.Core (getSpanContext)
 import qualified OpenTelemetry.Trace.Core as Trace (SpanContext (..))
-import OpenTelemetry.Trace.Id (TraceId)
+import OpenTelemetry.Trace.Id
+  ( Base (..)
+  , SpanId
+  , TraceId
+  , spanIdBaseEncodedText
+  , traceIdBaseEncodedText
+  )
 import OpenTelemetry.Trace.Monad
 import UnliftIO.Exception (bracket)
 
@@ -143,6 +156,12 @@ withTraceIdContext f = do
   mTraceId <- getCurrentTraceIdAsDatadog
   maybe f (\traceId -> withThreadContext ["trace_id" .= traceId] f) mTraceId
 {-# DEPRECATED withTraceIdContext "Use Freckle.App.OpenTelemetry.ThreadContext" #-}
+
+traceIdToHex :: TraceId -> Text
+traceIdToHex = traceIdBaseEncodedText Base16
+
+spanIdToHex :: SpanId -> Text
+spanIdToHex = spanIdBaseEncodedText Base16
 
 -- | Convert a 'ByteString' to an 'Attribute' safely
 --

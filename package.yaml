@@ -168,6 +168,7 @@ tests:
       - conduit
       - errors
       - freckle-app
+      - hs-opentelemetry-api
       - hspec
       - hspec-expectations-json
       - hspec-expectations-lifted
