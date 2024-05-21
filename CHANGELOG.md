@@ -8,14 +8,14 @@
 
   ```diff
   - import Network.Wai.Middleware.OpenTelemetry (newOpenTelemetryWaiMiddleware)
-  + import Freckle.App.Wai (addThreadContextFromRequest)
+  + import Freckle.App.Wai (addThreadContextFromTracing)
   + import OpenTelemetry.Instrumentation.Wai (newOpenTelemetryWaiMiddleware)
 
     traceMiddleware <- newOpenTelemetryWaiMiddleware
 
     run 3000
       . traceMiddleware
-  +   . addThreadContextFromRequest
+  +   . addThreadContextFromTracing
       . ...
       $ app
   ```
