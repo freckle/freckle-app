@@ -9,7 +9,7 @@ module Freckle.App.OpenTelemetry.Context
 import Freckle.App.Prelude
 
 import Control.Error.Util (hush)
-import Control.Lens (Lens', lens, views, (&), (.~), (^.))
+import Control.Lens (Lens', lens, (&), (.~), (^.))
 import Control.Monad.Catch (MonadMask)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.ByteString (ByteString)
@@ -19,8 +19,7 @@ import Faktory.Job (Job, custom, jobOptions)
 import Faktory.Job.Custom (fromCustom, toCustom)
 import Faktory.JobOptions (JobOptions (..))
 import Freckle.App.OpenTelemetry
-  ( HasTracer (..)
-  , MonadTracer
+  ( MonadTracer (..)
   , SpanArguments
   , inSpan
   )
@@ -76,7 +75,7 @@ decode = bimap (decodeUtf8 . CI.original) decodeUtf8
 
 -- | Update our trace context from that extracted from the given item's headers
 extractContext
-  :: (MonadIO m, MonadReader env m, HasTracer env, HasHeaders a) => a -> m ()
+  :: (MonadIO m, MonadTracer m, HasHeaders a) => a -> m ()
 extractContext a = do
   context <- getContext
   propagator <- getPropagator
@@ -85,25 +84,22 @@ extractContext a = do
 
 -- | Inject our trace context into the given item's headers
 injectContext
-  :: (MonadIO m, MonadReader env m, HasTracer env, HasHeaders a) => a -> m a
+  :: (MonadIO m, MonadTracer m, HasHeaders a) => a -> m a
 injectContext a = do
   context <- getContext
   propagator <- getPropagator
   headers <- inject propagator context $ a ^. headersL
   pure $ a & headersL .~ headers
 
-getPropagator
-  :: (MonadReader env m, HasTracer env)
-  => m (Propagator Context [Header] [Header])
-getPropagator = views tracerL $ getTracerProviderPropagators . getTracerTracerProvider
+getPropagator :: MonadTracer m => m (Propagator Context [Header] [Header])
+getPropagator =
+  getTracerProviderPropagators . getTracerTracerProvider <$> getTracer
 
 -- | Process an item (a request, a Job, etc) in a top-level span and context
 processWithContext
   :: ( MonadUnliftIO m
      , MonadMask m
      , MonadTracer m
-     , MonadReader env m
-     , HasTracer env
      , HasHeaders a
      , HasCallStack
      )
