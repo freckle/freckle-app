@@ -1,4 +1,9 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.15.4.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.15.5.0...main)
+
+## [v1.15.5.0](https://github.com/freckle/freckle-app/compare/v1.15.4.0...v1.15.5.0)
+
+- Add `Freckle.App.OpenTelemetry.Context` with helpers for propagating trace
+  context across services.
 
 ## [v1.15.4.0](https://github.com/freckle/freckle-app/compare/v1.15.3.0...v1.15.4.0)
 
