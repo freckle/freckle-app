@@ -102,34 +102,34 @@ spec = do
         stubs =
           [ "https://example.com/1"
               & matchL <>~ MatchHeader (hAcceptLanguage, "en")
+              & headersL <>~ [(hVary, "accept-language")]
               & bodyL .~ "Hello\n"
           , "https://example.com/1"
               & matchL <>~ MatchHeader (hAcceptLanguage, "es")
+              & headersL <>~ [(hVary, "accept-language")]
               & bodyL .~ "Hola\n"
           , "https://example.com/2"
               & matchL <>~ MatchHeader (hAcceptLanguage, "en")
+              & headersL <>~ [(hVary, "accept-language")]
               & bodyL .~ "World\n"
           , "https://example.com/2"
               & matchL <>~ MatchHeader (hAcceptLanguage, "es")
+              & headersL <>~ [(hVary, "accept-language")]
               & bodyL .~ "Mundo\n"
           ]
 
         reqEn1 =
           parseRequest_ "https://example.com/1"
             & addRequestHeader hAcceptLanguage "en"
-            & addRequestHeader hVary "Accept, Accept-Language"
         reqEn2 =
           parseRequest_ "https://example.com/2"
             & addRequestHeader hAcceptLanguage "en"
-            & addRequestHeader hVary "Accept, Accept-Language"
         reqEs1 =
           parseRequest_ "https://example.com/1"
             & addRequestHeader hAcceptLanguage "es"
-            & addRequestHeader hVary "Accept, Accept-Language"
         reqEs2 =
           parseRequest_ "https://example.com/2"
             & addRequestHeader hAcceptLanguage "es"
-            & addRequestHeader hVary "Accept, Accept-Language"
 
       cache <- execCached $ do
         requestBodyCached settings stubs reqEn1 `shouldReturn` "Hello\n"
@@ -156,21 +156,22 @@ spec = do
             [ "https://example.com/1"
                 & matchL <>~ MatchHeader (hAcceptEncoding, "gzip")
                 & headersL <>~ [(hContentEncoding, "gzip")]
+                & headersL <>~ [(hVary, "accept-encoding")]
                 & bodyL .~ gzipped
             , "https://example.com/1"
                 & bodyL .~ "Hi (not zipped)\n"
+                & headersL <>~ [(hContentEncoding, "text/plain")]
+                & headersL <>~ [(hVary, "accept-encoding")]
             ]
 
           req =
             parseRequest_ "https://example.com/1"
-              & addRequestHeader hVary "accept-encoding"
+              & addRequestHeader hAcceptEncoding "text-plain"
           reqGzipped =
             parseRequest_ "https://example.com/1"
-              & addRequestHeader hVary "accept-encoding"
               & addRequestHeader hAcceptEncoding "gzip"
           reqGzippedAsIs =
             parseRequest_ "https://example.com/1"
-              & addRequestHeader hVary "accept-encoding"
               & addRequestHeader hAcceptEncoding "gzip"
               & disableRequestDecompress
 
