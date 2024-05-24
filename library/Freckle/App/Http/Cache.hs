@@ -31,17 +31,14 @@ import Network.HTTP.Client (Request, Response)
 import qualified Network.HTTP.Client as HTTP
 import Network.HTTP.Simple
   ( addRequestHeader
-  , getRequestHeader
   , getResponseStatus
   )
 import Network.HTTP.Types.Header
-  ( HeaderName
-  , hAge
+  ( hAge
   , hCacheControl
   , hETag
   , hExpires
   , hIfNoneMatch
-  , hVary
   )
 import Network.HTTP.Types.Status (Status, statusCode)
 
@@ -81,11 +78,9 @@ isCachedResponseStale cached now =
 -- Wrap a function from "Freckle.App.Http" with caching
 --
 -- Verify that the request is cacheable (e.g. a @GET@), then cache it at a
--- derived key (from URL and considering any @Vary@ headers). The response will
--- only be cached if @Cache-Control@ allows it. @Cache-Control@ is also used to
--- determine TTL (e.g. @max-age@)
+-- derived key (from URL). The response will only be cached if @Cache-Control@
+-- allows it. @Cache-Control@ is also used to determine TTL (e.g. @max-age@)
 --
--- - <https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#vary>
 -- - <https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#fresh_and_stale_based_on_age>
 --
 -- If a cached response is stale, but it has an @ETag@ header, we will make the
@@ -212,7 +207,6 @@ getCachableRequestKey settings req = do
     , HTTP.port req
     , HTTP.path req
     , HTTP.queryString req
-    , concatMap (`getRequestHeader` req) requestHeaders.vary
     )
 
 -- | Return a 'CacheTTL' for a 'Response', if it's cacheable
@@ -293,16 +287,14 @@ setCacheControlFrom from to =
   fromCCHeader = filter ((== hCacheControl) . fst) $ getHeaders from
   toNonCCHeader = filter ((/= hCacheControl) . fst) $ getHeaders to
 
-data RequestHeaders = RequestHeaders
+newtype RequestHeaders = RequestHeaders
   { cacheControl :: [CacheControl]
-  , vary :: [HeaderName]
   }
 
 getRequestHeaders :: Request -> RequestHeaders
 getRequestHeaders req =
   RequestHeaders
     { cacheControl = getCacheControl req
-    , vary = map CI.mk $ concatMap splitHeader $ getRequestHeader hVary req
     }
 
 data ResponseHeaders = ResponseHeaders

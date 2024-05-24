@@ -1,4 +1,4 @@
--- | Centralized module for making HTTP requests
+-- | Centralized module for making HTTP requestshttp
 --
 -- These functions:
 --
