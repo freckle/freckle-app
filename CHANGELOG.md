@@ -1,4 +1,12 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.15.5.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.16.0.0...main)
+
+## [v1.16.0.0](https://github.com/freckle/freckle-app/compare/v1.15.5.0...v1.16.0.0)
+
+- Add tracing to HTTP requests made within `AppT`
+
+  This is a potentially breaking change for users of `AppT app` because it now
+  requires `HasTracer app`. This instance most likely already exists, since it's
+  required to use `runDB` too.
 
 ## [v1.15.5.0](https://github.com/freckle/freckle-app/compare/v1.15.4.0...v1.15.5.0)
 
