@@ -23,7 +23,7 @@ import qualified Freckle.App.Memcached.Client as Memcached
 import Freckle.App.OpenTelemetry (MonadTracer)
 import Network.HTTP.Client (Request)
 import qualified Network.HTTP.Client.Internal as HTTP
-import Network.HTTP.Types.Header (ResponseHeaders)
+import Network.HTTP.Types.Header (ResponseHeaders, hAcceptEncoding)
 import Network.HTTP.Types.Status (Status (..))
 import Network.HTTP.Types.Version (HttpVersion (..))
 
@@ -41,6 +41,7 @@ memcachedHttpCacheSettings defaultTTL =
   HttpCacheSettings
     { shared = True
     , cacheable = const True
+    , cacheKeyHeaders = [hAcceptEncoding]
     , defaultTTL
     , getCurrentTime = liftIO getCurrentTime
     , logDebug = logDebugNS "http.cache"

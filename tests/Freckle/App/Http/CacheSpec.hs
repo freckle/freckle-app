@@ -37,7 +37,7 @@ import Network.HTTP.Types.Status
   , status400
   , status503
   )
-import Test.Hspec (Spec, context, describe, it, pendingWith)
+import Test.Hspec (Spec, context, describe, it)
 import Test.Hspec.Expectations.Json.Lifted (shouldMatchJson)
 import Test.Hspec.Expectations.Lifted
 
@@ -95,9 +95,7 @@ spec = do
 
       cache.map `shouldSatisfy` ((== 0) . HashMap.size)
 
-    it "incorporates Vary headers into the cache key" $ do
-      pendingWith "Need to fix Vary handling"
-
+    it "incorporates cacheKeyHeaders into the cache key" $ do
       let
         stubs =
           [ "https://example.com/1"
@@ -131,24 +129,23 @@ spec = do
           parseRequest_ "https://example.com/2"
             & addRequestHeader hAcceptLanguage "es"
 
+      let settings' = settings {cacheKeyHeaders = [hAcceptLanguage]}
       cache <- execCached $ do
-        requestBodyCached settings stubs reqEn1 `shouldReturn` "Hello\n"
-        requestBodyCached settings stubs reqEn2 `shouldReturn` "World\n"
-        requestBodyCached settings stubs reqEs1 `shouldReturn` "Hola\n"
-        requestBodyCached settings stubs reqEs2 `shouldReturn` "Mundo\n"
+        requestBodyCached settings' stubs reqEn1 `shouldReturn` "Hello\n"
+        requestBodyCached settings' stubs reqEn2 `shouldReturn` "World\n"
+        requestBodyCached settings' stubs reqEs1 `shouldReturn` "Hola\n"
+        requestBodyCached settings' stubs reqEs2 `shouldReturn` "Mundo\n"
 
         -- No stubs, so these would fail if not cached
-        requestBodyCached settings [] reqEn1 `shouldReturn` "Hello\n"
-        requestBodyCached settings [] reqEn2 `shouldReturn` "World\n"
-        requestBodyCached settings [] reqEs1 `shouldReturn` "Hola\n"
-        requestBodyCached settings [] reqEs2 `shouldReturn` "Mundo\n"
+        requestBodyCached settings' [] reqEn1 `shouldReturn` "Hello\n"
+        requestBodyCached settings' [] reqEn2 `shouldReturn` "World\n"
+        requestBodyCached settings' [] reqEs1 `shouldReturn` "Hola\n"
+        requestBodyCached settings' [] reqEs2 `shouldReturn` "Mundo\n"
 
       cache.map `shouldSatisfy` ((== 4) . HashMap.size)
 
     context "compression" $ do
       it "caches gzipped responses as gzipped" $ do
-        pendingWith "Need to fix Vary handling"
-
         let
           gzipped = GZip.compress "Hi (zipped)\n"
 

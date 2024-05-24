@@ -26,6 +26,7 @@ import qualified Data.Text.IO as T
 import Freckle.App.Http.Cache
 import Freckle.App.Memcached.CacheKey
 import Freckle.App.Memcached.CacheTTL
+import Network.HTTP.Types.Header (hAcceptEncoding)
 import System.IO (stderr)
 
 newtype Cache = Cache
@@ -52,6 +53,7 @@ stateHttpCacheSettings =
   HttpCacheSettings
     { shared = False
     , cacheable = const True
+    , cacheKeyHeaders = [hAcceptEncoding]
     , defaultTTL = fiveMinuteTTL
     , getCurrentTime = liftIO getCurrentTime
     , logDebug = \_ -> pure ()
