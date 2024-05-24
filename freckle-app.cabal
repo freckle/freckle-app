@@ -49,6 +49,7 @@ library
       Freckle.App.Http
       Freckle.App.Http.Cache
       Freckle.App.Http.Cache.Gzip
+      Freckle.App.Http.Cache.KeyExtension
       Freckle.App.Http.Cache.Memcached
       Freckle.App.Http.Cache.State
       Freckle.App.Http.Header

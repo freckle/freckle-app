@@ -18,6 +18,7 @@ import Data.CaseInsensitive (CI)
 import qualified Data.CaseInsensitive as CI
 import Database.Memcache.Types (Value)
 import Freckle.App.Http.Cache
+import Freckle.App.Http.Cache.KeyExtension
 import Freckle.App.Memcached
 import qualified Freckle.App.Memcached.Client as Memcached
 import Freckle.App.OpenTelemetry (MonadTracer)
@@ -41,7 +42,7 @@ memcachedHttpCacheSettings defaultTTL =
   HttpCacheSettings
     { shared = True
     , cacheable = const True
-    , cacheKeyHeaders = [hAcceptEncoding]
+    , cacheKeyExtension = includeHeader normalizeGzip hAcceptEncoding
     , defaultTTL
     , getCurrentTime = liftIO getCurrentTime
     , logDebug = logDebugNS "http.cache"

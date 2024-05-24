@@ -25,18 +25,17 @@ import Data.Text.Encoding.Error (lenientDecode)
 import Data.Time (addUTCTime, defaultTimeLocale, parseTimeM)
 import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
 import Freckle.App.Http.Cache.Gzip
+import Freckle.App.Http.Cache.KeyExtension
 import Freckle.App.Http.Header
 import Freckle.App.Memcached
 import Network.HTTP.Client (Request, Response)
 import qualified Network.HTTP.Client as HTTP
 import Network.HTTP.Simple
   ( addRequestHeader
-  , getRequestHeader
   , getResponseStatus
   )
 import Network.HTTP.Types.Header
-  ( HeaderName
-  , hAge
+  ( hAge
   , hCacheControl
   , hETag
   , hExpires
@@ -47,7 +46,7 @@ import Network.HTTP.Types.Status (Status, statusCode)
 data HttpCacheSettings m t = HttpCacheSettings
   { shared :: Bool
   , cacheable :: Request -> Bool
-  , cacheKeyHeaders :: [HeaderName]
+  , cacheKeyExtension :: CacheKeyExtension
   , defaultTTL :: CacheTTL
   , getCurrentTime :: m UTCTime
   , logDebug :: Message -> m ()
@@ -210,7 +209,7 @@ getCachableRequestKey settings req = do
     , HTTP.port req
     , HTTP.path req
     , HTTP.queryString req
-    , concatMap (`getRequestHeader` req) settings.cacheKeyHeaders
+    , settings.cacheKeyExtension.run req
     )
 
 -- | Return a 'CacheTTL' for a 'Response', if it's cacheable

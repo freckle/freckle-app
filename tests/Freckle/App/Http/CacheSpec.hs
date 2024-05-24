@@ -17,6 +17,7 @@ import qualified Data.HashMap.Strict as HashMap
 import Data.Time (addUTCTime)
 import Freckle.App.Http
 import Freckle.App.Http.Cache
+import Freckle.App.Http.Cache.KeyExtension
 import Freckle.App.Http.Cache.State
 import Freckle.App.Test.Http
 import Network.HTTP.Types.Header
@@ -129,7 +130,11 @@ spec = do
           parseRequest_ "https://example.com/2"
             & addRequestHeader hAcceptLanguage "es"
 
-      let settings' = settings {cacheKeyHeaders = [hAcceptLanguage]}
+        settings' =
+          settings
+            { cacheKeyExtension = includeHeader id hAcceptLanguage
+            }
+
       cache <- execCached $ do
         requestBodyCached settings' stubs reqEn1 `shouldReturn` "Hello\n"
         requestBodyCached settings' stubs reqEn2 `shouldReturn` "World\n"

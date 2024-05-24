@@ -24,6 +24,7 @@ import Data.Text.Encoding (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
 import qualified Data.Text.IO as T
 import Freckle.App.Http.Cache
+import Freckle.App.Http.Cache.KeyExtension
 import Freckle.App.Memcached.CacheKey
 import Freckle.App.Memcached.CacheTTL
 import Network.HTTP.Types.Header (hAcceptEncoding)
@@ -53,7 +54,7 @@ stateHttpCacheSettings =
   HttpCacheSettings
     { shared = False
     , cacheable = const True
-    , cacheKeyHeaders = [hAcceptEncoding]
+    , cacheKeyExtension = includeHeader normalizeGzip hAcceptEncoding
     , defaultTTL = fiveMinuteTTL
     , getCurrentTime = liftIO getCurrentTime
     , logDebug = \_ -> pure ()
