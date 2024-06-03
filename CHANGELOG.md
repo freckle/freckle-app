@@ -1,4 +1,13 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.16.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.17.0.0...main)
+
+## [v1.17.0.0](https://github.com/freckle/freckle-app/compare/v1.16.0.0...v1.17.0.0)
+
+- Require Blammo 1.2
+- Remove `LoggingT` from the definitions of `AppT` and `AppExample`
+- Users are advised to use the new `withLogger` utility available as of Blammo 1.2
+  to intialize an application's logger. In places other than the top level of an
+  application, most uses of `runLoggerLoggingT` should be replaced with
+  `runWithLogger`.
 
 ## [v1.16.0.0](https://github.com/freckle/freckle-app/compare/v1.15.5.0...v1.16.0.0)
 

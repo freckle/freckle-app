@@ -66,7 +66,7 @@ import qualified UnliftIO.Exception as UnliftIO
 -- - Export @LOG_LEVEL=error@, if this would be quiet enough, or
 -- - Export @LOG_DESTINATION=@/dev/null@ to fully silence
 newtype AppExample app a = AppExample
-  { unAppExample :: ReaderT app (LoggingT IO) a
+  { unAppExample :: ReaderT app IO a
   }
   deriving newtype
     ( Applicative
@@ -79,9 +79,11 @@ newtype AppExample app a = AppExample
     , MonadUnliftIO
     , MonadReader app
     , MonadThrow
-    , MonadLogger
     , Fail.MonadFail
     )
+  deriving
+    (MonadLogger, MonadLoggerIO)
+    via WithLogger app IO
 
 instance MonadMask (AppExample app) where
   mask = UnliftIO.mask
@@ -106,12 +108,12 @@ instance PrimMonad (AppExample app) where
   type PrimState (AppExample app) = PrimState IO
   primitive = liftIO . primitive
 
-instance HasLogger app => Example (AppExample app a) where
+instance Example (AppExample app a) where
   type Arg (AppExample app a) = app
 
   evaluateExample (AppExample ex) params action =
     evaluateExample
-      (action $ \app -> void $ runLoggerLoggingT app $ runReaderT ex app)
+      (action $ \app -> void $ runReaderT ex app)
       params
       ($ ())
 
