@@ -229,14 +229,13 @@ newtype AppT app m a = AppT
     )
   deriving (MonadLogger, MonadLoggerIO) via WithLogger app (ResourceT m)
 
+instance MonadTrans (AppT app) where
+  lift = AppT . lift . lift
+
 instance PrimMonad m => PrimMonad (AppT app m) where
   type PrimState (AppT app m) = PrimState m
 
-  -- This should really just be `lift . primitive`, but:
-  --
-  -- - We'd need `MonadTrans (AppT app)`, which meh
-  --
-  primitive = AppT . lift . lift . primitive
+  primitive = lift . primitive
   {-# INLINE primitive #-}
 
 instance (MonadUnliftIO m, HasTracer app) => MonadHttp (AppT app m) where

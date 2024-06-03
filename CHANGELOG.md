@@ -7,7 +7,8 @@
 - Users are advised to use the new `withLogger` utility available as of Blammo 1.2
   to intialize an application's logger. In places other than the top level of an
   application, most uses of `runLoggerLoggingT` should be replaced with
-  `runWithLogger`.
+  `runWithLogger` or `runAppT`.
+- Add instance `MonadTrans AppT`
 
 ## [v1.16.0.0](https://github.com/freckle/freckle-app/compare/v1.15.5.0...v1.16.0.0)
 
