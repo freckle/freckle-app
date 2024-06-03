@@ -122,12 +122,12 @@
 -- > loadApp :: (App -> IO a) -> IO a
 -- > loadApp f = do
 -- >   appConfig{..} <- loadConfig
--- >   appLogger <- newLogger configLoggerSettings
--- >   appSqlPool <- runLoggerLoggingT appLogger $ makePostgresPool configDbPoolSize
--- >   withTracerProvider $ \tracerProvider -> do
--- >     withStatsClient configStatsSettings $ \appStatsClient -> do
--- >       let appTracer = makeTracer tracerProvider "my-app" tracerOptions
--- >       f App{..}
+-- >   withLogger configLoggerSettings $ \appLogger ->
+-- >     appSqlPool <- runWithLogger appLogger $ makePostgresPool configDbPoolSize
+-- >     withTracerProvider $ \tracerProvider -> do
+-- >       withStatsClient configStatsSettings $ \appStatsClient -> do
+-- >         let appTracer = makeTracer tracerProvider "my-app" tracerOptions
+-- >         f App{..}
 --
 -- This unlocks @'runDB'@ for your application:
 --
@@ -196,8 +196,7 @@ import Freckle.App.OpenTelemetry.Http
 import System.IO (BufferMode (..), hSetBuffering, stderr, stdout)
 
 runApp
-  :: HasLogger app
-  => (forall b. (app -> IO b) -> IO b)
+  :: (forall b. (app -> IO b) -> IO b)
   -> AppT app IO a
   -> IO a
 runApp loadApp action = do
@@ -214,7 +213,7 @@ setLineBuffering = liftIO $ do
   hSetBuffering stderr LineBuffering
 
 newtype AppT app m a = AppT
-  { unAppT :: ReaderT app (LoggingT (ResourceT m)) a
+  { unAppT :: ReaderT app (ResourceT m) a
   }
   deriving newtype
     ( Functor
@@ -225,21 +224,18 @@ newtype AppT app m a = AppT
     , MonadThrow
     , MonadCatch
     , MonadMask
-    , MonadLogger
-    , MonadLoggerIO
     , MonadResource
     , MonadReader app
     )
+  deriving (MonadLogger, MonadLoggerIO) via WithLogger app (ResourceT m)
+
+instance MonadTrans (AppT app) where
+  lift = AppT . lift . lift
 
 instance PrimMonad m => PrimMonad (AppT app m) where
   type PrimState (AppT app m) = PrimState m
 
-  -- This should really just be `lift . primitive`, but:
-  --
-  -- - We'd need `MonadTrans (AppT app)`, which meh
-  -- - We'd need an orphan `Primitive LoggingT`, which no thanks
-  --
-  primitive = AppT . lift . lift . lift . primitive
+  primitive = lift . primitive
   {-# INLINE primitive #-}
 
 instance (MonadUnliftIO m, HasTracer app) => MonadHttp (AppT app m) where
@@ -259,6 +255,6 @@ instance
   where
   runSqlTx = runDB
 
-runAppT :: (MonadUnliftIO m, HasLogger app) => AppT app m a -> app -> m a
+runAppT :: MonadUnliftIO m => AppT app m a -> app -> m a
 runAppT action app =
-  runResourceT $ runLoggerLoggingT app $ runReaderT (unAppT action) app
+  runResourceT $ runReaderT (unAppT action) app
