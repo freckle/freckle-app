@@ -23,10 +23,6 @@ extra-deps:
   # for thread-utils-context
   - thread-utils-finalizers-0.1.1.0
 
-  # We're not ready to take on the breaking changes in v5
-  # @sled --exclude hw-kafka-client
-  - hw-kafka-client-4.0.3
-
 allow-newer: true
 allow-newer-deps:
   - hs-opentelemetry-propagator-datadog

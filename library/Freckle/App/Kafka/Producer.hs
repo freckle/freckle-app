@@ -15,6 +15,8 @@ module Freckle.App.Kafka.Producer
 import Freckle.App.Prelude
 
 import Blammo.Logging
+import Conduit ((.|))
+import qualified Conduit
 import Control.Lens (Lens', view)
 import Data.Aeson (ToJSON, encode)
 import Data.ByteString.Lazy (toStrict)
@@ -91,13 +93,13 @@ createKafkaProducerPool
   -> KafkaProducerPoolConfig
   -> IO (Pool KafkaProducer)
 createKafkaProducerPool addresses KafkaProducerPoolConfig {..} =
-  Pool.newPool $
-    Pool.setNumStripes (Just kafkaProducerPoolConfigStripes) $
-      Pool.defaultPoolConfig
-        mkProducer
-        closeProducer
-        (realToFrac kafkaProducerPoolConfigIdleTimeout)
-        kafkaProducerPoolConfigSize
+  Pool.newPool
+    $ Pool.setNumStripes (Just kafkaProducerPoolConfigStripes)
+    $ Pool.defaultPoolConfig
+      mkProducer
+      closeProducer
+      (realToFrac kafkaProducerPoolConfigIdleTimeout)
+      kafkaProducerPoolConfigSize
  where
   mkProducer =
     either
@@ -123,25 +125,27 @@ produceKeyedOn prTopic values keyF = traced $ do
   view kafkaProducerPoolL >>= \case
     NullKafkaProducerPool -> pure ()
     KafkaProducerPool producerPool -> do
-      errors <-
-        liftIO $
-          Pool.withResource producerPool $ \producer ->
-            produceMessageBatch producer $
-              toList $
-                mkProducerRecord <$> values
-      unless (null errors) $
-        logErrorNS "kafka" $
-          "Failed to send events" :# ["errors" .= fmap (tshow . snd) errors]
+      errors <- liftIO $ Pool.withResource producerPool $ \producer ->
+        Conduit.runConduit
+          $ Conduit.yieldMany values
+          .| Conduit.awaitForever
+            ( \value -> do
+                mError <- liftIO $ produceMessage producer $ mkProducerRecord value
+                for_ @Maybe mError Conduit.yield
+            )
+          .| Conduit.sinkList
+      unless (null errors)
+        $ logErrorNS "kafka"
+        $ "Failed to send events"
+        :# ["errors" .= fmap tshow errors]
  where
   mkProducerRecord value =
     ProducerRecord
       { prTopic
       , prPartition = UnassignedPartition
       , prKey = Just $ toStrict $ encode $ keyF value
-      , prValue =
-          Just $
-            toStrict $
-              encode value
+      , prValue = Just $ toStrict $ encode value
+      , prHeaders = mempty
       }
 
   traced =

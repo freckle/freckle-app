@@ -165,7 +165,7 @@ library
     , http-conduit >=2.3.5
     , http-link-header
     , http-types
-    , hw-kafka-client <5.0.0
+    , hw-kafka-client
     , immortal
     , lens
     , memcache
