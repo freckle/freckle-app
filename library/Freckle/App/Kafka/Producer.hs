@@ -15,8 +15,6 @@ module Freckle.App.Kafka.Producer
 import Freckle.App.Prelude
 
 import Blammo.Logging
-import Conduit ((.|))
-import qualified Conduit
 import Control.Lens (Lens', view)
 import Data.Aeson (ToJSON, encode)
 import Data.ByteString.Lazy (toStrict)
@@ -126,14 +124,9 @@ produceKeyedOn prTopic values keyF = traced $ do
     NullKafkaProducerPool -> pure ()
     KafkaProducerPool producerPool -> do
       errors <- liftIO $ Pool.withResource producerPool $ \producer ->
-        Conduit.runConduit
-          $ Conduit.yieldMany values
-          .| Conduit.awaitForever
-            ( \value -> do
-                mError <- liftIO $ produceMessage producer $ mkProducerRecord value
-                for_ @Maybe mError Conduit.yield
-            )
-          .| Conduit.sinkList
+        fmap catMaybes
+          $ traverse (produceMessage producer . mkProducerRecord)
+          $ toList values
       unless (null errors)
         $ logErrorNS "kafka"
         $ "Failed to send events"
