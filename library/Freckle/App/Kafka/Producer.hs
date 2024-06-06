@@ -28,6 +28,7 @@ import qualified Freckle.App.Env as Env
 import Freckle.App.OpenTelemetry
 import Kafka.Producer
 import qualified OpenTelemetry.Trace as Trace
+import UnliftIO (withRunInIO)
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
 
@@ -122,15 +123,13 @@ produceKeyedOn prTopic values keyF = traced $ do
   logDebugNS "kafka" $ "Producing Kafka events" :# ["events" .= values]
   view kafkaProducerPoolL >>= \case
     NullKafkaProducerPool -> pure ()
-    KafkaProducerPool producerPool -> do
-      errors <- liftIO $ Pool.withResource producerPool $ \producer ->
-        fmap catMaybes
-          $ traverse (produceMessage producer . mkProducerRecord)
-          $ toList values
-      unless (null errors)
-        $ logErrorNS "kafka"
-        $ "Failed to send events"
-        :# ["errors" .= fmap tshow errors]
+    KafkaProducerPool producerPool ->
+      withRunInIO $ \run ->
+        Pool.withResource producerPool $ \producer ->
+          for_ @NonEmpty values $ \value -> do
+            mError <- liftIO $ produceMessage producer $ mkProducerRecord value
+            for_ @Maybe mError $ \e ->
+              run $ logErrorNS "kafka" $ "Failed to send event" :# ["error" .= tshow e]
  where
   mkProducerRecord value =
     ProducerRecord
