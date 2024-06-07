@@ -18,10 +18,6 @@ extra-deps:
   - thread-utils-context-0.3.0.4
   - thread-utils-finalizers-0.1.1.0
 
-  # We're not ready to take on the breaking changes in v5
-  # @sled --exclude hw-kafka-client
-  - hw-kafka-client-4.0.3
-
   # These are me just adding what Stack told me to
   - Cabal-3.10.2.1
   - Cabal-syntax-3.10.2.0

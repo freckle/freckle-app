@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.17.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.17.1.0...main)
+
+## [v1.17.1.0](https://github.com/freckle/freckle-app/compare/v1.17.0.0...v1.17.1.0)
+
+- Support (and require) `hw-kafka-client` `>= 5`
 
 ## [v1.17.0.0](https://github.com/freckle/freckle-app/compare/v1.16.0.0...v1.17.0.0)
 

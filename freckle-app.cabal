@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.17.0.0
+version:        1.17.1.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -165,7 +165,7 @@ library
     , http-conduit >=2.3.5
     , http-link-header
     , http-types
-    , hw-kafka-client <5.0.0
+    , hw-kafka-client
     , immortal
     , lens
     , memcache

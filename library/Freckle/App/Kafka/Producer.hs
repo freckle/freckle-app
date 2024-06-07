@@ -28,6 +28,7 @@ import qualified Freckle.App.Env as Env
 import Freckle.App.OpenTelemetry
 import Kafka.Producer
 import qualified OpenTelemetry.Trace as Trace
+import UnliftIO (withRunInIO)
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
 
@@ -91,13 +92,13 @@ createKafkaProducerPool
   -> KafkaProducerPoolConfig
   -> IO (Pool KafkaProducer)
 createKafkaProducerPool addresses KafkaProducerPoolConfig {..} =
-  Pool.newPool $
-    Pool.setNumStripes (Just kafkaProducerPoolConfigStripes) $
-      Pool.defaultPoolConfig
-        mkProducer
-        closeProducer
-        (realToFrac kafkaProducerPoolConfigIdleTimeout)
-        kafkaProducerPoolConfigSize
+  Pool.newPool
+    $ Pool.setNumStripes (Just kafkaProducerPoolConfigStripes)
+    $ Pool.defaultPoolConfig
+      mkProducer
+      closeProducer
+      (realToFrac kafkaProducerPoolConfigIdleTimeout)
+      kafkaProducerPoolConfigSize
  where
   mkProducer =
     either
@@ -122,26 +123,21 @@ produceKeyedOn prTopic values keyF = traced $ do
   logDebugNS "kafka" $ "Producing Kafka events" :# ["events" .= values]
   view kafkaProducerPoolL >>= \case
     NullKafkaProducerPool -> pure ()
-    KafkaProducerPool producerPool -> do
-      errors <-
-        liftIO $
-          Pool.withResource producerPool $ \producer ->
-            produceMessageBatch producer $
-              toList $
-                mkProducerRecord <$> values
-      unless (null errors) $
-        logErrorNS "kafka" $
-          "Failed to send events" :# ["errors" .= fmap (tshow . snd) errors]
+    KafkaProducerPool producerPool ->
+      withRunInIO $ \run ->
+        Pool.withResource producerPool $ \producer ->
+          for_ @NonEmpty values $ \value -> do
+            mError <- liftIO $ produceMessage producer $ mkProducerRecord value
+            for_ @Maybe mError $ \e ->
+              run $ logErrorNS "kafka" $ "Failed to send event" :# ["error" .= tshow e]
  where
   mkProducerRecord value =
     ProducerRecord
       { prTopic
       , prPartition = UnassignedPartition
       , prKey = Just $ toStrict $ encode $ keyF value
-      , prValue =
-          Just $
-            toStrict $
-              encode value
+      , prValue = Just $ toStrict $ encode value
+      , prHeaders = mempty
       }
 
   traced =
