@@ -41,6 +41,15 @@ class HasHeaders a where
 instance HasHeaders [Header] where
   headersL = id
 
+instance HasHeaders [(Text, Text)] where
+  headersL = lens (map encode) $ \_ y -> map decode y
+
+encode :: (Text, Text) -> (CI ByteString, ByteString)
+encode = bimap (CI.mk . encodeUtf8) encodeUtf8
+
+decode :: (CI ByteString, ByteString) -> (Text, Text)
+decode = bimap (decodeUtf8 . CI.original) decodeUtf8
+
 instance HasHeaders Request where
   headersL = lens requestHeaders $ \req hs -> setRequestHeaders hs req
 
@@ -64,14 +73,11 @@ newtype CustomTraceContext = CustomTraceContext
   deriving newtype (Semigroup, Monoid)
   deriving anyclass (FromJSON, ToJSON)
 
+traceHeadersL :: Lens' CustomTraceContext [(Text, Text)]
+traceHeadersL = lens traceHeaders $ \x y -> x {traceHeaders = y}
+
 instance HasHeaders CustomTraceContext where
-  headersL = lens (map encode . traceHeaders) $ \x y -> x {traceHeaders = map decode y}
-
-encode :: (Text, Text) -> (CI ByteString, ByteString)
-encode = bimap (CI.mk . encodeUtf8) encodeUtf8
-
-decode :: (CI ByteString, ByteString) -> (Text, Text)
-decode = bimap (decodeUtf8 . CI.original) decodeUtf8
+  headersL = traceHeadersL . headersL
 
 -- | Update our trace context from that extracted from the given item's headers
 extractContext

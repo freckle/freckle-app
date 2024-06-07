@@ -26,6 +26,7 @@ import qualified Data.Text as T
 import Freckle.App.Async (async)
 import qualified Freckle.App.Env as Env
 import Freckle.App.OpenTelemetry
+import qualified Freckle.App.OpenTelemetry.TraceEnvelope as TraceEnvelope
 import Kafka.Producer
 import qualified OpenTelemetry.Trace as Trace
 import Yesod.Core.Lens
@@ -123,26 +124,24 @@ produceKeyedOn prTopic values keyF = traced $ do
   view kafkaProducerPoolL >>= \case
     NullKafkaProducerPool -> pure ()
     KafkaProducerPool producerPool -> do
+      records <- traverse mkProducerRecord values
       errors <-
         liftIO $
           Pool.withResource producerPool $ \producer ->
-            produceMessageBatch producer $
-              toList $
-                mkProducerRecord <$> values
+            produceMessageBatch producer $ toList records
       unless (null errors) $
         logErrorNS "kafka" $
           "Failed to send events" :# ["errors" .= fmap (tshow . snd) errors]
  where
-  mkProducerRecord value =
-    ProducerRecord
-      { prTopic
-      , prPartition = UnassignedPartition
-      , prKey = Just $ toStrict $ encode $ keyF value
-      , prValue =
-          Just $
-            toStrict $
-              encode value
-      }
+  mkProducerRecord value = do
+    encoded <- TraceEnvelope.encodeStrict value
+    pure
+      ProducerRecord
+        { prTopic
+        , prPartition = UnassignedPartition
+        , prKey = Just $ toStrict $ encode $ keyF value
+        , prValue = Just encoded
+        }
 
   traced =
     inSpan

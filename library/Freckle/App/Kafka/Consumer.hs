@@ -25,6 +25,7 @@ import Freckle.App.Exception (annotatedExceptionMessageFrom)
 import Freckle.App.Kafka.Producer (envKafkaBrokerAddresses)
 import Freckle.App.OpenTelemetry
 import Freckle.App.OpenTelemetry.ThreadContext
+import qualified Freckle.App.OpenTelemetry.TraceEnvelope as TraceEnvelope
 import Kafka.Consumer hiding
   ( Timeout
   , closeConsumer
@@ -183,9 +184,9 @@ runConsumer pollTimeout onMessage =
 
       for_ (crValue =<< mRecord) $ \bs -> do
         a <-
-          inSpan "kafka.consumer.message.decode" defaultSpanArguments $
-            either (throwM . KafkaMessageDecodeError bs) pure $
-              eitherDecodeStrict bs
+          inSpan "kafka.consumer.message.decode" defaultSpanArguments $ do
+            decoded <- TraceEnvelope.eitherDecodeStrict bs
+            either (throwM . KafkaMessageDecodeError bs) pure decoded
         inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
  where
   kTimeout = Kafka.Timeout $ timeoutMs pollTimeout

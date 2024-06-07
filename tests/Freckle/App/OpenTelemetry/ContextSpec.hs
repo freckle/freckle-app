@@ -139,6 +139,20 @@ spec = withApp loadApp $ do
           fmap snd headerTraceParent
             `shouldBe` Just (spanIdToHex $ Trace.spanId spanContext)
 
+    it "sets a unique trace-id each time called" $ appExample $ do
+      let
+        headers :: [Header]
+        headers = []
+
+      context1 <-
+        processWithContext "one" defaultSpanArguments headers $
+          const assertCurrentSpanContext
+      context2 <-
+        processWithContext "two" defaultSpanArguments headers $
+          const assertCurrentSpanContext
+
+      Trace.traceId context2 `shouldNotBe` Trace.traceId context1
+
 assertCurrentSpanContext :: (MonadIO m, HasCallStack) => m Trace.SpanContext
 assertCurrentSpanContext =
   getCurrentSpanContext >>= \case

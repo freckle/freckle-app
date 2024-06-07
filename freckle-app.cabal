@@ -68,6 +68,7 @@ library
       Freckle.App.OpenTelemetry.Context
       Freckle.App.OpenTelemetry.Http
       Freckle.App.OpenTelemetry.ThreadContext
+      Freckle.App.OpenTelemetry.TraceEnvelope
       Freckle.App.Prelude
       Freckle.App.Random
       Freckle.App.Scientist
@@ -266,6 +267,7 @@ test-suite spec
       Freckle.App.Memcached.ServersSpec
       Freckle.App.MemcachedSpec
       Freckle.App.OpenTelemetry.ContextSpec
+      Freckle.App.OpenTelemetry.TraceEnvelopeSpec
       Freckle.App.Test.Http.MatchRequestSpec
       Freckle.App.Test.Properties.JSONSpec
       Freckle.App.Test.Properties.PathPieceSpec
