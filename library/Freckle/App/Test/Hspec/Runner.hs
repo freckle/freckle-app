@@ -116,4 +116,4 @@ isolatedTests :: Path -> Bool
 isolatedTests = ("ISOLATED" `isInfixOf`) . snd
 
 anys :: [a -> Bool] -> a -> Bool
-anys xs a = or $ fmap (\f -> f a) xs
+anys xs a = any ($ a) xs
