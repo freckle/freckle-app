@@ -13,6 +13,8 @@ extra-doc-files:
 extra-source-files:
   - package.yaml
 
+language: GHC2021
+
 ghc-options:
   - -fignore-optim-changes
   - -fwrite-ide-info
@@ -37,30 +39,16 @@ dependencies:
   - base < 5
 
 default-extensions:
-  - BangPatterns
   - DataKinds
   - DeriveAnyClass
-  - DeriveFoldable
-  - DeriveFunctor
-  - DeriveGeneric
-  - DeriveLift
-  - DeriveTraversable
   - DerivingVia
   - DerivingStrategies
-  - FlexibleContexts
-  - FlexibleInstances
   - GADTs
-  - GeneralizedNewtypeDeriving
   - LambdaCase
-  - MultiParamTypeClasses
   - NoImplicitPrelude
   - NoMonomorphismRestriction
   - OverloadedStrings
-  - RankNTypes
   - RecordWildCards
-  - ScopedTypeVariables
-  - StandaloneDeriving
-  - TypeApplications
   - TypeFamilies
 
 library:
