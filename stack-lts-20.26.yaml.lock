@@ -116,19 +116,6 @@ packages:
       size: 400
   original:
     hackage: thread-utils-finalizers-0.1.1.0
-- completed:
-    name: hs-opentelemetry-propagator-datadog
-    pantry-tree:
-      sha256: cab894439e1bbb20a9ef901c3ac14b519ccd74e2712789472564bccdaa67da78
-      size: 683
-    sha256: 53a6cd3a01447c9a41512de16c44a7f6ba3fde3fab61b765fcd22b6ac33a882e
-    size: 352144
-    subdir: propagators/datadog
-    url: https://github.com/iand675/hs-opentelemetry/archive/8fcdc7323cf872abfcc02ff512429b2a3d617085.tar.gz
-    version: 0.0.0.0
-  original:
-    subdir: propagators/datadog
-    url: https://github.com/iand675/hs-opentelemetry/archive/8fcdc7323cf872abfcc02ff512429b2a3d617085.tar.gz
 snapshots:
 - completed:
     sha256: 5a59b2a405b3aba3c00188453be172b85893cab8ebc352b1ef58b0eae5d248a2

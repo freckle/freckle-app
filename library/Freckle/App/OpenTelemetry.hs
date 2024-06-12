@@ -39,9 +39,7 @@ module Freckle.App.OpenTelemetry
   , consumerSpanArguments
 
     -- * Querying
-  , withTraceIdContext
   , getCurrentTraceId
-  , getCurrentTraceIdAsDatadog
   , getCurrentSpanContext
 
     -- * Ids
@@ -68,18 +66,12 @@ module Freckle.App.OpenTelemetry
 
 import Freckle.App.Prelude
 
-import Blammo.Logging (withThreadContext, (.=))
-import Control.Monad.Catch (MonadMask)
 import Data.ByteString (ByteString)
 import qualified Data.Text as T
 import Data.Text.Encoding (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
-import Data.Word (Word64)
 import OpenTelemetry.Context (lookupSpan)
 import OpenTelemetry.Context.ThreadLocal (getContext)
-import OpenTelemetry.Propagator.Datadog
-  ( convertOpenTelemetryTraceIdToDatadogTraceId
-  )
 import OpenTelemetry.Trace hiding (inSpan)
 import OpenTelemetry.Trace.Core (getSpanContext)
 import qualified OpenTelemetry.Trace.Core as Trace (SpanContext (..))
@@ -135,11 +127,6 @@ withTracerProvider =
 getCurrentTraceId :: MonadIO m => m (Maybe TraceId)
 getCurrentTraceId = fmap Trace.traceId <$> getCurrentSpanContext
 
-getCurrentTraceIdAsDatadog :: MonadIO m => m (Maybe Word64)
-getCurrentTraceIdAsDatadog =
-  fmap convertOpenTelemetryTraceIdToDatadogTraceId <$> getCurrentTraceId
-{-# DEPRECATED getCurrentTraceIdAsDatadog "Datadog can operate with Base16 ids" #-}
-
 getCurrentSpanContext :: MonadIO m => m (Maybe SpanContext)
 getCurrentSpanContext = withCurrentSpan getSpanContext
 
@@ -150,12 +137,6 @@ withCurrentSpan :: MonadIO m => (Span -> m b) -> m (Maybe b)
 withCurrentSpan f = do
   mSpan <- lookupSpan <$> getContext
   traverse f mSpan
-
-withTraceIdContext :: (MonadIO m, MonadMask m) => m a -> m a
-withTraceIdContext f = do
-  mTraceId <- getCurrentTraceIdAsDatadog
-  maybe f (\traceId -> withThreadContext ["trace_id" .= traceId] f) mTraceId
-{-# DEPRECATED withTraceIdContext "Use Freckle.App.OpenTelemetry.ThreadContext" #-}
 
 traceIdToHex :: TraceId -> Text
 traceIdToHex = traceIdBaseEncodedText Base16
