@@ -50,7 +50,6 @@ import Freckle.App.Database
   , MonadSqlTx (..)
   , runDB
   )
-import qualified Freckle.App.Database.XRay as XRay
 import qualified Freckle.App.Dotenv as Dotenv
 import qualified Freckle.App.Exception.MonadThrow as MonadThrow
 import Freckle.App.OpenTelemetry
@@ -119,9 +118,6 @@ instance Example (AppExample app a) where
 
 instance HasTracer app => MonadTracer (AppExample app) where
   getTracer = view tracerL
-
-instance XRay.MonadTracer (AppExample app) where
-  getVaultData = pure Nothing
 
 instance
   (HasSqlPool app, HasStatsClient app, HasTracer app)
