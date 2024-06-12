@@ -92,13 +92,13 @@ createKafkaProducerPool
   -> KafkaProducerPoolConfig
   -> IO (Pool KafkaProducer)
 createKafkaProducerPool addresses KafkaProducerPoolConfig {..} =
-  Pool.newPool
-    $ Pool.setNumStripes (Just kafkaProducerPoolConfigStripes)
-    $ Pool.defaultPoolConfig
-      mkProducer
-      closeProducer
-      (realToFrac kafkaProducerPoolConfigIdleTimeout)
-      kafkaProducerPoolConfigSize
+  Pool.newPool $
+    Pool.setNumStripes (Just kafkaProducerPoolConfigStripes) $
+      Pool.defaultPoolConfig
+        mkProducer
+        closeProducer
+        (realToFrac kafkaProducerPoolConfigIdleTimeout)
+        kafkaProducerPoolConfigSize
  where
   mkProducer =
     either

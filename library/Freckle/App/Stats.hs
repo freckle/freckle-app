@@ -178,9 +178,9 @@ withGauge
 withGauge getGauge f = do
   gauge' <- lookupGauge getGauge
   bracket_ (inc gauge') (dec gauge') f
-  where
-    inc = incGauge
-    dec = decGauge
+ where
+  inc = incGauge
+  dec = decGauge
 
 lookupGauge
   :: (MonadReader app m, HasStatsClient app)

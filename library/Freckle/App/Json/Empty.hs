@@ -5,7 +5,12 @@ module Freckle.App.Json.Empty
 
 import Freckle.App.Prelude
 
-import Autodocodec (Autodocodec (..), HasCodec (..), HasObjectCodec (..), object)
+import Autodocodec
+  ( Autodocodec (..)
+  , HasCodec (..)
+  , HasObjectCodec (..)
+  , object
+  )
 import Autodocodec.OpenAPI ()
 import Data.Aeson (FromJSON, ToJSON)
 import Data.OpenApi (ToSchema (..))
