@@ -300,7 +300,7 @@ packages:
     hackage: filepath-1.4.200.1
 snapshots:
 - completed:
-    sha256: 09f9efab30913bca4aed828dc64ef4567984c3c27055c0900b71ca180f722c09
-    size: 615155
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2024/3/12.yaml
-  original: nightly-2024-03-12
+    sha256: d14d2743bfd6881cef22f855af7038797db5cc55798feb0ef2923d20cbc022db
+    size: 649141
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2024/6/12.yaml
+  original: nightly-2024-06-12

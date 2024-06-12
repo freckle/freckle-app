@@ -1,4 +1,4 @@
-resolver: nightly-2024-03-12
+resolver: nightly-2024-06-12
 extra-deps:
   - Blammo-1.2.1.0
   - bcp47-0.2.0.6
