@@ -11,17 +11,17 @@ import Control.Concurrent (getNumCapabilities, setNumCapabilities)
 import Control.Monad.Trans.Maybe (MaybeT (MaybeT), runMaybeT)
 import Data.List (isInfixOf)
 import System.Environment (getArgs, lookupEnv)
-import Test.Hspec (Spec)
-import Test.Hspec.JUnit
-  ( configWithJUnit
-  , setJUnitConfigOutputFile
+import Test.Hspec (Spec, runIO)
+import Test.Hspec.JUnit.Config
+  ( setJUnitConfigOutputFile
   , setJUnitConfigSourcePathPrefix
   )
-import Test.Hspec.JUnit.Config.Env (envJUnitConfig, envJUnitEnabled)
+import Test.Hspec.JUnit.Config.Env (envJUnitConfig)
+import qualified Test.Hspec.JUnit.Formatter as JUnit (add)
+import qualified Test.Hspec.JUnit.Formatter.Env as JUnit (whenEnabled)
 import Test.Hspec.Runner
   ( Config
   , Path
-  , Summary
   , configConcurrentJobs
   , configSkipPredicate
   , defaultConfig
@@ -66,17 +66,15 @@ runWith config name spec = do
  where
   load = flip readConfig
   runner filename changeConfig =
-    (spec `runWithJUnit` ("/tmp/junit", filename)) . changeConfig
+    runSpec (addJUnit "/tmp/junit" filename spec) . changeConfig
   noConcurrency x = x {configConcurrentJobs = Just 1}
-
-runWithJUnit :: Spec -> (FilePath, String) -> Config -> IO Summary
-runWithJUnit spec (path, name) config = do
-  junitEnabled <- envJUnitEnabled
-  baseJUnitConfig <- envJUnitConfig
-  let modify = if junitEnabled then configWithJUnit $ withOverride baseJUnitConfig else id
-  spec `runSpec` modify config
- where
   runSpec = flip hspecWithResult
+
+addJUnit :: FilePath -> String -> Spec -> Spec
+addJUnit path name spec = do
+  junitConfig <- runIO $ withOverride <$> envJUnitConfig
+  JUnit.whenEnabled (JUnit.add junitConfig) spec
+ where
   filePath = path <> "/" <> name <> "/test_results.xml"
   withOverride =
     setJUnitConfigSourcePathPrefix name . setJUnitConfigOutputFile filePath
