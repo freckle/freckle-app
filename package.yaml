@@ -20,6 +20,7 @@ ghc-options:
   - -Wno-all-missed-specialisations
   - -Wno-missing-exported-signatures # re-enables missing-signatures
   - -Wno-missing-import-lists
+  - -Wno-missing-kind-signatures
   - -Wno-missing-local-signatures
   - -Wno-missing-safe-haskell-mode
   - -Wno-monomorphism-restriction
@@ -31,9 +32,6 @@ when:
   - condition: "impl(ghc >= 9.8)"
     ghc-options:
       - -Wno-missing-role-annotations
-  - condition: "impl(ghc >= 9.2)"
-    ghc-options:
-      - -Wno-missing-kind-signatures
 
 dependencies:
   - base < 5
