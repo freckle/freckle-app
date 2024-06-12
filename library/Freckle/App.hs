@@ -188,7 +188,6 @@ import Control.Monad.Primitive (PrimMonad (..))
 import Control.Monad.Reader
 import Control.Monad.Trans.Resource (MonadResource, ResourceT, runResourceT)
 import Freckle.App.Database
-import qualified Freckle.App.Database.XRay as XRay
 import Freckle.App.Http (MonadHttp (..))
 import Freckle.App.OpenTelemetry
 import Freckle.App.OpenTelemetry.Context
@@ -245,9 +244,6 @@ instance (MonadUnliftIO m, HasTracer app) => MonadHttp (AppT app m) where
 
 instance (Monad m, HasTracer app) => MonadTracer (AppT app m) where
   getTracer = view tracerL
-
-instance Applicative m => XRay.MonadTracer (AppT app m) where
-  getVaultData = pure Nothing
 
 instance
   (MonadUnliftIO m, HasSqlPool app, HasStatsClient app, HasTracer app)

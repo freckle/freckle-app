@@ -35,7 +35,6 @@ library
       Freckle.App.Bugsnag.SqlError
       Freckle.App.Csv
       Freckle.App.Database
-      Freckle.App.Database.XRay
       Freckle.App.Dotenv
       Freckle.App.Ecs
       Freckle.App.Env
@@ -128,8 +127,6 @@ library
     , annotated-exception
     , autodocodec
     , autodocodec-openapi3
-    , aws-xray-client-persistent
-    , aws-xray-client-wai
     , base <5
     , bcp47
     , bugsnag >=1.1.0.0
@@ -197,7 +194,6 @@ library
     , transformers-base
     , typed-process
     , unliftio
-    , unliftio-core
     , unordered-containers
     , vector
     , wai

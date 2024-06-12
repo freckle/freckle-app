@@ -76,8 +76,6 @@ library:
     - autodocodec-openapi3
     - aeson
     - annotated-exception
-    - aws-xray-client-persistent
-    - aws-xray-client-wai
     - bcp47
     - bugsnag >= 1.1.0.0 # Network.Bugsnag.MetaData
     - bytestring
@@ -144,7 +142,6 @@ library:
     - transformers-base
     - typed-process
     - unliftio
-    - unliftio-core
     - unordered-containers
     - vector
     - wai
