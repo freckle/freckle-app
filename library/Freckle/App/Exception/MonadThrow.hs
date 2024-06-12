@@ -34,8 +34,8 @@ import Data.String (String)
 import GHC.IO.Exception (userError)
 import GHC.Stack (withFrozenCallStack)
 
-import qualified Control.Exception.Annotated as Annotated
-import qualified Control.Monad.Catch
+import Control.Exception.Annotated qualified as Annotated
+import Control.Monad.Catch qualified
 
 -- Throws an exception, wrapped in 'AnnotatedException' which includes a call stack
 throwM :: forall e m a. (Exception e, MonadThrow m, HasCallStack) => e -> m a

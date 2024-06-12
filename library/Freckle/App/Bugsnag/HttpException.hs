@@ -8,9 +8,9 @@ module Freckle.App.Bugsnag.HttpException
 import Freckle.App.Prelude
 
 import Data.Bugsnag (Exception (..))
-import qualified Data.ByteString.Char8 as BS8
+import Data.ByteString.Char8 qualified as BS8
 import Freckle.App.Exception.Types (AnnotatedException)
-import qualified Freckle.App.Exception.Types as Annotated
+import Freckle.App.Exception.Types qualified as Annotated
 import Network.Bugsnag
   ( BeforeNotify
   , setGroupingHash

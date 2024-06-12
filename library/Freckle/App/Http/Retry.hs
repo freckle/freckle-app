@@ -7,7 +7,7 @@ module Freckle.App.Http.Retry
 import Freckle.App.Prelude
 
 import Control.Retry
-import qualified Data.ByteString.Char8 as BS8
+import Data.ByteString.Char8 qualified as BS8
 import Network.HTTP.Client (Request (..))
 import Network.HTTP.Simple
 import Network.HTTP.Types.Status (status429)

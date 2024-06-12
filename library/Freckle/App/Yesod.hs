@@ -16,9 +16,9 @@ import Freckle.App.Exception
   , withException
   )
 import Freckle.App.Stats (HasStatsClient)
-import qualified Freckle.App.Stats as Stats
+import Freckle.App.Stats qualified as Stats
 import Network.HTTP.Types (ResponseHeaders, status503)
-import qualified Network.Wai as W
+import Network.Wai qualified as W
 import Yesod.Core.Handler (HandlerFor, sendWaiResponse)
 import Yesod.Core.Types (HandlerContents)
 

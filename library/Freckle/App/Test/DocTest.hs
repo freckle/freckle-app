@@ -13,10 +13,10 @@ import Freckle.App.Prelude
 
 import Control.Monad (filterM)
 import Data.Aeson
-import qualified Data.Text as T
-import qualified Data.Text.IO as T
+import Data.Text qualified as T
+import Data.Text.IO qualified as T
 import Data.Yaml (decodeFileThrow)
-import qualified Test.DocTest as DocTest
+import Test.DocTest qualified as DocTest
 import "Glob" System.FilePath.Glob (globDir1)
 
 -- | Run doctest on files in the given directory

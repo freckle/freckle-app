@@ -17,9 +17,9 @@ import Data.Pool
   , newPool
   , setNumStripes
   )
-import qualified Faktory.Producer as Faktory
-import qualified Faktory.Settings as Faktory
-import qualified Freckle.App.Env as Env
+import Faktory.Producer qualified as Faktory
+import Faktory.Settings qualified as Faktory
+import Freckle.App.Env qualified as Env
 import Yesod.Core.Lens (envL, siteL)
 import Yesod.Core.Types (HandlerData)
 

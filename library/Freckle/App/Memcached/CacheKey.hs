@@ -8,7 +8,7 @@ module Freckle.App.Memcached.CacheKey
 import Freckle.App.Prelude
 
 import Data.Char (isControl, isSpace)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Database.Memcache.Types (Key)
 import OpenTelemetry.Trace (ToAttribute (..))
 

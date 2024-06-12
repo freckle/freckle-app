@@ -9,9 +9,9 @@ import Blammo.Logging (Pair, withThreadContext)
 import Control.Lens ((^.))
 import Control.Monad.Reader (runReaderT)
 import Data.Aeson ((.=))
-import qualified Data.Aeson.Key as Key
+import Data.Aeson.Key qualified as Key
 import Freckle.App.Stats (HasStatsClient (..), tagsL)
-import qualified Freckle.App.Stats as Stats
+import Freckle.App.Stats qualified as Stats
 import Network.HTTP.Types.Status (Status (..))
 import Network.Wai (Middleware, Request, requestMethod, responseStatus)
 

@@ -67,14 +67,14 @@ module Freckle.App.OpenTelemetry
 import Freckle.App.Prelude
 
 import Data.ByteString (ByteString)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Data.Text.Encoding (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
 import OpenTelemetry.Context (lookupSpan)
 import OpenTelemetry.Context.ThreadLocal (getContext)
 import OpenTelemetry.Trace hiding (inSpan)
 import OpenTelemetry.Trace.Core (getSpanContext)
-import qualified OpenTelemetry.Trace.Core as Trace (SpanContext (..))
+import OpenTelemetry.Trace.Core qualified as Trace (SpanContext (..))
 import OpenTelemetry.Trace.Id
   ( Base (..)
   , SpanId

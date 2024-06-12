@@ -6,8 +6,8 @@ module Freckle.App.Memcached.MD5
 
 import Freckle.App.Prelude
 
-import qualified Data.ByteString.Lazy as BSL
-import qualified Data.Digest.Pure.MD5 as Digest
+import Data.ByteString.Lazy qualified as BSL
+import Data.Digest.Pure.MD5 qualified as Digest
 import Freckle.App.Memcached.CacheKey
 
 md5CacheKey :: Show a => a -> CacheKey

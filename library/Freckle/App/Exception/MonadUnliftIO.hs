@@ -35,8 +35,8 @@ import GHC.Stack (withFrozenCallStack)
 import System.IO (IO)
 import UnliftIO (MonadIO, MonadUnliftIO)
 
-import qualified Control.Exception.Annotated.UnliftIO as Annotated
-import qualified UnliftIO.Exception
+import Control.Exception.Annotated.UnliftIO qualified as Annotated
+import UnliftIO.Exception qualified
 
 -- Throws an exception, wrapped in 'AnnotatedException' which includes a call stack
 throwM :: forall e m a. (Exception e, MonadIO m, HasCallStack) => e -> m a

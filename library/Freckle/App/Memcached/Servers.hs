@@ -29,8 +29,8 @@ module Freckle.App.Memcached.Servers
 import Freckle.App.Prelude
 
 import Control.Error.Util (note)
-import qualified Data.Text as T
-import qualified Database.Memcache.Client as Memcache
+import Data.Text qualified as T
+import Database.Memcache.Client qualified as Memcache
 import Network.URI (URI (..), URIAuth (..), parseAbsoluteURI)
 
 newtype MemcachedServers = MemcachedServers

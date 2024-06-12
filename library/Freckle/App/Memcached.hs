@@ -28,14 +28,14 @@ import Blammo.Logging
 import Codec.Serialise (Serialise, deserialiseOrFail, serialise)
 import Data.Aeson
 import Data.ByteString (ByteString)
-import qualified Data.ByteString.Lazy as BSL
+import Data.ByteString.Lazy qualified as BSL
 import Data.Text.Encoding (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
 import Freckle.App.Exception (annotatedExceptionMessage)
 import Freckle.App.Memcached.CacheKey
 import Freckle.App.Memcached.CacheTTL
 import Freckle.App.Memcached.Client (HasMemcachedClient (..))
-import qualified Freckle.App.Memcached.Client as Memcached
+import Freckle.App.Memcached.Client qualified as Memcached
 import Freckle.App.Memcached.MD5
 import Freckle.App.OpenTelemetry
 

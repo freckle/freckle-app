@@ -82,17 +82,17 @@ import Control.Monad.Trans.Maybe (MaybeT)
 import Control.Monad.Validate (ValidateT)
 import Control.Monad.Writer (WriterT)
 import Data.Aeson (FromJSON)
-import qualified Data.Aeson as Aeson
-import qualified Data.ByteString as BS
+import Data.Aeson qualified as Aeson
+import Data.ByteString qualified as BS
 import Data.ByteString.Lazy (ByteString)
-import qualified Data.ByteString.Lazy.Char8 as BSL8
-import qualified Data.List.NonEmpty as NE
+import Data.ByteString.Lazy.Char8 qualified as BSL8
+import Data.List.NonEmpty qualified as NE
 import Freckle.App.Http.Paginate
 import Freckle.App.Http.Retry
-import qualified Network.HTTP.Client as HTTP (Request (..))
+import Network.HTTP.Client qualified as HTTP (Request (..))
 import Network.HTTP.Conduit (HttpExceptionContent (..))
 import Network.HTTP.Simple hiding (httpLbs, httpNoBody)
-import qualified Network.HTTP.Simple as HTTP
+import Network.HTTP.Simple qualified as HTTP
 import Network.HTTP.Types.Header (hAccept, hAuthorization)
 import Network.HTTP.Types.Status
   ( Status

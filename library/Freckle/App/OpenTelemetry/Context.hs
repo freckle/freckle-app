@@ -14,7 +14,7 @@ import Control.Monad.Catch (MonadMask)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.ByteString (ByteString)
 import Data.CaseInsensitive (CI)
-import qualified Data.CaseInsensitive as CI
+import Data.CaseInsensitive qualified as CI
 import Faktory.Job (Job, custom, jobOptions)
 import Faktory.Job.Custom (fromCustom, toCustom)
 import Faktory.JobOptions (JobOptions (..))

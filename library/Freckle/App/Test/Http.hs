@@ -49,13 +49,13 @@ import Control.Lens (Lens', lens, view, (&), (.~), (<>~))
 import Control.Monad (filterM)
 import Control.Monad.Reader (runReaderT)
 import Data.Aeson (ToJSON, encode)
-import qualified Data.ByteString.Lazy as BSL
+import Data.ByteString.Lazy qualified as BSL
 import Data.List (stripPrefix)
 import Data.String (IsString (..))
 import Freckle.App.Http (MonadHttp (..))
 import Freckle.App.Test.Http.MatchRequest
 import Network.HTTP.Client (Request, Response)
-import qualified Network.HTTP.Client.Internal as HTTP
+import Network.HTTP.Client.Internal qualified as HTTP
 import Network.HTTP.Types.Header (ResponseHeaders, hAccept, hContentType)
 import Network.HTTP.Types.Status (Status, status200)
 import System.Directory (doesFileExist)
@@ -86,11 +86,11 @@ httpStubbed stubs req =
   maybe (error errorMessage) (toResponse req) $ headMay matched
  where
   (unmatched, matched) =
-    partitionEithers $
-      map
+    partitionEithers
+      $ map
         ( \stub ->
-            bimap (stub,) (const stub.response) $
-              matchRequest req stub.match
+            bimap (stub,) (const stub.response)
+              $ matchRequest req stub.match
         )
         stubs
 

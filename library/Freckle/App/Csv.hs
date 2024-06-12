@@ -40,9 +40,9 @@ import Control.Monad.Validate
   )
 import Data.Aeson (KeyValue (..), ToJSON (..), object, pairs, (.=))
 import Data.ByteString (ByteString)
-import qualified Data.ByteString.Char8 as BS8
-import qualified Data.Conduit.Combinators as Conduit
-import qualified Data.Conduit.Text as Conduit
+import Data.ByteString.Char8 qualified as BS8
+import Data.Conduit.Combinators qualified as Conduit
+import Data.Conduit.Text qualified as Conduit
 import Data.Csv
   ( DefaultOrdered
   , FromNamedRecord (..)
@@ -54,17 +54,17 @@ import Data.Csv
   , defaultOptions
   , headerOrder
   )
-import qualified Data.Csv.Incremental as CsvI
+import Data.Csv.Incremental qualified as CsvI
 import Data.Functor.Bind (Bind)
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.List.NonEmpty as NE
+import Data.HashMap.Strict qualified as HashMap
+import Data.List.NonEmpty qualified as NE
 import Data.Proxy (Proxy (Proxy))
 import Data.Sequence (Seq)
-import qualified Data.Sequence as Seq
+import Data.Sequence qualified as Seq
 import Data.Sequence.NonEmpty (NESeq)
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
-import qualified Data.Vector as V
+import Data.Text qualified as T
+import Data.Text.Encoding qualified as T
+import Data.Vector qualified as V
 
 -- | Treat CSV header line as 1
 --

@@ -7,11 +7,11 @@ import Freckle.App.Prelude
 import Conduit (ConduitT, MonadThrow, ResourceT, yieldMany)
 import Control.Monad.Validate (Validate, refute, runValidate)
 import Data.ByteString (ByteString)
-import qualified Data.ByteString as BS
+import Data.ByteString qualified as BS
 import Data.Csv hiding (header)
-import qualified Data.List.NonEmpty as NE
+import Data.List.NonEmpty qualified as NE
 import Data.Sequence.NonEmpty (NESeq)
-import qualified Data.Vector as V
+import Data.Vector qualified as V
 import Data.Void (Void)
 import Freckle.App.Csv
 import Test.Hspec

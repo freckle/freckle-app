@@ -19,7 +19,7 @@ module Freckle.App.Bugsnag
 
 import Freckle.App.Prelude
 
-import qualified Control.Exception as Base (Exception)
+import Control.Exception qualified as Base (Exception)
 import Control.Lens (Lens', view)
 import Control.Monad.Catch (MonadMask)
 import Control.Monad.Reader (runReaderT)
@@ -29,9 +29,9 @@ import Data.List (isInfixOf)
 import Freckle.App.Async (async)
 import Freckle.App.Bugsnag.HttpException (httpExceptionBeforeNotify)
 import Freckle.App.Bugsnag.SqlError (sqlErrorBeforeNotify)
-import qualified Freckle.App.Env as Env
+import Freckle.App.Env qualified as Env
 import Network.Bugsnag hiding (notifyBugsnag, notifyBugsnagWith)
-import qualified Network.Bugsnag as Bugsnag
+import Network.Bugsnag qualified as Bugsnag
 import Yesod.Core.Lens (envL, siteL)
 import Yesod.Core.Types (HandlerData)
 

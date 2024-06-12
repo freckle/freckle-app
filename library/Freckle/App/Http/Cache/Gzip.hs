@@ -23,11 +23,11 @@ import Freckle.App.Prelude
 
 import Codec.Serialise (Serialise)
 import Data.ByteString.Lazy (ByteString)
-import qualified Data.ByteString.Lazy as BSL
+import Data.ByteString.Lazy qualified as BSL
 import Freckle.App.Http (disableRequestDecompress)
 import Freckle.App.Http.Header
 import Network.HTTP.Client (Request, Response)
-import qualified Network.HTTP.Client.Internal as HTTP
+import Network.HTTP.Client.Internal qualified as HTTP
 
 newtype PotentiallyGzipped a = PotentiallyGzipped
   { unwrap :: a

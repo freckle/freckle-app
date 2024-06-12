@@ -16,9 +16,9 @@ import Freckle.App.Prelude
 
 import Blammo.Logging (Message (..), (.=))
 import Data.ByteString (ByteString)
-import qualified Data.ByteString.Char8 as BS8
-import qualified Data.ByteString.Lazy as BSL
-import qualified Data.CaseInsensitive as CI
+import Data.ByteString.Char8 qualified as BS8
+import Data.ByteString.Lazy qualified as BSL
+import Data.CaseInsensitive qualified as CI
 import Data.List.Extra (firstJust)
 import Data.Text.Encoding (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
@@ -28,7 +28,7 @@ import Freckle.App.Http.Cache.Gzip
 import Freckle.App.Http.Header
 import Freckle.App.Memcached
 import Network.HTTP.Client (Request, Response)
-import qualified Network.HTTP.Client as HTTP
+import Network.HTTP.Client qualified as HTTP
 import Network.HTTP.Simple
   ( addRequestHeader
   , getRequestHeader

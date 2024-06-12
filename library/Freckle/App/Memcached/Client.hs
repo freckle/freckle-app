@@ -12,14 +12,14 @@ module Freckle.App.Memcached.Client
 import Freckle.App.Prelude
 
 import Control.Lens (Lens', view, _1)
-import qualified Data.HashMap.Strict as HashMap
-import qualified Database.Memcache.Client as Memcache
+import Data.HashMap.Strict qualified as HashMap
+import Database.Memcache.Client qualified as Memcache
 import Database.Memcache.Types (Value, Version)
 import Freckle.App.Memcached.CacheKey
 import Freckle.App.Memcached.CacheTTL
 import Freckle.App.Memcached.Servers
 import Freckle.App.OpenTelemetry
-import qualified OpenTelemetry.Trace as Trace
+import OpenTelemetry.Trace qualified as Trace
 import UnliftIO.Exception (finally)
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)

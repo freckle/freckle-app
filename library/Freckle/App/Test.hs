@@ -37,8 +37,8 @@ import Blammo.Logging
 import Control.Lens (view)
 import Control.Monad.Base
 import Control.Monad.Catch (ExitCase (..), MonadCatch, MonadThrow, mask)
-import qualified Control.Monad.Catch
-import qualified Control.Monad.Fail as Fail
+import Control.Monad.Catch qualified
+import Control.Monad.Fail qualified as Fail
 import Control.Monad.Primitive
 import Control.Monad.Random (MonadRandom (..))
 import Control.Monad.Reader
@@ -50,13 +50,13 @@ import Freckle.App.Database
   , MonadSqlTx (..)
   , runDB
   )
-import qualified Freckle.App.Dotenv as Dotenv
-import qualified Freckle.App.Exception.MonadThrow as MonadThrow
+import Freckle.App.Dotenv qualified as Dotenv
+import Freckle.App.Exception.MonadThrow qualified as MonadThrow
 import Freckle.App.OpenTelemetry
-import qualified Test.Hspec as Hspec hiding (expectationFailure)
+import Test.Hspec qualified as Hspec hiding (expectationFailure)
 import Test.Hspec.Core.Spec (Arg, Example, SpecWith, evaluateExample)
-import qualified Test.Hspec.Expectations.Lifted as Hspec (expectationFailure)
-import qualified UnliftIO.Exception as UnliftIO
+import Test.Hspec.Expectations.Lifted qualified as Hspec (expectationFailure)
+import UnliftIO.Exception qualified as UnliftIO
 
 -- | An Hspec example over some @App@ value
 --

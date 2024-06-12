@@ -22,7 +22,7 @@ import Control.Monad.Logger (ToLogStr (..), fromLogStr)
 import Control.Monad.State
 import Data.Text.Encoding (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
-import qualified Data.Text.IO as T
+import Data.Text.IO qualified as T
 import Freckle.App.Http.Cache
 import Freckle.App.Memcached.CacheKey
 import Freckle.App.Memcached.CacheTTL

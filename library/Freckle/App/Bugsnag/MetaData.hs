@@ -18,7 +18,7 @@ import Freckle.App.Prelude
 import Blammo.Logging (myThreadContext)
 import Control.Lens (Lens', lens, to, view, (<>~))
 import Data.Aeson (Value (..))
-import qualified Data.Aeson.KeyMap as KeyMap
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Bugsnag (Event (..))
 import Data.String (fromString)
 import Freckle.App.Stats (HasStatsClient (..), tagsL)

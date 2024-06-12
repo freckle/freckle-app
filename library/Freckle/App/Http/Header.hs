@@ -10,7 +10,7 @@ module Freckle.App.Http.Header
 import Freckle.App.Prelude
 
 import Data.ByteString (ByteString)
-import qualified Data.ByteString.Char8 as BS8
+import Data.ByteString.Char8 qualified as BS8
 import Data.Char (isSpace)
 import Network.HTTP.Client (Request, Response, requestHeaders, responseHeaders)
 import Network.HTTP.Simple (getRequestHeader, getResponseHeader)

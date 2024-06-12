@@ -7,11 +7,11 @@ import Freckle.App.Test
 import Blammo.Logging
 import Blammo.Logging.Logger (newTestLogger)
 import Control.Lens (lens)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Freckle.App.OpenTelemetry
 import Freckle.App.OpenTelemetry.Context
 import Network.HTTP.Types.Header (Header)
-import qualified OpenTelemetry.Trace.Core as Trace
+import OpenTelemetry.Trace.Core qualified as Trace
 
 data App = App
   { appLogger :: Logger

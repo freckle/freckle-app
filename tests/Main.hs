@@ -5,7 +5,7 @@ module Main
 import Prelude
 
 import Freckle.App.Test.Hspec.Runner (runParConfig)
-import qualified Spec
+import Spec qualified
 import Test.Hspec
 
 main :: IO ()
