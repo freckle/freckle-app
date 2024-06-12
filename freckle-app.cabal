@@ -84,7 +84,6 @@ library
       Freckle.App.Yesod
       Freckle.App.Yesod.Routes
       Network.Wai.Middleware.Cors
-      Network.Wai.Middleware.OpenTelemetry
       Network.Wai.Middleware.Stats
       Yesod.Core.Lens
   other-modules:
@@ -152,7 +151,6 @@ library
     , hs-opentelemetry-api
     , hs-opentelemetry-instrumentation-persistent
     , hs-opentelemetry-instrumentation-wai
-    , hs-opentelemetry-propagator-datadog
     , hs-opentelemetry-sdk
     , hspec >=2.8.1
     , hspec-core >=2.8.1

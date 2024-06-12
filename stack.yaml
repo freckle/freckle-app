@@ -6,7 +6,6 @@ extra-deps:
   - hs-opentelemetry-api-0.1.0.0
   - hs-opentelemetry-instrumentation-persistent-0.1.0.0
   - hs-opentelemetry-instrumentation-wai-0.1.0.0
-  - hs-opentelemetry-propagator-datadog-0.0.0.0
   - hs-opentelemetry-sdk-0.0.3.6
 
   # for hs-opentelemetry-sdk
@@ -22,7 +21,3 @@ extra-deps:
 
   # for thread-utils-context
   - thread-utils-finalizers-0.1.1.0
-
-allow-newer: true
-allow-newer-deps:
-  - hs-opentelemetry-propagator-datadog

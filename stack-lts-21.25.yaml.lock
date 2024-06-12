@@ -54,13 +54,6 @@ packages:
   original:
     hackage: hs-opentelemetry-instrumentation-wai-0.1.0.0
 - completed:
-    hackage: hs-opentelemetry-propagator-datadog-0.0.0.0@sha256:dabfc321773b95b58a6985332eb2b510c227369b6903f8ade4d702ecab63db2d,3254
-    pantry-tree:
-      sha256: 43679f09fc744be01821d933936ba82fb4fa6cd3ff772ea4525b4f17a2b89754
-      size: 781
-  original:
-    hackage: hs-opentelemetry-propagator-datadog-0.0.0.0
-- completed:
     hackage: hs-opentelemetry-sdk-0.0.3.6@sha256:6776705a4e0c06c6a4bfa16a9bed3ba353901f52d214ac737f57ea7f8e1ed465,3746
     pantry-tree:
       sha256: 154663d933a44c350db6c98d2c14db192c14fd04a10c17d0ebb8090707bd359b
