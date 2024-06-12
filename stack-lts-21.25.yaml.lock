@@ -61,6 +61,13 @@ packages:
   original:
     hackage: hs-opentelemetry-sdk-0.0.3.6
 - completed:
+    hackage: hspec-junit-formatter-1.1.1.0@sha256:fa2c908a6272c9e68f9c47bb70fa51333762dc90e7fc00c4abd6ca14501630cb,5753
+    pantry-tree:
+      sha256: 0ebf9df3fe67c556c938d6ab49adf4f78cfec85f08335ca543aadb976d353d4d
+      size: 1279
+  original:
+    hackage: hspec-junit-formatter-1.1.1.0
+- completed:
     hackage: hw-kafka-client-5.0.0@sha256:99ce4899a39e3be37acf013a2f8f12761e868bf9777c0135547fcfb4c6fbf882,4861
     pantry-tree:
       sha256: d87af59eabad9c90fdf2d778740374911dd3b15b767c8e9fe5ba33244f8952f7
@@ -109,6 +116,13 @@ packages:
       size: 400
   original:
     hackage: thread-utils-finalizers-0.1.1.0
+- completed:
+    hackage: hspec-api-2.10.0@sha256:68690737181eae90d25e214803d966658e661215ddf5e24f1495b54a71a09364,1509
+    pantry-tree:
+      sha256: 5f40ff2d1b0e137530fd5ea0790e0f8a08ea1552cf570627861e666bd291fad0
+      size: 665
+  original:
+    hackage: hspec-api-2.10.0
 snapshots:
 - completed:
     sha256: a81fb3877c4f9031e1325eb3935122e608d80715dc16b586eb11ddbff8671ecd

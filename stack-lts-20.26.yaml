@@ -8,6 +8,7 @@ extra-deps:
   - hs-opentelemetry-instrumentation-persistent-0.1.0.0
   - hs-opentelemetry-instrumentation-wai-0.1.0.0
   - hs-opentelemetry-sdk-0.0.3.6
+  - hspec-junit-formatter-1.1.1.0
   - hw-kafka-client-5.0.0
   - resource-pool-0.4.0.0
 
@@ -25,3 +26,8 @@ extra-deps:
   # for thread-utils-context
   - thread-utils-finalizers-0.1.1.0
 
+  # for hspec-junit-formatter
+  - hspec-2.10.10
+  - hspec-api-2.10.0
+  - hspec-core-2.10.10
+  - hspec-discover-2.10.10

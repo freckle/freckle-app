@@ -54,6 +54,13 @@ packages:
   original:
     hackage: hs-opentelemetry-sdk-0.0.3.6
 - completed:
+    hackage: hspec-junit-formatter-1.1.1.0@sha256:fa2c908a6272c9e68f9c47bb70fa51333762dc90e7fc00c4abd6ca14501630cb,5753
+    pantry-tree:
+      sha256: 0ebf9df3fe67c556c938d6ab49adf4f78cfec85f08335ca543aadb976d353d4d
+      size: 1279
+  original:
+    hackage: hspec-junit-formatter-1.1.1.0
+- completed:
     hackage: hs-opentelemetry-exporter-otlp-0.0.1.5@sha256:89b0a6481096a338fa6383fbdf08ccaa0eb7bb009c4cbb340894eac33e55c5de,2214
     pantry-tree:
       sha256: 744146043f5818ad2b7577a32862affcbf6ed400b097723eae9f6941d739365e

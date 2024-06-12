@@ -104,7 +104,7 @@ library:
     - hspec >= 2.8.1
     - hspec-core >= 2.8.1
     - hspec-expectations-lifted
-    - hspec-junit-formatter >= 1.1.0.1
+    - hspec-junit-formatter >= 1.1.1.0 # Test.Hspec.JUnit.Formatter
     - http-client
     - http-conduit >= 2.3.5 # addToRequestQueryString
     - http-link-header
