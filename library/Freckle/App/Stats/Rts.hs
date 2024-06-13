@@ -5,12 +5,12 @@ module Freckle.App.Stats.Rts
 
 import Freckle.App.Prelude
 
-import qualified Control.Immortal as Immortal
-import qualified Data.HashMap.Strict as HashMap
+import Control.Immortal qualified as Immortal
+import Data.HashMap.Strict qualified as HashMap
 import Freckle.App.Stats (HasStatsClient)
-import qualified Freckle.App.Stats as Stats
-import qualified System.Metrics as Ekg
-import qualified System.Metrics.Distribution.Internal as Ekg
+import Freckle.App.Stats qualified as Stats
+import System.Metrics qualified as Ekg
+import System.Metrics.Distribution.Internal qualified as Ekg
 import UnliftIO.Concurrent (threadDelay)
 
 -- | Initialize a thread to poll RTS stats

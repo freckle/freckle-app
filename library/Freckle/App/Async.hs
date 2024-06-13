@@ -8,11 +8,11 @@ where
 import Freckle.App.Prelude
 
 import Blammo.Logging
-import qualified Control.Immortal as Immortal
+import Control.Immortal qualified as Immortal
 import Control.Monad (forever)
-import qualified Data.Aeson.Compat as KeyMap
+import Data.Aeson.Compat qualified as KeyMap
 import UnliftIO.Async (Async)
-import qualified UnliftIO.Async as UnliftIO
+import UnliftIO.Async qualified as UnliftIO
 import UnliftIO.Concurrent (threadDelay)
 
 -- | 'UnliftIO.Async.async' but passing the thread context along

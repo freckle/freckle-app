@@ -81,14 +81,14 @@ import Control.Monad.Trans.Resource (ResourceT)
 import Control.Monad.Validate (ValidateT)
 import Data.Aeson (FromJSON, eitherDecode)
 import Data.BCP47 (BCP47)
-import qualified Data.BCP47 as BCP47
+import Data.BCP47 qualified as BCP47
 import Data.ByteString (ByteString)
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Lazy as BSL
+import Data.ByteString qualified as BS
+import Data.ByteString.Lazy qualified as BSL
 import Data.CaseInsensitive (CI)
 import Data.Csv (FromNamedRecord, decodeByName)
-import qualified Data.Text as T
-import qualified Data.Vector as V
+import Data.Text qualified as T
+import Data.Vector qualified as V
 import Network.HTTP.Types.Header (hAccept, hAcceptLanguage, hContentType)
 import Network.Wai.Test (SResponse (..))
 import Test.Hspec.Expectations.Lifted (expectationFailure)
@@ -110,7 +110,7 @@ import Yesod.Test
   , setUrl
   , withResponse
   )
-import qualified Yesod.Test
+import Yesod.Test qualified
 
 class (MonadIO m, Yesod site) => MonadYesodExample site m | m -> site where
   liftYesodExample :: YesodExample site a -> m a

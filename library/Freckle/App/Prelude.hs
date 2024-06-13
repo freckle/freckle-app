@@ -88,7 +88,7 @@ module Freckle.App.Prelude
     -- ** 'UTCTime'
   , getCurrentTime
 
-   -- * Exceptions
+    -- * Exceptions
   , throwM
   , throwString
   , fromJustNoteM
@@ -112,14 +112,14 @@ import Prelude hiding
   , head
   , init
   , last
+#if MIN_VERSION_base(4,18,0)
+  , liftA2
+#endif
   , maximum
   , minimum
   , read
   , tail
   , (!!)
-#if MIN_VERSION_base(4,18,0)
-  , liftA2
-#endif
   )
 
 -- Commonly used types (and their commonly used functions)
@@ -135,10 +135,10 @@ import Data.Int (Int64)
 import Data.List.NonEmpty (NonEmpty)
 import Data.Map.Strict (Map)
 import Data.Set (Set)
-import Freckle.App.Exception
 import Data.Text (Text, pack, unpack)
 import Data.Time (NominalDiffTime, UTCTime, getCurrentTime)
 import Data.Vector (Vector)
+import Freckle.App.Exception
 import GHC.Generics (Generic)
 
 -- Safe alternatives to prelude functions

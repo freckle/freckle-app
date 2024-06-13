@@ -18,16 +18,16 @@ import Blammo.Logging
 import Control.Lens (Lens', view)
 import Data.Aeson (ToJSON, encode)
 import Data.ByteString.Lazy (toStrict)
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.List.NonEmpty as NE
+import Data.HashMap.Strict qualified as HashMap
+import Data.List.NonEmpty qualified as NE
 import Data.Pool (Pool)
-import qualified Data.Pool as Pool
-import qualified Data.Text as T
+import Data.Pool qualified as Pool
+import Data.Text qualified as T
 import Freckle.App.Async (async)
-import qualified Freckle.App.Env as Env
+import Freckle.App.Env qualified as Env
 import Freckle.App.OpenTelemetry
 import Kafka.Producer
-import qualified OpenTelemetry.Trace as Trace
+import OpenTelemetry.Trace qualified as Trace
 import UnliftIO (withRunInIO)
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
@@ -92,13 +92,13 @@ createKafkaProducerPool
   -> KafkaProducerPoolConfig
   -> IO (Pool KafkaProducer)
 createKafkaProducerPool addresses KafkaProducerPoolConfig {..} =
-  Pool.newPool
-    $ Pool.setNumStripes (Just kafkaProducerPoolConfigStripes)
-    $ Pool.defaultPoolConfig
-      mkProducer
-      closeProducer
-      (realToFrac kafkaProducerPoolConfigIdleTimeout)
-      kafkaProducerPoolConfigSize
+  Pool.newPool $
+    Pool.setNumStripes (Just kafkaProducerPoolConfigStripes) $
+      Pool.defaultPoolConfig
+        mkProducer
+        closeProducer
+        (realToFrac kafkaProducerPoolConfigIdleTimeout)
+        kafkaProducerPoolConfigSize
  where
   mkProducer =
     either

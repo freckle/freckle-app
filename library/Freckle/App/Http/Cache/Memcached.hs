@@ -13,16 +13,16 @@ import Freckle.App.Prelude
 
 import Blammo.Logging (MonadLogger, logDebugNS, logWarnNS)
 import Codec.Serialise (Serialise (..), deserialiseOrFail, serialise)
-import qualified Data.ByteString.Lazy as BSL
+import Data.ByteString.Lazy qualified as BSL
 import Data.CaseInsensitive (CI)
-import qualified Data.CaseInsensitive as CI
+import Data.CaseInsensitive qualified as CI
 import Database.Memcache.Types (Value)
 import Freckle.App.Http.Cache
 import Freckle.App.Memcached
-import qualified Freckle.App.Memcached.Client as Memcached
+import Freckle.App.Memcached.Client qualified as Memcached
 import Freckle.App.OpenTelemetry (MonadTracer)
 import Network.HTTP.Client (Request)
-import qualified Network.HTTP.Client.Internal as HTTP
+import Network.HTTP.Client.Internal qualified as HTTP
 import Network.HTTP.Types.Header (ResponseHeaders)
 import Network.HTTP.Types.Status (Status (..))
 import Network.HTTP.Types.Version (HttpVersion (..))

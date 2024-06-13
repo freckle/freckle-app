@@ -15,10 +15,10 @@ import Control.Lens (Lens', view)
 import Control.Monad (forever)
 import Data.Aeson
 import Data.ByteString (ByteString)
-import qualified Data.List.NonEmpty as NE
-import qualified Data.Map.Strict as Map
-import qualified Data.Text as T
-import qualified Env
+import Data.List.NonEmpty qualified as NE
+import Data.Map.Strict qualified as Map
+import Data.Text qualified as T
+import Env qualified
 import Freckle.App.Async
 import Freckle.App.Env
 import Freckle.App.Exception (annotatedExceptionMessageFrom)
@@ -32,7 +32,7 @@ import Kafka.Consumer hiding
   , runConsumer
   , subscription
   )
-import qualified Kafka.Consumer as Kafka
+import Kafka.Consumer qualified as Kafka
 import UnliftIO.Exception (bracket)
 
 data KafkaConsumerConfig = KafkaConsumerConfig

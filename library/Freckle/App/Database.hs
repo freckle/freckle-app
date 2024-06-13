@@ -39,14 +39,14 @@ module Freckle.App.Database
 import Freckle.App.Prelude
 
 import Blammo.Logging
-import qualified Control.Immortal as Immortal
+import Control.Immortal qualified as Immortal
 import Control.Monad.Reader
 import Data.ByteString (ByteString)
-import qualified Data.ByteString.Char8 as BS8
-import qualified Data.ByteString.Lazy as BSL
-import qualified Data.HashMap.Strict as HashMap
+import Data.ByteString.Char8 qualified as BS8
+import Data.ByteString.Lazy qualified as BSL
+import Data.HashMap.Strict qualified as HashMap
 import Data.Pool
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Database.Persist.Postgresql
   ( SqlBackend
   , SqlPersistT
@@ -66,13 +66,13 @@ import Database.PostgreSQL.Simple
   )
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import Freckle.App.Env (Timeout (..))
-import qualified Freckle.App.Env as Env
+import Freckle.App.Env qualified as Env
 import Freckle.App.Exception.MonadUnliftIO
 import Freckle.App.OpenTelemetry
 import Freckle.App.Stats (HasStatsClient)
-import qualified Freckle.App.Stats as Stats
+import Freckle.App.Stats qualified as Stats
 import OpenTelemetry.Instrumentation.Persistent
-import qualified OpenTelemetry.Trace as Trace
+import OpenTelemetry.Trace qualified as Trace
 import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
 import UnliftIO.IORef

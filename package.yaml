@@ -13,6 +13,8 @@ extra-doc-files:
 extra-source-files:
   - package.yaml
 
+language: GHC2021
+
 ghc-options:
   - -fignore-optim-changes
   - -fwrite-ide-info
@@ -20,6 +22,7 @@ ghc-options:
   - -Wno-all-missed-specialisations
   - -Wno-missing-exported-signatures # re-enables missing-signatures
   - -Wno-missing-import-lists
+  - -Wno-missing-kind-signatures
   - -Wno-missing-local-signatures
   - -Wno-missing-safe-haskell-mode
   - -Wno-monomorphism-restriction
@@ -31,38 +34,22 @@ when:
   - condition: "impl(ghc >= 9.8)"
     ghc-options:
       - -Wno-missing-role-annotations
-  - condition: "impl(ghc >= 9.2)"
-    ghc-options:
-      - -Wno-missing-kind-signatures
+      - -Wno-missing-poly-kind-signatures
 
 dependencies:
   - base < 5
 
 default-extensions:
-  - BangPatterns
   - DataKinds
   - DeriveAnyClass
-  - DeriveFoldable
-  - DeriveFunctor
-  - DeriveGeneric
-  - DeriveLift
-  - DeriveTraversable
   - DerivingVia
   - DerivingStrategies
-  - FlexibleContexts
-  - FlexibleInstances
   - GADTs
-  - GeneralizedNewtypeDeriving
   - LambdaCase
-  - MultiParamTypeClasses
   - NoImplicitPrelude
   - NoMonomorphismRestriction
   - OverloadedStrings
-  - RankNTypes
   - RecordWildCards
-  - ScopedTypeVariables
-  - StandaloneDeriving
-  - TypeApplications
   - TypeFamilies
 
 library:

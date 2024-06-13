@@ -4,7 +4,7 @@ module Freckle.App.Yesod.Routes
 
 import Freckle.App.Prelude
 
-import qualified Language.Haskell.TH as TH
+import Language.Haskell.TH qualified as TH
 import Yesod.Routes.TH.Types
 
 -- | Lambdacase expression to print route names

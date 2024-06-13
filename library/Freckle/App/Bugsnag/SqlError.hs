@@ -17,7 +17,7 @@ import Database.PostgreSQL.Simple.Errors
   , constraintViolation
   )
 import Freckle.App.Exception.Types (AnnotatedException)
-import qualified Freckle.App.Exception.Types as Annotated
+import Freckle.App.Exception.Types qualified as Annotated
 import Network.Bugsnag
   ( BeforeNotify
   , setGroupingHash

@@ -44,10 +44,10 @@ import Data.Aeson (Value (..))
 import Data.String
 import Data.Time (diffUTCTime)
 import Freckle.App.Ecs
-import qualified Freckle.App.Env as Env
-import qualified Network.StatsD.Datadog as Datadog
+import Freckle.App.Env qualified as Env
+import Network.StatsD.Datadog qualified as Datadog
 import System.IO (hPutStrLn, stderr)
-import qualified System.Metrics.Gauge as EKG
+import System.Metrics.Gauge qualified as EKG
 import UnliftIO.Exception (bracket_)
 import Yesod.Core.Lens
 import Yesod.Core.Types (HandlerData)
@@ -178,9 +178,9 @@ withGauge
 withGauge getGauge f = do
   gauge' <- lookupGauge getGauge
   bracket_ (inc gauge') (dec gauge') f
-  where
-    inc = incGauge
-    dec = decGauge
+ where
+  inc = incGauge
+  dec = decGauge
 
 lookupGauge
   :: (MonadReader app m, HasStatsClient app)

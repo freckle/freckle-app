@@ -9,7 +9,7 @@ import Blammo.Logging.Simple
 import Database.Persist.Postgresql (runSqlPool)
 import Database.Persist.Sql (SqlBackend)
 import Freckle.App.Database (makePostgresPool)
-import qualified Freckle.App.Dotenv as Dotenv
+import Freckle.App.Dotenv qualified as Dotenv
 
 -- | Run a db action against .env
 runDB :: ReaderT SqlBackend IO b -> IO b

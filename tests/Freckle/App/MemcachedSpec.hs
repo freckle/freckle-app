@@ -11,12 +11,12 @@ import Blammo.Logging.Logger
 import Control.Lens (lens, to, (^?))
 import Data.Aeson (Value (..))
 import Data.Aeson.Lens
-import qualified Data.List.NonEmpty as NE
-import qualified Data.Text as T
-import qualified Freckle.App.Env as Env
+import Data.List.NonEmpty qualified as NE
+import Data.Text qualified as T
+import Freckle.App.Env qualified as Env
 import Freckle.App.Memcached
 import Freckle.App.Memcached.Client (MemcachedClient, withMemcachedClient)
-import qualified Freckle.App.Memcached.Client as Memcached
+import Freckle.App.Memcached.Client qualified as Memcached
 import Freckle.App.Memcached.Servers
 import Freckle.App.OpenTelemetry
 

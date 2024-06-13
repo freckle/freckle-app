@@ -7,9 +7,9 @@ module Freckle.App.OpenTelemetry.Http
 
 import Freckle.App.Prelude
 
-import qualified Data.CaseInsensitive as CI
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.Text as T
+import Data.CaseInsensitive qualified as CI
+import Data.HashMap.Strict qualified as HashMap
+import Data.Text qualified as T
 import Data.Text.Encoding (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
 import Freckle.App.OpenTelemetry
@@ -18,7 +18,7 @@ import Freckle.App.OpenTelemetry
   , clientSpanArguments
   )
 import Network.HTTP.Client (Request, Response)
-import qualified Network.HTTP.Client as HTTP
+import Network.HTTP.Client qualified as HTTP
 import Network.HTTP.Types.Status (statusCode)
 import OpenTelemetry.Attributes (Attribute, ToAttribute (..))
 

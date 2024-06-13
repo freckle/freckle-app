@@ -10,7 +10,7 @@ import Data.Bugsnag
 import Freckle.App.Bugsnag
 import Freckle.App.Bugsnag.MetaData
 import Freckle.App.Stats
-import qualified Freckle.App.Stats as Stats
+import Freckle.App.Stats qualified as Stats
 
 spec :: Spec
 spec = do

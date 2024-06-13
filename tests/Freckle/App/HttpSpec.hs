@@ -7,7 +7,7 @@ import Freckle.App.Prelude
 import Control.Lens (to, (^?), _Left, _Right)
 import Data.Aeson
 import Data.Aeson.Lens
-import qualified Data.List.NonEmpty as NE
+import Data.List.NonEmpty qualified as NE
 import Freckle.App.Http
 import Freckle.App.Test.Http
 import Network.HTTP.Types.Status (status200)

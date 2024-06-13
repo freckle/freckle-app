@@ -5,7 +5,7 @@ module Freckle.App.Scientist
 import Freckle.App.Prelude
 
 import Freckle.App.Stats (HasStatsClient)
-import qualified Freckle.App.Stats as Stats
+import Freckle.App.Stats qualified as Stats
 import Scientist
 import Scientist.Duration
 

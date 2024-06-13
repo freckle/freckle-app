@@ -29,7 +29,7 @@ import Test.Hspec.Runner
   , hspecWithResult
   , readConfig
   )
-import qualified Prelude as Unsafe (read)
+import Prelude qualified as Unsafe (read)
 
 run :: String -> Spec -> IO ()
 run = runWith defaultConfig

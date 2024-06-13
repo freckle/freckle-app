@@ -24,13 +24,13 @@ module Freckle.App.Test.Http.MatchRequest
 import Freckle.App.Prelude
 
 import Data.ByteString (ByteString)
-import qualified Data.ByteString.Char8 as BS8
-import qualified Data.ByteString.Lazy as BSL
+import Data.ByteString.Char8 qualified as BS8
+import Data.ByteString.Lazy qualified as BSL
 import Data.List (isPrefixOf)
 import Data.List.NonEmpty (NonEmpty (..))
-import qualified Data.List.NonEmpty as NE
+import Data.List.NonEmpty qualified as NE
 import Network.HTTP.Client (Request, RequestBody (..), parseRequest_)
-import qualified Network.HTTP.Client.Internal as HTTP
+import Network.HTTP.Client.Internal qualified as HTTP
 import Network.HTTP.Types.Header (Header, RequestHeaders)
 import Network.HTTP.Types.Method (Method)
 

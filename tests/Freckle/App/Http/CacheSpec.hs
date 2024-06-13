@@ -7,13 +7,13 @@ module Freckle.App.Http.CacheSpec
 
 import Freckle.App.Prelude
 
-import qualified Codec.Compression.GZip as GZip
+import Codec.Compression.GZip qualified as GZip
 import Control.Lens ((&), (.~), (<>~))
 import Control.Monad.State (StateT, execStateT)
 import Data.Aeson (FromJSON, eitherDecode)
 import Data.ByteString.Lazy (ByteString)
-import qualified Data.ByteString.Lazy as BSL
-import qualified Data.HashMap.Strict as HashMap
+import Data.ByteString.Lazy qualified as BSL
+import Data.HashMap.Strict qualified as HashMap
 import Data.Time (addUTCTime)
 import Freckle.App.Http
 import Freckle.App.Http.Cache

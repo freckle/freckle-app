@@ -6,7 +6,7 @@ import Freckle.App.Prelude
 
 import Control.Error.Util (hush)
 import Data.Either (isLeft, isRight)
-import qualified Database.Memcache.Client as Memcache
+import Database.Memcache.Client qualified as Memcache
 import Freckle.App.Memcached.Servers
 import Freckle.App.Test
 

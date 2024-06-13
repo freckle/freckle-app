@@ -8,7 +8,7 @@ import Freckle.App.Prelude
 
 import Blammo.Logging (MonadMask, withThreadContext)
 import Data.Aeson ((.=))
-import qualified Data.Aeson.Key as Key
+import Data.Aeson.Key qualified as Key
 import Data.Aeson.Types (Pair)
 import Freckle.App.OpenTelemetry (getCurrentSpanContext)
 import OpenTelemetry.Trace.Core (SpanContext (..))

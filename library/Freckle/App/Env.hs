@@ -39,11 +39,11 @@ import Freckle.App.Prelude
 
 import Control.Error.Util (note)
 import Data.Char (isDigit)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Data.Time (defaultTimeLocale, parseTimeM)
 import Env hiding (flag)
-import qualified Env
-import qualified Prelude as Unsafe (read)
+import Env qualified
+import Prelude qualified as Unsafe (read)
 
 -- | Designates the value of a parameter when a flag is not provided.
 newtype Off a = Off a

@@ -6,8 +6,8 @@ module Network.Wai.Middleware.Cors
 import Freckle.App.Prelude
 
 import Data.ByteString (ByteString)
-import qualified Data.ByteString as BS
-import qualified Data.CaseInsensitive as CI
+import Data.ByteString qualified as BS
+import Data.CaseInsensitive qualified as CI
 import Network.HTTP.Types (ResponseHeaders)
 import Network.HTTP.Types.Status (status200)
 import Network.Wai

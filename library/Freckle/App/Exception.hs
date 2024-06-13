@@ -12,7 +12,7 @@ module Freckle.App.Exception
 import Prelude
 
 import Control.Exception.Annotated (annotatedExceptionCallStack)
-import qualified Control.Exception.Annotated as AnnotatedException
+import Control.Exception.Annotated qualified as AnnotatedException
 import Control.Monad.Logger.Aeson (Message (..), (.=))
 import Data.Aeson (object)
 import Freckle.App.Exception.MonadUnliftIO

@@ -16,7 +16,7 @@ import Data.Functor ((<&>))
 import Data.STRef (newSTRef, readSTRef, writeSTRef)
 import Numeric.Natural (Natural)
 
-import qualified Data.Set as Set
+import Data.Set qualified as Set
 
 -- | A possibly-empty contiguous range of integers
 data Range i
