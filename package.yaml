@@ -34,6 +34,7 @@ when:
   - condition: "impl(ghc >= 9.8)"
     ghc-options:
       - -Wno-missing-role-annotations
+      - -Wno-missing-poly-kind-signatures
 
 dependencies:
   - base < 5

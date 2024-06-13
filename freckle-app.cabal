@@ -187,7 +187,7 @@ library
     , yesod-test
   default-language: GHC2021
   if impl(ghc >= 9.8)
-    ghc-options: -Wno-missing-role-annotations
+    ghc-options: -Wno-missing-role-annotations -Wno-missing-poly-kind-signatures
 
 test-suite doctest
   type: exitcode-stdio-1.0
@@ -214,7 +214,7 @@ test-suite doctest
     , freckle-app
   default-language: GHC2021
   if impl(ghc >= 9.8)
-    ghc-options: -Wno-missing-role-annotations
+    ghc-options: -Wno-missing-role-annotations -Wno-missing-poly-kind-signatures
 
 test-suite spec
   type: exitcode-stdio-1.0
@@ -281,4 +281,4 @@ test-suite spec
     , zlib
   default-language: GHC2021
   if impl(ghc >= 9.8)
-    ghc-options: -Wno-missing-role-annotations
+    ghc-options: -Wno-missing-role-annotations -Wno-missing-poly-kind-signatures
