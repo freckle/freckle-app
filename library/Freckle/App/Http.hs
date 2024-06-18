@@ -14,6 +14,9 @@ module Freckle.App.Http
   , HttpDecodeError (..)
   , httpDecode
 
+    -- * Raw response
+  , httpBytes
+
     -- * Pagination
   , httpPaginated
   , sourcePaginated
@@ -199,6 +202,13 @@ httpDecode decode req = do
   resp <- httpLbs req
   let body = getResponseBody resp
   pure $ first (HttpDecodeError body) . decode <$> resp
+
+-- | Make a request without decoding the body
+httpBytes
+  :: MonadHttp m
+  => Request
+  -> m (Response ByteString)
+httpBytes = httpLbs
 
 -- | Request all pages of a paginated endpoint into some 'Monoid'
 --
