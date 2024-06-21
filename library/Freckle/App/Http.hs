@@ -32,6 +32,7 @@ module Freckle.App.Http
   , setRequestBodyJSON
   , setRequestBodyURLEncoded
   , setRequestCheckStatus
+  , setRequestMethod
   , setRequestPath
   , disableRequestDecompress
 
@@ -71,6 +72,7 @@ module Freckle.App.Http
   , statusIsRedirection
   , statusIsClientError
   , statusIsServerError
+  , StdMethod (..)
   ) where
 
 import Freckle.App.Prelude
@@ -91,8 +93,9 @@ import Freckle.App.Http.Paginate
 import Freckle.App.Http.Retry
 import Network.HTTP.Client qualified as HTTP (Request (..))
 import Network.HTTP.Conduit (HttpExceptionContent (..))
-import Network.HTTP.Simple hiding (httpLbs, httpNoBody)
+import Network.HTTP.Simple hiding (httpLbs, httpNoBody, setRequestMethod)
 import Network.HTTP.Simple qualified as HTTP
+import Network.HTTP.Types (StdMethod (..), renderStdMethod)
 import Network.HTTP.Types.Header (hAccept, hAuthorization)
 import Network.HTTP.Types.Status
   ( Status
@@ -250,6 +253,9 @@ addAcceptHeader = addRequestHeader hAccept
 
 addBearerAuthorizationHeader :: BS.ByteString -> Request -> Request
 addBearerAuthorizationHeader = addRequestHeader hAuthorization . ("Bearer " <>)
+
+setRequestMethod :: StdMethod -> Request -> Request
+setRequestMethod method req = req {HTTP.method = renderStdMethod method}
 
 disableRequestDecompress :: Request -> Request
 disableRequestDecompress req =
