@@ -43,6 +43,7 @@ library
       Freckle.App.Exception.MonadUnliftIO
       Freckle.App.Exception.Types
       Freckle.App.Faktory.ProducerPool
+      Freckle.App.Foldable1
       Freckle.App.Ghci
       Freckle.App.GlobalCache
       Freckle.App.Http
@@ -63,6 +64,7 @@ library
       Freckle.App.Memcached.Client
       Freckle.App.Memcached.MD5
       Freckle.App.Memcached.Servers
+      Freckle.App.Monoid.Average
       Freckle.App.OpenTelemetry
       Freckle.App.OpenTelemetry.Context
       Freckle.App.OpenTelemetry.Http
