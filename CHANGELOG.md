@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.17.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.18.1.0...main)
+
+## [v1.18.1.0](https://github.com/freckle/freckle-app/compare/v1.18.0.0...v1.18.1.0)
+
+- Add `Freckle.App.Http (setRequestMethod)`
 
 ## [v1.18.0.0](https://github.com/freckle/freckle-app/compare/v1.17.1.0...v1.18.0.0)
 
