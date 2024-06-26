@@ -79,6 +79,7 @@ library
       Freckle.App.Test.Http.MatchRequest
       Freckle.App.Test.Properties.JSON
       Freckle.App.Test.Properties.PathPiece
+      Freckle.App.Test.Properties.PersistValue
       Freckle.App.Test.Yesod
       Freckle.App.Wai
       Freckle.App.Yesod
@@ -232,6 +233,7 @@ test-suite spec
       Freckle.App.Test.Http.MatchRequestSpec
       Freckle.App.Test.Properties.JSONSpec
       Freckle.App.Test.Properties.PathPieceSpec
+      Freckle.App.Test.Properties.PersistValueSpec
       Freckle.App.WaiSpec
       Spec
       Paths_freckle_app
