@@ -78,3 +78,6 @@ allow-newer-deps:
   - text
   - time
   - witherable
+
+packages:
+  - freckle-app

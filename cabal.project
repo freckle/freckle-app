@@ -1,4 +1,4 @@
-packages: .
+packages: freckle-app
 allow-newer: hs-opentelemetry-propagator-datadog:text
 
 documentation: True

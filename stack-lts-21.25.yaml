@@ -27,3 +27,6 @@ extra-deps:
 
   # for hspec-junit-formatter
   - hspec-api-2.10.0
+
+packages:
+  - freckle-app
