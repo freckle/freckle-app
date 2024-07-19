@@ -3,6 +3,10 @@
 ## [v1.18.1.0](https://github.com/freckle/freckle-app/compare/v1.18.0.0...v1.18.1.0)
 
 - Add `Freckle.App.Http (setRequestMethod)`
+- Add `Freckle.App.Async` (`foldConcurrently`, `ThreadContext (..)`,
+  `getThreadContext`, `withThreadContext`)
+- Bugfix: Utilities in `Freckle.App.Async` now preserve OpenTelemetry context
+  (previously were only passing along Blammo logging context)
 
 ## [v1.18.0.0](https://github.com/freckle/freckle-app/compare/v1.17.1.0...v1.18.0.0)
 
