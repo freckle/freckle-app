@@ -145,6 +145,7 @@ tests:
       - Blammo
       - QuickCheck
       - aeson
+      - async
       - bugsnag
       - bytestring
       - cassava

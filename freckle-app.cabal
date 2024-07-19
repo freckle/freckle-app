@@ -220,6 +220,7 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Main.hs
   other-modules:
+      Freckle.App.AsyncSpec
       Freckle.App.Bugsnag.MetaDataSpec
       Freckle.App.BugsnagSpec
       Freckle.App.CsvSpec
@@ -253,6 +254,7 @@ test-suite spec
       Blammo
     , QuickCheck
     , aeson
+    , async
     , base <5
     , bugsnag
     , bytestring
