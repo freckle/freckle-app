@@ -80,12 +80,12 @@ matchRequestFromUrl url =
 
 hasExplicitPath :: Bool -> ByteString -> Int -> String -> Bool
 hasExplicitPath secure host port url =
-  any ((`isPrefixOf` url) . toUrlPrefix) $
-    concat
-      [ [Just port]
-      , Nothing <$ guard (secure && port == 443)
-      , Nothing <$ guard (not secure && port == 80)
-      ]
+  any
+    (any ((`isPrefixOf` url) . toUrlPrefix))
+    [ [Just port]
+    , Nothing <$ guard (secure && port == 443)
+    , Nothing <$ guard (not secure && port == 80)
+    ]
  where
   toUrlPrefix mport =
     mconcat

@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.18.0.0
+version:        1.18.1.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -220,6 +220,7 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Main.hs
   other-modules:
+      Freckle.App.AsyncSpec
       Freckle.App.Bugsnag.MetaDataSpec
       Freckle.App.BugsnagSpec
       Freckle.App.CsvSpec
@@ -253,6 +254,7 @@ test-suite spec
       Blammo
     , QuickCheck
     , aeson
+    , async
     , base <5
     , bugsnag
     , bytestring
