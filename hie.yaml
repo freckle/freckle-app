@@ -1,10 +1,10 @@
 cradle:
   stack:
-    - path: "./library"
+    - path: "freckle-app/library"
       component: "freckle-app:lib"
 
-    - path: "./doctest"
+    - path: "freckle-app/doctest"
       component: "freckle-app:test:doctest"
 
-    - path: "./tests"
+    - path: "freckle-app/tests"
       component: "freckle-app:test:spec"

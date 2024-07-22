@@ -22,3 +22,6 @@ extra-deps:
 
   # for thread-utils-context
   - thread-utils-finalizers-0.1.1.0
+
+packages:
+  - freckle-app

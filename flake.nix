@@ -23,31 +23,11 @@
           ghc = freckleLib.haskellBundle {
             ghcVersion = "ghc-9-4-8";
             enableHLS = true;
-            packageSelection = p: [
-              p.aeson
-              p.conduit
-              p.conduit-extra
-              p.doctest
-              p.extra
-              p.hspec
-              p.hspec-core
-              p.http-client
-              p.http-conduit
-              p.hs-opentelemetry-api
-              p.immortal
-              p.lens
-              p.lens-aeson
-              p.hw-kafka-client
-              p.persistent
-              p.persistent-postgresql
-              p.postgresql-simple
-              p.safe
-              p.unliftio
-              p.unliftio-core
-              p.yaml
-              p.yesod-core
-            ];
           };
+
+          implicit-hie =
+            nixpkgs.stable.haskell.lib.justStaticExecutables
+              nixpkgs.stable.haskellPackages.implicit-hie;
         };
 
         devShells.default = nixpkgs.stable.mkShell {
@@ -63,6 +43,7 @@
           nativeBuildInputs = with (packages); [
             fourmolu
             ghc
+            implicit-hie
           ];
 
           shellHook = ''

@@ -31,3 +31,6 @@ extra-deps:
   - hspec-api-2.10.0
   - hspec-core-2.10.10
   - hspec-discover-2.10.10
+
+packages:
+  - freckle-app
