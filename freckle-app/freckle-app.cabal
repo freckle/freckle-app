@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.18.1.0
+version:        1.18.2.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -105,7 +105,8 @@ library
       TypeFamilies
   ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-all-missed-specialisations -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-kind-signatures -Wno-missing-local-signatures -Wno-missing-safe-haskell-mode -Wno-monomorphism-restriction -Wno-prepositive-qualified-module -Wno-safe -Wno-unsafe
   build-depends:
-      Blammo
+      Blammo >=2.0.0.0
+    , Blammo-wai
     , Glob
     , MonadRandom
     , QuickCheck
