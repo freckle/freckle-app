@@ -11,6 +11,9 @@ jobs:
       - uses: actions/checkout@v4
       - id: tag
         uses: freckle/haskell-tag-action@v1
+        with:
+          package-yaml: freckle-app/package.yaml
+          tag-prefix: freckle-app-v
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
 
