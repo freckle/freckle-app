@@ -5,12 +5,19 @@
 
 packages:
 - completed:
-    hackage: Blammo-1.2.0.0@sha256:727b02bff2ef0363501778bfc01a13d4c7b2912843b9e1a2538081f0b44484d4,4836
+    hackage: Blammo-2.0.0.0@sha256:874b1572232d974b234ee8b2655b74ff15e3759abd2c1874d57ca35fe07002d4,4689
     pantry-tree:
-      sha256: 35a51b2053f5b56a16458e8316bb1cd5d13490eab87b0ba30cd1dbbbdef99c0c
-      size: 1724
+      sha256: 6dece91d00f9a022a62eaa39bacc6ae34bce07cae77830edb2c2b8ad25061099
+      size: 1647
   original:
-    hackage: Blammo-1.2.0.0
+    hackage: Blammo-2.0.0.0
+- completed:
+    hackage: Blammo-wai-0.0.0.0@sha256:4eab73c27798edec02d5398cd709e2a24200f5dad14954e6a6d1314e117dfcd8,2845
+    pantry-tree:
+      sha256: f0e79a1e18bb9fc5741b402133d78cf039f02736089ac68752d31462a29f4b54
+      size: 338
+  original:
+    hackage: Blammo-wai-0.0.0.0
 - completed:
     hackage: bugsnag-1.1.0.0@sha256:9723af13b09e7aed7e5855fcbcd7f89a904df80324f21d32480f01aabd8d035b,4565
     pantry-tree:

@@ -1,6 +1,10 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.18.1.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.18.2.0...main)
+
+## [v1.18.2.0](https://github.com/freckle/freckle-app/compare/v1.18.1.0...v1.18.2.0)
 
 - Add `Freckle.App.Test.Properties.PersistValue` (`prop_roundTripPersistValue`)
+- Support and require `Blammo` `>= 2` to accommodate the extraction of the
+  `Blammo-wai` package
 
 ## [v1.18.1.0](https://github.com/freckle/freckle-app/compare/v1.18.0.0...v1.18.1.0)
 
