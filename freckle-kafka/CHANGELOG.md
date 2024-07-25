@@ -1,6 +1,6 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-kafka-v0.0.0.0...main)
 
-## [v0.0.0.0](https://github.com/freckle/freckle-app/tree/freckle-kafka-v0.0.0.0)
+## [v0.0.0.0](https://github.com/freckle/freckle-app/tree/freckle-kafka-v0.0.0.0/freckle-kafka)
 
 First release, sprouted from `freckle-app-1.18.2.0`.
 
