@@ -1,7 +1,7 @@
 name: freckle-env
 version: 0.0.0.0
 maintainer: Freckle Education
-category: Utils
+category: Environment, System
 github: freckle/freckle-app
 synopsis: Some extension to the envparse library
 description: Please see README.md

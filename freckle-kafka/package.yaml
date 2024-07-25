@@ -1,7 +1,7 @@
 name: freckle-kafka
 version: 0.0.0.0
 maintainer: Freckle Education
-category: Utils
+category: Database
 github: freckle/freckle-app
 synopsis: Some extensions to the hw-kafka-client library
 description: Please see README.md
