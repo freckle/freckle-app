@@ -66,9 +66,4 @@ tests:
     main: Main.hs
     source-dirs: doctest
     dependencies:
-      - Glob
-      - aeson
       - doctest
-      - relude
-      - text
-      - yaml

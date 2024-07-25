@@ -1,11 +1,8 @@
-module Main
-  ( main
-  )
-where
+module Main (main) where
 
 import Prelude
 
-import Freckle.App.Test.DocTest
+import Test.DocTest
 
 main :: IO ()
-main = doctest "library/"
+main = doctest ["library/"]
