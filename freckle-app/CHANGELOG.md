@@ -1,6 +1,6 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.19.0.0...main)
 
-## [v1.19.0.0](https://github.com/freckle/freckle-app/compare/v1.18.2.0...freckle-app-v1.19.0.0)
+## [v1.19.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.18.2.0...freckle-app-v1.19.0.0)
 
 - Removed `Freckle.App.Kafka(.*)`; this is now available from the `freckle-kafka`
   package. If you are using `freckle-app` but not Kafka, you no longer need
