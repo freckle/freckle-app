@@ -37,10 +37,9 @@ jobs:
       - name: Install rdkafka
         run: sudo apt-get install --assume-yes --no-install-recommends librdkafka-dev
       - uses: freckle/stack-action@v5
-        with:
-          stack-yaml: ${{ matrix.stack-yaml }}
         env:
           OTEL_TRACES_EXPORTER: none
+          STACK_YAML: ${{ matrix.stack-yaml }}
 
   lint:
     runs-on: ubuntu-latest
