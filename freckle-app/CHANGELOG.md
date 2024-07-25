@@ -4,7 +4,8 @@
 
 - Removed `Freckle.App.Kafka(.*)`; this is now available from the `freckle-kafka`
   package. If you are using `freckle-app` but not Kafka, you no longer need
-  to also install the native Kafka library to build `freckle-app`.
+  to also install the native Kafka library to build `freckle-app`. Please see
+  opening the change log entry in `freckle-kafka` for notes on how to upgrade.
 - `Freckle.App.Env` is now a re-export from the new `freckle-env` package.
   Its API has not changed.
 
