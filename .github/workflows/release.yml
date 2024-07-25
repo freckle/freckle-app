@@ -7,13 +7,20 @@ on:
 jobs:
   tag:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package:
+          - freckle-app
+          - freckle-env
+          - freckle-kafka
+
     steps:
       - uses: actions/checkout@v4
       - id: tag
         uses: freckle/haskell-tag-action@v1
         with:
-          package-yaml: freckle-app/package.yaml
-          tag-prefix: freckle-app-v
+          package-yaml: ${{ matrix.package }}/package.yaml
+          tag-prefix: ${{ matrix.package }}-v
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
 
@@ -22,6 +29,12 @@ jobs:
     if: needs.tag.outputs.tag
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package:
+          - freckle-app
+          - freckle-env
+          - freckle-kafka
 
     env:
       HACKAGE_KEY: ${{ secrets.HACKAGE_UPLOAD_API_KEY }}
@@ -38,7 +51,7 @@ jobs:
 
       # Upload using our oldest, tested resolver, to set the lowest lower bounds
       - name: "Release to Hackage"
-        run: stack --stack-yaml stack-lts-20.26.yaml upload --pvp-bounds lower freckle-app
+        run: stack --stack-yaml stack-lts-20.26.yaml upload --pvp-bounds lower ${{ matrix.package }}
 
       - name: "Upload documentation"
-        run: stack upload --documentation freckle-app
+        run: stack upload --documentation ${{ matrix.package }}
