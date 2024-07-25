@@ -118,19 +118,19 @@ class HasKafkaConsumer env where
   kafkaConsumerL :: Lens' env KafkaConsumer
 
 consumerProps :: KafkaConsumerConfig -> ConsumerProperties
-consumerProps KafkaConsumerConfig {..} =
+consumerProps config =
   brokersList brokers
-    <> groupId kafkaConsumerConfigGroupId
-    <> autoCommit kafkaConsumerConfigAutoCommitInterval
+    <> groupId (kafkaConsumerConfigGroupId config)
+    <> autoCommit (kafkaConsumerConfigAutoCommitInterval config)
     <> logLevel KafkaLogInfo
  where
-  brokers = NE.toList kafkaConsumerConfigBrokerAddresses
+  brokers = NE.toList $ kafkaConsumerConfigBrokerAddresses config
 
 subscription :: KafkaConsumerConfig -> Subscription
-subscription KafkaConsumerConfig {..} =
-  topics [kafkaConsumerConfigTopic]
-    <> offsetReset kafkaConsumerConfigOffsetReset
-    <> extraSubscriptionProps kafkaConsumerConfigExtraSubscriptionProps
+subscription config =
+  topics [kafkaConsumerConfigTopic config]
+    <> offsetReset (kafkaConsumerConfigOffsetReset config)
+    <> extraSubscriptionProps (kafkaConsumerConfigExtraSubscriptionProps config)
 
 withKafkaConsumer
   :: (MonadUnliftIO m, HasCallStack)
@@ -155,11 +155,11 @@ data KafkaMessageDecodeError = KafkaMessageDecodeError
   deriving stock (Show)
 
 instance Exception KafkaMessageDecodeError where
-  displayException KafkaMessageDecodeError {..} =
+  displayException e =
     mconcat
       [ "Unable to decode JSON"
-      , "\n  input:  " <> decodeUtf8 input
-      , "\n  errors: " <> errors
+      , "\n  input:  " <> decodeUtf8 (input e)
+      , "\n  errors: " <> (errors e)
       ]
 
 runConsumer
