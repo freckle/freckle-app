@@ -8,23 +8,19 @@ module Freckle.App.Kafka.Consumer
   , runConsumer
   ) where
 
-import Freckle.App.Prelude
+import Relude
 
 import Blammo.Logging
+import Control.Exception.Annotated.UnliftIO (AnnotatedException)
+import Control.Exception.Annotated.UnliftIO qualified as Annotated
 import Control.Lens (Lens', view)
-import Control.Monad (forever)
 import Data.Aeson
-import Data.ByteString (ByteString)
 import Data.List.NonEmpty qualified as NE
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
-import Env qualified
-import Freckle.App.Async
-import Freckle.App.Env
-import Freckle.App.Exception (annotatedExceptionMessageFrom)
+import Freckle.App.Env (Timeout (..))
+import Freckle.App.Env qualified as Env
 import Freckle.App.Kafka.Producer (envKafkaBrokerAddresses)
-import Freckle.App.OpenTelemetry
-import Freckle.App.OpenTelemetry.ThreadContext
 import Kafka.Consumer hiding
   ( Timeout
   , closeConsumer
@@ -33,6 +29,10 @@ import Kafka.Consumer hiding
   , subscription
   )
 import Kafka.Consumer qualified as Kafka
+import OpenTelemetry.Trace (SpanKind (..), defaultSpanArguments)
+import OpenTelemetry.Trace qualified as Trace
+import OpenTelemetry.Trace.Monad (MonadTracer, inSpan)
+import UnliftIO (MonadUnliftIO)
 import UnliftIO.Exception (bracket)
 
 data KafkaConsumerConfig = KafkaConsumerConfig
@@ -65,7 +65,7 @@ envKafkaTopic
   :: Env.Parser Env.Error TopicName
 envKafkaTopic =
   Env.var
-    (eitherReader readKafkaTopic)
+    (Env.eitherReader readKafkaTopic)
     "KAFKA_TOPIC"
     mempty
 
@@ -78,7 +78,7 @@ envKafkaOffsetReset
   :: Env.Parser Env.Error OffsetReset
 envKafkaOffsetReset =
   Env.var
-    (eitherReader readKafkaOffsetReset)
+    (Env.eitherReader readKafkaOffsetReset)
     "KAFKA_OFFSET_RESET"
     $ Env.def Earliest
 
@@ -96,16 +96,17 @@ envKafkaConsumerConfig = do
   kafkaTopic <- envKafkaTopic
   kafkaOffsetReset <- envKafkaOffsetReset
   kafkaAutoOffsetInterval <-
-    fromIntegral . timeoutMs <$$> Env.var timeout "KAFKA_AUTO_COMMIT_INTERVAL" $
-      Env.def $
-        TimeoutMilliseconds 5000
+    fmap (fromIntegral . timeoutMs)
+      <$> Env.var Env.timeout "KAFKA_AUTO_COMMIT_INTERVAL"
+      $ Env.def
+      $ TimeoutMilliseconds 5000
   kafkaExtraProps <-
     Env.var
-      (fmap Map.fromList . keyValues)
+      (fmap Map.fromList . Env.keyValues)
       "KAFKA_EXTRA_SUBSCRIPTION_PROPS"
       (Env.def mempty)
-  pure $
-    KafkaConsumerConfig
+  pure
+    $ KafkaConsumerConfig
       brokerAddresses
       consumerGroupId
       kafkaTopic
@@ -139,8 +140,8 @@ withKafkaConsumer
 withKafkaConsumer config = bracket newConsumer closeConsumer
  where
   (props, sub) = (consumerProps &&& subscription) config
-  newConsumer = either throwM pure =<< Kafka.newConsumer props sub
-  closeConsumer = maybe (pure ()) throwM <=< Kafka.closeConsumer
+  newConsumer = either Annotated.throw pure =<< Kafka.newConsumer props sub
+  closeConsumer = maybe (pure ()) Annotated.throw <=< Kafka.closeConsumer
 
 timeoutMs :: Timeout -> Int
 timeoutMs = \case
@@ -157,13 +158,12 @@ instance Exception KafkaMessageDecodeError where
   displayException KafkaMessageDecodeError {..} =
     mconcat
       [ "Unable to decode JSON"
-      , "\n  input:  " <> unpack (decodeUtf8 input)
+      , "\n  input:  " <> decodeUtf8 input
       , "\n  errors: " <> errors
       ]
 
 runConsumer
-  :: ( MonadMask m
-     , MonadUnliftIO m
+  :: ( MonadUnliftIO m
      , MonadReader env m
      , MonadLogger m
      , MonadTracer m
@@ -175,31 +175,49 @@ runConsumer
   -> (a -> m ())
   -> m ()
 runConsumer pollTimeout onMessage =
-  withTraceContext $ immortalCreateLogged $ forever $ do
+  forever $ do
     consumer <- view kafkaConsumerL
 
-    flip catches handlers $ inSpan "kafka.consumer" consumerSpanArguments $ do
-      mRecord <- fromKafkaError =<< pollMessage consumer kTimeout
+    flip Annotated.catches handlers
+      $ inSpan
+        "kafka.consumer"
+        (defaultSpanArguments {Trace.kind = Consumer})
+      $ do
+        mRecord <- fromKafkaError =<< pollMessage consumer kTimeout
 
-      for_ (crValue =<< mRecord) $ \bs -> do
-        a <-
-          inSpan "kafka.consumer.message.decode" defaultSpanArguments $
-            either (throwM . KafkaMessageDecodeError bs) pure $
-              eitherDecodeStrict bs
-        inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
+        for_ (crValue =<< mRecord) $ \bs -> do
+          a <-
+            inSpan "kafka.consumer.message.decode" defaultSpanArguments
+              $ either (Annotated.throw . KafkaMessageDecodeError bs) pure
+              $ eitherDecodeStrict bs
+          inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
  where
   kTimeout = Kafka.Timeout $ timeoutMs pollTimeout
 
   handlers =
-    [ ExceptionHandler $
-        logErrorNS "kafka"
-          . annotatedExceptionMessageFrom @KafkaError
-            (const "Error polling for message from Kafka")
-    , ExceptionHandler $
-        logErrorNS "kafka"
-          . annotatedExceptionMessageFrom @KafkaMessageDecodeError
-            (const "Could not decode message value")
+    [ Annotated.Handler
+        $ logErrorNS "kafka"
+        . annotatedExceptionMessageFrom @KafkaError
+          (const "Error polling for message from Kafka")
+    , Annotated.Handler
+        $ logErrorNS "kafka"
+        . annotatedExceptionMessageFrom @KafkaMessageDecodeError
+          (const "Could not decode message value")
     ]
+
+-- | Like 'annotatedExceptionMessage', but use the supplied function to
+--   construct an initial 'Message' that it will augment.
+annotatedExceptionMessageFrom
+  :: Exception ex => (ex -> Message) -> AnnotatedException ex -> Message
+annotatedExceptionMessageFrom f ann = case f ex of
+  msg :# series -> msg :# series <> ["error" .= errorObject]
+ where
+  ex = Annotated.exception ann
+  errorObject =
+    object
+      [ "message" .= displayException ex
+      , "stack" .= (prettyCallStack <$> Annotated.annotatedExceptionCallStack ann)
+      ]
 
 fromKafkaError
   :: (MonadIO m, MonadLogger m, HasCallStack)
@@ -210,6 +228,7 @@ fromKafkaError =
     ( \case
         KafkaResponseError RdKafkaRespErrTimedOut ->
           Nothing <$ logDebug "Polling timeout"
-        err -> throwM err
+        err -> Annotated.throw err
     )
-    $ pure . Just
+    $ pure
+    . Just

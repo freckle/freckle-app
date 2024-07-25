@@ -1,0 +1,72 @@
+name: freckle-kafka
+version: 0.0.0.0
+maintainer: Freckle Education
+category: Utils
+github: freckle/freckle-app
+synopsis: ...
+description: Please see README.md
+
+extra-doc-files:
+  - README.md
+  - CHANGELOG.md
+
+extra-source-files:
+  - package.yaml
+
+language: GHC2021
+
+ghc-options:
+  - -fignore-optim-changes
+  - -fwrite-ide-info
+  - -Weverything
+  - -Wno-all-missed-specialisations
+  - -Wno-missing-exported-signatures # re-enables missing-signatures
+  - -Wno-missing-import-lists
+  - -Wno-missing-kind-signatures
+  - -Wno-missing-local-signatures
+  - -Wno-missing-safe-haskell-mode
+  - -Wno-monomorphism-restriction
+  - -Wno-prepositive-qualified-module
+  - -Wno-safe
+  - -Wno-unsafe
+
+when:
+  - condition: "impl(ghc >= 9.8)"
+    ghc-options:
+      - -Wno-missing-role-annotations
+      - -Wno-missing-poly-kind-signatures
+
+dependencies:
+  - base < 5
+
+default-extensions:
+  - DataKinds
+  - DeriveAnyClass
+  - DerivingVia
+  - DerivingStrategies
+  - GADTs
+  - LambdaCase
+  - NoImplicitPrelude
+  - NoMonomorphismRestriction
+  - OverloadedStrings
+  - RecordWildCards
+  - TypeFamilies
+
+library:
+  source-dirs: library
+  dependencies:
+    - Blammo >= 2.0.0.0
+    - aeson
+    - annotated-exception
+    - containers
+    - freckle-env
+    - hs-opentelemetry-sdk
+    - hw-kafka-client
+    - lens
+    - relude
+    - resource-pool >= 0.4.0.0
+    - text
+    - time
+    - unliftio
+    - unordered-containers
+    - yesod-core

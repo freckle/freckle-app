@@ -9,28 +9,34 @@ module Freckle.App.Kafka.Producer
   , HasKafkaProducerPool (..)
   , createKafkaProducerPool
   , produceKeyedOn
-  , produceKeyedOnAsync
   ) where
 
-import Freckle.App.Prelude
+import Relude
 
 import Blammo.Logging
-import Control.Lens (Lens', view)
+  ( Message ((:#))
+  , MonadLogger
+  , logDebugNS
+  , logErrorNS
+  , (.=)
+  )
+import Control.Exception.Annotated.UnliftIO qualified as Annotated
+import Control.Lens (Lens', lens, view)
 import Data.Aeson (ToJSON, encode)
-import Data.ByteString.Lazy (toStrict)
 import Data.HashMap.Strict qualified as HashMap
 import Data.List.NonEmpty qualified as NE
 import Data.Pool (Pool)
 import Data.Pool qualified as Pool
 import Data.Text qualified as T
-import Freckle.App.Async (async)
+import Data.Time (NominalDiffTime)
 import Freckle.App.Env qualified as Env
-import Freckle.App.OpenTelemetry
+import GHC.IO.Exception (userError)
 import Kafka.Producer
+import OpenTelemetry.Trace (SpanKind (..), defaultSpanArguments)
 import OpenTelemetry.Trace qualified as Trace
-import UnliftIO (withRunInIO)
-import Yesod.Core.Lens
-import Yesod.Core.Types (HandlerData)
+import OpenTelemetry.Trace.Monad (MonadTracer, inSpan)
+import UnliftIO (MonadUnliftIO, withRunInIO)
+import Yesod.Core.Types (HandlerData (..), RunHandlerEnv (..))
 
 envKafkaBrokerAddresses
   :: Env.Parser Env.Error (NonEmpty BrokerAddress)
@@ -87,22 +93,29 @@ class HasKafkaProducerPool env where
 instance HasKafkaProducerPool site => HasKafkaProducerPool (HandlerData child site) where
   kafkaProducerPoolL = envL . siteL . kafkaProducerPoolL
 
+envL :: Lens' (HandlerData child site) (RunHandlerEnv child site)
+envL = lens handlerEnv $ \x y -> x {handlerEnv = y}
+
+siteL :: Lens' (RunHandlerEnv child site) site
+siteL = lens rheSite $ \x y -> x {rheSite = y}
+
 createKafkaProducerPool
   :: NonEmpty BrokerAddress
   -> KafkaProducerPoolConfig
   -> IO (Pool KafkaProducer)
 createKafkaProducerPool addresses KafkaProducerPoolConfig {..} =
-  Pool.newPool $
-    Pool.setNumStripes (Just kafkaProducerPoolConfigStripes) $
-      Pool.defaultPoolConfig
-        mkProducer
-        closeProducer
-        (realToFrac kafkaProducerPoolConfigIdleTimeout)
-        kafkaProducerPoolConfigSize
+  Pool.newPool
+    $ Pool.setNumStripes (Just kafkaProducerPoolConfigStripes)
+    $ Pool.defaultPoolConfig
+      mkProducer
+      closeProducer
+      (realToFrac kafkaProducerPoolConfigIdleTimeout)
+      kafkaProducerPoolConfigSize
  where
   mkProducer =
     either
-      (\err -> throwString ("Failed to open kafka producer: " <> show err))
+      ( \err -> Annotated.throw $ userError ("Failed to open kafka producer: " <> show err)
+      )
       pure
       =<< newProducer (brokersList $ toList addresses)
 
@@ -129,7 +142,8 @@ produceKeyedOn prTopic values keyF = traced $ do
           for_ @NonEmpty values $ \value -> do
             mError <- liftIO $ produceMessage producer $ mkProducerRecord value
             for_ @Maybe mError $ \e ->
-              run $ logErrorNS "kafka" $ "Failed to send event" :# ["error" .= tshow e]
+              run $ logErrorNS "kafka" $ "Failed to send event"
+                :# ["error" .= (show e :: Text)]
  where
   mkProducerRecord value =
     ProducerRecord
@@ -143,26 +157,11 @@ produceKeyedOn prTopic values keyF = traced $ do
   traced =
     inSpan
       "kafka.produce"
-      producerSpanArguments
-        { Trace.attributes =
+      defaultSpanArguments
+        { Trace.kind = Producer
+        , Trace.attributes =
             HashMap.fromList
               [ ("service.name", "kafka")
               , ("topic", Trace.toAttribute $ unTopicName prTopic)
               ]
         }
-
-produceKeyedOnAsync
-  :: ( MonadMask m
-     , MonadUnliftIO m
-     , MonadLogger m
-     , MonadTracer m
-     , MonadReader env m
-     , HasKafkaProducerPool env
-     , ToJSON key
-     , ToJSON value
-     )
-  => TopicName
-  -> NonEmpty value
-  -> (value -> key)
-  -> m ()
-produceKeyedOnAsync prTopic values = void . async . produceKeyedOn prTopic values

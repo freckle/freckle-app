@@ -1,6 +1,14 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/v1.18.2.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.19.0.0...main)
 
-## [v1.18.2.0](https://github.com/freckle/freckle-app/compare/v1.18.1.0...v1.18.2.0)
+## [v1.19.0.0](https://github.com/freckle/freckle-app/compare/v1.18.2.0...freckle-app-v1.19.0.0)
+
+- Removed `Freckle.App.Kafka(.*)`; this is now available from the `freckle-kafka`
+  package. If you are using `freckle-app` but not Kafka, you no longer need
+  to also install the native Kafka library to build `freckle-app`.
+- `Freckle.App.Env` is now a re-export from the new `freckle-env` package.
+  Its API has not changed.
+
+## [v1.18.2.0](https://github.com/freckle/freckle-app/compare/v1.18.1.0...freckle-app-v1.18.2.0)
 
 - Add `Freckle.App.Test.Properties.PersistValue` (`prop_roundTripPersistValue`)
 - Support and require `Blammo` `>= 2` to accommodate the extraction of the
