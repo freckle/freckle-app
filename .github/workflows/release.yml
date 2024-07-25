@@ -5,43 +5,40 @@ on:
     branches: main
 
 jobs:
-  release:
+  tag:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        package:
-          - freckle-app
-          - freckle-env
-          - freckle-kafka
+    steps:
+      - uses: actions/checkout@v4
+      - id: tag
+        uses: freckle/haskell-tag-action@v1
+        with:
+          package-yaml: freckle-app/package.yaml
+          tag-prefix: freckle-app-v
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+
+  release:
+    needs: tag
+    if: needs.tag.outputs.tag
+
+    runs-on: ubuntu-latest
 
     env:
       HACKAGE_KEY: ${{ secrets.HACKAGE_UPLOAD_API_KEY }}
 
     steps:
       - uses: actions/checkout@v4
-
       - run: sudo apt-get install --assume-yes --no-install-recommends librdkafka-dev
 
-      - id: tag
-        uses: freckle/haskell-tag-action@v1
-        with:
-          package-yaml: ${{ matrix.package }}/package.yaml
-          tag-prefix: ${{ matrix.package }}-v
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - if: steps.tag.outputs.tag
-        name: "Build with Haddocks"
+      - name: "Build with Haddocks"
         uses: freckle/stack-action@v5
         with:
           test: false
           stack-build-arguments: --haddock --haddock-for-hackage
 
-      - if: steps.tag.outputs.tag
-        run: stack upload --pvp-bounds lower ${{ matrix.package }}
-        env:
-          STACK_YAML: stack-lts-20.26.yaml
+      # Upload using our oldest, tested resolver, to set the lowest lower bounds
+      - name: "Release to Hackage"
+        run: stack --stack-yaml stack-lts-20.26.yaml upload --pvp-bounds lower freckle-app
 
-      - if: steps.tag.outputs.tag
-        name: "Upload documentation"
-        run: stack upload --documentation ${{ matrix.package }}
+      - name: "Upload documentation"
+        run: stack upload --documentation freckle-app
