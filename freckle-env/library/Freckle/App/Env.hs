@@ -56,7 +56,7 @@ newtype On a = On a
 -- If the variable is present and non-empty in the environment, the active value
 -- is returned, otherwise the default is used.
 --
--- >>> import Blammo.Logging (LogLevel(..))
+-- >>> data LogLevel = LevelDebug | LevelInfo | LevelWarn | LevelError | LevelOther Text deriving (Eq, Prelude.Show, Prelude.Read, Ord)
 --
 -- >>> flag (Off LevelInfo) (On LevelDebug) "DEBUG" mempty `parsePure` [("DEBUG", "1")]
 -- Right LevelDebug
@@ -130,10 +130,10 @@ keyValue c =
 -- 'splitOnParse' c pure == 'splitOn' c
 -- @
 --
--- >>> var (splitOnParse @Error ',' nonempty) "X" mempty `parsePure` [("X", "a,b")]
+-- >>> var (splitOnParse @Error ',' nonempty) "X" mempty `parsePure` [("X", "a,b")] :: Either [(String, Error)] [Text]
 -- Right ["a","b"]
 --
--- >>> var (splitOnParse @Error ',' nonempty) "X" mempty `parsePure` [("X", ",,")]
+-- >>> var (splitOnParse @Error ',' nonempty) "X" mempty `parsePure` [("X", ",,")] :: Either [(String, Error)] [Text]
 -- Left [("X",EmptyError)]
 splitOnParse :: Char -> Env.Reader e a -> Env.Reader e [a]
 splitOnParse c p = traverse p <=< splitOn c
