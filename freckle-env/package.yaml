@@ -49,7 +49,6 @@ default-extensions:
   - NoImplicitPrelude
   - NoMonomorphismRestriction
   - OverloadedStrings
-  - RecordWildCards
   - TypeFamilies
 
 library:
