@@ -1,11 +1,11 @@
-cabal-version: 1.18
+cabal-version: 1.22
 
 -- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.18.2.0
+version:        1.19.0.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -37,7 +37,6 @@ library
       Freckle.App.Database
       Freckle.App.Dotenv
       Freckle.App.Ecs
-      Freckle.App.Env
       Freckle.App.Exception
       Freckle.App.Exception.MonadThrow
       Freckle.App.Exception.MonadUnliftIO
@@ -54,9 +53,6 @@ library
       Freckle.App.Http.Paginate
       Freckle.App.Http.Retry
       Freckle.App.Json.Empty
-      Freckle.App.Kafka
-      Freckle.App.Kafka.Consumer
-      Freckle.App.Kafka.Producer
       Freckle.App.Memcached
       Freckle.App.Memcached.CacheKey
       Freckle.App.Memcached.CacheTTL
@@ -89,6 +85,8 @@ library
       Yesod.Core.Lens
   other-modules:
       Paths_freckle_app
+  reexported-modules:
+      Freckle.App.Env
   hs-source-dirs:
       library
   default-extensions:
@@ -129,12 +127,12 @@ library
     , doctest
     , dotenv
     , ekg-core
-    , envparse
     , errors
     , exceptions
     , extra
     , faktory
     , filepath
+    , freckle-env
     , hashable
     , hs-opentelemetry-api
     , hs-opentelemetry-instrumentation-persistent
@@ -148,7 +146,6 @@ library
     , http-conduit >=2.3.5
     , http-link-header
     , http-types
-    , hw-kafka-client
     , immortal
     , lens
     , memcache
@@ -265,6 +262,7 @@ test-suite spec
     , conduit
     , errors
     , freckle-app
+    , freckle-env
     , hs-opentelemetry-api
     , hspec
     , hspec-expectations-json

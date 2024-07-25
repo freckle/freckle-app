@@ -26,3 +26,5 @@ extra-deps:
 
 packages:
   - freckle-app
+  - freckle-env
+  - freckle-kafka

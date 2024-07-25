@@ -1,0 +1,82 @@
+cabal-version: 1.18
+
+-- This file has been generated from package.yaml by hpack version 0.36.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           freckle-env
+version:        0.0.0.0
+synopsis:       Some extension to the envparse library
+description:    Please see README.md
+category:       Environment, System
+homepage:       https://github.com/freckle/freckle-app#readme
+bug-reports:    https://github.com/freckle/freckle-app/issues
+maintainer:     Freckle Education
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    package.yaml
+extra-doc-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/freckle/freckle-app
+
+library
+  exposed-modules:
+      Freckle.App.Env
+  other-modules:
+      Paths_freckle_env
+  hs-source-dirs:
+      library
+  default-extensions:
+      DataKinds
+      DeriveAnyClass
+      DerivingVia
+      DerivingStrategies
+      GADTs
+      LambdaCase
+      NoImplicitPrelude
+      NoMonomorphismRestriction
+      OverloadedStrings
+      TypeFamilies
+  ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-all-missed-specialisations -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-kind-signatures -Wno-missing-local-signatures -Wno-missing-safe-haskell-mode -Wno-monomorphism-restriction -Wno-prepositive-qualified-module -Wno-safe -Wno-unsafe
+  build-depends:
+      base <5
+    , envparse
+    , errors
+    , relude
+    , text
+    , time
+  default-language: GHC2021
+  if impl(ghc >= 9.8)
+    ghc-options: -Wno-missing-role-annotations -Wno-missing-poly-kind-signatures
+
+test-suite doctest
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Paths_freckle_env
+  hs-source-dirs:
+      doctest
+  default-extensions:
+      DataKinds
+      DeriveAnyClass
+      DerivingVia
+      DerivingStrategies
+      GADTs
+      LambdaCase
+      NoImplicitPrelude
+      NoMonomorphismRestriction
+      OverloadedStrings
+      TypeFamilies
+  ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-all-missed-specialisations -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-kind-signatures -Wno-missing-local-signatures -Wno-missing-safe-haskell-mode -Wno-monomorphism-restriction -Wno-prepositive-qualified-module -Wno-safe -Wno-unsafe
+  build-depends:
+      base <5
+    , doctest
+  default-language: GHC2021
+  if impl(ghc >= 9.8)
+    ghc-options: -Wno-missing-role-annotations -Wno-missing-poly-kind-signatures

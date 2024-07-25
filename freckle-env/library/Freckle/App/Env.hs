@@ -35,12 +35,12 @@ module Freckle.App.Env
   , timeout
   ) where
 
-import Freckle.App.Prelude
+import Relude
 
 import Control.Error.Util (note)
 import Data.Char (isDigit)
 import Data.Text qualified as T
-import Data.Time (defaultTimeLocale, parseTimeM)
+import Data.Time (UTCTime, defaultTimeLocale, parseTimeM)
 import Env hiding (flag)
 import Env qualified
 import Prelude qualified as Unsafe (read)
@@ -56,7 +56,7 @@ newtype On a = On a
 -- If the variable is present and non-empty in the environment, the active value
 -- is returned, otherwise the default is used.
 --
--- >>> import Blammo.Logging (LogLevel(..))
+-- >>> data LogLevel = LevelDebug | LevelInfo | LevelWarn | LevelError | LevelOther Text deriving (Eq, Prelude.Show, Prelude.Read, Ord)
 --
 -- >>> flag (Off LevelInfo) (On LevelDebug) "DEBUG" mempty `parsePure` [("DEBUG", "1")]
 -- Right LevelDebug
@@ -80,7 +80,7 @@ flag (Off f) (On t) n m = Env.flag f t n m
 -- | Create a 'Reader' from a simple parser function
 --
 -- This is a building-block for other 'Reader's
-eitherReader :: (String -> Either String a) -> Reader Error a
+eitherReader :: (String -> Either String a) -> Env.Reader Error a
 eitherReader f s = first (unread . suffix) $ f s
  where
   suffix x = x <> ": " <> show s
@@ -92,11 +92,11 @@ eitherReader f s = first (unread . suffix) $ f s
 --
 -- >>> var (time "%Y-%m-%d") "TIME" mempty `parsePure` [("TIME", "10:00PM")]
 -- Left [("TIME",UnreadError "unable to parse time as %Y-%m-%d: \"10:00PM\"")]
-time :: String -> Reader Error UTCTime
+time :: String -> Env.Reader Error UTCTime
 time fmt =
-  eitherReader $
-    note ("unable to parse time as " <> fmt)
-      . parseTimeM True defaultTimeLocale fmt
+  eitherReader
+    $ note ("unable to parse time as " <> fmt)
+    . parseTimeM True defaultTimeLocale fmt
 
 -- | Read key-value pairs
 --
@@ -112,16 +112,16 @@ time fmt =
 --
 -- >>> var keyValues "TAGS" mempty `parsePure` [("TAGS", "foo:bar,:bat")]
 -- Left [("TAGS",UnreadError "Value bat has no key: \":bat\"")]
-keyValues :: Reader Error [(Text, Text)]
+keyValues :: Env.Reader Error [(Text, Text)]
 keyValues = splitOnParse ',' $ keyValue ':'
 
-keyValue :: Char -> Reader Error (Text, Text)
+keyValue :: Char -> Env.Reader Error (Text, Text)
 keyValue c =
-  eitherReader $ go . second (T.drop 1) . T.breakOn (T.singleton c) . pack
+  eitherReader $ go . second (T.drop 1) . T.breakOn (T.singleton c) . toText
  where
   go = \case
-    (k, v) | T.null v -> Left $ "Key " <> unpack k <> " has no value"
-    (k, v) | T.null k -> Left $ "Value " <> unpack v <> " has no key"
+    (k, v) | T.null v -> Left $ "Key " <> toString k <> " has no value"
+    (k, v) | T.null k -> Left $ "Value " <> toString v <> " has no key"
     (k, v) -> Right (k, v)
 
 -- | Use 'splitOn' then call the given 'Reader' on each element
@@ -130,12 +130,12 @@ keyValue c =
 -- 'splitOnParse' c pure == 'splitOn' c
 -- @
 --
--- >>> var (splitOnParse @Error ',' nonempty) "X" mempty `parsePure` [("X", "a,b")]
+-- >>> var (splitOnParse @Error ',' nonempty) "X" mempty `parsePure` [("X", "a,b")] :: Either [(String, Error)] [Text]
 -- Right ["a","b"]
 --
--- >>> var (splitOnParse @Error ',' nonempty) "X" mempty `parsePure` [("X", ",,")]
+-- >>> var (splitOnParse @Error ',' nonempty) "X" mempty `parsePure` [("X", ",,")] :: Either [(String, Error)] [Text]
 -- Left [("X",EmptyError)]
-splitOnParse :: Char -> Reader e a -> Reader e [a]
+splitOnParse :: Char -> Env.Reader e a -> Env.Reader e [a]
 splitOnParse c p = traverse p <=< splitOn c
 
 -- | Represents a timeout in seconds or milliseconds
@@ -160,7 +160,7 @@ data Timeout
 --
 -- >>> var timeout "TIMEOUT" mempty `parsePure` [("TIMEOUT", "2m0")]
 -- Left [("TIMEOUT",UnreadError "must be {digits}(s|ms): \"2m0\"")]
-timeout :: Reader Error Timeout
+timeout :: Env.Reader Error Timeout
 timeout = eitherReader $ parseTimeout . span isDigit
  where
   parseTimeout = \case
