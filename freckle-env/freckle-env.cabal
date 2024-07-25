@@ -6,7 +6,7 @@ cabal-version: 1.18
 
 name:           freckle-env
 version:        0.0.0.0
-synopsis:       ...
+synopsis:       Some extension to the envparse library
 description:    Please see README.md
 category:       Utils
 homepage:       https://github.com/freckle/freckle-app#readme
