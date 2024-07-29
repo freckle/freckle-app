@@ -120,6 +120,7 @@ library:
     - resourcet
     - retry >= 0.8.1.0 # retryingDynamic
     - safe
+    - servant-server
     - scientist
     - semigroupoids
     - serialise
@@ -167,6 +168,7 @@ tests:
       - mtl
       - nonempty-containers
       - postgresql-simple
+      - servant-server
       - text
       - time
       - unordered-containers
