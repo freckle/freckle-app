@@ -1,9 +1,9 @@
-name: freckle-env
-version: 0.0.1.0
+name: freckle-http
+version: 0.0.0.0
 maintainer: Freckle Education
-category: Environment, System
+category: Utils
 github: freckle/freckle-app
-synopsis: Some extension to the envparse library
+synopsis: ...
 description: Please see README.md
 
 extra-doc-files:
@@ -49,23 +49,61 @@ default-extensions:
   - NoImplicitPrelude
   - NoMonomorphismRestriction
   - OverloadedStrings
+  - RecordWildCards
   - TypeFamilies
 
 library:
   source-dirs: library
   dependencies:
-    - dotenv
-    - envparse
+    - Glob
+    - Blammo >= 2.0.0.0
+    - aeson
+    - annotated-exception
+    - bytestring
+    - case-insensitive
+    - conduit
+    - directory
     - errors
+    - extra
     - filepath
+    - freckle-memcached
+    - hs-opentelemetry-api
+    - hspec >= 2.8.1
+    - http-client
+    - http-conduit >= 2.3.5 # addToRequestQueryString
+    - http-link-header
+    - http-types
+    - lens
+    - lens-aeson
+    - memcache
+    - monad-logger
+    - monad-validate
+    - mtl
+    - network-uri
     - relude
+    - retry >= 0.8.1.0 # retryingDynamic
+    - safe
+    - serialise
+    - semigroupoids
     - text
     - time
     - unliftio
 
 tests:
-  doctest:
+  spec:
     main: Main.hs
-    source-dirs: doctest
+    source-dirs: tests
+    ghc-options: -threaded -rtsopts "-with-rtsopts=-N"
     dependencies:
-      - doctest
+      - aeson
+      - bytestring
+      - freckle-http
+      - hspec
+      - hspec-expectations-json
+      - hspec-expectations-lifted
+      - http-types
+      - lens
+      - relude
+      - time
+      - unordered-containers
+      - zlib

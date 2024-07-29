@@ -4,11 +4,11 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 
-name:           freckle-env
-version:        0.0.1.0
-synopsis:       Some extension to the envparse library
+name:           freckle-memcached
+version:        0.0.0.0
+synopsis:       ..
 description:    Please see README.md
-category:       Environment, System
+category:       Database
 homepage:       https://github.com/freckle/freckle-app#readme
 bug-reports:    https://github.com/freckle/freckle-app/issues
 maintainer:     Freckle Education
@@ -27,10 +27,14 @@ source-repository head
 
 library
   exposed-modules:
-      Freckle.App.Dotenv
-      Freckle.App.Env
+      Freckle.App.Memcached
+      Freckle.App.Memcached.CacheKey
+      Freckle.App.Memcached.CacheTTL
+      Freckle.App.Memcached.Client
+      Freckle.App.Memcached.MD5
+      Freckle.App.Memcached.Servers
   other-modules:
-      Paths_freckle_env
+      Paths_freckle_memcached
   hs-source-dirs:
       library
   default-extensions:
@@ -43,29 +47,43 @@ library
       NoImplicitPrelude
       NoMonomorphismRestriction
       OverloadedStrings
+      RecordWildCards
       TypeFamilies
   ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-all-missed-specialisations -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-kind-signatures -Wno-missing-local-signatures -Wno-missing-safe-haskell-mode -Wno-monomorphism-restriction -Wno-prepositive-qualified-module -Wno-safe -Wno-unsafe
   build-depends:
-      base <5
-    , dotenv
-    , envparse
+      Blammo >=2.0.0.0
+    , aeson
+    , annotated-exception
+    , base <5
+    , bytestring
     , errors
-    , filepath
+    , freckle-otel
+    , hs-opentelemetry-sdk
+    , lens
+    , memcache
+    , network-uri
+    , pureMD5
     , relude
+    , serialise
     , text
-    , time
     , unliftio
+    , unordered-containers
+    , yesod-core
   default-language: GHC2021
   if impl(ghc >= 9.8)
     ghc-options: -Wno-missing-role-annotations -Wno-missing-poly-kind-signatures
 
-test-suite doctest
+test-suite spec
   type: exitcode-stdio-1.0
   main-is: Main.hs
   other-modules:
-      Paths_freckle_env
+      AppExample
+      Freckle.App.Memcached.ServersSpec
+      Freckle.App.MemcachedSpec
+      Spec
+      Paths_freckle_memcached
   hs-source-dirs:
-      doctest
+      tests
   default-extensions:
       DataKinds
       DeriveAnyClass
@@ -76,11 +94,28 @@ test-suite doctest
       NoImplicitPrelude
       NoMonomorphismRestriction
       OverloadedStrings
+      RecordWildCards
       TypeFamilies
-  ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-all-missed-specialisations -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-kind-signatures -Wno-missing-local-signatures -Wno-missing-safe-haskell-mode -Wno-monomorphism-restriction -Wno-prepositive-qualified-module -Wno-safe -Wno-unsafe
+  ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-all-missed-specialisations -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-kind-signatures -Wno-missing-local-signatures -Wno-missing-safe-haskell-mode -Wno-monomorphism-restriction -Wno-prepositive-qualified-module -Wno-safe -Wno-unsafe -threaded -rtsopts "-with-rtsopts=-N"
   build-depends:
-      base <5
-    , doctest
+      Blammo
+    , aeson
+    , base <5
+    , errors
+    , exceptions
+    , freckle-env
+    , freckle-memcached
+    , hs-opentelemetry-sdk
+    , hspec
+    , hspec-core
+    , hspec-expectations-lifted
+    , lens
+    , lens-aeson
+    , memcache
+    , relude
+    , safe
+    , text
+    , unliftio
   default-language: GHC2021
   if impl(ghc >= 9.8)
     ghc-options: -Wno-missing-role-annotations -Wno-missing-poly-kind-signatures
