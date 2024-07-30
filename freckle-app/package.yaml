@@ -167,6 +167,8 @@ tests:
       - monad-validate
       - mtl
       - nonempty-containers
+      - path-pieces
+      - persistent
       - postgresql-simple
       - servant-server
       - text

@@ -4,21 +4,36 @@ module Freckle.App.TextualEnumSpec
 
 import Freckle.App.Prelude
 
+import Data.Aeson qualified as JSON
 import Data.Csv qualified as CSV
 import Data.List.NonEmpty (NonEmpty ((:|)))
+import Database.Persist.Sql qualified as Sql
 import Freckle.App.Test.Properties.JSON
 import Freckle.App.Test.Properties.PathPiece
 import Freckle.App.Test.Properties.PersistValue
 import Freckle.App.TextualEnum
-import Servant
+import Servant qualified
 import Test.Hspec
 import Test.QuickCheck
+import Web.PathPieces qualified as Path
 
 data PrimaryColor
   = Red
   | Blue
   | Yellow
-  deriving stock (Bounded, Enum, Eq, Generic, Show)
+  deriving stock (Bounded, Enum, Eq, Show)
+  deriving
+    ( CSV.ToField
+    , CSV.FromField
+    , JSON.ToJSON
+    , JSON.FromJSON
+    , Servant.FromHttpApiData
+    , Servant.ToHttpApiData
+    , Path.PathPiece
+    , Sql.PersistField
+    , Arbitrary
+    )
+    via TextualEnum PrimaryColor
 
 instance EnumValue PrimaryColor where
   toText = \case
@@ -30,7 +45,7 @@ data BadExample
   = Okay
   | Conflict1
   | Conflict2
-  deriving stock (Bounded, Enum, Eq, Generic, Show)
+  deriving stock (Bounded, Enum, Eq, Show)
 
 instance EnumValue BadExample where
   toText = \case
@@ -44,26 +59,26 @@ spec = do
     describe "JSON" $
       it "round trips" $
         property $
-          prop_roundTripJSON @(TextualEnum PrimaryColor)
+          prop_roundTripJSON @PrimaryColor
 
     describe "PathPiece" $
       it "round trips" $
         property $
-          prop_roundTripPathPiece @(TextualEnum PrimaryColor)
+          prop_roundTripPathPiece @PrimaryColor
 
     describe "HttpApiData" $
       it "round trips" $
-        property $ \(e :: TextualEnum PrimaryColor) ->
-          parseUrlPiece (toUrlPiece e) == Right e
+        property $
+          \(e :: PrimaryColor) -> Servant.parseUrlPiece (Servant.toUrlPiece e) == Right e
 
     describe "PersistValue" $
       it "round trips" $
         property $
-          prop_roundTripPersistValue @(TextualEnum PrimaryColor)
+          prop_roundTripPersistValue @PrimaryColor
 
     describe "CSV" $
       it "round trips" $
-        property $ \(e :: TextualEnum PrimaryColor) ->
+        property $ \(e :: PrimaryColor) ->
           CSV.runParser (CSV.parseField $ CSV.toField e) == Right e
 
     describe "prop_roundTripEnumText" $ do
