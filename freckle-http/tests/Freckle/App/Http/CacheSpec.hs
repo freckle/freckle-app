@@ -68,20 +68,16 @@ spec = do
       let
         stubs =
           [ "https://example.com/1"
-              & headersL
-              <>~ [(hCacheControl, "max-age=2")]
-                & bodyL
-              .~ "Hi\n"
+              & headersL <>~ [(hCacheControl, "max-age=2")]
+              & bodyL .~ "Hi\n"
           ]
 
         -- On the request that we expect to evict, we'll use this so that we
         -- don't store a cache from that and we can observe the eviction.
         stubsNoStore =
           [ "https://example.com/1"
-              & headersL
-              <>~ [(hCacheControl, "no-store")]
-                & bodyL
-              .~ "Hi\n"
+              & headersL <>~ [(hCacheControl, "no-store")]
+              & bodyL .~ "Hi\n"
           ]
 
         req = parseRequest_ "https://example.com/1"
@@ -101,25 +97,17 @@ spec = do
       let
         stubs =
           [ "https://example.com/1"
-              & matchL
-              <>~ MatchHeader (hAcceptLanguage, "en")
-                & bodyL
-              .~ "Hello\n"
+              & matchL <>~ MatchHeader (hAcceptLanguage, "en")
+              & bodyL .~ "Hello\n"
           , "https://example.com/1"
-              & matchL
-              <>~ MatchHeader (hAcceptLanguage, "es")
-                & bodyL
-              .~ "Hola\n"
+              & matchL <>~ MatchHeader (hAcceptLanguage, "es")
+              & bodyL .~ "Hola\n"
           , "https://example.com/2"
-              & matchL
-              <>~ MatchHeader (hAcceptLanguage, "en")
-                & bodyL
-              .~ "World\n"
+              & matchL <>~ MatchHeader (hAcceptLanguage, "en")
+              & bodyL .~ "World\n"
           , "https://example.com/2"
-              & matchL
-              <>~ MatchHeader (hAcceptLanguage, "es")
-                & bodyL
-              .~ "Mundo\n"
+              & matchL <>~ MatchHeader (hAcceptLanguage, "es")
+              & bodyL .~ "Mundo\n"
           ]
 
         reqEn1 =
@@ -160,15 +148,11 @@ spec = do
 
           stubs =
             [ "https://example.com/1"
-                & matchL
-                <>~ MatchHeader (hAcceptEncoding, "gzip")
-                  & headersL
-                <>~ [(hContentEncoding, "gzip")]
-                  & bodyL
-                .~ gzipped
+                & matchL <>~ MatchHeader (hAcceptEncoding, "gzip")
+                & headersL <>~ [(hContentEncoding, "gzip")]
+                & bodyL .~ gzipped
             , "https://example.com/1"
-                & bodyL
-                .~ "Hi (not zipped)\n"
+                & bodyL .~ "Hi (not zipped)\n"
             ]
 
           req =
@@ -205,12 +189,9 @@ spec = do
         let
           stubs =
             [ "https://example.com/1"
-                & matchL
-                <>~ MatchHeader (hAcceptEncoding, "gzip")
-                  & headersL
-                <>~ [(hContentEncoding, "gzip")]
-                  & bodyL
-                .~ bs
+                & matchL <>~ MatchHeader (hAcceptEncoding, "gzip")
+                & headersL <>~ [(hContentEncoding, "gzip")]
+                & bodyL .~ bs
             ]
 
           req =
@@ -228,19 +209,13 @@ spec = do
       it "uses cached response and doesn't evict on 304 from If-None-Match" $ do
         let stubs =
               [ "https://example.com/1"
-                  & matchL
-                  <>~ MatchHeader (hIfNoneMatch, etag)
-                    & statusL
-                  .~ status304
-                    & bodyL
-                  .~ "<ignore me>\n"
+                  & matchL <>~ MatchHeader (hIfNoneMatch, etag)
+                  & statusL .~ status304
+                  & bodyL .~ "<ignore me>\n"
               , "https://example.com/1"
-                  & headersL
-                  <>~ [(hCacheControl, "max-age=-1")]
-                    & headersL
-                  <>~ [(hETag, etag)]
-                    & bodyL
-                  .~ "Original body\n"
+                  & headersL <>~ [(hCacheControl, "max-age=-1")]
+                  & headersL <>~ [(hETag, etag)]
+                  & bodyL .~ "Original body\n"
               ]
 
         cache <- execCached $ do
@@ -253,21 +228,14 @@ spec = do
       it "updates cached response on 304 from If-None-Match" $ do
         let stubs =
               [ "https://example.com/1"
-                  & matchL
-                  <>~ MatchHeader (hIfNoneMatch, etag)
-                    & statusL
-                  .~ status304
-                    & headersL
-                  <>~ [(hCacheControl, "max-age=120")]
-                    & bodyL
-                  .~ "<ignore me>\n"
+                  & matchL <>~ MatchHeader (hIfNoneMatch, etag)
+                  & statusL .~ status304
+                  & headersL <>~ [(hCacheControl, "max-age=120")]
+                  & bodyL .~ "<ignore me>\n"
               , "https://example.com/1"
-                  & headersL
-                  <>~ [(hCacheControl, "max-age=-1")]
-                    & headersL
-                  <>~ [(hETag, etag)]
-                    & bodyL
-                  .~ "Original body\n"
+                  & headersL <>~ [(hCacheControl, "max-age=-1")]
+                  & headersL <>~ [(hETag, etag)]
+                  & bodyL .~ "Original body\n"
               ]
 
         cache <- execCached $ do
@@ -281,19 +249,13 @@ spec = do
       it "evicts a stale response after trying If-None-Match" $ do
         let stubs =
               [ "https://example.com/1"
-                  & matchL
-                  <>~ MatchHeader (hIfNoneMatch, etag)
-                    & headersL
-                  <>~ [(hCacheControl, "no-store")]
-                    & bodyL
-                  .~ "Newer body\n"
+                  & matchL <>~ MatchHeader (hIfNoneMatch, etag)
+                  & headersL <>~ [(hCacheControl, "no-store")]
+                  & bodyL .~ "Newer body\n"
               , "https://example.com/1"
-                  & headersL
-                  <>~ [(hCacheControl, "max-age=-1")]
-                    & headersL
-                  <>~ [(hETag, etag)]
-                    & bodyL
-                  .~ "Original body\n"
+                  & headersL <>~ [(hCacheControl, "max-age=-1")]
+                  & headersL <>~ [(hETag, etag)]
+                  & bodyL .~ "Original body\n"
               ]
 
         cache <- execCached $ do
@@ -309,8 +271,7 @@ spec = do
       it "sets TTL based on max-age" $ do
         let stubs =
               [ "https://example.com"
-                  & headersL
-                  <>~ [(hCacheControl, "max-age=42")]
+                  & headersL <>~ [(hCacheControl, "max-age=42")]
               ]
 
         cache <- execCached $ requestBodyCached settings stubs req
@@ -319,8 +280,7 @@ spec = do
       it "sets TTL based on max-age + Age" $ do
         let stubs =
               [ "https://example.com"
-                  & headersL
-                  <>~ [(hAge, "78000"), (hCacheControl, "max-age=78250")]
+                  & headersL <>~ [(hAge, "78000"), (hCacheControl, "max-age=78250")]
               ]
 
         cache <- execCached $ requestBodyCached settings stubs req
@@ -366,8 +326,7 @@ spec = do
       it "does not cache no-store" $ do
         let stubs =
               [ "https://example.com"
-                  & headersL
-                  <>~ [(hCacheControl, "no-store, max-age=0, public")]
+                  & headersL <>~ [(hCacheControl, "no-store, max-age=0, public")]
               ]
 
         cache <- execCached $ requestBodyCached settings stubs req
@@ -376,8 +335,7 @@ spec = do
       it "does not cache private in a shared cache" $ do
         let stubs =
               [ "https://example.com"
-                  & headersL
-                  <>~ [(hCacheControl, "max-age=0, private")]
+                  & headersL <>~ [(hCacheControl, "max-age=0, private")]
               ]
 
         cache <- execCached $ requestBodyCached settingsShared stubs req
