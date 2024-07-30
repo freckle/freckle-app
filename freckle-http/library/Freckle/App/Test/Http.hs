@@ -49,6 +49,7 @@ import Control.Lens (Lens', lens, view,  (.~), (<>~))
 import Data.Aeson (ToJSON, encode)
 import Data.ByteString.Lazy qualified as BSL
 import Data.List (stripPrefix)
+import Data.Traversable (for)
 import Freckle.App.Http (MonadHttp (..))
 import Freckle.App.Test.Http.MatchRequest
 import Network.HTTP.Client (Request, Response)
@@ -58,8 +59,6 @@ import Network.HTTP.Types.Status (Status, status200)
 import System.Directory (doesFileExist)
 import System.FilePath (addTrailingPathSeparator)
 import System.FilePath.Glob (globDir1)
-import Safe(headMay)
-import Data.Traversable   (for)
 
 -- | Respond to a 'Request' with the first 'HttpStub' to match
 --
@@ -82,7 +81,7 @@ httpStubbed
   -> Request
   -> Response BSL.ByteString
 httpStubbed stubs req =
-  maybe (error errorMessage) (toResponse req) $ headMay matched
+  maybe (error errorMessage) (toResponse req) $ viaNonEmpty head matched
  where
   (unmatched, matched) =
     partitionEithers

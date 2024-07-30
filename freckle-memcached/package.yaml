@@ -93,6 +93,5 @@ tests:
       - lens-aeson
       - memcache
       - relude
-      - safe
       - text
       - unliftio

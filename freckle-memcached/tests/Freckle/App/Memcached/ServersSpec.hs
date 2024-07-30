@@ -7,7 +7,6 @@ import Relude
 import Control.Error.Util (hush)
 import Database.Memcache.Client qualified as Memcache
 import Freckle.App.Memcached.Servers
-import Safe (headMay)
 import Test.Hspec
 
 spec :: Spec
@@ -75,7 +74,7 @@ spec = do
           [Memcache.NoAuth, Memcache.NoAuth, Memcache.Auth "u" "p"]
 
 readServerSpec :: String -> Maybe Memcache.ServerSpec
-readServerSpec = headMay <=< readServerSpecs
+readServerSpec = viaNonEmpty head <=< readServerSpecs
 
 readServerSpecs :: String -> Maybe [Memcache.ServerSpec]
 readServerSpecs = fmap toServerSpecs . hush . readMemcachedServers

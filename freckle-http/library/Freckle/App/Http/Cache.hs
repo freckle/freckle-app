@@ -41,7 +41,6 @@ import Network.HTTP.Types.Header
   , hVary
   )
 import Network.HTTP.Types.Status (Status, statusCode)
-import Safe (readMay)
 
 data HttpCacheSettings m t = HttpCacheSettings
   { shared :: Bool
@@ -276,7 +275,7 @@ readCacheControl = go . CI.foldCase
   go = \case
     "private" -> Just Private
     "no-store" -> Just NoStore
-    h | Just s <- BS8.stripPrefix "max-age=" h -> MaxAge <$> readMay (BS8.unpack s)
+    h | Just s <- BS8.stripPrefix "max-age=" h -> MaxAge <$> readMaybe (BS8.unpack s)
     _ -> Nothing
 
 getCacheControl :: HasHeaders a => a -> [CacheControl]
@@ -316,7 +315,7 @@ getResponseHeaders resp =
     { cacheControl = getCacheControl resp
     , age = fromMaybe 0 $ do
         h <- lookupHeader hAge resp
-        readMay $ BS8.unpack h
+        readMaybe $ BS8.unpack h
     , expires = do
         h <- lookupHeader hExpires resp
         parseTimeM True defaultTimeLocale httpDateFormat $ BS8.unpack h

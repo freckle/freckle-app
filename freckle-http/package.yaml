@@ -82,7 +82,6 @@ library:
     - network-uri
     - relude
     - retry >= 0.8.1.0 # retryingDynamic
-    - safe
     - serialise
     - semigroupoids
     - text

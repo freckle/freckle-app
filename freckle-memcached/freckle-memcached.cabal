@@ -112,7 +112,6 @@ test-suite spec
     , lens-aeson
     , memcache
     , relude
-    , safe
     , text
     , unliftio
   default-language: GHC2021
