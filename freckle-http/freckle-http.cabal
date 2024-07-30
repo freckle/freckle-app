@@ -99,7 +99,6 @@ test-suite spec
   main-is: Main.hs
   other-modules:
       Freckle.App.Http.CacheSpec
-      Spec
       Paths_freckle_http
   hs-source-dirs:
       tests

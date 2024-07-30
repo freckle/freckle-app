@@ -76,7 +76,6 @@ test-suite spec
   other-modules:
       AppExample
       Freckle.App.OpenTelemetry.ContextSpec
-      Spec
       Paths_freckle_otel
   hs-source-dirs:
       tests

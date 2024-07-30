@@ -1,11 +1,1 @@
-module Main
-  ( main
-  ) where
-
-import Prelude
-
-import Spec qualified
-import Test.Hspec
-
-main :: IO ()
-main = hspec Spec.spec
+{-# OPTIONS_GHC -F -pgmF hspec-discover -optF --module-name=Main -Wno-missing-export-lists #-}
