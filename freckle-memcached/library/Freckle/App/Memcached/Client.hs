@@ -11,7 +11,7 @@ module Freckle.App.Memcached.Client
 
 import Relude hiding (get)
 
-import Control.Lens (Lens', lens, view, _1)
+import Control.Lens (Lens', view, _1)
 import Data.HashMap.Strict qualified as HashMap
 import Database.Memcache.Client qualified as Memcache
 import Database.Memcache.Types (Value, Version)
@@ -24,7 +24,6 @@ import OpenTelemetry.Trace qualified as Trace
 import OpenTelemetry.Trace.Monad
 import UnliftIO (MonadUnliftIO)
 import UnliftIO.Exception (finally)
-import Yesod.Core.Types (HandlerData, RunHandlerEnv, handlerEnv, rheSite)
 
 data MemcachedClient
   = MemcachedClient Memcache.Client
@@ -35,15 +34,6 @@ class HasMemcachedClient env where
 
 instance HasMemcachedClient MemcachedClient where
   memcachedClientL = id
-
-instance HasMemcachedClient site => HasMemcachedClient (HandlerData child site) where
-  memcachedClientL = envL . siteL . memcachedClientL
-
-envL :: Lens' (HandlerData child site) (RunHandlerEnv child site)
-envL = lens handlerEnv $ \x y -> x {handlerEnv = y}
-
-siteL :: Lens' (RunHandlerEnv child site) site
-siteL = lens rheSite $ \x y -> x {rheSite = y}
 
 newMemcachedClient :: MonadIO m => MemcachedServers -> m MemcachedClient
 newMemcachedClient servers = case toServerSpecs servers of

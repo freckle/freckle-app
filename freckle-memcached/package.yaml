@@ -71,7 +71,6 @@ library:
     - text
     - unliftio
     - unordered-containers
-    - yesod-core
 
 tests:
   spec:
