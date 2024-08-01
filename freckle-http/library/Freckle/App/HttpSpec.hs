@@ -2,7 +2,7 @@ module Freckle.App.HttpSpec
   ( spec
   ) where
 
-import Relude
+import Prelude
 
 import Control.Lens (to, (^?), _Left, _Right)
 import Data.Aeson

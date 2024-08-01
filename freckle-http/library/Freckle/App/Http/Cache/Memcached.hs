@@ -1,6 +1,4 @@
 {-# LANGUAGE CPP #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE OverloadedRecordDot #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Freckle.App.Http.Cache.Memcached
@@ -9,11 +7,14 @@ module Freckle.App.Http.Cache.Memcached
   , memcachedHttpCache
   ) where
 
-import Relude
+import Prelude
 
 import Blammo.Logging (MonadLogger, logDebugNS, logWarnNS)
 import Codec.Serialise (Serialise (..), deserialiseOrFail, serialise)
 import Control.Exception.Annotated.UnliftIO (try)
+import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Reader (MonadReader)
+import Data.Bifunctor (bimap)
 import Data.ByteString.Lazy qualified as BSL
 import Data.CaseInsensitive (CI)
 import Data.CaseInsensitive qualified as CI
@@ -22,6 +23,7 @@ import Database.Memcache.Types (Value)
 import Freckle.App.Http.Cache
 import Freckle.App.Memcached
 import Freckle.App.Memcached.Client qualified as Memcached
+import GHC.Generics (Generic)
 import Network.HTTP.Client (Request)
 import Network.HTTP.Client.Internal qualified as HTTP
 import Network.HTTP.Types.Header (ResponseHeaders)

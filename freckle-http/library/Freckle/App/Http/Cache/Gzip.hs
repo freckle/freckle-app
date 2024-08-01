@@ -1,4 +1,3 @@
-{-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE NoFieldSelectors #-}
 
 -- | Type and functions for handling gzipped HTTP responses
@@ -19,9 +18,10 @@ module Freckle.App.Http.Cache.Gzip
   , gunzipResponseBody
   ) where
 
-import Relude
+import Prelude
 
 import Codec.Serialise (Serialise)
+import Control.Monad.IO.Class
 import Data.ByteString.Lazy qualified as BSL
 import Freckle.App.Http (disableRequestDecompress)
 import Freckle.App.Http.Header
@@ -47,15 +47,15 @@ requestPotentiallyGzipped doHttp =
 gunzipResponseBody
   :: MonadIO m
   => Request
-  -> Response (PotentiallyGzipped LByteString)
-  -> m (Response LByteString)
+  -> Response (PotentiallyGzipped BSL.ByteString)
+  -> m (Response BSL.ByteString)
 gunzipResponseBody req resp
   | HTTP.needsGunzip req (getHeaders resp) = liftIO $ do
       body <- gunzipBody $ HTTP.responseBody resp
       pure $ body <$ resp
   | otherwise = pure $ (.unwrap) <$> resp
 
-gunzipBody :: PotentiallyGzipped LByteString -> IO LByteString
+gunzipBody :: PotentiallyGzipped BSL.ByteString -> IO BSL.ByteString
 gunzipBody body = do
   body1 <- HTTP.constBodyReader $ BSL.toChunks body.unwrap
   reader' <- HTTP.makeGzipReader body1

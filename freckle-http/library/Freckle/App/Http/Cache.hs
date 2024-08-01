@@ -1,5 +1,3 @@
-{-# LANGUAGE DuplicateRecordFields #-}
-{-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE NoFieldSelectors #-}
 
 -- | Cache HTTP responses like a CDN or browser would
@@ -12,13 +10,22 @@ module Freckle.App.Http.Cache
   , PotentiallyGzipped
   ) where
 
-import Relude
+import Prelude
 
 import Blammo.Logging (Message (..), (.=))
+import Control.Applicative ((<|>))
+import Control.Exception.Annotated.UnliftIO (SomeException, displayException)
+import Control.Monad (guard)
+import Control.Monad.IO.Class (MonadIO)
+import Data.ByteString (ByteString)
 import Data.ByteString.Char8 qualified as BS8
 import Data.ByteString.Lazy qualified as BSL
 import Data.CaseInsensitive qualified as CI
+import Data.Foldable (for_)
 import Data.List.Extra (firstJust)
+import Data.Maybe (fromMaybe, mapMaybe)
+import Data.Text.Encoding qualified as T
+import Data.Text.Encoding.Error qualified as T
 import Data.Time (UTCTime, addUTCTime, defaultTimeLocale, parseTimeM)
 import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
 import Freckle.App.Http.Cache.Gzip
@@ -41,6 +48,7 @@ import Network.HTTP.Types.Header
   , hVary
   )
 import Network.HTTP.Types.Status (Status, statusCode)
+import Text.Read (readMaybe)
 
 data HttpCacheSettings m t = HttpCacheSettings
   { shared :: Bool
@@ -105,7 +113,7 @@ httpCached settings doHttp req =
     now <- settings.getCurrentTime
     result <- fromEx Nothing $ settings.cache.get key
 
-    let tkey = decodeUtf8With lenientDecode $ fromCacheKey key
+    let tkey = T.decodeUtf8With T.lenientDecode $ fromCacheKey key
 
     case result of
       Nothing -> do
@@ -118,23 +126,23 @@ httpCached settings doHttp req =
             settings.logWarn $ "Error deserialising" :# ["error" .= err]
             writeCache now key =<< getResponse req
           Right cresp | isCachedResponseStale cresp now -> do
-            settings.logDebug
-              $ "Cached value stale"
-              :# [ "key" .= tkey
-                 , "inserted" .= cresp.inserted
-                 , "ttl" .= fromCacheTTL cresp.ttl
-                 , "now" .= now
-                 ]
+            settings.logDebug $
+              "Cached value stale"
+                :# [ "key" .= tkey
+                   , "inserted" .= cresp.inserted
+                   , "ttl" .= fromCacheTTL cresp.ttl
+                   , "now" .= now
+                   ]
             case lookupHeader hETag cresp.response of
               Nothing -> do
                 fromEx () $ settings.cache.evict key
                 writeCache now key =<< getResponse req
               Just etag -> do
-                settings.logDebug
-                  $ "Retrying with If-None-Match"
-                  :# [ "key" .= tkey
-                     , "etag" .= decodeUtf8With lenientDecode etag
-                     ]
+                settings.logDebug $
+                  "Retrying with If-None-Match"
+                    :# [ "key" .= tkey
+                       , "etag" .= T.decodeUtf8With T.lenientDecode etag
+                       ]
                 resp <- getResponse $ addRequestHeader hIfNoneMatch etag req
                 case statusCode (getResponseStatus resp) of
                   304 -> do
@@ -162,11 +170,11 @@ httpCached settings doHttp req =
     -> m (Response BSL.ByteString)
   writeCache now key resp = do
     for_ (getCachableResponseTTL settings resp) $ \ttl -> do
-      settings.logDebug
-        $ "Write cache"
-        :# [ "key" .= decodeUtf8With lenientDecode (fromCacheKey key)
-           , "ttl" .= fromCacheTTL ttl
-           ]
+      settings.logDebug $
+        "Write cache"
+          :# [ "key" .= T.decodeUtf8With T.lenientDecode (fromCacheKey key)
+             , "ttl" .= fromCacheTTL ttl
+             ]
       let cresp = CachedResponse {response = resp, inserted = now, ttl = ttl}
       fromEx () $ settings.cache.set key $ settings.codec.serialise cresp
 
@@ -227,7 +235,8 @@ getCachableResponseTTL
   :: HttpCacheSettings m t -> Response body -> Maybe CacheTTL
 getCachableResponseTTL settings resp = do
   guard $ NoStore `notElem` responseHeaders.cacheControl
-  guard $ not settings.shared || Private `notElem` responseHeaders.cacheControl
+  guard $
+    not settings.shared || Private `notElem` responseHeaders.cacheControl
   guard $ statusIsCacheable $ HTTP.responseStatus resp
   pure $ fromMaybe settings.defaultTTL $ responseHeadersToTTL responseHeaders
  where

@@ -4,14 +4,20 @@ module Freckle.App.Http.Retry
   , rateLimited'
   ) where
 
-import Relude
+import Prelude
 
-import Control.Exception.Annotated.UnliftIO (throwWithCallStack)
+import Control.Exception.Annotated.UnliftIO (Exception (..), throwWithCallStack)
+import Control.Monad (guard, unless)
+import Control.Monad.IO.Class (MonadIO)
 import Control.Retry
 import Data.ByteString.Char8 qualified as BS8
+import Data.Functor (void)
+import Data.Maybe (listToMaybe)
+import GHC.Stack (HasCallStack)
 import Network.HTTP.Client (Request (..))
 import Network.HTTP.Simple
 import Network.HTTP.Types.Status (status429)
+import Text.Read (readMaybe)
 
 -- | Thrown if we exhaust our retries limit and still see a @429@
 --
@@ -71,8 +77,8 @@ suppressRetryStatusError :: Request -> Request
 suppressRetryStatusError req =
   req
     { checkResponse = \req' resp ->
-        unless (getResponseStatus resp == status429)
-          $ originalCheckResponse req' resp
+        unless (getResponseStatus resp == status429) $
+          originalCheckResponse req' resp
     }
  where
   originalCheckResponse = checkResponse req
@@ -81,8 +87,8 @@ checkRetriesExhausted
   :: (MonadIO m, HasCallStack) => Int -> Response body -> m (Response body)
 checkRetriesExhausted retryLimit resp
   | getResponseStatus resp == status429 =
-      throwWithCallStack
-        $ RetriesExhausted {reLimit = retryLimit, reResponse = void resp}
+      throwWithCallStack $
+        RetriesExhausted {reLimit = retryLimit, reResponse = void resp}
   | otherwise = pure resp
 
 getRetryAfter :: Response body -> Maybe Int

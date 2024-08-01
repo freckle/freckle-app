@@ -21,11 +21,18 @@ module Freckle.App.Test.Http.MatchRequest
   , showMatchRequestWithMismatches
   ) where
 
-import Relude
+import Prelude
 
+import Control.Applicative ((<|>))
+import Control.Monad (guard)
+import Data.ByteString (ByteString)
 import Data.ByteString.Char8 qualified as BS8
 import Data.ByteString.Lazy qualified as BSL
+import Data.Foldable (toList)
+import Data.List (isPrefixOf)
+import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.List.NonEmpty qualified as NE
+import Data.Maybe (catMaybes)
 import Data.Semigroup.Foldable (fold1)
 import Network.HTTP.Client (Request, RequestBody (..), parseRequest_)
 import Network.HTTP.Client.Internal qualified as HTTP
@@ -67,8 +74,8 @@ matchRequestFromUrl url =
   requiredMatches = MatchMethod method :| [MatchSecure secure, MatchPort port]
 
   optionalMatches =
-    NE.nonEmpty
-      $ catMaybes
+    NE.nonEmpty $
+      catMaybes
         [ MatchHost host <$ guard (host /= "")
         , MatchPath path <$ guard (hasExplicitPath secure host port url)
         , MatchQuery query <$ guard (query /= "")
@@ -100,8 +107,8 @@ hasExplicitPath secure host port url =
 -- Success is @'Right' ()@, failure is a message in 'Left'.
 matchRequest :: Request -> MatchRequest -> Either String ()
 matchRequest req mr =
-  maybe (Right ()) (Left . showMatchRequestWithMismatches mr)
-    $ buildMismatch req mr
+  maybe (Right ()) (Left . showMatchRequestWithMismatches mr) $
+    buildMismatch req mr
 
 showMatchRequest :: MatchRequest -> String
 showMatchRequest mr =

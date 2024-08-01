@@ -75,18 +75,30 @@ module Freckle.App.Http
   , StdMethod (..)
   ) where
 
-import Relude
+import Prelude
 
 import Conduit (foldC, mapMC, runConduit, (.|))
-import Control.Exception.Annotated.UnliftIO (throwWithCallStack)
+import Control.Exception.Annotated.UnliftIO (Exception (..), throwWithCallStack)
+import Control.Monad.Except (ExceptT)
+import Control.Monad.IO.Class (MonadIO)
+import Control.Monad.Reader (ReaderT)
+import Control.Monad.State (StateT)
+import Control.Monad.Trans.Class (lift)
+import Control.Monad.Trans.Maybe (MaybeT)
 import Control.Monad.Validate (ValidateT)
 import Control.Monad.Writer (WriterT)
 import Data.Aeson (FromJSON)
 import Data.Aeson qualified as Aeson
+import Data.Bifunctor (first)
+import Data.ByteString (ByteString)
+import Data.ByteString.Lazy qualified as BSL
 import Data.ByteString.Lazy.Char8 qualified as BSL8
+import Data.List.NonEmpty (NonEmpty)
 import Data.List.NonEmpty qualified as NE
+import Data.Text qualified as T
 import Freckle.App.Http.Paginate
 import Freckle.App.Http.Retry
+import GHC.Stack (HasCallStack)
 import Network.HTTP.Client qualified as HTTP (Request (..))
 import Network.HTTP.Conduit (HttpExceptionContent (..))
 import Network.HTTP.Simple hiding (httpLbs, httpNoBody, setRequestMethod)
@@ -126,7 +138,7 @@ import Network.HTTP.Types.Status
 -- resp <- liftIO $ httpLbs ...
 -- @
 class Monad m => MonadHttp m where
-  httpLbs :: Request -> m (Response LByteString)
+  httpLbs :: Request -> m (Response BSL.ByteString)
 
 instance MonadHttp IO where
   httpLbs = rateLimited HTTP.httpLbs
@@ -150,21 +162,21 @@ instance MonadHttp m => MonadHttp (ValidateT e m) where
   httpLbs = lift . httpLbs
 
 data HttpDecodeError = HttpDecodeError
-  { hdeBody :: LByteString
+  { hdeBody :: BSL.ByteString
   , hdeErrors :: NonEmpty String
   }
   deriving stock (Eq, Show)
 
 instance Exception HttpDecodeError where
   displayException HttpDecodeError {..} =
-    toString
-      $ unlines
-      $ ["Error decoding HTTP Response:", "Raw body:", toText $ BSL8.unpack hdeBody]
-      <> fromErrors hdeErrors
+    T.unpack $
+      T.unlines $
+        ["Error decoding HTTP Response:", "Raw body:", T.pack $ BSL8.unpack hdeBody]
+          <> fromErrors hdeErrors
    where
     fromErrors = \case
-      err NE.:| [] -> ["Error:", toText err]
-      errs -> "Errors:" : map (bullet . toText) (NE.toList errs)
+      err NE.:| [] -> ["Error:", T.pack err]
+      errs -> "Errors:" : map (bullet . T.pack) (NE.toList errs)
     bullet = (" • " <>)
 
 -- | Make a request and parse the body as JSON
@@ -192,7 +204,7 @@ httpJson =
 -- This be used to request other formats, e.g. CSV.
 httpDecode
   :: MonadHttp m
-  => (LByteString -> Either (NonEmpty String) a)
+  => (BSL.ByteString -> Either (NonEmpty String) a)
   -> Request
   -> m (Response (Either HttpDecodeError a))
 httpDecode decode req = do

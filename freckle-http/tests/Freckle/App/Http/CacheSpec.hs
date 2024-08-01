@@ -5,12 +5,17 @@ module Freckle.App.Http.CacheSpec
   ( spec
   ) where
 
-import Relude
+import Prelude
 
 import Codec.Compression.GZip qualified as GZip
 import Control.Lens ((.~), (<>~))
+import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.State (StateT, execStateT)
 import Data.Aeson (FromJSON, eitherDecode)
 import Data.ByteString.Lazy qualified as BSL
+import Data.Foldable (for_)
+import Data.Function ((&))
+import Data.Functor (void)
 import Data.HashMap.Strict qualified as HashMap
 import Data.Time (addUTCTime, getCurrentTime)
 import Freckle.App.Http
@@ -355,7 +360,7 @@ requestBodyCached
   :: CacheSettings
   -> [HttpStub]
   -> Request
-  -> StateT Cache IO LByteString
+  -> StateT Cache IO BSL.ByteString
 requestBodyCached ss stubs req =
   getResponseBody <$> httpCached ss (pure . httpStubbed stubs) req
 
@@ -383,11 +388,11 @@ settingsFuture =
 stubAnything :: [HttpStub]
 stubAnything = [httpStub "Anything" MatchAnything]
 
-expectDecode :: (HasCallStack, MonadIO m, FromJSON a) => LByteString -> m a
+expectDecode :: (HasCallStack, MonadIO m, FromJSON a) => BSL.ByteString -> m a
 expectDecode bs = case eitherDecode bs of
   Left err -> do
-    expectationFailure
-      $ mconcat
+    expectationFailure $
+      mconcat
         [ "Expected input to decode as JSON"
         , "\nInput:  " <> show bs
         , "\nErrors: " <> err

@@ -47,10 +47,12 @@ library
       DeriveAnyClass
       DerivingVia
       DerivingStrategies
+      DuplicateRecordFields
       GADTs
       LambdaCase
       NoImplicitPrelude
       NoMonomorphismRestriction
+      OverloadedRecordDot
       OverloadedStrings
       RecordWildCards
       TypeFamilies
@@ -82,13 +84,15 @@ library
     , monad-validate
     , mtl
     , network-uri
-    , relude
     , retry >=0.8.1.0
+    , safe
     , semigroupoids
     , serialise
     , text
     , time
+    , transformers
     , unliftio
+    , unordered-containers
   default-language: GHC2021
   if impl(ghc >= 9.8)
     ghc-options: -Wno-missing-role-annotations -Wno-missing-poly-kind-signatures
@@ -106,10 +110,12 @@ test-suite spec
       DeriveAnyClass
       DerivingVia
       DerivingStrategies
+      DuplicateRecordFields
       GADTs
       LambdaCase
       NoImplicitPrelude
       NoMonomorphismRestriction
+      OverloadedRecordDot
       OverloadedStrings
       RecordWildCards
       TypeFamilies
@@ -124,7 +130,7 @@ test-suite spec
     , hspec-expectations-lifted
     , http-types
     , lens
-    , relude
+    , mtl
     , time
     , unordered-containers
     , zlib

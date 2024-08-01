@@ -1,4 +1,3 @@
-{-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE NoFieldSelectors #-}
 
 -- | HTTP caching via 'MonadState'
@@ -14,16 +13,23 @@ module Freckle.App.Http.Cache.State
   , stateHttpCache
   ) where
 
-import Relude
+import Prelude
 
 import Blammo.Logging (Message)
 import Control.Lens (Lens', at, lens, use, (.=), (?=))
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Logger (ToLogStr (..), fromLogStr)
+import Control.Monad.State (MonadState)
+import Data.HashMap.Strict (HashMap)
+import Data.Text (Text)
+import Data.Text.Encoding qualified as T
+import Data.Text.Encoding.Error qualified as T
 import Data.Text.IO qualified as T
 import Data.Time (getCurrentTime)
 import Freckle.App.Http.Cache
 import Freckle.App.Memcached.CacheKey
 import Freckle.App.Memcached.CacheTTL
+import System.IO qualified as IO
 
 newtype Cache = Cache
   { map :: HashMap CacheKey CachedResponse
@@ -52,7 +58,7 @@ stateHttpCacheSettings =
     , defaultTTL = fiveMinuteTTL
     , getCurrentTime = liftIO getCurrentTime
     , logDebug = \_ -> pure ()
-    , logWarn = liftIO . T.hPutStrLn stderr . messageToText
+    , logWarn = liftIO . T.hPutStrLn IO.stderr . messageToText
     , codec = stateHttpCacheCodec
     , cache = stateHttpCache
     }
@@ -74,4 +80,4 @@ stateHttpCache =
     }
 
 messageToText :: Message -> Text
-messageToText = decodeUtf8With lenientDecode . fromLogStr . toLogStr
+messageToText = T.decodeUtf8With T.lenientDecode . fromLogStr . toLogStr

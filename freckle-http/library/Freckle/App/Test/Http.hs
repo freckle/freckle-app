@@ -1,8 +1,4 @@
 {-# LANGUAGE CPP #-}
-{-# LANGUAGE DuplicateRecordFields #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE OverloadedRecordDot #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE NoFieldSelectors #-}
 
@@ -43,19 +39,30 @@ module Freckle.App.Test.Http
   , runHttpStubsT
   ) where
 
-import Relude
+import Prelude
 
+import Control.Applicative (asum)
 import Control.Lens (Lens', lens, view,  (.~), (<>~))
+import Control.Monad.Reader (MonadReader, ReaderT, runReaderT)
 import Data.Aeson (ToJSON, encode)
+import Data.Bifunctor (bimap)
+import Control.Monad(filterM)
 import Data.ByteString.Lazy qualified as BSL
+import Data.Either (partitionEithers)
+import Data.Function ((&))
 import Data.List (stripPrefix)
+import Data.Maybe (mapMaybe)
+import Data.String (IsString)
+import Data.String qualified
 import Data.Traversable (for)
 import Freckle.App.Http (MonadHttp (..))
 import Freckle.App.Test.Http.MatchRequest
+import GHC.Stack (HasCallStack)
 import Network.HTTP.Client (Request, Response)
 import Network.HTTP.Client.Internal qualified as HTTP
 import Network.HTTP.Types.Header (ResponseHeaders, hAccept, hContentType)
 import Network.HTTP.Types.Status (Status, status200)
+import Safe (headMay)
 import System.Directory (doesFileExist)
 import System.FilePath (addTrailingPathSeparator)
 import System.FilePath.Glob (globDir1)
@@ -81,7 +88,7 @@ httpStubbed
   -> Request
   -> Response BSL.ByteString
 httpStubbed stubs req =
-  maybe (error errorMessage) (toResponse req) $ viaNonEmpty head matched
+  maybe (error errorMessage) (toResponse req) $ headMay matched
  where
   (unmatched, matched) =
     partitionEithers
@@ -93,10 +100,10 @@ httpStubbed stubs req =
         stubs
 
   errorMessage =
-    toText $ "No stubs were found that matched:\n"
-      <> show req
-      <> "\n"
-      <> concatMap (uncurry unmatchedMessage) unmatched
+    "No stubs were found that matched:\n"
+    <> show req
+    <> "\n"
+    <> concatMap (uncurry unmatchedMessage) unmatched
 
   unmatchedMessage stub err = "\n== " <> stub.label <> " ==\n" <> err
 

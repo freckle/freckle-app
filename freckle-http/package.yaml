@@ -44,10 +44,12 @@ default-extensions:
   - DeriveAnyClass
   - DerivingVia
   - DerivingStrategies
+  - DuplicateRecordFields
   - GADTs
   - LambdaCase
   - NoImplicitPrelude
   - NoMonomorphismRestriction
+  - OverloadedRecordDot
   - OverloadedStrings
   - RecordWildCards
   - TypeFamilies
@@ -80,13 +82,15 @@ library:
     - monad-validate
     - mtl
     - network-uri
-    - relude
     - retry >= 0.8.1.0 # retryingDynamic
+    - safe
     - serialise
     - semigroupoids
     - text
     - time
+    - transformers
     - unliftio
+    - unordered-containers
 
 tests:
   spec:
@@ -102,7 +106,7 @@ tests:
       - hspec-expectations-lifted
       - http-types
       - lens
-      - relude
+      - mtl
       - time
       - unordered-containers
       - zlib

@@ -7,10 +7,12 @@ module Freckle.App.Http.Header
   , splitHeader
   ) where
 
-import Relude
+import Prelude
 
+import Data.ByteString (ByteString)
 import Data.ByteString.Char8 qualified as BS8
 import Data.Char (isSpace)
+import Data.Maybe (listToMaybe)
 import Network.HTTP.Client (Request, Response, requestHeaders, responseHeaders)
 import Network.HTTP.Simple (getRequestHeader, getResponseHeader)
 import Network.HTTP.Types.Header (Header, HeaderName)
