@@ -1,10 +1,37 @@
 cradle:
-  stack:
+  cabal:
     - path: "freckle-app/library"
-      component: "freckle-app:lib"
+      component: "lib:freckle-app"
 
     - path: "freckle-app/doctest"
       component: "freckle-app:test:doctest"
 
     - path: "freckle-app/tests"
       component: "freckle-app:test:spec"
+
+    - path: "freckle-env/library"
+      component: "lib:freckle-env"
+
+    - path: "freckle-env/doctest"
+      component: "freckle-env:test:doctest"
+
+    - path: "freckle-http/library"
+      component: "lib:freckle-http"
+
+    - path: "freckle-http/tests"
+      component: "freckle-http:test:spec"
+
+    - path: "freckle-kafka/library"
+      component: "lib:freckle-kafka"
+
+    - path: "freckle-memcached/library"
+      component: "lib:freckle-memcached"
+
+    - path: "freckle-memcached/tests"
+      component: "freckle-memcached:test:spec"
+
+    - path: "freckle-otel/library"
+      component: "lib:freckle-otel"
+
+    - path: "freckle-otel/tests"
+      component: "freckle-otel:test:spec"
