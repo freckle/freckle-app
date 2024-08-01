@@ -1,5 +1,5 @@
 name: freckle-kafka
-version: 0.0.0.0
+version: 0.0.0.1
 maintainer: Freckle Education
 category: Database
 github: freckle/freckle-app
@@ -57,12 +57,13 @@ library:
     - Blammo >= 2.0.0.0
     - aeson
     - annotated-exception
+    - bytestring
     - containers
     - freckle-env
     - hs-opentelemetry-sdk
     - hw-kafka-client
     - lens
-    - relude
+    - mtl
     - resource-pool >= 0.4.0.0
     - text
     - time

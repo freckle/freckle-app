@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           freckle-kafka
-version:        0.0.0.0
+version:        0.0.0.1
 synopsis:       Some extensions to the hw-kafka-client library
 description:    Please see README.md
 category:       Database
@@ -51,12 +51,13 @@ library
     , aeson
     , annotated-exception
     , base <5
+    , bytestring
     , containers
     , freckle-env
     , hs-opentelemetry-sdk
     , hw-kafka-client
     , lens
-    , relude
+    , mtl
     , resource-pool >=0.4.0.0
     , text
     , time
