@@ -35,10 +35,12 @@ module Freckle.App.Env
   , timeout
   ) where
 
-import Relude
+import Prelude
 
 import Control.Error.Util (note)
+import Data.Bifunctor (first, second)
 import Data.Char (isDigit)
+import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Time (UTCTime, defaultTimeLocale, parseTimeM)
 import Env hiding (flag)
@@ -94,9 +96,9 @@ eitherReader f s = first (unread . suffix) $ f s
 -- Left [("TIME",UnreadError "unable to parse time as %Y-%m-%d: \"10:00PM\"")]
 time :: String -> Env.Reader Error UTCTime
 time fmt =
-  eitherReader
-    $ note ("unable to parse time as " <> fmt)
-    . parseTimeM True defaultTimeLocale fmt
+  eitherReader $
+    note ("unable to parse time as " <> fmt)
+      . parseTimeM True defaultTimeLocale fmt
 
 -- | Read key-value pairs
 --
@@ -117,11 +119,11 @@ keyValues = splitOnParse ',' $ keyValue ':'
 
 keyValue :: Char -> Env.Reader Error (Text, Text)
 keyValue c =
-  eitherReader $ go . second (T.drop 1) . T.breakOn (T.singleton c) . toText
+  eitherReader $ go . second (T.drop 1) . T.breakOn (T.singleton c) . T.pack
  where
   go = \case
-    (k, v) | T.null v -> Left $ "Key " <> toString k <> " has no value"
-    (k, v) | T.null k -> Left $ "Value " <> toString v <> " has no key"
+    (k, v) | T.null v -> Left $ "Key " <> T.unpack k <> " has no value"
+    (k, v) | T.null k -> Left $ "Value " <> T.unpack v <> " has no key"
     (k, v) -> Right (k, v)
 
 -- | Use 'splitOn' then call the given 'Reader' on each element

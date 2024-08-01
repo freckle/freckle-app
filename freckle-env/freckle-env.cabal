@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           freckle-env
-version:        0.0.1.0
+version:        0.0.1.1
 synopsis:       Some extension to the envparse library
 description:    Please see README.md
 category:       Environment, System
@@ -51,7 +51,6 @@ library
     , envparse
     , errors
     , filepath
-    , relude
     , text
     , time
     , unliftio

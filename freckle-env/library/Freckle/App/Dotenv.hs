@@ -5,9 +5,12 @@ module Freckle.App.Dotenv
   , loadFile
   ) where
 
-import Relude
+import Prelude
 
 import Configuration.Dotenv qualified as Dotenv
+import Control.Monad ((<=<))
+import Data.Foldable (traverse_)
+import Data.Functor (void)
 import System.FilePath (takeDirectory, (</>))
 import UnliftIO.Directory (doesFileExist, getCurrentDirectory)
 
@@ -42,12 +45,12 @@ loadFile = traverse_ go <=< locateInParents
     let examplePath = takeDirectory path </> ".env.example"
     exampleExists <- doesFileExist examplePath
 
-    void
-      $ Dotenv.loadFile
-      $ Dotenv.defaultConfig
-        { Dotenv.configPath = [path]
-        , Dotenv.configExamplePath = [examplePath | exampleExists]
-        }
+    void $
+      Dotenv.loadFile $
+        Dotenv.defaultConfig
+          { Dotenv.configPath = [path]
+          , Dotenv.configExamplePath = [examplePath | exampleExists]
+          }
 
 locateInParents :: FilePath -> IO (Maybe FilePath)
 locateInParents path = go =<< getCurrentDirectory

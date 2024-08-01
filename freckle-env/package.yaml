@@ -1,5 +1,5 @@
 name: freckle-env
-version: 0.0.1.0
+version: 0.0.1.1
 maintainer: Freckle Education
 category: Environment, System
 github: freckle/freckle-app
@@ -58,7 +58,6 @@ library:
     - envparse
     - errors
     - filepath
-    - relude
     - text
     - time
     - unliftio
