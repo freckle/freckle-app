@@ -5,9 +5,10 @@ module Freckle.App.Memcached.CacheTTL
   , fiveMinuteTTL
   ) where
 
-import Relude
+import Prelude
 
 import Codec.Serialise (Serialise (..))
+import Data.Word (Word32)
 import Database.Memcache.Types (Expiration)
 import OpenTelemetry.Trace (ToAttribute (..))
 

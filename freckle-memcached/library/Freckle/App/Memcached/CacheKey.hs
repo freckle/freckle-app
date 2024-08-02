@@ -5,13 +5,17 @@ module Freckle.App.Memcached.CacheKey
   , fromCacheKey
   ) where
 
-import Relude
+import Prelude
 
 import Control.Exception.Annotated.UnliftIO (throwWithCallStack)
+import Control.Monad.IO.Class (MonadIO)
 import Data.Char (isControl, isSpace)
+import Data.Hashable (Hashable)
+import Data.Text (Text)
 import Data.Text qualified as T
+import Data.Text.Encoding qualified as T
 import Database.Memcache.Types (Key)
-import GHC.IO.Exception (userError)
+import GHC.Stack (HasCallStack)
 import OpenTelemetry.Trace (ToAttribute (..))
 
 newtype CacheKey = CacheKey Text
@@ -41,11 +45,11 @@ cacheKey t
   | otherwise = Right $ CacheKey t
  where
   invalid msg =
-    Left $ "Not a valid memcached key:\n  " <> toString t <> "\n\n" <> msg
+    Left $ "Not a valid memcached key:\n  " <> T.unpack t <> "\n\n" <> msg
 
 -- | Build a 'CacheKey' and throw if invalid
 cacheKeyThrow :: (MonadIO m, HasCallStack) => Text -> m CacheKey
 cacheKeyThrow = either (throwWithCallStack . userError) pure . cacheKey
 
 fromCacheKey :: CacheKey -> Key
-fromCacheKey = encodeUtf8 . unCacheKey
+fromCacheKey = T.encodeUtf8 . unCacheKey

@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           freckle-memcached
-version:        0.0.0.0
+version:        0.0.0.1
 synopsis:       ..
 description:    Please see README.md
 category:       Database
@@ -58,12 +58,13 @@ library
     , bytestring
     , errors
     , freckle-otel
+    , hashable
     , hs-opentelemetry-sdk
     , lens
     , memcache
+    , mtl
     , network-uri
     , pureMD5
-    , relude
     , serialise
     , text
     , unliftio
@@ -110,7 +111,8 @@ test-suite spec
     , lens
     , lens-aeson
     , memcache
-    , relude
+    , mtl
+    , safe
     , text
     , unliftio
   default-language: GHC2021

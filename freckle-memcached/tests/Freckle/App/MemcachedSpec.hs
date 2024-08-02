@@ -4,12 +4,13 @@ module Freckle.App.MemcachedSpec
   ( spec
   ) where
 
-import Relude
+import Prelude
 
 import AppExample
 import Blammo.Logging.LogSettings
 import Blammo.Logging.Logger
 import Control.Lens (lens, to, (^?))
+import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (Value (..))
 import Data.Aeson.Lens
 import Data.List.NonEmpty qualified as NE
@@ -73,8 +74,8 @@ instance HasTracer App where
 loadApp :: (App -> IO a) -> IO a
 loadApp f = do
   servers <-
-    Env.parse id
-      $ Env.var
+    Env.parse id $
+      Env.var
         (Env.eitherReader readMemcachedServers)
         "MEMCACHED_SERVERS"
         (Env.def defaultMemcachedServers)

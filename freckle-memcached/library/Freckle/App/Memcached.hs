@@ -22,7 +22,7 @@ module Freckle.App.Memcached
   , module Freckle.App.Memcached.MD5
   ) where
 
-import Relude
+import Prelude
 
 import Blammo.Logging
 import Codec.Serialise (Serialise, deserialiseOrFail, serialise)
@@ -31,14 +31,21 @@ import Control.Exception.Annotated.UnliftIO
   , throwWithCallStack
   )
 import Control.Exception.Annotated.UnliftIO qualified as AnnotatedException
+import Control.Monad.Reader (MonadReader)
 import Data.Aeson
+import Data.Bifunctor (first)
+import Data.ByteString (ByteString)
 import Data.ByteString.Lazy qualified as BSL
+import Data.Text (Text)
+import Data.Text.Encoding qualified as T
+import Data.Text.Encoding.Error qualified as T
 import Freckle.App.Memcached.CacheKey
 import Freckle.App.Memcached.CacheTTL
 import Freckle.App.Memcached.Client (HasMemcachedClient (..))
 import Freckle.App.Memcached.Client qualified as Memcached
 import Freckle.App.Memcached.MD5
 import Freckle.App.OpenTelemetry
+import GHC.Stack (HasCallStack, prettyCallStack)
 import UnliftIO (MonadUnliftIO)
 import UnliftIO.Exception
 
@@ -55,8 +62,8 @@ instance Cachable BSL.ByteString where
   fromCachable = Right . BSL.fromStrict
 
 instance Cachable Text where
-  toCachable = encodeUtf8
-  fromCachable = Right . decodeUtf8With lenientDecode
+  toCachable = T.encodeUtf8
+  fromCachable = Right . T.decodeUtf8With T.lenientDecode
 
 data CachingError
   = CacheGetError SomeException
@@ -73,10 +80,10 @@ instance Exception CachingError where
 -- | Log any thrown 'CachingError's as warnings and return the given value
 warnOnCachingError :: (MonadUnliftIO m, MonadLogger m) => a -> m a -> m a
 warnOnCachingError val =
-  flip catch
-    $ (val <$)
-    . logWarnNS "caching"
-    . annotatedExceptionMessage @CachingError
+  flip catch $
+    (val <$)
+      . logWarnNS "caching"
+      . annotatedExceptionMessage @CachingError
 
 annotatedExceptionMessage :: Exception ex => AnnotatedException ex -> Message
 annotatedExceptionMessage = annotatedExceptionMessageFrom $ const "Exception"

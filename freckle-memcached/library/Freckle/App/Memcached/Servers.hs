@@ -26,10 +26,14 @@ module Freckle.App.Memcached.Servers
   , toServerSpecs
   ) where
 
-import Relude
+import Prelude
 
 import Control.Error.Util (note)
+import Control.Monad (guard)
+import Data.Bifunctor (second)
+import Data.Maybe (fromMaybe)
 import Data.Text qualified as T
+import Data.Text.Encoding qualified as T
 import Database.Memcache.Client qualified as Memcache
 import Network.URI (URI (..), URIAuth (..), parseAbsoluteURI)
 
@@ -46,11 +50,11 @@ emptyMemcachedServers = MemcachedServers []
 readMemcachedServers :: String -> Either String MemcachedServers
 readMemcachedServers =
   fmap MemcachedServers
-    . traverse (readMemcachedServer . toString)
+    . traverse (readMemcachedServer . T.unpack)
     . filter (not . T.null)
     . map T.strip
     . T.splitOn ","
-    . toText
+    . T.pack
 
 toServerSpecs :: MemcachedServers -> [Memcache.ServerSpec]
 toServerSpecs = map unMemcachedServer . unMemcachedServers
@@ -77,7 +81,7 @@ readMemcachedServer s = do
     $ Memcache.def
 
 readAuthentication :: String -> Maybe Memcache.Authentication
-readAuthentication = go . toText
+readAuthentication = go . T.pack
  where
   go a = do
     (u, p) <- second (T.drop 1) . T.breakOn ":" <$> T.stripSuffix "@" a
@@ -87,8 +91,8 @@ readAuthentication = go . toText
 
     pure
       Memcache.Auth
-        { Memcache.username = encodeUtf8 u
-        , Memcache.password = encodeUtf8 p
+        { Memcache.username = T.encodeUtf8 u
+        , Memcache.password = T.encodeUtf8 p
         }
 
 setHost :: URIAuth -> Memcache.ServerSpec -> Memcache.ServerSpec

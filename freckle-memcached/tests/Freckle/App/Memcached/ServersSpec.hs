@@ -2,11 +2,15 @@ module Freckle.App.Memcached.ServersSpec
   ( spec
   ) where
 
-import Relude
+import Prelude
 
 import Control.Error.Util (hush)
+import Control.Monad ((<=<))
+import Data.Either (isLeft, isRight)
+import Data.Functor (void)
 import Database.Memcache.Client qualified as Memcache
 import Freckle.App.Memcached.Servers
+import Safe (headMay)
 import Test.Hspec
 
 spec :: Spec
@@ -74,7 +78,7 @@ spec = do
           [Memcache.NoAuth, Memcache.NoAuth, Memcache.Auth "u" "p"]
 
 readServerSpec :: String -> Maybe Memcache.ServerSpec
-readServerSpec = viaNonEmpty head <=< readServerSpecs
+readServerSpec = headMay <=< readServerSpecs
 
 readServerSpecs :: String -> Maybe [Memcache.ServerSpec]
 readServerSpecs = fmap toServerSpecs . hush . readMemcachedServers

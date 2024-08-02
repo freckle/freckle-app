@@ -1,5 +1,5 @@
 name: freckle-memcached
-version: 0.0.0.0
+version: 0.0.0.1
 maintainer: Freckle Education
 category: Database
 github: freckle/freckle-app
@@ -61,12 +61,13 @@ library:
     - bytestring
     - errors
     - freckle-otel
+    - hashable
     - hs-opentelemetry-sdk
     - lens
     - memcache
+    - mtl
     - network-uri
     - pureMD5
-    - relude
     - serialise
     - text
     - unliftio
@@ -91,6 +92,7 @@ tests:
       - lens
       - lens-aeson
       - memcache
-      - relude
+      - mtl
+      - safe
       - text
       - unliftio

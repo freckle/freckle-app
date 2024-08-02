@@ -9,9 +9,12 @@ module Freckle.App.Memcached.Client
   , delete
   ) where
 
-import Relude hiding (get)
+import Prelude
 
 import Control.Lens (Lens', view, _1)
+import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.Reader (MonadReader)
+import Data.Functor (void)
 import Data.HashMap.Strict qualified as HashMap
 import Database.Memcache.Client qualified as Memcache
 import Database.Memcache.Types (Value, Version)
@@ -80,11 +83,11 @@ set
   -> m ()
 set k v expiration = traced $ with $ \case
   MemcachedClient mc ->
-    void
-      $ liftIO
-      $ Memcache.set mc (fromCacheKey k) v 0
-      $ fromCacheTTL
-        expiration
+    void $
+      liftIO $
+        Memcache.set mc (fromCacheKey k) v 0 $
+          fromCacheTTL
+            expiration
   MemcachedClientDisabled -> pure ()
  where
   traced =

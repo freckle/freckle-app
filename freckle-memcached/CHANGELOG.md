@@ -1,6 +1,10 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-http-v0.0.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-memcached-v0.0.0.1...main)
 
-## [v0.0.0.0](https://github.com/freckle/freckle-app/tree/freckle-http-v0.0.0.0/freckle-http)
+## [v0.0.0.1](https://github.com/freckle/freckle-app/compare/freckle-memcached-v0.0.0.0...freckle-memcached-v0.0.0.1)
+
+Drop `relude` dependency
+
+## [v0.0.0.0](https://github.com/freckle/freckle-app/tree/freckle-memcached-v0.0.0.0/freckle-memcached)
 
 First release, sprouted from `freckle-app-1.19.0.0`.
 
