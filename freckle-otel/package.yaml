@@ -1,5 +1,5 @@
 name: freckle-otel
-version: 0.0.0.0
+version: 0.0.0.1
 maintainer: Freckle Education
 category: OpenTelemetry, Telemetry, Monitoring, Observability, Metrics
 github: freckle/freckle-app
@@ -57,6 +57,7 @@ library:
   dependencies:
     - Blammo >= 2.0.0.0
     - aeson
+    - bytestring
     - case-insensitive
     - errors
     - exceptions
@@ -67,7 +68,6 @@ library:
     - http-conduit >= 2.3.5 # addToRequestQueryString
     - http-types
     - lens
-    - relude
     - text
     - unliftio
     - unordered-containers
@@ -89,6 +89,6 @@ tests:
       - hspec-expectations-lifted
       - http-types
       - lens
-      - relude
+      - mtl
       - text
       - unliftio

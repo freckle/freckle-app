@@ -4,10 +4,12 @@ module AppExample
   , withApp
   ) where
 
-import Relude
+import Prelude
 
 import Control.Lens (view)
 import Control.Monad.Catch
+import Control.Monad.Reader (MonadReader, ReaderT (..))
+import Data.Functor (void)
 import Freckle.App.Dotenv qualified as Dotenv
 import OpenTelemetry.Trace (HasTracer (..))
 import OpenTelemetry.Trace.Monad (MonadTracer (..))

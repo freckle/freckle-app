@@ -2,16 +2,20 @@ module Freckle.App.OpenTelemetry.ContextSpec
   ( spec
   ) where
 
-import Relude hiding (traceId)
+import Prelude
 
 import AppExample
 import Blammo.Logging
 import Blammo.Logging.Logger (newTestLogger)
 import Control.Lens (lens)
+import Control.Monad.IO.Class (MonadIO)
 import Data.List qualified as List
+import Data.Text (Text)
 import Data.Text qualified as T
+import Data.Text.Encoding qualified as T
 import Freckle.App.OpenTelemetry
 import Freckle.App.OpenTelemetry.Context
+import GHC.Stack (HasCallStack)
 import Network.HTTP.Types.Header (Header)
 import OpenTelemetry.Trace.Core qualified as Trace
 import Test.Hspec (Spec, describe, it)
@@ -54,7 +58,7 @@ spec = withApp loadApp $ do
                 (spanIdToHex $ Trace.spanId spanContext)
 
         injectContext ([] :: [Header])
-          `shouldReturn` [ ("traceparent", encodeUtf8 expectedTraceParent)
+          `shouldReturn` [ ("traceparent", T.encodeUtf8 expectedTraceParent)
                          , ("tracestate", "")
                          ]
 
@@ -66,7 +70,7 @@ spec = withApp loadApp $ do
 
         headers :: [Header]
         headers =
-          [ ("traceparent", encodeUtf8 $ toTraceParent traceId spanId)
+          [ ("traceparent", T.encodeUtf8 $ toTraceParent traceId spanId)
           , ("tracestate", "")
           ]
 
@@ -94,7 +98,7 @@ spec = withApp loadApp $ do
 
           headers :: [Header]
           headers =
-            [ ("traceparent", encodeUtf8 $ toTraceParent traceId spanId)
+            [ ("traceparent", T.encodeUtf8 $ toTraceParent traceId spanId)
             , ("tracestate", "")
             ]
 
@@ -115,7 +119,7 @@ spec = withApp loadApp $ do
 
           headers :: [Header]
           headers =
-            [ ("traceparent", encodeUtf8 $ toTraceParent traceId spanId)
+            [ ("traceparent", T.encodeUtf8 $ toTraceParent traceId spanId)
             , ("tracestate", "")
             ]
 
@@ -124,7 +128,7 @@ spec = withApp loadApp $ do
 
           let headerTraceParent = do
                 bs <- List.lookup "traceparent" headers'
-                fromTraceParent $ decodeUtf8 bs
+                fromTraceParent $ T.decodeUtf8 bs
 
           fmap fst headerTraceParent `shouldBe` Just traceId
           fmap snd headerTraceParent
@@ -141,7 +145,7 @@ spec = withApp loadApp $ do
 
           let headerTraceParent = do
                 bs <- List.lookup "traceparent" headers'
-                fromTraceParent $ decodeUtf8 bs
+                fromTraceParent $ T.decodeUtf8 bs
 
           fmap fst headerTraceParent
             `shouldBe` Just (traceIdToHex $ Trace.traceId spanContext)

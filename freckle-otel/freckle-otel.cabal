@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           freckle-otel
-version:        0.0.0.0
+version:        0.0.0.1
 synopsis:       ...
 description:    Please see README.md
 category:       OpenTelemetry, Telemetry, Monitoring, Observability, Metrics
@@ -52,6 +52,7 @@ library
       Blammo >=2.0.0.0
     , aeson
     , base <5
+    , bytestring
     , case-insensitive
     , errors
     , exceptions
@@ -62,7 +63,6 @@ library
     , http-conduit >=2.3.5
     , http-types
     , lens
-    , relude
     , text
     , unliftio
     , unordered-containers
@@ -105,7 +105,7 @@ test-suite spec
     , hspec-expectations-lifted
     , http-types
     , lens
-    , relude
+    , mtl
     , text
     , unliftio
   default-language: GHC2021

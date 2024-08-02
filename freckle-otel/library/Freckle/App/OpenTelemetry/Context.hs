@@ -6,14 +6,22 @@ module Freckle.App.OpenTelemetry.Context
   , processWithContext
   ) where
 
-import Relude hiding (get)
+import Prelude
 
 import Control.Error.Util (hush)
 import Control.Lens (Lens', lens, (.~), (^.))
 import Control.Monad.Catch (MonadMask)
+import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson (FromJSON, ToJSON)
+import Data.Bifunctor (bimap)
+import Data.ByteString (ByteString)
 import Data.CaseInsensitive (CI)
 import Data.CaseInsensitive qualified as CI
+import Data.Function ((&))
+import Data.Functor (void)
+import Data.Maybe (fromMaybe)
+import Data.Text (Text)
+import Data.Text.Encoding qualified as T
 import Faktory.Job (Job, custom, jobOptions)
 import Faktory.Job.Custom (fromCustom, toCustom)
 import Faktory.JobOptions (JobOptions (..))
@@ -23,6 +31,8 @@ import Freckle.App.OpenTelemetry
   , inSpan
   )
 import Freckle.App.OpenTelemetry.ThreadContext (withTraceContext)
+import GHC.Generics (Generic)
+import GHC.Stack (HasCallStack)
 import Network.HTTP.Client (Request, requestHeaders)
 import Network.HTTP.Simple (setRequestHeaders)
 import Network.HTTP.Types.Header (Header)
@@ -68,10 +78,10 @@ instance HasHeaders CustomTraceContext where
   headersL = lens (map encode . traceHeaders) $ \x y -> x {traceHeaders = map decode y}
 
 encode :: (Text, Text) -> (CI ByteString, ByteString)
-encode = bimap (CI.mk . encodeUtf8) encodeUtf8
+encode = bimap (CI.mk . T.encodeUtf8) T.encodeUtf8
 
 decode :: (CI ByteString, ByteString) -> (Text, Text)
-decode = bimap (decodeUtf8 . CI.original) decodeUtf8
+decode = bimap (T.decodeUtf8 . CI.original) T.decodeUtf8
 
 -- | Update our trace context from that extracted from the given item's headers
 extractContext

@@ -64,9 +64,16 @@ module Freckle.App.OpenTelemetry
   , attributeValueLimit
   ) where
 
-import Relude
+import Prelude
 
+import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.ByteString (ByteString)
+import Data.Functor (void)
+import Data.HashMap.Strict (HashMap)
+import Data.Text (Text)
 import Data.Text qualified as T
+import Data.Text.Encoding qualified as T
+import Data.Text.Encoding.Error qualified as T
 import OpenTelemetry.Context (lookupSpan)
 import OpenTelemetry.Context.ThreadLocal (getContext)
 import OpenTelemetry.Trace hiding (inSpan)
@@ -150,7 +157,7 @@ byteStringToAttribute :: ByteString -> Attribute
 byteStringToAttribute =
   toAttribute
     . truncateText attributeValueLimit
-    . decodeUtf8With lenientDecode
+    . T.decodeUtf8With T.lenientDecode
 
 -- | Character limit for 'Attribute' values
 --

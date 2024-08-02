@@ -5,11 +5,15 @@ module Freckle.App.OpenTelemetry.Http
   , httpResponseAttributes
   ) where
 
-import Relude hiding (traceId)
+import Prelude
 
 import Data.CaseInsensitive qualified as CI
+import Data.HashMap.Strict (HashMap)
 import Data.HashMap.Strict qualified as HashMap
+import Data.Text (Text)
 import Data.Text qualified as T
+import Data.Text.Encoding qualified as T
+import Data.Text.Encoding.Error qualified as T
 import Freckle.App.OpenTelemetry
   ( SpanArguments (..)
   , byteStringToAttribute
@@ -22,7 +26,7 @@ import OpenTelemetry.Attributes (Attribute, ToAttribute (..))
 
 httpSpanName :: Request -> Text
 httpSpanName req =
-  decodeUtf8With lenientDecode $ HTTP.method req <> " " <> HTTP.path req
+  T.decodeUtf8With T.lenientDecode $ HTTP.method req <> " " <> HTTP.path req
 
 httpSpanArguments :: Request -> SpanArguments
 httpSpanArguments req = clientSpanArguments {attributes = httpAttributes req}
@@ -52,5 +56,5 @@ httpResponseAttributes resp = statusAttr <> foldMap (uncurry headerAttr) (HTTP.r
   headerAttrKey =
     ("http.response.headers." <>)
       . T.toLower
-      . decodeUtf8With lenientDecode
+      . T.decodeUtf8With T.lenientDecode
       . CI.original

@@ -4,12 +4,15 @@ module Freckle.App.OpenTelemetry.ThreadContext
   ( withTraceContext
   ) where
 
-import Relude hiding (traceId)
+import Prelude
 
 import Blammo.Logging (MonadMask, withThreadContext)
+import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson ((.=))
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.Types (Pair)
+import Data.Bifunctor (bimap)
+import Data.Text (Text)
 import Freckle.App.OpenTelemetry (getCurrentSpanContext)
 import OpenTelemetry.Trace.Core (SpanContext (..))
 import OpenTelemetry.Trace.Id
