@@ -32,4 +32,7 @@ extra-deps:
 packages:
   - freckle-app
   - freckle-env
+  - freckle-http
   - freckle-kafka
+  - freckle-memcached
+  - freckle-otel

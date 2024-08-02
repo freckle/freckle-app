@@ -1,4 +1,4 @@
-packages: freckle-app
+packages: */*.cabal
 allow-newer: hs-opentelemetry-propagator-datadog:text
 
 documentation: True

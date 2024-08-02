@@ -5,7 +5,7 @@ cabal-version: 1.22
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.19.0.0
+version:        1.20.0.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -35,7 +35,6 @@ library
       Freckle.App.Bugsnag.SqlError
       Freckle.App.Csv
       Freckle.App.Database
-      Freckle.App.Dotenv
       Freckle.App.Ecs
       Freckle.App.Exception
       Freckle.App.Exception.MonadThrow
@@ -44,25 +43,7 @@ library
       Freckle.App.Faktory.ProducerPool
       Freckle.App.Ghci
       Freckle.App.GlobalCache
-      Freckle.App.Http
-      Freckle.App.Http.Cache
-      Freckle.App.Http.Cache.Gzip
-      Freckle.App.Http.Cache.Memcached
-      Freckle.App.Http.Cache.State
-      Freckle.App.Http.Header
-      Freckle.App.Http.Paginate
-      Freckle.App.Http.Retry
       Freckle.App.Json.Empty
-      Freckle.App.Memcached
-      Freckle.App.Memcached.CacheKey
-      Freckle.App.Memcached.CacheTTL
-      Freckle.App.Memcached.Client
-      Freckle.App.Memcached.MD5
-      Freckle.App.Memcached.Servers
-      Freckle.App.OpenTelemetry
-      Freckle.App.OpenTelemetry.Context
-      Freckle.App.OpenTelemetry.Http
-      Freckle.App.OpenTelemetry.ThreadContext
       Freckle.App.Prelude
       Freckle.App.Random
       Freckle.App.Scientist
@@ -71,8 +52,6 @@ library
       Freckle.App.Test
       Freckle.App.Test.DocTest
       Freckle.App.Test.Hspec.Runner
-      Freckle.App.Test.Http
-      Freckle.App.Test.Http.MatchRequest
       Freckle.App.Test.Properties.JSON
       Freckle.App.Test.Properties.PathPiece
       Freckle.App.Test.Properties.PersistValue
@@ -86,7 +65,19 @@ library
   other-modules:
       Paths_freckle_app
   reexported-modules:
-      Freckle.App.Env
+      Freckle.App.Dotenv
+    , Freckle.App.Env
+    , Freckle.App.Http
+    , Freckle.App.Http.Cache
+    , Freckle.App.Http.Cache.Gzip
+    , Freckle.App.Http.Cache.Memcached
+    , Freckle.App.Http.Cache.State
+    , Freckle.App.Http.Header
+    , Freckle.App.Http.Paginate
+    , Freckle.App.Http.Retry
+    , Freckle.App.HttpSpec
+    , Freckle.App.Test.Http
+    , Freckle.App.Test.Http.MatchRequest
   hs-source-dirs:
       library
   default-extensions:
@@ -123,16 +114,14 @@ library
     , containers
     , cookie
     , datadog
-    , directory
     , doctest
-    , dotenv
     , ekg-core
-    , errors
     , exceptions
     , extra
     , faktory
-    , filepath
     , freckle-env
+    , freckle-http
+    , freckle-otel
     , hashable
     , hs-opentelemetry-api
     , hs-opentelemetry-instrumentation-persistent
@@ -143,18 +132,13 @@ library
     , hspec-expectations-lifted
     , hspec-junit-formatter >=1.1.1.0
     , http-client
-    , http-conduit >=2.3.5
-    , http-link-header
     , http-types
     , immortal
     , lens
-    , memcache
     , monad-control
-    , monad-logger
     , monad-logger-aeson
     , monad-validate
     , mtl
-    , network-uri
     , nonempty-containers
     , openapi3
     , path-pieces
@@ -162,14 +146,11 @@ library
     , persistent-postgresql
     , postgresql-simple
     , primitive
-    , pureMD5
     , resource-pool >=0.4.0.0
     , resourcet
-    , retry >=0.8.1.0
     , safe
     , scientist
     , semigroupoids
-    , serialise
     , template-haskell
     , text
     , time
@@ -223,11 +204,6 @@ test-suite spec
       Freckle.App.Bugsnag.MetaDataSpec
       Freckle.App.BugsnagSpec
       Freckle.App.CsvSpec
-      Freckle.App.Http.CacheSpec
-      Freckle.App.HttpSpec
-      Freckle.App.Memcached.ServersSpec
-      Freckle.App.MemcachedSpec
-      Freckle.App.OpenTelemetry.ContextSpec
       Freckle.App.Test.Http.MatchRequestSpec
       Freckle.App.Test.Properties.JSONSpec
       Freckle.App.Test.Properties.PathPieceSpec
@@ -260,28 +236,16 @@ test-suite spec
     , bytestring
     , cassava
     , conduit
-    , errors
     , freckle-app
-    , freckle-env
     , hs-opentelemetry-api
     , hspec
-    , hspec-expectations-json
-    , hspec-expectations-lifted
     , http-types
-    , lens
-    , lens-aeson
-    , memcache
     , monad-validate
-    , mtl
     , nonempty-containers
     , postgresql-simple
-    , text
-    , time
-    , unordered-containers
     , vector
     , wai
     , wai-extra
-    , zlib
   default-language: GHC2021
   if impl(ghc >= 9.8)
     ghc-options: -Wno-missing-role-annotations -Wno-missing-poly-kind-signatures

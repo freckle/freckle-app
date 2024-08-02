@@ -17,8 +17,8 @@ import Test.Hspec.JUnit.Config
   , setJUnitConfigSourcePathPrefix
   )
 import Test.Hspec.JUnit.Config.Env (envJUnitConfig)
-import qualified Test.Hspec.JUnit.Formatter as JUnit (add)
-import qualified Test.Hspec.JUnit.Formatter.Env as JUnit (whenEnabled)
+import Test.Hspec.JUnit.Formatter qualified as JUnit (add)
+import Test.Hspec.JUnit.Formatter.Env qualified as JUnit (whenEnabled)
 import Test.Hspec.Runner
   ( Config
   , Path

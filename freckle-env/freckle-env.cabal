@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           freckle-env
-version:        0.0.0.0
+version:        0.0.1.1
 synopsis:       Some extension to the envparse library
 description:    Please see README.md
 category:       Environment, System
@@ -27,6 +27,7 @@ source-repository head
 
 library
   exposed-modules:
+      Freckle.App.Dotenv
       Freckle.App.Env
   other-modules:
       Paths_freckle_env
@@ -46,11 +47,13 @@ library
   ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-all-missed-specialisations -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-kind-signatures -Wno-missing-local-signatures -Wno-missing-safe-haskell-mode -Wno-monomorphism-restriction -Wno-prepositive-qualified-module -Wno-safe -Wno-unsafe
   build-depends:
       base <5
+    , dotenv
     , envparse
     , errors
-    , relude
+    , filepath
     , text
     , time
+    , unliftio
   default-language: GHC2021
   if impl(ghc >= 9.8)
     ghc-options: -Wno-missing-role-annotations -Wno-missing-poly-kind-signatures

@@ -11,7 +11,7 @@ module Freckle.App.Kafka.Producer
   , produceKeyedOn
   ) where
 
-import Relude
+import Prelude
 
 import Blammo.Logging
   ( Message ((:#))
@@ -22,15 +22,19 @@ import Blammo.Logging
   )
 import Control.Exception.Annotated.UnliftIO qualified as Annotated
 import Control.Lens (Lens', lens, view)
+import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Reader (MonadReader)
 import Data.Aeson (ToJSON, encode)
+import Data.ByteString.Lazy qualified as BSL
+import Data.Foldable (for_, toList)
 import Data.HashMap.Strict qualified as HashMap
+import Data.List.NonEmpty (NonEmpty)
 import Data.List.NonEmpty qualified as NE
 import Data.Pool (Pool)
 import Data.Pool qualified as Pool
 import Data.Text qualified as T
 import Data.Time (NominalDiffTime)
 import Freckle.App.Env qualified as Env
-import GHC.IO.Exception (userError)
 import Kafka.Producer
 import OpenTelemetry.Trace (SpanKind (..), defaultSpanArguments)
 import OpenTelemetry.Trace qualified as Trace
@@ -104,13 +108,13 @@ createKafkaProducerPool
   -> KafkaProducerPoolConfig
   -> IO (Pool KafkaProducer)
 createKafkaProducerPool addresses config =
-  Pool.newPool
-    $ Pool.setNumStripes (Just $ kafkaProducerPoolConfigStripes config)
-    $ Pool.defaultPoolConfig
-      mkProducer
-      closeProducer
-      (realToFrac $ kafkaProducerPoolConfigIdleTimeout config)
-      (kafkaProducerPoolConfigSize config)
+  Pool.newPool $
+    Pool.setNumStripes (Just $ kafkaProducerPoolConfigStripes config) $
+      Pool.defaultPoolConfig
+        mkProducer
+        closeProducer
+        (realToFrac $ kafkaProducerPoolConfigIdleTimeout config)
+        (kafkaProducerPoolConfigSize config)
  where
   mkProducer =
     either
@@ -142,15 +146,17 @@ produceKeyedOn prTopic values keyF = traced $ do
           for_ @NonEmpty values $ \value -> do
             mError <- liftIO $ produceMessage producer $ mkProducerRecord value
             for_ @Maybe mError $ \e ->
-              run $ logErrorNS "kafka" $ "Failed to send event"
-                :# ["error" .= (show e :: Text)]
+              run $
+                logErrorNS "kafka" $
+                  "Failed to send event"
+                    :# ["error" .= T.pack (show e)]
  where
   mkProducerRecord value =
     ProducerRecord
       { prTopic
       , prPartition = UnassignedPartition
-      , prKey = Just $ toStrict $ encode $ keyF value
-      , prValue = Just $ toStrict $ encode value
+      , prKey = Just $ BSL.toStrict $ encode $ keyF value
+      , prValue = Just $ BSL.toStrict $ encode value
       , prHeaders = mempty
       }
 

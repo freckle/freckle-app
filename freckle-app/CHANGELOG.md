@@ -1,5 +1,21 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.19.0.0...main)
 
+## [v1.12.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.19.0.0...freckle-app-v1.20.0.0)
+
+Changes affecting users:
+
+- Removed `Freckle.App.Memcached(.*)`; these modules have moved into the
+  `freckle-memcached` package.
+
+Changes that do not have to affect users:
+
+- Modules `Freckle.App(.Test?).Http(.*)` are now re-exports from the
+  `freckle-http` package.
+- Modules `Freckle.App.OpenTelementry(.*)` are now re-exports from the
+  `freckle-otel` package.
+- Module `Freckle.App.Dotenv` is now a re-export from the `freckle-env`
+  package.
+
 ## [v1.19.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.18.2.0...freckle-app-v1.19.0.0)
 
 - Removed `Freckle.App.Kafka(.*)`; this is now available from the `freckle-kafka`
