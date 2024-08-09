@@ -38,6 +38,9 @@ jobs:
           - freckle-app
           - freckle-env
           - freckle-kafka
+          - freckle-http
+          - freckle-memcached
+          - freckle-otel
 
     env:
       HACKAGE_KEY: ${{ secrets.HACKAGE_UPLOAD_API_KEY }}
