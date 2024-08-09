@@ -5,7 +5,7 @@ module Freckle.App.AsyncSpec
 import Freckle.App.Prelude
 
 import Blammo.Logging
-import Blammo.Logging qualified as Blammo
+import Blammo.Logging.ThreadContext qualified as Blammo
 import Control.Concurrent.Async (wait)
 import Data.Aeson.KeyMap qualified as KeyMap
 import Freckle.App.Async (async)

@@ -33,7 +33,9 @@ import Test.Hspec as X
   )
 import Test.Hspec.Expectations.Lifted as X hiding (expectationFailure)
 
-import Blammo.Logging
+import Blammo.Logging (MonadLogger, MonadLoggerIO)
+import Blammo.Logging.Setup (WithLogger (..))
+import Blammo.Logging.ThreadContext (MonadMask)
 import Control.Lens (view)
 import Control.Monad.Base
 import Control.Monad.Catch (ExitCase (..), MonadCatch, MonadThrow, mask)

@@ -6,7 +6,8 @@ module AppExample
 
 import Prelude
 
-import Blammo.Logging
+import Blammo.Logging (MonadLogger, MonadLoggerIO)
+import Blammo.Logging.Setup (WithLogger (..))
 import Control.Lens (view)
 import Control.Monad.Catch
 import Control.Monad.Reader (MonadReader, ReaderT (..))

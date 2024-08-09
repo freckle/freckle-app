@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           freckle-otel
-version:        0.0.0.1
+version:        0.0.0.2
 synopsis:       ...
 description:    Please see README.md
 category:       OpenTelemetry, Telemetry, Monitoring, Observability, Metrics
@@ -49,7 +49,7 @@ library
       TypeFamilies
   ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-all-missed-specialisations -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-kind-signatures -Wno-missing-local-signatures -Wno-missing-safe-haskell-mode -Wno-monomorphism-restriction -Wno-prepositive-qualified-module -Wno-safe -Wno-unsafe
   build-depends:
-      Blammo >=2.0.0.0
+      Blammo
     , aeson
     , base <5
     , bytestring

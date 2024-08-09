@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.0.1...main)
+
+## [v1.20.0.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.0.0...freckle-app-v1.20.0.1)
+
+- Upgrade `Blammo` to 2.1
 
 ## [v1.20.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.19.0.0...freckle-app-v1.20.0.0)
 

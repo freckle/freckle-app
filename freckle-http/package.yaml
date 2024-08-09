@@ -58,7 +58,7 @@ library:
   source-dirs: library
   dependencies:
     - Glob
-    - Blammo >= 2.0.0.0
+    - Blammo
     - aeson
     - annotated-exception
     - bytestring

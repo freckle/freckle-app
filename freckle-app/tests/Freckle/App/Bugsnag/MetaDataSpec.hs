@@ -4,7 +4,7 @@ module Freckle.App.Bugsnag.MetaDataSpec
 
 import Freckle.App.Test
 
-import Blammo.Logging
+import Blammo.Logging.ThreadContext qualified as Blammo
 import Data.Aeson
 import Data.Bugsnag
 import Freckle.App.Bugsnag
@@ -20,7 +20,7 @@ spec = do
 
       withStatsClient settings $ \client -> flip runReaderT client $ do
         Stats.tagged [("baz", "bat")] $ do
-          withThreadContext ["quix" .= ("quip" :: Text)] $ do
+          Blammo.withThreadContext ["quix" .= ("quip" :: Text)] $ do
             collected <- collectMetaData
 
             let expected =

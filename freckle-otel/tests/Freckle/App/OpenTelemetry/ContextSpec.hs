@@ -5,8 +5,9 @@ module Freckle.App.OpenTelemetry.ContextSpec
 import Prelude
 
 import AppExample
-import Blammo.Logging
-import Blammo.Logging.Logger (newTestLogger)
+import Blammo.Logging.LogSettings (defaultLogSettings)
+import Blammo.Logging.Logger (Logger, newTestLogger)
+import Blammo.Logging.Setup (HasLogger (..))
 import Control.Lens (lens)
 import Control.Monad.IO.Class (MonadIO)
 import Data.List qualified as List

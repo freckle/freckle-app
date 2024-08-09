@@ -15,7 +15,7 @@ module Freckle.App.Bugsnag.MetaData
 
 import Freckle.App.Prelude
 
-import Blammo.Logging (myThreadContext)
+import Blammo.Logging.ThreadContext (myThreadContext)
 import Control.Lens (Lens', lens, to, view, (<>~))
 import Data.Aeson (Value (..))
 import Data.Aeson.KeyMap qualified as KeyMap
