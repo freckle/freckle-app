@@ -8,19 +8,34 @@ module Freckle.App.Kafka.Consumer
   , runConsumer
   ) where
 
-import Relude
+import Prelude
 
 import Blammo.Logging
-import Control.Exception.Annotated.UnliftIO (AnnotatedException)
+import Control.Arrow ((&&&))
+import Control.Exception.Annotated.UnliftIO
+  ( AnnotatedException
+  , Exception
+  , displayException
+  )
 import Control.Exception.Annotated.UnliftIO qualified as Annotated
 import Control.Lens (Lens', view)
+import Control.Monad (forever, (<=<))
+import Control.Monad.IO.Class (MonadIO)
+import Control.Monad.Reader (MonadReader)
 import Data.Aeson
+import Data.ByteString (ByteString)
+import Data.Foldable (for_)
+import Data.List.NonEmpty (NonEmpty)
 import Data.List.NonEmpty qualified as NE
+import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
+import Data.Text (Text)
 import Data.Text qualified as T
+import Data.Text.Encoding qualified as T
 import Freckle.App.Env (Timeout (..))
 import Freckle.App.Env qualified as Env
 import Freckle.App.Kafka.Producer (envKafkaBrokerAddresses)
+import GHC.Stack (HasCallStack, prettyCallStack)
 import Kafka.Consumer hiding
   ( Timeout
   , closeConsumer
@@ -105,8 +120,8 @@ envKafkaConsumerConfig = do
       (fmap Map.fromList . Env.keyValues)
       "KAFKA_EXTRA_SUBSCRIPTION_PROPS"
       (Env.def mempty)
-  pure
-    $ KafkaConsumerConfig
+  pure $
+    KafkaConsumerConfig
       brokerAddresses
       consumerGroupId
       kafkaTopic
@@ -158,8 +173,8 @@ instance Exception KafkaMessageDecodeError where
   displayException e =
     mconcat
       [ "Unable to decode JSON"
-      , "\n  input:  " <> decodeUtf8 (input e)
-      , "\n  errors: " <> (errors e)
+      , "\n  input:  " <> T.unpack (T.decodeUtf8 (input e))
+      , "\n  errors: " <> errors e
       ]
 
 runConsumer
@@ -187,22 +202,22 @@ runConsumer pollTimeout onMessage =
 
         for_ (crValue =<< mRecord) $ \bs -> do
           a <-
-            inSpan "kafka.consumer.message.decode" defaultSpanArguments
-              $ either (Annotated.throw . KafkaMessageDecodeError bs) pure
-              $ eitherDecodeStrict bs
+            inSpan "kafka.consumer.message.decode" defaultSpanArguments $
+              either (Annotated.throw . KafkaMessageDecodeError bs) pure $
+                eitherDecodeStrict bs
           inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
  where
   kTimeout = Kafka.Timeout $ timeoutMs pollTimeout
 
   handlers =
-    [ Annotated.Handler
-        $ logErrorNS "kafka"
-        . annotatedExceptionMessageFrom @KafkaError
-          (const "Error polling for message from Kafka")
-    , Annotated.Handler
-        $ logErrorNS "kafka"
-        . annotatedExceptionMessageFrom @KafkaMessageDecodeError
-          (const "Could not decode message value")
+    [ Annotated.Handler $
+        logErrorNS "kafka"
+          . annotatedExceptionMessageFrom @KafkaError
+            (const "Error polling for message from Kafka")
+    , Annotated.Handler $
+        logErrorNS "kafka"
+          . annotatedExceptionMessageFrom @KafkaMessageDecodeError
+            (const "Could not decode message value")
     ]
 
 -- | Like 'annotatedExceptionMessage', but use the supplied function to
@@ -231,4 +246,4 @@ fromKafkaError =
         err -> Annotated.throw err
     )
     $ pure
-    . Just
+      . Just
