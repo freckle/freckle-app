@@ -10,8 +10,9 @@ module Freckle.App.Async
 
 import Freckle.App.Prelude
 
-import Blammo.Logging (Message (..), MonadLogger, MonadMask, logError, (.=))
-import Blammo.Logging qualified as Blammo
+import Blammo.Logging (Message (..), MonadLogger, logError, (.=))
+import Blammo.Logging.ThreadContext (MonadMask)
+import Blammo.Logging.ThreadContext qualified as Blammo
 import Control.Immortal qualified as Immortal
 import Control.Monad (forever)
 import Data.Aeson (Value)

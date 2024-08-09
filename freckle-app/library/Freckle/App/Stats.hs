@@ -36,7 +36,7 @@ module Freckle.App.Stats
 
 import Freckle.App.Prelude
 
-import Blammo.Logging
+import Blammo.Logging.ThreadContext (MonadMask, withThreadContext)
 import Control.Lens (Lens', lens, to, view, (&), (.~), (<>~))
 import Control.Monad.Except (runExceptT)
 import Control.Monad.Reader (local)

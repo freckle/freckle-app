@@ -5,7 +5,7 @@ module Network.Wai.Middleware.Stats
 
 import Freckle.App.Prelude
 
-import Blammo.Logging (Pair, withThreadContext)
+import Blammo.Logging.ThreadContext (Pair, withThreadContext)
 import Control.Lens ((^.))
 import Control.Monad.Reader (runReaderT)
 import Data.Aeson ((.=))

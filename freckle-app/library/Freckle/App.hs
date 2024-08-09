@@ -181,7 +181,9 @@ module Freckle.App
 
 import Freckle.App.Prelude
 
-import Blammo.Logging
+import Blammo.Logging (MonadLogger, MonadLoggerIO)
+import Blammo.Logging.Setup (WithLogger (..))
+import Blammo.Logging.ThreadContext (MonadMask)
 import Control.Lens (view)
 import Control.Monad.Catch (MonadCatch, MonadThrow)
 import Control.Monad.Primitive (PrimMonad (..))

@@ -73,7 +73,7 @@ where
 
 import Freckle.App.Prelude
 
-import Blammo.Logging (LoggingT)
+import Blammo.Logging.Setup (LoggingT)
 import Control.Monad.Except (ExceptT)
 import Control.Monad.State (StateT)
 import Control.Monad.Trans.Maybe (MaybeT)

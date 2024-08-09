@@ -1,5 +1,5 @@
 name: freckle-app
-version: 1.20.0.0
+version: 1.20.0.1
 maintainer: Freckle Education
 category: Utils
 github: freckle/freckle-app
@@ -69,7 +69,7 @@ library:
     - Freckle.App.Test.Http
     - Freckle.App.Test.Http.MatchRequest
   dependencies:
-    - Blammo >= 2.0.0.0
+    - Blammo
     - Blammo-wai
     - Glob
     - MonadRandom

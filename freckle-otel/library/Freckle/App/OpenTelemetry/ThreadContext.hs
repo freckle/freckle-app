@@ -6,7 +6,7 @@ module Freckle.App.OpenTelemetry.ThreadContext
 
 import Prelude
 
-import Blammo.Logging (MonadMask, withThreadContext)
+import Blammo.Logging.ThreadContext (MonadMask, withThreadContext)
 import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson ((.=))
 import Data.Aeson.Key qualified as Key

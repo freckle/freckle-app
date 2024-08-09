@@ -5,19 +5,19 @@
 
 packages:
 - completed:
-    hackage: Blammo-2.0.0.0@sha256:874b1572232d974b234ee8b2655b74ff15e3759abd2c1874d57ca35fe07002d4,4689
+    hackage: Blammo-2.1.0.0@sha256:cb974555dfe850cbc4f174a0a4443883b776b1e93c1d4b37249fb6081cb286de,4755
     pantry-tree:
-      sha256: 6dece91d00f9a022a62eaa39bacc6ae34bce07cae77830edb2c2b8ad25061099
-      size: 1647
+      sha256: 3c36d6a62cc32b5f80f0573a50205b71874570e6d55e0af5a7b72795f8c1b3b7
+      size: 1788
   original:
-    hackage: Blammo-2.0.0.0
+    hackage: Blammo-2.1.0.0
 - completed:
-    hackage: Blammo-wai-0.0.0.0@sha256:4eab73c27798edec02d5398cd709e2a24200f5dad14954e6a6d1314e117dfcd8,2845
+    hackage: Blammo-wai-0.0.0.2@sha256:b5d5c665d5ff919b229ff0d5ee4eea9021a848fcdbecb7dd7b17bbe64c073f21,2883
     pantry-tree:
-      sha256: f0e79a1e18bb9fc5741b402133d78cf039f02736089ac68752d31462a29f4b54
+      sha256: d018b595cf33757c7c197bd91743b4a0727569d7d9bcb828e24acb83b88dbfc7
       size: 338
   original:
-    hackage: Blammo-wai-0.0.0.0
+    hackage: Blammo-wai-0.0.0.2
 - completed:
     hackage: bugsnag-1.1.0.0@sha256:9723af13b09e7aed7e5855fcbcd7f89a904df80324f21d32480f01aabd8d035b,4565
     pantry-tree:
