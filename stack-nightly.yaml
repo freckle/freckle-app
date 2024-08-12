@@ -83,7 +83,9 @@ allow-newer-deps:
 packages:
   - freckle-app
   - freckle-env
+  - freckle-exception
   - freckle-http
   - freckle-kafka
   - freckle-memcached
   - freckle-otel
+  - freckle-prelude

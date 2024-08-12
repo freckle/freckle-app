@@ -36,15 +36,10 @@ library
       Freckle.App.Csv
       Freckle.App.Database
       Freckle.App.Ecs
-      Freckle.App.Exception
-      Freckle.App.Exception.MonadThrow
-      Freckle.App.Exception.MonadUnliftIO
-      Freckle.App.Exception.Types
       Freckle.App.Faktory.ProducerPool
       Freckle.App.Ghci
       Freckle.App.GlobalCache
       Freckle.App.Json.Empty
-      Freckle.App.Prelude
       Freckle.App.Random
       Freckle.App.Scientist
       Freckle.App.Stats
@@ -76,6 +71,11 @@ library
     , Freckle.App.Http.Paginate
     , Freckle.App.Http.Retry
     , Freckle.App.HttpSpec
+    , Freckle.App.Prelude
+    , Freckle.App.Exception
+    , Freckle.App.Exception.MonadThrow
+    , Freckle.App.Exception.MonadUnliftIO
+    , Freckle.App.Exception.Types
     , Freckle.App.Test.Http
     , Freckle.App.Test.Http.MatchRequest
   hs-source-dirs:
@@ -100,7 +100,6 @@ library
     , MonadRandom
     , QuickCheck
     , aeson
-    , annotated-exception
     , autodocodec
     , autodocodec-openapi3
     , base <5
@@ -120,9 +119,10 @@ library
     , extra
     , faktory
     , freckle-env
+    , freckle-exception
     , freckle-http
     , freckle-otel
-    , hashable
+    , freckle-prelude
     , hs-opentelemetry-api
     , hs-opentelemetry-instrumentation-persistent
     , hs-opentelemetry-instrumentation-wai
@@ -136,7 +136,6 @@ library
     , immortal
     , lens
     , monad-control
-    , monad-logger-aeson
     , monad-validate
     , mtl
     , nonempty-containers
@@ -148,7 +147,6 @@ library
     , primitive
     , resource-pool >=0.4.0.0
     , resourcet
-    , safe
     , scientist
     , semigroupoids
     , template-haskell

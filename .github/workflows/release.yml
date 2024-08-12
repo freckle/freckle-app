@@ -12,10 +12,12 @@ jobs:
         package:
           - freckle-app
           - freckle-env
+          - freckle-exception
           - freckle-kafka
           - freckle-http
           - freckle-memcached
           - freckle-otel
+          - freckle-prelude
 
     steps:
       - uses: actions/checkout@v4
@@ -37,10 +39,12 @@ jobs:
         package:
           - freckle-app
           - freckle-env
+          - freckle-exception
           - freckle-kafka
           - freckle-http
           - freckle-memcached
           - freckle-otel
+          - freckle-prelude
 
     env:
       HACKAGE_KEY: ${{ secrets.HACKAGE_UPLOAD_API_KEY }}
