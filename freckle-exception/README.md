@@ -1,6 +1,6 @@
 # freckle-exception
 
-Some extensions to the `annotated-exception` library.
+Some extensions to the [annotated-exception](https://hackage.haskell.org/package/annotated-exception) library.
 
 ---
 

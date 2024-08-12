@@ -3,7 +3,7 @@ version: 0.0.1.1
 maintainer: Freckle Education
 category: Environment, System
 github: freckle/freckle-app
-synopsis: Some extension to the envparse library
+synopsis: Some extensions to the envparse library
 description: Please see README.md
 
 extra-doc-files:

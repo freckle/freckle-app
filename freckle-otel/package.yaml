@@ -3,7 +3,7 @@ version: 0.0.0.2
 maintainer: Freckle Education
 category: OpenTelemetry, Telemetry, Monitoring, Observability, Metrics
 github: freckle/freckle-app
-synopsis: ...
+synopsis: Some extensions to the hs-opentelemetry-sdk library
 description: Please see README.md
 
 extra-doc-files:

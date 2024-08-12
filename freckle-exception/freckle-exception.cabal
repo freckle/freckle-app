@@ -6,7 +6,7 @@ cabal-version: 1.18
 
 name:           freckle-exception
 version:        0.0.0.0
-synopsis:       Some extension to the annotated-exception library
+synopsis:       Some extensions to the annotated-exception library
 description:    Please see README.md
 category:       Exceptions
 homepage:       https://github.com/freckle/freckle-app#readme
