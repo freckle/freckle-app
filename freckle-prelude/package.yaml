@@ -1,9 +1,9 @@
-name: freckle-env
+name: freckle-prelude
 version: 0.0.1.1
 maintainer: Freckle Education
-category: Environment, System
+category: Prelude
 github: freckle/freckle-app
-synopsis: Some extensions to the envparse library
+synopsis: Standard prelude for Freckle applications
 description: Please see README.md
 
 extra-doc-files:
@@ -54,17 +54,14 @@ default-extensions:
 library:
   source-dirs: library
   dependencies:
-    - dotenv
-    - envparse
-    - errors
-    - filepath
+    - containers
+    - freckle-exception
+    - hashable
+    - mtl
+    - primitive
+    - safe
+    - semigroupoids
     - text
     - time
-    - unliftio
-
-tests:
-  doctest:
-    main: Main.hs
-    source-dirs: doctest
-    dependencies:
-      - doctest
+    - unordered-containers
+    - vector

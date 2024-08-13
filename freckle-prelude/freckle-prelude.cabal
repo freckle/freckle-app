@@ -4,11 +4,11 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 
-name:           freckle-env
+name:           freckle-prelude
 version:        0.0.1.1
-synopsis:       Some extensions to the envparse library
+synopsis:       Standard prelude for Freckle applications
 description:    Please see README.md
-category:       Environment, System
+category:       Prelude
 homepage:       https://github.com/freckle/freckle-app#readme
 bug-reports:    https://github.com/freckle/freckle-app/issues
 maintainer:     Freckle Education
@@ -27,10 +27,9 @@ source-repository head
 
 library
   exposed-modules:
-      Freckle.App.Dotenv
-      Freckle.App.Env
+      Freckle.App.Prelude
   other-modules:
-      Paths_freckle_env
+      Paths_freckle_prelude
   hs-source-dirs:
       library
   default-extensions:
@@ -47,39 +46,17 @@ library
   ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-all-missed-specialisations -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-kind-signatures -Wno-missing-local-signatures -Wno-missing-safe-haskell-mode -Wno-monomorphism-restriction -Wno-prepositive-qualified-module -Wno-safe -Wno-unsafe
   build-depends:
       base <5
-    , dotenv
-    , envparse
-    , errors
-    , filepath
+    , containers
+    , freckle-exception
+    , hashable
+    , mtl
+    , primitive
+    , safe
+    , semigroupoids
     , text
     , time
-    , unliftio
-  default-language: GHC2021
-  if impl(ghc >= 9.8)
-    ghc-options: -Wno-missing-role-annotations -Wno-missing-poly-kind-signatures
-
-test-suite doctest
-  type: exitcode-stdio-1.0
-  main-is: Main.hs
-  other-modules:
-      Paths_freckle_env
-  hs-source-dirs:
-      doctest
-  default-extensions:
-      DataKinds
-      DeriveAnyClass
-      DerivingVia
-      DerivingStrategies
-      GADTs
-      LambdaCase
-      NoImplicitPrelude
-      NoMonomorphismRestriction
-      OverloadedStrings
-      TypeFamilies
-  ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-all-missed-specialisations -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-kind-signatures -Wno-missing-local-signatures -Wno-missing-safe-haskell-mode -Wno-monomorphism-restriction -Wno-prepositive-qualified-module -Wno-safe -Wno-unsafe
-  build-depends:
-      base <5
-    , doctest
+    , unordered-containers
+    , vector
   default-language: GHC2021
   if impl(ghc >= 9.8)
     ghc-options: -Wno-missing-role-annotations -Wno-missing-poly-kind-signatures

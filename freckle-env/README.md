@@ -1,6 +1,6 @@
 # freckle-env
 
-Some extensions to the `envparse` library.
+Some extensions to the [envparse](https://hackage.haskell.org/package/envparse) library.
 
 ---
 

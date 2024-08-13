@@ -1,6 +1,6 @@
 # freckle-kafka
 
-Some extensions to the `hw-kafka-client` library.
+Some extensions to the [hw-kafka-client](https://hackage.haskell.org/package/hw-kafka-client) library.
 
 ---
 

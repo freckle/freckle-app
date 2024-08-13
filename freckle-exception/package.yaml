@@ -1,9 +1,9 @@
-name: freckle-env
-version: 0.0.1.1
+name: freckle-exception
+version: 0.0.0.0
 maintainer: Freckle Education
-category: Environment, System
+category: Exceptions
 github: freckle/freckle-app
-synopsis: Some extensions to the envparse library
+synopsis: Some extensions to the annotated-exception library
 description: Please see README.md
 
 extra-doc-files:
@@ -54,17 +54,8 @@ default-extensions:
 library:
   source-dirs: library
   dependencies:
-    - dotenv
-    - envparse
-    - errors
-    - filepath
-    - text
-    - time
+    - aeson
+    - annotated-exception
+    - exceptions
+    - monad-logger-aeson
     - unliftio
-
-tests:
-  doctest:
-    main: Main.hs
-    source-dirs: doctest
-    dependencies:
-      - doctest

@@ -15,6 +15,9 @@ cradle:
     - path: "freckle-env/doctest"
       component: "freckle-env:test:doctest"
 
+    - path: "freckle-exception/library"
+      component: "lib:freckle-exception"
+
     - path: "freckle-http/library"
       component: "lib:freckle-http"
 
@@ -35,3 +38,6 @@ cradle:
 
     - path: "freckle-otel/tests"
       component: "freckle-otel:test:spec"
+
+    - path: "freckle-prelude/library"
+      component: "lib:freckle-prelude"
