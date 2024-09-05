@@ -13,7 +13,7 @@
 -- >   }
 -- >
 -- > loadConfig :: IO Config
--- > loadConfig = parse (header "your-program-name") $ Config
+-- > loadConfig = parse id $ Config
 -- >   <$> var auto "BATCH_SIZE" (def 1)
 -- >   <*> switch "DRY_RUN" mempty
 -- >   <*> flag (Off LevelInfo) (On LevelDebug) "DEBUG" mempty
