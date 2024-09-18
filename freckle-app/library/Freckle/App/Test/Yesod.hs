@@ -159,20 +159,24 @@ testSetCookie :: forall m site. MonadYesodExample site m => SetCookie -> m ()
 testSetCookie = liftYesodExample . Yesod.Test.testSetCookie
 
 -- | Get the body of the most recent response and decode it as JSON
-getJsonBody :: forall a m site. (MonadYesodExample site m, FromJSON a) => m a
+getJsonBody
+  :: forall a m site. (MonadYesodExample site m, FromJSON a, HasCallStack) => m a
 getJsonBody = either err pure . eitherDecode =<< getRawBody
  where
   err e = throwString $ "Error decoding JSON response body: " <> e
 
 -- | Get the body of the most recent response and decode it as CSV
 getCsvBody
-  :: forall a m site. (MonadYesodExample site m, FromNamedRecord a) => m [a]
+  :: forall a m site
+   . (MonadYesodExample site m, FromNamedRecord a, HasCallStack)
+  => m [a]
 getCsvBody = either err (pure . V.toList . snd) . decodeByName =<< getRawBody
  where
   err e = throwString $ "Error decoding CSV response body: " <> e
 
 -- | Get the body of the most recent response as a byte string
-getRawBody :: forall m site. MonadYesodExample site m => m BSL.ByteString
+getRawBody
+  :: forall m site. (MonadYesodExample site m, HasCallStack) => m BSL.ByteString
 getRawBody =
   fmap simpleBody . maybe (throwString "Test response had no body") pure
     =<< getResponse
