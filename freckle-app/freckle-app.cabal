@@ -46,6 +46,7 @@ library
       Freckle.App.Stats.Rts
       Freckle.App.Test
       Freckle.App.Test.DocTest
+      Freckle.App.Test.Hspec.AnnotatedException
       Freckle.App.Test.Hspec.Runner
       Freckle.App.Test.Properties.JSON
       Freckle.App.Test.Properties.PathPiece
@@ -97,6 +98,7 @@ library
       Blammo
     , Blammo-wai
     , Glob
+    , HUnit
     , MonadRandom
     , QuickCheck
     , aeson
