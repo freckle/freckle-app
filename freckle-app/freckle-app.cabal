@@ -5,7 +5,7 @@ cabal-version: 1.22
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.20.0.1
+version:        1.20.1.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -46,6 +46,7 @@ library
       Freckle.App.Stats.Rts
       Freckle.App.Test
       Freckle.App.Test.DocTest
+      Freckle.App.Test.Hspec.AnnotatedException
       Freckle.App.Test.Hspec.Runner
       Freckle.App.Test.Properties.JSON
       Freckle.App.Test.Properties.PathPiece
@@ -97,6 +98,7 @@ library
       Blammo
     , Blammo-wai
     , Glob
+    , HUnit
     , MonadRandom
     , QuickCheck
     , aeson

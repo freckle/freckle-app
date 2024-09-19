@@ -1,5 +1,5 @@
 name: freckle-app
-version: 1.20.0.1
+version: 1.20.1.0
 maintainer: Freckle Education
 category: Utils
 github: freckle/freckle-app
@@ -77,6 +77,7 @@ library:
     - Blammo
     - Blammo-wai
     - Glob
+    - HUnit
     - MonadRandom
     - QuickCheck
     - autodocodec
