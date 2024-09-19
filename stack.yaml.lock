@@ -5,12 +5,19 @@
 
 packages:
 - completed:
-    hackage: Blammo-1.2.1.0@sha256:d319b91109e14762f06c340bbf955efcfccd6cc853a182e4c384113e236ddcb5,4836
+    hackage: Blammo-2.1.1.0@sha256:29fa7c1411fc3dc87504e3c2d1e903a0077208a51228d779eaa02abf025219c0,4755
     pantry-tree:
-      sha256: ea00c0835cbbcfa749803647d2c0415d1991d2bd325ecb13d8de4186b6dd2c4f
-      size: 1725
+      sha256: 3b2772b11e465564d2addc7225e33c211538ed96f4212b8d091edc7d9c352672
+      size: 1788
   original:
-    hackage: Blammo-1.2.1.0
+    hackage: Blammo-2.1.1.0
+- completed:
+    hackage: Blammo-wai-0.0.0.2@sha256:b5d5c665d5ff919b229ff0d5ee4eea9021a848fcdbecb7dd7b17bbe64c073f21,2883
+    pantry-tree:
+      sha256: d018b595cf33757c7c197bd91743b4a0727569d7d9bcb828e24acb83b88dbfc7
+      size: 338
+  original:
+    hackage: Blammo-wai-0.0.0.2
 - completed:
     hackage: fast-logger-3.2.3@sha256:41b4f1c07d5ee4a7cc785689eb7772554d29ddbbcced3cc184fe50fc63ece3f7,2176
     pantry-tree:
@@ -104,7 +111,7 @@ packages:
     hackage: thread-utils-finalizers-0.1.1.0
 snapshots:
 - completed:
-    sha256: 6f0bea3ba5b07360f25bc886e8cff8d847767557a492a6f7f6dcb06e3cc79ee9
-    size: 712905
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/13.yaml
-  original: lts-22.13
+    sha256: edbd50d7e7c85c13ad5f5835ae2db92fab1e9cf05ecf85340e2622ec0a303df1
+    size: 720020
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/34.yaml
+  original: lts-22.34
