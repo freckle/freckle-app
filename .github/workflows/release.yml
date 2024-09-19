@@ -46,6 +46,14 @@ jobs:
           - freckle-otel
           - freckle-prelude
 
+        include:
+          # Packages with system dependencies (librdkafka, libpq) need haddocks
+          # built and uploaded manually.
+          - package: freckle-kafka
+            upload-haddocks: true
+          - package: freckle-app
+            upload-haddocks: true
+
     env:
       HACKAGE_KEY: ${{ secrets.HACKAGE_UPLOAD_API_KEY }}
 
@@ -54,7 +62,7 @@ jobs:
       - run: sudo apt-get install --assume-yes --no-install-recommends librdkafka-dev
 
       - name: "Build with Haddocks"
-        if: ${{ matrix.package == 'freckle-kafka' }}
+        if: ${{ matrix.upload-haddocks }}
         uses: freckle/stack-action@v5
         with:
           test: false
@@ -65,5 +73,5 @@ jobs:
         run: stack --stack-yaml stack-lts-20.26.yaml upload --pvp-bounds lower ${{ matrix.package }}
 
       - name: "Upload documentation"
-        if: ${{ matrix.package == 'freckle-kafka' }}
+        if: ${{ matrix.upload-haddocks }}
         run: stack upload --documentation ${{ matrix.package }}
