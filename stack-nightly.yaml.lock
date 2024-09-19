@@ -5,12 +5,19 @@
 
 packages:
 - completed:
-    hackage: Blammo-1.2.1.0@sha256:d319b91109e14762f06c340bbf955efcfccd6cc853a182e4c384113e236ddcb5,4836
+    hackage: Blammo-2.1.0.0@sha256:cb974555dfe850cbc4f174a0a4443883b776b1e93c1d4b37249fb6081cb286de,4755
     pantry-tree:
-      sha256: ea00c0835cbbcfa749803647d2c0415d1991d2bd325ecb13d8de4186b6dd2c4f
-      size: 1725
+      sha256: 3c36d6a62cc32b5f80f0573a50205b71874570e6d55e0af5a7b72795f8c1b3b7
+      size: 1788
   original:
-    hackage: Blammo-1.2.1.0
+    hackage: Blammo-2.1.0.0
+- completed:
+    hackage: Blammo-wai-0.0.0.2@sha256:b5d5c665d5ff919b229ff0d5ee4eea9021a848fcdbecb7dd7b17bbe64c073f21,2883
+    pantry-tree:
+      sha256: d018b595cf33757c7c197bd91743b4a0727569d7d9bcb828e24acb83b88dbfc7
+      size: 338
+  original:
+    hackage: Blammo-wai-0.0.0.2
 - completed:
     hackage: bcp47-0.2.0.6@sha256:9071d1f97ef249ae62e4554e3cba892cd6059ac263271fd72635157c83743a30,2949
     pantry-tree:
@@ -293,7 +300,7 @@ packages:
     hackage: filepath-1.4.200.1
 snapshots:
 - completed:
-    sha256: d14d2743bfd6881cef22f855af7038797db5cc55798feb0ef2923d20cbc022db
-    size: 649141
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2024/6/12.yaml
-  original: nightly-2024-06-12
+    sha256: 027e1c40fdbeed68a4779a099ff8307c3054cd6ba61012305ea11b916bb41790
+    size: 663135
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2024/9/19.yaml
+  original: nightly-2024-09-19
