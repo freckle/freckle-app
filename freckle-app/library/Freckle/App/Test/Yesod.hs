@@ -89,9 +89,9 @@ import Data.CaseInsensitive (CI)
 import Data.Csv (FromNamedRecord, decodeByName)
 import Data.Text qualified as T
 import Data.Vector qualified as V
+import Freckle.App.Test (expectationFailure)
 import Network.HTTP.Types.Header (hAccept, hAcceptLanguage, hContentType)
 import Network.Wai.Test (SResponse (..))
-import Test.Hspec.Expectations.Lifted (expectationFailure)
 import Web.Cookie (SetCookie)
 import Yesod.Core (RedirectUrl, Yesod)
 import Yesod.Test
@@ -163,7 +163,7 @@ getJsonBody
   :: forall a m site. (MonadYesodExample site m, FromJSON a, HasCallStack) => m a
 getJsonBody = either err pure . eitherDecode =<< getRawBody
  where
-  err e = throwString $ "Error decoding JSON response body: " <> e
+  err e = expectationFailure $ "Error decoding JSON response body: " <> e
 
 -- | Get the body of the most recent response and decode it as CSV
 getCsvBody
@@ -172,13 +172,13 @@ getCsvBody
   => m [a]
 getCsvBody = either err (pure . V.toList . snd) . decodeByName =<< getRawBody
  where
-  err e = throwString $ "Error decoding CSV response body: " <> e
+  err e = expectationFailure $ "Error decoding CSV response body: " <> e
 
 -- | Get the body of the most recent response as a byte string
 getRawBody
   :: forall m site. (MonadYesodExample site m, HasCallStack) => m BSL.ByteString
 getRawBody =
-  fmap simpleBody . maybe (throwString "Test response had no body") pure
+  fmap simpleBody . maybe (expectationFailure "Test response had no body") pure
     =<< getResponse
 
 -- | Get the most recently provided response value, if available
