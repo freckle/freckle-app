@@ -8,9 +8,9 @@ Modules moving between packages:
 - `Freckle.App.Exception(.*)` has moved to the `freckle-exception` package
 - All moved modules are re-exported from `freckle-app`.
 
-- Added `Freckle.App.Test.Hspec.AnnotatedException` (`unwrapAnnotatedHUnitFailure`).
-  It is recommended that all hspec test suites for packages that use `freckle-prelude`
-  add this spec hook.
+Added `Freckle.App.Test.Hspec.AnnotatedException` (`unwrapAnnotatedHUnitFailure`).
+It is recommended that all hspec test suites for packages that use `freckle-prelude`
+add this spec hook.
 
 ## [v1.20.0.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.0.0...freckle-app-v1.20.0.1)
 
