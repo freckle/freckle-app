@@ -176,7 +176,7 @@ runDB action = do
   Stats.withGauge Stats.dbEnqueuedAndProcessing $
     inSpan "runDB" (clientSpanArguments {Trace.attributes = dbAttributes}) $
       runSqlPoolWithExtensibleHooks
-        (inSpan "with DB connection" defaultSpanArguments action)
+        (inSpan "runSqlPool" defaultSpanArguments action)
         pool
         Nothing
         hooks'
