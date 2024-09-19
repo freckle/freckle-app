@@ -1,4 +1,10 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.1.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.1.1...main)
+
+## [v1.20.1.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.1.0...freckle-app-v1.20.1.1)
+
+In `Freckle.App.Test.Yesod`, exceptions thrown by `getRawBody`, `getJsonBody`,
+and `getCsvBody` are now `HUnitFailure` (what you would normally expect when a
+test assertion fails) rather than `IOException`.
 
 ## [v1.20.1.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.0.1...freckle-app-v1.20.1.0)
 
