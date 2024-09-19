@@ -1,4 +1,9 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.1.1...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.1.2...main)
+
+## [v1.20.1.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.1.1...freckle-app-v1.20.1.2)
+
+Improve quality of error message output from `getJsonBody` and `getCsvBody`
+in `Freckle.App.Test.Yesod`.
 
 ## [v1.20.1.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.1.0...freckle-app-v1.20.1.1)
 
