@@ -1,11 +1,16 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.0.2...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.1.0...main)
 
-## [v1.20.0.2](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.0.1...freckle-app-v1.20.0.2)
+## [v1.20.1.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.0.1...freckle-app-v1.20.1.0)
+
+Modules moving between packages:
 
 - `Freckle.App.Prelude` has moved to the `freckle-prelude` package
 - `Freckle.App.Exception(.*)` has moved to the `freckle-exception` package
+- All moved modules are re-exported from `freckle-app`.
 
-All moved modules are re-exported from `freckle-app`.
+- Added `Freckle.App.Test.Hspec.AnnotatedException` (`unwrapAnnotatedHUnitFailure`).
+  It is recommended that all hspec test suites for packages that use `freckle-prelude`
+  add this spec hook.
 
 ## [v1.20.0.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.0.0...freckle-app-v1.20.0.1)
 
