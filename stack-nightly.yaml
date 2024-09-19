@@ -1,4 +1,4 @@
-resolver: nightly-2024-06-12
+resolver: nightly-2024-09-19
 extra-deps:
   - Blammo-2.1.0.0
   - Blammo-wai-0.0.0.2
