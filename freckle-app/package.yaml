@@ -1,5 +1,5 @@
 name: freckle-app
-version: 1.20.1.2
+version: 1.20.2.0
 maintainer: Freckle Education
 category: Utils
 github: freckle/freckle-app
@@ -80,6 +80,7 @@ library:
     - HUnit
     - MonadRandom
     - QuickCheck
+    - annotated-exception
     - autodocodec
     - autodocodec-openapi3
     - aeson
@@ -150,7 +151,9 @@ tests:
     source-dirs: tests
     ghc-options: -threaded -rtsopts "-with-rtsopts=-N"
     dependencies:
+      - annotated-exception
       - Blammo
+      - HUnit
       - QuickCheck
       - aeson
       - async

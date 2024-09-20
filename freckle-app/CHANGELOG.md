@@ -1,4 +1,11 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.1.2...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.2.0...main)
+
+## [v1.20.2.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.1.2...freckle-app-v1.20.2.0)
+
+- Add `Freckle.App.Test.Hspec.AnnotatedException.annotateHUnitFailure`
+- Improve quality of exceptions rethrown by `unwrapAnnotatedHUnitFailure`.
+  Previously any `Annotation`s were discarded. Now they are incorporated into
+  the `HUnitFailure`, including pretty-printing of a call stack if present.
 
 ## [v1.20.1.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.1.1...freckle-app-v1.20.1.2)
 
