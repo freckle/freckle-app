@@ -5,6 +5,7 @@ module Freckle.App.Test.Hspec.AnnotatedExceptionSpec
 import Freckle.App.Prelude
 
 import Data.Annotation (toAnnotation)
+import Data.List (intercalate)
 import Freckle.App.Exception (AnnotatedException (..))
 import Freckle.App.Test.Hspec.AnnotatedException (annotateHUnitFailure)
 import GHC.Exts (fromList)
@@ -37,11 +38,12 @@ spec = do
             }
           `shouldBe` HUnitFailure
             Nothing
-            ( Reason
-                "x\n\
-                \\n\
-                \Annotations:\n\
-                \\t * Annotation @Int 56"
+            ( Reason . intercalate "\n" $
+                [ "x"
+                , ""
+                , "Annotations:"
+                , "\t * Annotation @Int 56"
+                ]
             )
 
       it "when the failure is ExpectedButGot with no message" $ do
@@ -53,9 +55,10 @@ spec = do
           `shouldBe` HUnitFailure
             Nothing
             ( ExpectedButGot
-                ( Just
-                    "Annotations:\n\
-                    \\t * Annotation @Int 56"
+                ( Just . intercalate "\n" $
+                    [ "Annotations:"
+                    , "\t * Annotation @Int 56"
+                    ]
                 )
                 "a"
                 "b"
@@ -70,11 +73,12 @@ spec = do
           `shouldBe` HUnitFailure
             Nothing
             ( ExpectedButGot
-                ( Just
-                    "x\n\
-                    \\n\
-                    \Annotations:\n\
-                    \\t * Annotation @Int 56"
+                ( Just . intercalate "\n" $
+                    [ "x"
+                    , ""
+                    , "Annotations:"
+                    , "\t * Annotation @Int 56"
+                    ]
                 )
                 "a"
                 "b"
@@ -104,11 +108,12 @@ spec = do
           }
         `shouldBe` HUnitFailure
           Nothing
-          ( Reason
-              "x\n\
-              \\n\
-              \CallStack (from HasCallStack):\n\
-              \  abc, called at src/Foo.hs:7:50 in thepackage:Foo"
+          ( Reason . intercalate "\n" $
+              [ "x"
+              , ""
+              , "CallStack (from HasCallStack):"
+              , "  abc, called at src/Foo.hs:7:50 in thepackage:Foo"
+              ]
           )
 
     it "can show both an annotation and a stack trace" $
@@ -136,12 +141,13 @@ spec = do
           }
         `shouldBe` HUnitFailure
           Nothing
-          ( Reason
-              "x\n\
-              \\n\
-              \Annotations:\n\
-              \\t * Annotation @Text \"Visibility is poor\"\n\
-              \\n\
-              \CallStack (from HasCallStack):\n\
-              \  abc, called at src/Foo.hs:7:50 in thepackage:Foo"
+          ( Reason . intercalate "\n" $
+              [ "x"
+              , ""
+              , "Annotations:"
+              , "\t * Annotation @Text \"Visibility is poor\""
+              , ""
+              , "CallStack (from HasCallStack):"
+              , "  abc, called at src/Foo.hs:7:50 in thepackage:Foo"
+              ]
           )
