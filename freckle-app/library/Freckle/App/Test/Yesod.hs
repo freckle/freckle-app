@@ -79,19 +79,20 @@ import Control.Monad.State (StateT)
 import Control.Monad.Trans.Maybe (MaybeT)
 import Control.Monad.Trans.Resource (ResourceT)
 import Control.Monad.Validate (ValidateT)
-import Data.Aeson (FromJSON, eitherDecode)
+import Data.Aeson (FromJSON)
 import Data.BCP47 (BCP47)
 import Data.BCP47 qualified as BCP47
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
 import Data.ByteString.Lazy qualified as BSL
 import Data.CaseInsensitive (CI)
-import Data.Csv (FromNamedRecord, decodeByName)
+import Data.Csv qualified as CSV
 import Data.Text qualified as T
 import Data.Vector qualified as V
+import Freckle.App.Test (expectationFailure)
 import Network.HTTP.Types.Header (hAccept, hAcceptLanguage, hContentType)
 import Network.Wai.Test (SResponse (..))
-import Test.Hspec.Expectations.Lifted (expectationFailure)
+import Test.HUnit qualified as HUnit
 import Web.Cookie (SetCookie)
 import Yesod.Core (RedirectUrl, Yesod)
 import Yesod.Test
@@ -111,6 +112,7 @@ import Yesod.Test
   , withResponse
   )
 import Yesod.Test qualified
+import Yesod.Test.Internal (getBodyTextPreview)
 
 class (MonadIO m, Yesod site) => MonadYesodExample site m | m -> site where
   liftYesodExample :: YesodExample site a -> m a
@@ -159,22 +161,39 @@ testSetCookie :: forall m site. MonadYesodExample site m => SetCookie -> m ()
 testSetCookie = liftYesodExample . Yesod.Test.testSetCookie
 
 -- | Get the body of the most recent response and decode it as JSON
-getJsonBody :: forall a m site. (MonadYesodExample site m, FromJSON a) => m a
-getJsonBody = either err pure . eitherDecode =<< getRawBody
- where
-  err e = throwString $ "Error decoding JSON response body: " <> e
+getJsonBody
+  :: forall a m site. (MonadYesodExample site m, FromJSON a, HasCallStack) => m a
+getJsonBody = liftYesodExample Yesod.Test.requireJSONResponse
 
 -- | Get the body of the most recent response and decode it as CSV
 getCsvBody
-  :: forall a m site. (MonadYesodExample site m, FromNamedRecord a) => m [a]
-getCsvBody = either err (pure . V.toList . snd) . decodeByName =<< getRawBody
+  :: forall a m site
+   . (MonadYesodExample site m, CSV.FromNamedRecord a, HasCallStack)
+  => m [a]
+getCsvBody =
+  liftYesodExample $
+    withResponse $ \(SResponse _status _headers body) ->
+      -- todo - check the response header first
+      case fmap (V.toList . snd) (CSV.decodeByName body) of
+        Left err ->
+          failure $
+            T.concat
+              [ "Failed to parse CSV response; error: "
+              , T.pack err
+              , "CSV: "
+              , getBodyTextPreview body
+              ]
+        Right v -> pure v
  where
-  err e = throwString $ "Error decoding CSV response body: " <> e
+  failure reason = do
+    _ <- liftIO $ HUnit.assertFailure $ T.unpack reason
+    error ""
 
 -- | Get the body of the most recent response as a byte string
-getRawBody :: forall m site. MonadYesodExample site m => m BSL.ByteString
+getRawBody
+  :: forall m site. (MonadYesodExample site m, HasCallStack) => m BSL.ByteString
 getRawBody =
-  fmap simpleBody . maybe (throwString "Test response had no body") pure
+  fmap simpleBody . maybe (expectationFailure "Test response had no body") pure
     =<< getResponse
 
 -- | Get the most recently provided response value, if available

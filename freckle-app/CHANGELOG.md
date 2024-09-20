@@ -1,4 +1,34 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.1.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.2.1...main)
+
+## [v1.20.2.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.2.0...freckle-app-v1.20.2.1)
+
+Adds an OpenTelemetry span called "runSqlPool" within each "runDB" span.
+
+- `runDB` covers the entire action, from the time it requests a connection
+  from the pool to the time it returns the connection to the pool.
+- The new `runSqlPool` span covers the actions taken while _holding_ a
+  connection. This span doesn't start until a connection is obtained.
+
+This makes the trace more explicitly reflect situations where a thread was
+blocked by an exhausted connection pool.
+
+## [v1.20.2.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.1.2...freckle-app-v1.20.2.0)
+
+- Add `Freckle.App.Test.Hspec.AnnotatedException.annotateHUnitFailure`
+- Improve quality of exceptions rethrown by `unwrapAnnotatedHUnitFailure`.
+  Previously any `Annotation`s were discarded. Now they are incorporated into
+  the `HUnitFailure`, including pretty-printing of a call stack if present.
+
+## [v1.20.1.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.1.1...freckle-app-v1.20.1.2)
+
+Improve quality of error message output from `getJsonBody` and `getCsvBody`
+in `Freckle.App.Test.Yesod`.
+
+## [v1.20.1.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.1.0...freckle-app-v1.20.1.1)
+
+In `Freckle.App.Test.Yesod`, exceptions thrown by `getRawBody`, `getJsonBody`,
+and `getCsvBody` are now `HUnitFailure` (what you would normally expect when a
+test assertion fails) rather than `IOException`.
 
 ## [v1.20.1.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.0.1...freckle-app-v1.20.1.0)
 

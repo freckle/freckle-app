@@ -175,7 +175,11 @@ runDB action = do
         }
   Stats.withGauge Stats.dbEnqueuedAndProcessing $
     inSpan "runDB" (clientSpanArguments {Trace.attributes = dbAttributes}) $
-      runSqlPoolWithExtensibleHooks action pool Nothing hooks'
+      runSqlPoolWithExtensibleHooks
+        (inSpan "runSqlPool" defaultSpanArguments action)
+        pool
+        Nothing
+        hooks'
  where
   dbAttributes = HashMap.fromList [("service.name", "database")]
 
