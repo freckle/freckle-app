@@ -5,7 +5,7 @@ cabal-version: 1.22
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.20.1.2
+version:        1.20.2.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -102,6 +102,7 @@ library
     , MonadRandom
     , QuickCheck
     , aeson
+    , annotated-exception
     , autodocodec
     , autodocodec-openapi3
     , base <5
@@ -204,6 +205,7 @@ test-suite spec
       Freckle.App.Bugsnag.MetaDataSpec
       Freckle.App.BugsnagSpec
       Freckle.App.CsvSpec
+      Freckle.App.Test.Hspec.AnnotatedExceptionSpec
       Freckle.App.Test.Http.MatchRequestSpec
       Freckle.App.Test.Properties.JSONSpec
       Freckle.App.Test.Properties.PathPieceSpec
@@ -228,8 +230,10 @@ test-suite spec
   ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-all-missed-specialisations -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-kind-signatures -Wno-missing-local-signatures -Wno-missing-safe-haskell-mode -Wno-monomorphism-restriction -Wno-prepositive-qualified-module -Wno-safe -Wno-unsafe -threaded -rtsopts "-with-rtsopts=-N"
   build-depends:
       Blammo
+    , HUnit
     , QuickCheck
     , aeson
+    , annotated-exception
     , async
     , base <5
     , bugsnag
