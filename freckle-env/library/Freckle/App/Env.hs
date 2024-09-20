@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 -- | Parse the shell environment for configuration
 --
 -- A minor extension of [envparse](https://hackage.haskell.org/package/envparse).
@@ -38,14 +40,20 @@ module Freckle.App.Env
 import Prelude
 
 import Control.Error.Util (note)
-import Data.Bifunctor (first, second)
 import Data.Char (isDigit)
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Time (UTCTime, defaultTimeLocale, parseTimeM)
-import Env hiding (flag)
 import Env qualified
 import Prelude qualified as Unsafe (read)
+
+#if MIN_VERSION_envparse(0,5,2)
+import Data.Bifunctor (second)
+import Env hiding (eitherReader, flag)
+#else
+import Data.Bifunctor (first, second)
+import Env hiding (flag)
+#endif
 
 -- | Designates the value of a parameter when a flag is not provided.
 newtype Off a = Off a
@@ -83,9 +91,13 @@ flag (Off f) (On t) n m = Env.flag f t n m
 --
 -- This is a building-block for other 'Reader's
 eitherReader :: (String -> Either String a) -> Env.Reader Error a
+#if MIN_VERSION_envparse(0,5,2)
+eitherReader = Env.eitherReader
+#else
 eitherReader f s = first (unread . suffix) $ f s
  where
   suffix x = x <> ": " <> show s
+#endif
 
 -- | Read a time value using the given format
 --
