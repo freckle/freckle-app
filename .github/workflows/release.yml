@@ -54,7 +54,6 @@ jobs:
       - run: sudo apt-get install --assume-yes --no-install-recommends librdkafka-dev
 
       - name: "Build with Haddocks"
-        if: ${{ matrix.package == 'freckle-kafka' }}
         uses: freckle/stack-action@v5
         with:
           test: false
@@ -65,5 +64,4 @@ jobs:
         run: stack --stack-yaml stack-lts-20.26.yaml upload --pvp-bounds lower ${{ matrix.package }}
 
       - name: "Upload documentation"
-        if: ${{ matrix.package == 'freckle-kafka' }}
         run: stack upload --documentation ${{ matrix.package }}
