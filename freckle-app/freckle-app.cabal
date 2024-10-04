@@ -52,6 +52,7 @@ library
       Freckle.App.Test.Properties.PathPiece
       Freckle.App.Test.Properties.PersistValue
       Freckle.App.Test.Yesod
+      Freckle.App.TextualEnum
       Freckle.App.Wai
       Freckle.App.Yesod
       Freckle.App.Yesod.Routes
@@ -152,6 +153,7 @@ library
     , resourcet
     , scientist
     , semigroupoids
+    , servant-server
     , template-haskell
     , text
     , time
@@ -210,6 +212,7 @@ test-suite spec
       Freckle.App.Test.Properties.JSONSpec
       Freckle.App.Test.Properties.PathPieceSpec
       Freckle.App.Test.Properties.PersistValueSpec
+      Freckle.App.TextualEnumSpec
       Freckle.App.WaiSpec
       Spec
       Paths_freckle_app
@@ -246,7 +249,10 @@ test-suite spec
     , http-types
     , monad-validate
     , nonempty-containers
+    , path-pieces
+    , persistent
     , postgresql-simple
+    , servant-server
     , vector
     , wai
     , wai-extra
