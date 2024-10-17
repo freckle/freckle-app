@@ -1,4 +1,4 @@
-resolver: lts-22.34
+resolver: lts-22.38
 extra-deps:
   - Blammo-2.1.1.0
   - Blammo-wai-0.0.0.2
