@@ -61,14 +61,19 @@ catch action handler = withFrozenCallStack $ Annotated.catch action handler
 
 catchJust
   :: forall e b m a
-   . (Exception e, MonadCatch m, HasCallStack)
+   . (Exception e, MonadCatch m)
   => (e -> Maybe b)
   -> m a
   -> (b -> m a)
   -> m a
 catchJust test action handler =
-  withFrozenCallStack $ Annotated.catch action $ \e ->
-    maybe (Control.Monad.Catch.throwM e) handler (test e)
+  Control.Monad.Catch.catches
+    action
+    [ Control.Monad.Catch.Handler $ \caught ->
+        maybe (Control.Monad.Catch.throwM caught) handler (test caught)
+    , Control.Monad.Catch.Handler $ \caught@(AnnotatedException _ unwrapped) ->
+        maybe (Control.Monad.Catch.throwM caught) handler (test unwrapped)
+    ]
 
 catches
   :: forall m a
@@ -97,25 +102,38 @@ try action = withFrozenCallStack $ Annotated.try action
 
 tryJust
   :: forall e b m a
-   . (Exception e, MonadCatch m, HasCallStack)
+   . (Exception e, MonadCatch m)
   => (e -> Maybe b)
   -> m a
   -- ^ Action to run
   -> m (Either b a)
 tryJust test action =
-  withFrozenCallStack $ Annotated.catch (Right <$> action) $ \e ->
-    maybe (Control.Monad.Catch.throwM e) (pure . Left) (test e)
+  withFrozenCallStack $
+    Control.Monad.Catch.catches
+      (Right <$> action)
+      [ Control.Monad.Catch.Handler $ \caught ->
+          maybe (Control.Monad.Catch.throwM caught) (pure . Left) (test caught)
+      , Control.Monad.Catch.Handler $ \caught@(AnnotatedException _ unwrapped) ->
+          maybe (Control.Monad.Catch.throwM caught) (pure . Left) (test unwrapped)
+      ]
 
 withException
   :: forall e a m b
-   . (Exception e, MonadCatch m, HasCallStack)
+   . (Exception e, MonadCatch m)
   => m a
   -> (e -> m b)
   -> m a
 withException action onException =
-  withFrozenCallStack $ Annotated.catch action $ \e -> do
-    void $ onException e
-    Control.Monad.Catch.throwM e
+  withFrozenCallStack $
+    Control.Monad.Catch.catches
+      action
+      [ Control.Monad.Catch.Handler $ \caught -> do
+          void $ onException caught
+          Control.Monad.Catch.throwM caught
+      , Control.Monad.Catch.Handler $ \caught@(AnnotatedException _ unwrapped) -> do
+          void $ onException unwrapped
+          Control.Monad.Catch.throwM caught
+      ]
 
 -- | When dealing with a library that does not use 'AnnotatedException',
 --   apply this function to augment its exceptions with call stacks.

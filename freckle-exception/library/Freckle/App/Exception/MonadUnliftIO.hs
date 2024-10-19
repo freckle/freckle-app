@@ -62,14 +62,23 @@ catch action handler = withFrozenCallStack $ Annotated.catch action handler
 
 catchJust
   :: forall e b m a
-   . (Exception e, MonadUnliftIO m, HasCallStack)
+   . (Exception e, MonadUnliftIO m)
   => (e -> Maybe b)
   -> m a
   -> (b -> m a)
   -> m a
 catchJust test action handler =
-  withFrozenCallStack $ Annotated.catch action $ \e ->
-    maybe (UnliftIO.Exception.throwIO e) handler (test e)
+  withFrozenCallStack $
+    UnliftIO.Exception.catches
+      action
+      [ UnliftIO.Exception.Handler $ \caught ->
+          maybe (UnliftIO.Exception.throwIO caught) handler (test caught)
+      , UnliftIO.Exception.Handler $ \caught@(AnnotatedException _ unwrapped) ->
+          maybe (UnliftIO.Exception.throwIO caught) handler (test unwrapped)
+      ]
+
+-- action $ \e ->
+--   maybe (UnliftIO.Exception.throwIO e) handler (test e)
 
 catches
   :: forall m a
@@ -98,25 +107,38 @@ try = withFrozenCallStack Annotated.try
 
 tryJust
   :: forall e b m a
-   . (Exception e, MonadUnliftIO m, HasCallStack)
+   . (Exception e, MonadUnliftIO m)
   => (e -> Maybe b)
   -> m a
   -- ^ Action to run
   -> m (Either b a)
 tryJust test action =
-  withFrozenCallStack $ Annotated.catch (Right <$> action) $ \e ->
-    maybe (UnliftIO.Exception.throwIO e) (pure . Left) (test e)
+  withFrozenCallStack $
+    UnliftIO.Exception.catches
+      (Right <$> action)
+      [ UnliftIO.Exception.Handler $ \caught ->
+          maybe (UnliftIO.Exception.throwIO caught) (pure . Left) (test caught)
+      , UnliftIO.Exception.Handler $ \caught@(AnnotatedException _ unwrapped) ->
+          maybe (UnliftIO.Exception.throwIO caught) (pure . Left) (test unwrapped)
+      ]
 
 withException
   :: forall e a m b
-   . (Exception e, MonadUnliftIO m, HasCallStack)
+   . (Exception e, MonadUnliftIO m)
   => m a
   -> (e -> m b)
   -> m a
 withException action onException =
-  withFrozenCallStack $ Annotated.catch action $ \e -> do
-    void $ onException e
-    UnliftIO.Exception.throwIO e
+  withFrozenCallStack $
+    UnliftIO.Exception.catches
+      action
+      [ UnliftIO.Exception.Handler $ \caught -> do
+          void $ onException caught
+          UnliftIO.Exception.throwIO caught
+      , UnliftIO.Exception.Handler $ \caught@(AnnotatedException _ unwrapped) -> do
+          void $ onException unwrapped
+          UnliftIO.Exception.throwIO caught
+      ]
 
 -- | When dealing with a library that does not use 'AnnotatedException',
 --   apply this function to augment its exceptions with call stacks.
