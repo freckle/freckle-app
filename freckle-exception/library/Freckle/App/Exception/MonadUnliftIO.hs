@@ -77,9 +77,6 @@ catchJust test action handler =
           maybe (UnliftIO.Exception.throwIO caught) handler (test unwrapped)
       ]
 
--- action $ \e ->
---   maybe (UnliftIO.Exception.throwIO e) handler (test e)
-
 catches
   :: forall m a
    . (MonadUnliftIO m, HasCallStack)
