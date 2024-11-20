@@ -1,7 +1,7 @@
 cradle:
-  cabal:
+  stack:
     - path: "freckle-app/library"
-      component: "lib:freckle-app"
+      component: "freckle-app:lib"
 
     - path: "freckle-app/doctest"
       component: "freckle-app:test:doctest"
@@ -10,34 +10,37 @@ cradle:
       component: "freckle-app:test:spec"
 
     - path: "freckle-env/library"
-      component: "lib:freckle-env"
+      component: "freckle-env:lib"
 
     - path: "freckle-env/doctest"
       component: "freckle-env:test:doctest"
 
     - path: "freckle-exception/library"
-      component: "lib:freckle-exception"
+      component: "freckle-exception:lib"
 
     - path: "freckle-http/library"
-      component: "lib:freckle-http"
+      component: "freckle-http:lib"
 
     - path: "freckle-http/tests"
       component: "freckle-http:test:spec"
 
     - path: "freckle-kafka/library"
-      component: "lib:freckle-kafka"
+      component: "freckle-kafka:lib"
 
     - path: "freckle-memcached/library"
-      component: "lib:freckle-memcached"
+      component: "freckle-memcached:lib"
 
     - path: "freckle-memcached/tests"
       component: "freckle-memcached:test:spec"
 
     - path: "freckle-otel/library"
-      component: "lib:freckle-otel"
+      component: "freckle-otel:lib"
 
     - path: "freckle-otel/tests"
       component: "freckle-otel:test:spec"
 
     - path: "freckle-prelude/library"
-      component: "lib:freckle-prelude"
+      component: "freckle-prelude:lib"
+
+    - path: "persistent-sql-lifted/library"
+      component: "persistent-sql-lifted:lib"

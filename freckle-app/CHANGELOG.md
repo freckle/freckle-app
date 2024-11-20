@@ -1,4 +1,17 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.3.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.21.0.0...main)
+
+## [v1.21.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-vv1.20.3.0...freckle-app-v1.21.0.0)
+
+The following have moved from `Freckle.App.Database` to a new package, `persistent-sql-lifted`:
+
+- `MonadSqlTx (..)`
+- `HasSqlBackend (..)`
+- `MonadSqlBackend (..)`
+- `liftSql`
+
+The definitions in `freckle-app` have been replaced with reëxports,
+so no code needs to change for users, except that a dependency on
+the `persistent-sql-lifted` package is now required.
 
 ## [v1.20.3.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.2.1...freckle-app-v1.20.3.0)
 

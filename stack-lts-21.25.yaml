@@ -38,3 +38,4 @@ packages:
   - freckle-memcached
   - freckle-otel
   - freckle-prelude
+  - persistent-sql-lifted

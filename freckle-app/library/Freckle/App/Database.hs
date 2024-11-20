@@ -56,6 +56,7 @@ import Database.Persist.Postgresql
   , runSqlPool
   , runSqlPoolWithExtensibleHooks
   )
+import Database.Persist.Sql.Lifted
 import Database.Persist.SqlBackend.Internal.SqlPoolHooks (SqlPoolHooks (..))
 import Database.Persist.SqlBackend.SqlPoolHooks
 import Database.PostgreSQL.Simple
@@ -67,7 +68,6 @@ import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.SqlQQ (sql)
 import Freckle.App.Env (Timeout (..))
 import Freckle.App.Env qualified as Env
-import Freckle.App.Exception.MonadUnliftIO
 import Freckle.App.OpenTelemetry
 import Freckle.App.Stats (HasStatsClient)
 import Freckle.App.Stats qualified as Stats
@@ -77,32 +77,6 @@ import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
 import UnliftIO.IORef
 import Yesod.Core.Types (HandlerData (..), RunHandlerEnv (..))
-
--- | A monadic context in which a SQL backend is available
---   for running database queries
-class MonadUnliftIO m => MonadSqlBackend m where
-  getSqlBackendM :: m SqlBackend
-
-instance (HasSqlBackend r, MonadUnliftIO m) => MonadSqlBackend (ReaderT r m) where
-  getSqlBackendM = asks getSqlBackend
-
--- | Generalize from 'SqlPersistT' to 'MonadSqlBackend'
-liftSql :: (MonadSqlBackend m, HasCallStack) => ReaderT SqlBackend m a -> m a
-liftSql (ReaderT f) = checkpointCallStack $ getSqlBackendM >>= f
-
--- | The constraint @'MonadSqlTx' db m@ indicates that @m@ is a monadic
---   context that can run @db@ actions, usually as a SQL transaction.
---   Typically, this means that @db@ needs a connection and @m@ can
---   provide one, e.g. from a connection pool.
-class (MonadSqlBackend db, MonadUnliftIO m) => MonadSqlTx db m | m -> db where
-  -- | Runs the action in a SQL transaction
-  runSqlTx :: HasCallStack => db a -> m a
-
-class HasSqlBackend a where
-  getSqlBackend :: a -> SqlBackend
-
-instance HasSqlBackend SqlBackend where
-  getSqlBackend = id
 
 type SqlPool = Pool SqlBackend
 
