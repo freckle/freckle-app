@@ -18,6 +18,7 @@ jobs:
           - freckle-memcached
           - freckle-otel
           - freckle-prelude
+          - persistent-sql-lifted
 
     steps:
       - uses: actions/checkout@v4
@@ -45,6 +46,7 @@ jobs:
           - freckle-memcached
           - freckle-otel
           - freckle-prelude
+          - persistent-sql-lifted
 
     env:
       HACKAGE_KEY: ${{ secrets.HACKAGE_UPLOAD_API_KEY }}
