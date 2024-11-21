@@ -2,7 +2,7 @@ name: persistent-sql-lifted
 version: 1.20.3.0
 
 maintainer: Freckle Education
-category: Utils
+category: Database
 github: freckle/freckle-app
 synopsis: ...
 description: Please see README.md
