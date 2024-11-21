@@ -1,6 +1,6 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.21.0.0...main)
 
-## [v1.21.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-vv1.20.3.0...freckle-app-v1.21.0.0)
+## [v1.21.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.3.0...freckle-app-v1.21.0.0)
 
 The following have moved from `Freckle.App.Database` to a new package, `persistent-sql-lifted`:
 
