@@ -12,6 +12,8 @@ category:       Database
 homepage:       https://github.com/freckle/freckle-app#readme
 bug-reports:    https://github.com/freckle/freckle-app/issues
 maintainer:     Freckle Education
+license:        MIT
+license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     package.yaml
