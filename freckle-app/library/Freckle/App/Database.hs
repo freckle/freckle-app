@@ -48,15 +48,14 @@ import Data.HashMap.Strict qualified as HashMap
 import Data.Pool
 import Data.Text qualified as T
 import Database.Persist.Postgresql
-  ( SqlBackend
-  , SqlPersistT
+  ( SqlPersistT
   , createPostgresqlPoolModified
   , createSqlPool
   , openSimpleConn
   , runSqlPool
   , runSqlPoolWithExtensibleHooks
   )
-import Database.Persist.Sql.Lifted
+import Database.Persist.Sql.Lifted.Core
 import Database.Persist.SqlBackend.Internal.SqlPoolHooks (SqlPoolHooks (..))
 import Database.Persist.SqlBackend.SqlPoolHooks
 import Database.PostgreSQL.Simple
