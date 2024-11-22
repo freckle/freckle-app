@@ -5,13 +5,15 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           persistent-sql-lifted
-version:        1.20.3.0
+version:        0.0.0.0
 synopsis:       ...
 description:    Please see README.md
 category:       Database
 homepage:       https://github.com/freckle/freckle-app#readme
 bug-reports:    https://github.com/freckle/freckle-app/issues
 maintainer:     Freckle Education
+license:        MIT
+license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     package.yaml
