@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           persistent-sql-lifted
-version:        1.20.3.0
+version:        0.0.0.0
 synopsis:       ...
 description:    Please see README.md
 category:       Database
