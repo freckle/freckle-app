@@ -5,12 +5,19 @@
 
 packages:
 - completed:
-    hackage: Blammo-1.2.0.0@sha256:727b02bff2ef0363501778bfc01a13d4c7b2912843b9e1a2538081f0b44484d4,4836
+    hackage: Blammo-2.1.0.0@sha256:cb974555dfe850cbc4f174a0a4443883b776b1e93c1d4b37249fb6081cb286de,4755
     pantry-tree:
-      sha256: 35a51b2053f5b56a16458e8316bb1cd5d13490eab87b0ba30cd1dbbbdef99c0c
-      size: 1724
+      sha256: 3c36d6a62cc32b5f80f0573a50205b71874570e6d55e0af5a7b72795f8c1b3b7
+      size: 1788
   original:
-    hackage: Blammo-1.2.0.0
+    hackage: Blammo-2.1.0.0
+- completed:
+    hackage: Blammo-wai-0.0.0.2@sha256:b5d5c665d5ff919b229ff0d5ee4eea9021a848fcdbecb7dd7b17bbe64c073f21,2883
+    pantry-tree:
+      sha256: d018b595cf33757c7c197bd91743b4a0727569d7d9bcb828e24acb83b88dbfc7
+      size: 338
+  original:
+    hackage: Blammo-wai-0.0.0.2
 - completed:
     hackage: bugsnag-1.1.0.0@sha256:9723af13b09e7aed7e5855fcbcd7f89a904df80324f21d32480f01aabd8d035b,4565
     pantry-tree:
@@ -74,6 +81,13 @@ packages:
       size: 2056
   original:
     hackage: hw-kafka-client-5.0.0
+- completed:
+    hackage: persistent-2.14.0.1@sha256:c5b9a2f108628b79b6573f2208b145bcdf31e1203f69ae2f1b8fac5a185cafa0,7322
+    pantry-tree:
+      sha256: 190bf7a32f16ab3a22c35a2689c83567ca6ef671a1543e93528bbc63d6387786
+      size: 6511
+  original:
+    hackage: persistent-2.14.0.1
 - completed:
     hackage: resource-pool-0.4.0.0@sha256:9c1e448a159875e21a7e68697feee2b61a4e584720974fa465a2fa1bc0776c73,1342
     pantry-tree:

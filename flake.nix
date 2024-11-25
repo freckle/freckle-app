@@ -26,7 +26,7 @@
           fourmolu = freckle.fourmolu-0-13-x;
 
           ghc = freckleLib.haskellBundle {
-            ghcVersion = "ghc-9-6-6";
+            ghcVersion = "ghc-9-8-2";
             enableHLS = true;
           };
 
@@ -50,7 +50,7 @@
           ];
 
           shellHook = ''
-            export STACK_YAML=stack.yaml
+            export STACK_YAML=stack-nightly.yaml
           '';
         };
       }

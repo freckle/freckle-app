@@ -5,8 +5,8 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           persistent-sql-lifted
-version:        0.0.0.0
-synopsis:       ...
+version:        0.1.0.0
+synopsis:       Monad classes for running queries with Persistent and Esqueleto
 description:    Please see README.md
 category:       Database
 homepage:       https://github.com/freckle/freckle-app#readme
@@ -28,32 +28,32 @@ source-repository head
 library
   exposed-modules:
       Database.Persist.Sql.Lifted
+      Database.Persist.Sql.Lifted.Core
+      Database.Persist.Sql.Lifted.Esqueleto
       Database.Persist.Sql.Lifted.HasSqlBackend
       Database.Persist.Sql.Lifted.MonadSqlBackend
       Database.Persist.Sql.Lifted.MonadSqlTx
+      Database.Persist.Sql.Lifted.Persistent
   other-modules:
       Paths_persistent_sql_lifted
   hs-source-dirs:
       library
   default-extensions:
-      DataKinds
-      DeriveAnyClass
-      DerivingVia
-      DerivingStrategies
+      ExplicitNamespaces
       FunctionalDependencies
       GADTs
-      LambdaCase
       NoImplicitPrelude
       NoMonomorphismRestriction
-      OverloadedStrings
-      RecordWildCards
-      TypeFamilies
   ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-all-missed-specialisations -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-kind-signatures -Wno-missing-local-signatures -Wno-missing-safe-haskell-mode -Wno-monomorphism-restriction -Wno-prepositive-qualified-module -Wno-safe -Wno-unsafe
   build-depends:
       annotated-exception
     , base
+    , conduit
+    , containers
+    , esqueleto
     , mtl
     , persistent
+    , text
     , unliftio-core
   default-language: GHC2021
   if impl(ghc >= 9.8)
