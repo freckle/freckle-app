@@ -59,7 +59,6 @@ library:
   source-dirs: library
   dependencies:
     - annotated-exception
-    - base
     - conduit
     - containers
     - esqueleto
