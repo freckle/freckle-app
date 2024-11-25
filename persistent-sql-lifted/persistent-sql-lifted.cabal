@@ -7,7 +7,14 @@ cabal-version: 1.18
 name:           persistent-sql-lifted
 version:        0.1.0.0
 synopsis:       Monad classes for running queries with Persistent and Esqueleto
-description:    Please see README.md
+description:    This package introduces two classes: MonadSqlBackend for monadic contexts in
+                which a SqlBackend is available, and MonadSqlBackend for contexts in which we
+                can execute a SQL transaction.
+                .
+                Additionally, this package provides variants of query-running utilities from
+                Persistent and Esqueleto which are concretized to use SqlBackend, generalized
+                to a MonadSqlBackend m constraint rather than "ReaderT backend", and wrapped in
+                checkpointCallStack so that exceptions will include call stacks.
 category:       Database
 homepage:       https://github.com/freckle/freckle-app#readme
 bug-reports:    https://github.com/freckle/freckle-app/issues
