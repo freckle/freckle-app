@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.21.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.21.0.1...main)
+
+## [v1.21.0.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.21.0.0...freckle-app-v1.21.0.1)
+
+Fix dependency bounds
 
 ## [v1.21.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.3.0...freckle-app-v1.21.0.0)
 
