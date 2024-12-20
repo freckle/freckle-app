@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.21.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.21.1.0...main)
+
+## [v1.21.1.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.21.0.0...freckle-app-v1.21.1.0)
+
+Add `Freckle.App.Kafka.Consumer.runConsumerBatched`
 
 ## [v1.21.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.3.0...freckle-app-v1.21.0.0)
 

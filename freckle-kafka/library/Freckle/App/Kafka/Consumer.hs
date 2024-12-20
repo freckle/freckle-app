@@ -6,6 +6,7 @@ module Freckle.App.Kafka.Consumer
   , KafkaConsumerConfig (..)
   , envKafkaConsumerConfig
   , runConsumer
+  , runConsumerBatched
   ) where
 
 import Prelude
@@ -18,17 +19,19 @@ import Control.Exception.Annotated.UnliftIO
   , displayException
   )
 import Control.Exception.Annotated.UnliftIO qualified as Annotated
-import Control.Lens (Lens', view)
+import Control.Lens (Lens', over, view, _Left)
 import Control.Monad (forever, (<=<))
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Reader (MonadReader)
 import Data.Aeson
 import Data.ByteString (ByteString)
-import Data.Foldable (for_)
-import Data.List.NonEmpty (NonEmpty)
+import Data.Either (partitionEithers)
+import Data.Foldable (for_, traverse_)
+import Data.List.NonEmpty (NonEmpty, nonEmpty)
 import Data.List.NonEmpty qualified as NE
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
+import Data.Maybe (mapMaybe)
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Text.Encoding qualified as T
@@ -198,7 +201,7 @@ runConsumer pollTimeout onMessage =
         "kafka.consumer"
         (defaultSpanArguments {Trace.kind = Consumer})
       $ do
-        mRecord <- fromKafkaError =<< pollMessage consumer kTimeout
+        mRecord <- fromKafkaError =<< pollMessage consumer (kafkaTimeout pollTimeout)
 
         for_ (crValue =<< mRecord) $ \bs -> do
           a <-
@@ -207,8 +210,6 @@ runConsumer pollTimeout onMessage =
                 eitherDecodeStrict bs
           inSpan "kafka.consumer.message.handle" defaultSpanArguments $ onMessage a
  where
-  kTimeout = Kafka.Timeout $ timeoutMs pollTimeout
-
   handlers =
     [ Annotated.Handler $
         logErrorNS "kafka"
@@ -219,6 +220,63 @@ runConsumer pollTimeout onMessage =
           . annotatedExceptionMessageFrom @KafkaMessageDecodeError
             (const "Could not decode message value")
     ]
+
+data BatchConsumerError
+  = BatchConsumerDecodeError KafkaMessageDecodeError
+  | BatchConsumerKafkaError KafkaError
+  deriving stock (Show)
+
+runConsumerBatched
+  :: forall a m env
+   . ( MonadUnliftIO m
+     , MonadReader env m
+     , MonadLogger m
+     , MonadTracer m
+     , HasKafkaConsumer env
+     , FromJSON a
+     , HasCallStack
+     )
+  => Timeout
+  -> BatchSize
+  -> ([a] -> m ())
+  -> m ()
+runConsumerBatched pollTimeout batchSize onBatch =
+  forever $ do
+    consumer <- view kafkaConsumerL
+
+    errors <- inSpan
+      "kafka.batchConsumer"
+      (defaultSpanArguments {Trace.kind = Consumer})
+      $ do
+        (errors, records) <- do
+          (kafkaErrors, batch) <-
+            partitionEithers
+              <$> pollMessageBatch consumer (kafkaTimeout pollTimeout) batchSize
+          (decodeErrors, records) <- fmap partitionEithers $ inSpan "kafka.batchConsumer.messages.decode" defaultSpanArguments $ do
+            let errorDecode bs = over _Left (KafkaMessageDecodeError bs) $ eitherDecodeStrict @a bs
+            pure $ mapMaybe (fmap errorDecode . crValue) batch
+          pure
+            ( fmap BatchConsumerKafkaError kafkaErrors
+                <> fmap BatchConsumerDecodeError decodeErrors
+            , records
+            )
+
+        inSpan "kafka.batchConsumer.messages.handle" defaultSpanArguments $
+          onBatch records
+        pure $ nonEmpty errors
+
+    traverse_ logErrors errors
+ where
+  displayConsumerError = \case
+    BatchConsumerDecodeError e -> displayException e
+    BatchConsumerKafkaError e -> displayException e
+  logErrors errors =
+    logErrorNS "kafka" $
+      "Batch consumer errors"
+        :# ["errors" .= fmap displayConsumerError errors]
+
+kafkaTimeout :: Timeout -> Kafka.Timeout
+kafkaTimeout = Kafka.Timeout . timeoutMs
 
 -- | Like 'annotatedExceptionMessage', but use the supplied function to
 --   construct an initial 'Message' that it will augment.
