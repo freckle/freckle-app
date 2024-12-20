@@ -1,5 +1,4 @@
 {-# LANGUAGE ApplicativeDo #-}
-{-# LANGUAGE ViewPatterns #-}
 
 module Freckle.App.Kafka.Consumer
   ( HasKafkaConsumer (..)
@@ -24,9 +23,6 @@ import Control.Lens (Lens', over, view, _Left)
 import Control.Monad (forever, (<=<))
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Reader (MonadReader)
-import Control.Monad.Trans (lift)
-import Control.Monad.Trans.Writer.CPS (runWriterT)
-import Control.Monad.Writer (MonadWriter, tell)
 import Data.Aeson
 import Data.ByteString (ByteString)
 import Data.Either (partitionEithers)
@@ -252,14 +248,18 @@ runConsumerBatched pollTimeout batchSize onBatch =
       "kafka.batchConsumer"
       (defaultSpanArguments {Trace.kind = Consumer})
       $ do
-        (records, errors) <- runWriterT $ do
-          batch <-
-            tellLeftsWith BatchConsumerKafkaError
-              =<< pollMessageBatch consumer (kafkaTimeout pollTimeout) batchSize
-          eDecoded <- lift $ inSpan "kafka.batchConsumer.messages.decode" defaultSpanArguments $ do
+        (errors, records) <- do
+          (kafkaErrors, batch) <-
+            partitionEithers
+              <$> pollMessageBatch consumer (kafkaTimeout pollTimeout) batchSize
+          (decodeErrors, records) <- fmap partitionEithers $ inSpan "kafka.batchConsumer.messages.decode" defaultSpanArguments $ do
             let errorDecode bs = over _Left (KafkaMessageDecodeError bs) $ eitherDecodeStrict @a bs
             pure $ mapMaybe (fmap errorDecode . crValue) batch
-          tellLeftsWith BatchConsumerDecodeError eDecoded
+          pure
+            ( fmap BatchConsumerKafkaError kafkaErrors
+                <> fmap BatchConsumerDecodeError decodeErrors
+            , records
+            )
 
         inSpan "kafka.batchConsumer.messages.handle" defaultSpanArguments $
           onBatch records
@@ -277,9 +277,6 @@ runConsumerBatched pollTimeout batchSize onBatch =
 
 kafkaTimeout :: Timeout -> Kafka.Timeout
 kafkaTimeout = Kafka.Timeout . timeoutMs
-
-tellLeftsWith :: MonadWriter [w] m => (e -> w) -> [Either e a] -> m [a]
-tellLeftsWith f (partitionEithers -> (errors, xs)) = xs <$ traverse_ (tell . pure . f) errors
 
 -- | Like 'annotatedExceptionMessage', but use the supplied function to
 --   construct an initial 'Message' that it will augment.

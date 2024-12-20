@@ -61,7 +61,6 @@ library
     , resource-pool >=0.4.0.0
     , text
     , time
-    , transformers
     , unliftio
     , unordered-containers
     , yesod-core
