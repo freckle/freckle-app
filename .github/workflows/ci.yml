@@ -41,8 +41,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Install rdkafka
-        run: sudo apt-get install --assume-yes --no-install-recommends librdkafka-dev
+      - name: Install system libraries
+        run: sudo apt-get install --assume-yes --no-install-recommends libpcre3 librdkafka-dev
       - uses: freckle/stack-action@v5
         env:
           OTEL_TRACES_EXPORTER: none
