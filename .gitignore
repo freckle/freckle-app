@@ -3,3 +3,4 @@
 *.hie
 .hiedb
 dist-newstyle
+stack-*.yaml.lock
