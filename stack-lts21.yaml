@@ -11,6 +11,7 @@ extra-deps:
   - hs-opentelemetry-sdk-0.0.3.6
   - hspec-junit-formatter-1.1.1.0
   - hw-kafka-client-5.0.0
+  - persistent-sql-lifted-0.1.0.0
 
   # for hs-opentelemetry-sdk
   - hs-opentelemetry-exporter-otlp-0.0.1.5
@@ -38,4 +39,3 @@ packages:
   - freckle-memcached
   - freckle-otel
   - freckle-prelude
-  - persistent-sql-lifted
