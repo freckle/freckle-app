@@ -1,6 +1,6 @@
 {
   inputs = {
-    stable.url = "github:nixos/nixpkgs/nixos-24.05";
+    stable.url = "github:nixos/nixpkgs/nixos-24.11";
     freckle.url = "git+ssh://git@github.com/freckle/flakes?dir=main";
     flake-utils.url = "github:numtide/flake-utils";
   };
@@ -26,7 +26,7 @@
           fourmolu = freckle.fourmolu-0-13-x;
 
           ghc = freckleLib.haskellBundle {
-            ghcVersion = "ghc-9-8-2";
+            ghcVersion = "ghc-9-8-4";
             enableHLS = true;
           };
 
@@ -50,7 +50,7 @@
           ];
 
           shellHook = ''
-            export STACK_YAML=stack-nightly.yaml
+            export STACK_YAML=stack-lts23.yaml
           '';
         };
       }
