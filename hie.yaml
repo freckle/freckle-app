@@ -41,6 +41,3 @@ cradle:
 
     - path: "freckle-prelude/library"
       component: "freckle-prelude:lib"
-
-    - path: "persistent-sql-lifted/library"
-      component: "persistent-sql-lifted:lib"

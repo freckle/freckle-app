@@ -13,6 +13,7 @@ extra-deps:
   - hs-opentelemetry-sdk-0.0.3.6
   - hspec-junit-formatter-1.1.1.0
   - monad-validate-1.3.0.0
+  - persistent-sql-lifted-0.1.0.0
   - thread-utils-context-0.3.0.4
   - thread-utils-finalizers-0.1.1.0
 
@@ -25,4 +26,3 @@ packages:
   - freckle-memcached
   - freckle-otel
   - freckle-prelude
-  - persistent-sql-lifted
