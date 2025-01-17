@@ -20,18 +20,20 @@ import Freckle.App.Stats qualified as Stats
 import Network.HTTP.Types (ResponseHeaders, status503)
 import Network.Wai qualified as W
 import Yesod.Core.Handler (HandlerFor, sendWaiResponse)
-import Yesod.Core.Types (HandlerContents)
+import Yesod.Core.Types (HandlerContents, HandlerData)
 
 -- | Catch 'SqlError' when queries are canceled due to timeout and respond 503
 --
 -- Also logs and increments a metric.
 respondQueryCanceled
-  :: HasStatsClient site => HandlerFor site res -> HandlerFor site res
+  :: HasStatsClient (HandlerData site site)
+  => HandlerFor site res
+  -> HandlerFor site res
 respondQueryCanceled = respondQueryCanceledHeaders []
 
 -- | 'respondQueryCanceledHeaders' but adding headers to the 503 response
 respondQueryCanceledHeaders
-  :: HasStatsClient site
+  :: HasStatsClient (HandlerData site site)
   => ResponseHeaders
   -> HandlerFor site res
   -> HandlerFor site res
