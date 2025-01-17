@@ -12,6 +12,7 @@ jobs:
       matrix:
         package:
           - freckle-app
+          - freckle-ecs
           - freckle-env
           - freckle-exception
           - freckle-kafka
@@ -19,6 +20,7 @@ jobs:
           - freckle-memcached
           - freckle-otel
           - freckle-prelude
+          - freckle-stats
 
     steps:
       - uses: actions/checkout@v4
@@ -39,6 +41,7 @@ jobs:
       matrix:
         package:
           - freckle-app
+          - freckle-ecs
           - freckle-env
           - freckle-exception
           - freckle-kafka
@@ -46,6 +49,7 @@ jobs:
           - freckle-memcached
           - freckle-otel
           - freckle-prelude
+          - freckle-stats
 
     env:
       HACKAGE_KEY: ${{ secrets.HACKAGE_UPLOAD_API_KEY }}
@@ -62,7 +66,7 @@ jobs:
 
       # Upload using our oldest, tested resolver, to set the lowest lower bounds
       - name: "Release to Hackage"
-        run: stack --stack-yaml stack-lts-20.26.yaml upload --pvp-bounds lower ${{ matrix.package }}
+        run: stack --stack-yaml stack-lts20.yaml upload --pvp-bounds lower ${{ matrix.package }}
 
       - name: "Upload documentation"
         run: stack upload --documentation ${{ matrix.package }}

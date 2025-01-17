@@ -44,6 +44,7 @@ allow-newer-deps:
 
 packages:
   - freckle-app
+  - freckle-ecs
   - freckle-env
   - freckle-exception
   - freckle-http
@@ -51,3 +52,4 @@ packages:
   - freckle-memcached
   - freckle-otel
   - freckle-prelude
+  - freckle-stats

@@ -1,4 +1,20 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.21.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.22.0.0...main)
+
+## [v1.22.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.21.0.0...freckle-app-v1.22.0.0)
+
+`Freckle.App.Stats` has moved to a separate package `freckle-stats`.
+
+When migrating to `freckle-stats`, note that the instance
+
+```hs
+instance HasStatsClient site => HasStatsClient (HandlerData child site) where
+  statsClientL = envL . siteL . statsClientL
+```
+
+has been removed. If you are using Yesod, you may need to copy this definition
+into your own code.
+
+`Freckle.App.Ecs` has moved to a separate package `freckle-ecs`.
 
 ## [v1.21.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.20.3.0...freckle-app-v1.21.0.0)
 

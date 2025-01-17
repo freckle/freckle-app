@@ -49,8 +49,6 @@ import Network.StatsD.Datadog qualified as Datadog
 import System.IO (hPutStrLn, stderr)
 import System.Metrics.Gauge qualified as EKG
 import UnliftIO.Exception (bracket_)
-import Yesod.Core.Lens
-import Yesod.Core.Types (HandlerData)
 
 data StatsSettings = StatsSettings
   { amsEnabled :: Bool
@@ -134,9 +132,6 @@ class HasStatsClient env where
 instance HasStatsClient StatsClient where
   statsClientL = id
 
-instance HasStatsClient site => HasStatsClient (HandlerData child site) where
-  statsClientL = envL . siteL . statsClientL
-
 withStatsClient
   :: (MonadMask m, MonadUnliftIO m)
   => StatsSettings
@@ -153,16 +148,16 @@ withStatsClient StatsSettings {..} f = do
       tags <- (amsTags <>) <$> getEcsMetadataTags
       Datadog.withDogStatsD amsSettings $ \client ->
         -- Add the tags to the thread context so they're present in all logs
-        withThreadContext (map toPair tags) $
-          f
+        withThreadContext (map toPair tags)
+          $ f
             StatsClient
               { scClient = client
               , scTags = tags
               , scGauges = gauges
               }
     else do
-      f $
-        StatsClient
+      f
+        $ StatsClient
           { scClient = Datadog.Dummy
           , scTags = amsTags
           , scGauges = gauges
@@ -295,9 +290,9 @@ sendMetric
 sendMetric metricType name metricValue = do
   StatsClient {..} <- view statsClientL
 
-  Datadog.send scClient $
-    Datadog.metric (Datadog.MetricName name) metricType metricValue
-      & (Datadog.tags .~ map (uncurry Datadog.tag) scTags)
+  Datadog.send scClient
+    $ Datadog.metric (Datadog.MetricName name) metricType metricValue
+    & (Datadog.tags .~ map (uncurry Datadog.tag) scTags)
 
 getEcsMetadataTags :: MonadIO m => m [(Text, Text)]
 getEcsMetadataTags = do
