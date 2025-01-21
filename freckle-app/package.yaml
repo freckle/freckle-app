@@ -1,5 +1,5 @@
 name: freckle-app
-version: 1.21.0.0
+version: 1.22.0.0
 
 maintainer: Freckle Education
 category: Utils
@@ -94,17 +94,15 @@ library:
     - conduit-extra
     - containers
     - cookie
-    - datadog
     - doctest
-    - ekg-core
     - exceptions
-    - extra
     - faktory
     - freckle-env
     - freckle-exception
     - freckle-http
     - freckle-otel
     - freckle-prelude
+    - freckle-stats
     - hs-opentelemetry-api
     - hs-opentelemetry-instrumentation-persistent
     - hs-opentelemetry-instrumentation-wai
@@ -135,7 +133,6 @@ library:
     - semigroupoids
     - template-haskell
     - text
-    - time
     - transformers
     - transformers-base
     - typed-process
@@ -165,6 +162,7 @@ tests:
       - cassava
       - conduit
       - freckle-app
+      - freckle-stats
       - hs-opentelemetry-api
       - hspec
       - http-types
