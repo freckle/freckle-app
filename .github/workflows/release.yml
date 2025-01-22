@@ -56,7 +56,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get install --assume-yes --no-install-recommends librdkafka-dev
+      - run: sudo apt-get install --assume-yes --no-install-recommends libpcre3-dev librdkafka-dev
 
       - name: "Build with Haddocks"
         uses: freckle/stack-action@v5
