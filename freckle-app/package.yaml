@@ -1,5 +1,5 @@
 name: freckle-app
-version: 1.22.0.0
+version: 1.23.0.0
 
 maintainer: Freckle Education
 category: Utils
@@ -66,7 +66,6 @@ library:
     - Freckle.App.Http.Header
     - Freckle.App.Http.Paginate
     - Freckle.App.Http.Retry
-    - Freckle.App.HttpSpec
     - Freckle.App.Prelude
     - Freckle.App.Exception
     - Freckle.App.Exception.MonadThrow

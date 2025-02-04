@@ -1,5 +1,5 @@
 name: freckle-http
-version: 0.0.0.0
+version: 0.1.0.0
 maintainer: Freckle Education
 category: HTTP
 github: freckle/freckle-app
@@ -70,13 +70,11 @@ library:
     - filepath
     - freckle-memcached
     - hs-opentelemetry-api
-    - hspec >= 2.8.1
     - http-client
     - http-conduit >= 2.3.5 # addToRequestQueryString
     - http-link-header
     - http-types
     - lens
-    - lens-aeson
     - memcache
     - monad-logger
     - monad-validate
@@ -101,11 +99,13 @@ tests:
       - aeson
       - bytestring
       - freckle-http
-      - hspec
+      - freckle-prelude
+      - hspec >= 2.8.1
       - hspec-expectations-json
       - hspec-expectations-lifted
       - http-types
       - lens
+      - lens-aeson
       - mtl
       - time
       - unordered-containers

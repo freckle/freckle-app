@@ -1,11 +1,11 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.36.0.
+-- This file has been generated from package.yaml by hpack version 0.37.0.
 --
 -- see: https://github.com/sol/hpack
 
 name:           freckle-http
-version:        0.0.0.0
+version:        0.1.0.0
 synopsis:       Toolkit for making HTTP requests
 description:    Please see README.md
 category:       HTTP
@@ -35,7 +35,6 @@ library
       Freckle.App.Http.Header
       Freckle.App.Http.Paginate
       Freckle.App.Http.Retry
-      Freckle.App.HttpSpec
       Freckle.App.Test.Http
       Freckle.App.Test.Http.MatchRequest
   other-modules:
@@ -72,13 +71,11 @@ library
     , filepath
     , freckle-memcached
     , hs-opentelemetry-api
-    , hspec >=2.8.1
     , http-client
     , http-conduit >=2.3.5
     , http-link-header
     , http-types
     , lens
-    , lens-aeson
     , memcache
     , monad-logger
     , monad-validate
@@ -102,6 +99,8 @@ test-suite spec
   main-is: Main.hs
   other-modules:
       Freckle.App.Http.CacheSpec
+      Freckle.App.HttpSpec
+      Freckle.App.Test.Http.MatchRequestSpec
       Paths_freckle_http
   hs-source-dirs:
       tests
@@ -125,11 +124,13 @@ test-suite spec
     , base <5
     , bytestring
     , freckle-http
-    , hspec
+    , freckle-prelude
+    , hspec >=2.8.1
     , hspec-expectations-json
     , hspec-expectations-lifted
     , http-types
     , lens
+    , lens-aeson
     , mtl
     , time
     , unordered-containers
