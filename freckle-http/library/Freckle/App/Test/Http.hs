@@ -191,7 +191,7 @@ json a stub =
 -- | Load stubs from the filesystem
 --
 -- Within the given directory, files are expected to be named for scheme, then
--- host, then path/port/query.
+-- host, then path\/port\/query.
 --
 -- Given,
 --
