@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.22.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.0.0...main)
+
+## [v1.23.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.22.0.0...freckle-app-v1.23.0.0)
+
+Removes `Freckle.App.HttpSpec` which had been included by mistake.
 
 ## [v1.22.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.21.0.0...freckle-app-v1.22.0.0)
 

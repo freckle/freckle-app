@@ -5,7 +5,7 @@ cabal-version: 1.22
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.22.0.0
+version:        1.23.0.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -69,7 +69,6 @@ library
     , Freckle.App.Http.Header
     , Freckle.App.Http.Paginate
     , Freckle.App.Http.Retry
-    , Freckle.App.HttpSpec
     , Freckle.App.Prelude
     , Freckle.App.Exception
     , Freckle.App.Exception.MonadThrow
@@ -203,7 +202,6 @@ test-suite spec
       Freckle.App.BugsnagSpec
       Freckle.App.CsvSpec
       Freckle.App.Test.Hspec.AnnotatedExceptionSpec
-      Freckle.App.Test.Http.MatchRequestSpec
       Freckle.App.Test.Properties.JSONSpec
       Freckle.App.Test.Properties.PathPieceSpec
       Freckle.App.Test.Properties.PersistValueSpec
