@@ -9,6 +9,9 @@ cradle:
     - path: "freckle-app/tests"
       component: "freckle-app:test:spec"
 
+    - path: "freckle-ecs/library"
+      component: "freckle-ecs:lib"
+
     - path: "freckle-env/library"
       component: "freckle-env:lib"
 
@@ -41,3 +44,6 @@ cradle:
 
     - path: "freckle-prelude/library"
       component: "freckle-prelude:lib"
+
+    - path: "freckle-stats/library"
+      component: "freckle-stats:lib"

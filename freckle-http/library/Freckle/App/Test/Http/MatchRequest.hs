@@ -28,7 +28,6 @@ import Control.Monad (guard)
 import Data.ByteString (ByteString)
 import Data.ByteString.Char8 qualified as BS8
 import Data.ByteString.Lazy qualified as BSL
-import Data.Foldable (toList)
 import Data.List (isPrefixOf)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.List.NonEmpty qualified as NE
@@ -121,7 +120,7 @@ showMatchRequestWithMismatches :: MatchRequest -> NonEmpty String -> String
 showMatchRequestWithMismatches mr mismatches =
   showMatchRequest mr
     <> "\nMismatches {"
-    <> concatMap ("\n  " <>) (toList mismatches)
+    <> concatMap ("\n  " <>) mismatches
     <> "\n}"
     <> "\n"
 
