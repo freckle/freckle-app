@@ -121,7 +121,7 @@ showMatchRequestWithMismatches :: MatchRequest -> NonEmpty String -> String
 showMatchRequestWithMismatches mr mismatches =
   showMatchRequest mr
     <> "\nMismatches {"
-    <> concatMap ("\n  " <>) (toList mismatches)
+    <> concatMap ("\n  " <>) mismatches
     <> "\n}"
     <> "\n"
 
