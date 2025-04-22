@@ -22,10 +22,8 @@ module Freckle.App.Async
     -- ** Related extensions
   , foldConcurrently
 
-    -- * "Control.Immortal" functions that preserve context
+    -- * "Control.Immortal"-related functions
   , immortalCreate
-
-    -- ** Related extensions
   , immortalCreateLogged
   ) where
 
