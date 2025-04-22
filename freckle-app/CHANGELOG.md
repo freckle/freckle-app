@@ -1,5 +1,9 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.0.1...main)
 
+## [v1.23.1.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.0.1...freckle-app-v1.23.1.0)
+
+- Add `pooledMapConcurrently` et-al to `Freckle.App.Async`
+
 ## [v1.23.0.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.0.0...freckle-app-v1.23.0.1)
 
 Add more thread context preserving combinators to `Freckle.App.Async`
