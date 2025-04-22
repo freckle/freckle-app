@@ -6,6 +6,14 @@ module Freckle.App.Async
 
     -- * "UnliftIO.Async" functions that preserve context
   , async
+  , pooledMapConcurrentlyN
+  , pooledMapConcurrently
+  , pooledMapConcurrentlyN_
+  , pooledMapConcurrently_
+  , pooledForConcurrentlyN
+  , pooledForConcurrently
+  , pooledForConcurrentlyN_
+  , pooledForConcurrently_
   , mapConcurrently
   , forConcurrently
   , mapConcurrently_
@@ -42,6 +50,58 @@ async :: (MonadMask m, MonadUnliftIO m) => m a -> m (Async a)
 async f = do
   context <- getThreadContext
   UnliftIO.async $ withThreadContext context f
+
+-- | 'UnliftIO.Async.pooledMapConcurrently' but passing the thread context along
+pooledMapConcurrentlyN
+  :: (MonadUnliftIO m, MonadMask m, Traversable t)
+  => Int -> (a -> m b) -> t a -> m (t b)
+pooledMapConcurrentlyN n f xs = do
+  context <- getThreadContext
+  UnliftIO.pooledMapConcurrentlyN n (withThreadContext context . f) xs
+
+-- | 'UnliftIO.Async.pooledMapConcurrently' but passing the thread context along
+pooledMapConcurrently
+  :: (MonadUnliftIO m, MonadMask m, Traversable t) => (a -> m b) -> t a -> m (t b)
+pooledMapConcurrently f xs = do
+  context <- getThreadContext
+  UnliftIO.pooledMapConcurrently (withThreadContext context . f) xs
+
+-- | 'UnliftIO.Async.pooledMapConcurrently' but passing the thread context along
+pooledMapConcurrentlyN_
+  :: (MonadUnliftIO m, MonadMask m, Traversable t)
+  => Int -> (a -> m b) -> t a -> m ()
+pooledMapConcurrentlyN_ n f xs = do
+  context <- getThreadContext
+  UnliftIO.pooledMapConcurrentlyN_ n (withThreadContext context . f) xs
+
+-- | 'UnliftIO.Async.pooledMapConcurrently' but passing the thread context along
+pooledMapConcurrently_
+  :: (MonadUnliftIO m, MonadMask m, Traversable t) => (a -> m b) -> t a -> m ()
+pooledMapConcurrently_ f xs = do
+  context <- getThreadContext
+  UnliftIO.pooledMapConcurrently_ (withThreadContext context . f) xs
+
+-- | 'UnliftIO.Async.pooledForConcurrently' but passing the thread context along
+pooledForConcurrentlyN
+  :: (MonadUnliftIO m, MonadMask m, Traversable t)
+  => Int -> t a -> (a -> m b) -> m (t b)
+pooledForConcurrentlyN n = flip $ pooledMapConcurrentlyN n
+
+-- | 'UnliftIO.Async.pooledForConcurrently' but passing the thread context along
+pooledForConcurrently
+  :: (MonadUnliftIO m, MonadMask m, Traversable t) => t a -> (a -> m b) -> m (t b)
+pooledForConcurrently = flip pooledMapConcurrently
+
+-- | 'UnliftIO.Async.pooledForConcurrently' but passing the thread context along
+pooledForConcurrentlyN_
+  :: (MonadUnliftIO m, MonadMask m, Traversable t)
+  => Int -> t a -> (a -> m b) -> m ()
+pooledForConcurrentlyN_ n = flip $ pooledMapConcurrentlyN_ n
+
+-- | 'UnliftIO.Async.pooledForConcurrently' but passing the thread context along
+pooledForConcurrently_
+  :: (MonadUnliftIO m, MonadMask m, Traversable t) => t a -> (a -> m b) -> m ()
+pooledForConcurrently_ = flip pooledMapConcurrently_
 
 -- | 'UnliftIO.Async.mapConcurrently' but passing the thread context along
 mapConcurrently
