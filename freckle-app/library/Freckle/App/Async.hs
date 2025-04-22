@@ -127,7 +127,7 @@ forConcurrently_
   :: (MonadUnliftIO m, MonadMask m, Traversable t) => t a -> (a -> m b) -> m ()
 forConcurrently_ = flip mapConcurrently_
 
--- | Run a list of actions concurrently
+-- | Run a list of actions concurrently, combining the results monoidally
 --
 -- The forked threads will have the current thread context copied to them.
 foldConcurrently
