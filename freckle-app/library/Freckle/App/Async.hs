@@ -1,15 +1,24 @@
 module Freckle.App.Async
-  ( async
-  , foldConcurrently
-  , immortalCreate
-  , immortalCreateLogged
-  , ThreadContext (..)
+  ( -- * The 'ThreadContext' these functions preserve
+    ThreadContext (..)
   , getThreadContext
   , withThreadContext
-  , forConcurrently
-  , forConcurrently_
+
+    -- * "UnliftIO.Async" functions that preserve context
+  , async
   , mapConcurrently
+  , forConcurrently
   , mapConcurrently_
+  , forConcurrently_
+
+    -- ** Related extensions
+  , foldConcurrently
+
+    -- * "Control.Immortal" functions that preserve context
+  , immortalCreate
+
+    -- ** Related extensions
+  , immortalCreateLogged
   ) where
 
 import Freckle.App.Prelude
@@ -34,6 +43,30 @@ async f = do
   context <- getThreadContext
   UnliftIO.async $ withThreadContext context f
 
+-- | 'UnliftIO.Async.mapConcurrently' but passing the thread context along
+mapConcurrently
+  :: (MonadUnliftIO m, MonadMask m, Traversable t) => (a -> m b) -> t a -> m (t b)
+mapConcurrently f xs = do
+  context <- getThreadContext
+  UnliftIO.mapConcurrently (withThreadContext context . f) xs
+
+-- | 'UnliftIO.Async.forConcurrently' but passing the thread context along
+forConcurrently
+  :: (MonadUnliftIO m, MonadMask m, Traversable t) => t a -> (a -> m b) -> m (t b)
+forConcurrently = flip mapConcurrently
+
+-- | 'UnliftIO.Async.mapConcurrently_' but passing the thread context along
+mapConcurrently_
+  :: (MonadUnliftIO m, MonadMask m, Traversable t) => (a -> m b) -> t a -> m ()
+mapConcurrently_ f xs = do
+  context <- getThreadContext
+  UnliftIO.mapConcurrently_ (withThreadContext context . f) xs
+
+-- | 'UnliftIO.Async.forConcurrently_' but passing the thread context along
+forConcurrently_
+  :: (MonadUnliftIO m, MonadMask m, Traversable t) => t a -> (a -> m b) -> m ()
+forConcurrently_ = flip mapConcurrently_
+
 -- | Run a list of actions concurrently
 --
 -- The forked threads will have the current thread context copied to them.
@@ -42,30 +75,6 @@ foldConcurrently
 foldConcurrently xs = do
   context <- getThreadContext
   runConc $ foldMap (conc . withThreadContext context) xs
-
--- | 'UnliftIO.Async.forConcurrently' but passing the thread context along
-forConcurrently
-  :: (MonadUnliftIO m, MonadMask m, Traversable t) => t a -> (a -> m b) -> m (t b)
-forConcurrently = flip mapConcurrently
-
--- | 'UnliftIO.Async.mapConcurrently' but passing the thread context along
-mapConcurrently
-  :: (MonadUnliftIO m, MonadMask m, Traversable t) => (a -> m b) -> t a -> m (t b)
-mapConcurrently f xs = do
-  context <- getThreadContext
-  UnliftIO.mapConcurrently (withThreadContext context . f) xs
-
--- | 'UnliftIO.Async.forConcurrently_' but passing the thread context along
-forConcurrently_
-  :: (MonadUnliftIO m, MonadMask m, Traversable t) => t a -> (a -> m b) -> m ()
-forConcurrently_ = flip mapConcurrently_
-
--- | 'UnliftIO.Async.mapConcurrently_' but passing the thread context along
-mapConcurrently_
-  :: (MonadUnliftIO m, MonadMask m, Traversable t) => (a -> m b) -> t a -> m ()
-mapConcurrently_ f xs = do
-  context <- getThreadContext
-  UnliftIO.mapConcurrently_ (withThreadContext context . f) xs
 
 -- | Wrapper around creating "Control.Immortal" processes
 --
