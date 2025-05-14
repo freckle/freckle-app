@@ -9,6 +9,7 @@ module Freckle.App.Kafka.Producer
   , HasKafkaProducerPool (..)
   , createKafkaProducerPool
   , produceKeyedOn
+  , produce
   ) where
 
 import Prelude
@@ -136,20 +137,7 @@ produceKeyedOn
   -> NonEmpty value
   -> (value -> key)
   -> m ()
-produceKeyedOn prTopic values keyF = traced $ do
-  logDebugNS "kafka" $ "Producing Kafka events" :# ["events" .= values]
-  view kafkaProducerPoolL >>= \case
-    NullKafkaProducerPool -> pure ()
-    KafkaProducerPool producerPool ->
-      withRunInIO $ \run ->
-        Pool.withResource producerPool $ \producer ->
-          for_ @NonEmpty values $ \value -> do
-            mError <- liftIO $ produceMessage producer $ mkProducerRecord value
-            for_ @Maybe mError $ \e ->
-              run $
-                logErrorNS "kafka" $
-                  "Failed to send event"
-                    :# ["error" .= T.pack (show e)]
+produceKeyedOn prTopic values keyF = produce prTopic (NE.map mkProducerRecord values)
  where
   mkProducerRecord value =
     ProducerRecord
@@ -160,6 +148,33 @@ produceKeyedOn prTopic values keyF = traced $ do
       , prHeaders = mempty
       }
 
+-- | Produce/Emit a message to a Kafka topic
+produce
+  :: ( MonadUnliftIO m
+     , MonadLogger m
+     , MonadTracer m
+     , MonadReader env m
+     , HasKafkaProducerPool env
+     )
+  => TopicName
+  -> NonEmpty ProducerRecord
+  -> m ()
+produce prTopic events = traced $ do
+  logDebugNS "kafka" $
+    "Producing Kafka events" :# ["events" .= NE.map show events]
+  view kafkaProducerPoolL >>= \case
+    NullKafkaProducerPool -> pure ()
+    KafkaProducerPool producerPool ->
+      withRunInIO $ \run ->
+        Pool.withResource producerPool $ \producer ->
+          for_ @NonEmpty events $ \event -> do
+            mError <- liftIO $ produceMessage producer event
+            for_ @Maybe mError $ \e ->
+              run $
+                logErrorNS "kafka" $
+                  "Failed to send event"
+                    :# ["error" .= T.pack (show e)]
+ where
   traced =
     inSpan
       "kafka.produce"
