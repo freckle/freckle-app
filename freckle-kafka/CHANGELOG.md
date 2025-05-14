@@ -1,4 +1,8 @@
-## [_Unreleased_](freckle-kafka-v0.0.0.2...main)
+## [_Unreleased_](freckle-kafka-v0.0.0.3...main)
+
+## [v0.0.0.3](https://github.com/freckle/freckle-app/compare/freckle-kafka-v0.0.0.2...freckle-kafka-v0.0.0.3)
+
+Add `produceKeyedOnWithEventTransformer`
 
 ## [v1.21.1.0](https://github.com/freckle/freckle-app/compare/freckle-kafka-v0.0.0.1...freckle-kafka-v0.0.0.2)
 

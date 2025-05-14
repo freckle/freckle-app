@@ -9,6 +9,7 @@ module Freckle.App.Kafka.Producer
   , HasKafkaProducerPool (..)
   , createKafkaProducerPool
   , produceKeyedOn
+  , produceKeyedOnWithEventTransformer
   ) where
 
 import Prelude
@@ -160,6 +161,48 @@ produceKeyedOn prTopic values keyF = traced $ do
       , prHeaders = mempty
       }
 
+  traced =
+    inSpan
+      "kafka.produce"
+      defaultSpanArguments
+        { Trace.kind = Producer
+        , Trace.attributes =
+            HashMap.fromList
+              [ ("service.name", "kafka")
+              , ("topic", Trace.toAttribute $ unTopicName prTopic)
+              ]
+        }
+
+-- | Produce/Emit a message to a Kafka topic, accepts a function that defines how to
+-- create a 'ProducerRecord' from an event value.
+produceKeyedOnWithEventTransformer
+  :: ( MonadUnliftIO m
+     , MonadLogger m
+     , MonadTracer m
+     , MonadReader env m
+     , HasKafkaProducerPool env
+     , ToJSON event
+     )
+  => TopicName
+  -> NonEmpty event
+  -> (event -> ProducerRecord)
+  -> m ()
+produceKeyedOnWithEventTransformer prTopic events mkProducerRecordFromEventVal = traced $ do
+  logDebugNS "kafka" $
+    "Producing Kafka events" :# ["events" .= events]
+  view kafkaProducerPoolL >>= \case
+    NullKafkaProducerPool -> pure ()
+    KafkaProducerPool producerPool ->
+      withRunInIO $ \run ->
+        Pool.withResource producerPool $ \producer ->
+          for_ @NonEmpty events $ \event -> do
+            mError <- liftIO $ produceMessage producer (mkProducerRecordFromEventVal event)
+            for_ @Maybe mError $ \e ->
+              run $
+                logErrorNS "kafka" $
+                  "Failed to send event"
+                    :# ["error" .= T.pack (show e)]
+ where
   traced =
     inSpan
       "kafka.produce"
