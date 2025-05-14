@@ -137,20 +137,7 @@ produceKeyedOn
   -> NonEmpty value
   -> (value -> key)
   -> m ()
-produceKeyedOn prTopic values keyF = traced $ do
-  logDebugNS "kafka" $ "Producing Kafka events" :# ["events" .= values]
-  view kafkaProducerPoolL >>= \case
-    NullKafkaProducerPool -> pure ()
-    KafkaProducerPool producerPool ->
-      withRunInIO $ \run ->
-        Pool.withResource producerPool $ \producer ->
-          for_ @NonEmpty values $ \value -> do
-            mError <- liftIO $ produceMessage producer $ mkProducerRecord value
-            for_ @Maybe mError $ \e ->
-              run $
-                logErrorNS "kafka" $
-                  "Failed to send event"
-                    :# ["error" .= T.pack (show e)]
+produceKeyedOn prTopic values keyF = produceKeyedOnWithEventTransformer prTopic values mkProducerRecord
  where
   mkProducerRecord value =
     ProducerRecord
@@ -160,18 +147,6 @@ produceKeyedOn prTopic values keyF = traced $ do
       , prValue = Just $ BSL.toStrict $ encode value
       , prHeaders = mempty
       }
-
-  traced =
-    inSpan
-      "kafka.produce"
-      defaultSpanArguments
-        { Trace.kind = Producer
-        , Trace.attributes =
-            HashMap.fromList
-              [ ("service.name", "kafka")
-              , ("topic", Trace.toAttribute $ unTopicName prTopic)
-              ]
-        }
 
 -- | Produce/Emit a message to a Kafka topic, accepts a function that defines how to
 -- create a 'ProducerRecord' from an event value.
