@@ -9,7 +9,7 @@ module Freckle.App.Kafka.Producer
   , HasKafkaProducerPool (..)
   , createKafkaProducerPool
   , produceKeyedOn
-  , produceKeyedOnWithProducerRecords
+  , produce
   ) where
 
 import Prelude
@@ -137,20 +137,7 @@ produceKeyedOn
   -> NonEmpty value
   -> (value -> key)
   -> m ()
-produceKeyedOn prTopic values keyF = traced $ do
-  logDebugNS "kafka" $ "Producing Kafka events" :# ["events" .= values]
-  view kafkaProducerPoolL >>= \case
-    NullKafkaProducerPool -> pure ()
-    KafkaProducerPool producerPool ->
-      withRunInIO $ \run ->
-        Pool.withResource producerPool $ \producer ->
-          for_ @NonEmpty values $ \value -> do
-            mError <- liftIO $ produceMessage producer $ mkProducerRecord value
-            for_ @Maybe mError $ \e ->
-              run $
-                logErrorNS "kafka" $
-                  "Failed to send event"
-                    :# ["error" .= T.pack (show e)]
+produceKeyedOn prTopic values keyF = produce prTopic (NE.map mkProducerRecord values)
  where
   mkProducerRecord value =
     ProducerRecord
@@ -161,20 +148,8 @@ produceKeyedOn prTopic values keyF = traced $ do
       , prHeaders = mempty
       }
 
-  traced =
-    inSpan
-      "kafka.produce"
-      defaultSpanArguments
-        { Trace.kind = Producer
-        , Trace.attributes =
-            HashMap.fromList
-              [ ("service.name", "kafka")
-              , ("topic", Trace.toAttribute $ unTopicName prTopic)
-              ]
-        }
-
 -- | Produce/Emit a message to a Kafka topic, accepts a list of ProducerRecords (Kafka messages) instead of a list of event payloads
-produceKeyedOnWithProducerRecords
+produce
   :: ( MonadUnliftIO m
      , MonadLogger m
      , MonadTracer m
@@ -184,7 +159,7 @@ produceKeyedOnWithProducerRecords
   => TopicName
   -> NonEmpty ProducerRecord
   -> m ()
-produceKeyedOnWithProducerRecords prTopic events = traced $ do
+produce prTopic events = traced $ do
   logDebugNS "kafka" $
     "Producing Kafka events" :# ["events" .= NE.map show events]
   view kafkaProducerPoolL >>= \case
