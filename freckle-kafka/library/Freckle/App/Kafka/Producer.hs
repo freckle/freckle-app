@@ -148,7 +148,7 @@ produceKeyedOn prTopic values keyF = produce prTopic (NE.map mkProducerRecord va
       , prHeaders = mempty
       }
 
--- | Produce/Emit a message to a Kafka topic, accepts a list of ProducerRecords (Kafka messages) instead of a list of event payloads
+-- | Produce/Emit a message to a Kafka topic, accepts a list of ProducerRecords (Kafka messages)
 produce
   :: ( MonadUnliftIO m
      , MonadLogger m
