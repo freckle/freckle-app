@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.0.1...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.2.0...main)
+
+## [v1.23.2.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.1.0...freckle-app-v1.23.2.0)
+
+- Add `shouldBeJust` to `Freckle.App.Test`
 
 ## [v1.23.1.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.0.1...freckle-app-v1.23.1.0)
 

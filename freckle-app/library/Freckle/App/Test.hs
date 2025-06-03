@@ -11,6 +11,7 @@ module Freckle.App.Test
   , expectationFailure
   , pending
   , pendingWith
+  , shouldBeJust
 
     -- * Re-exports
   , module X
@@ -161,3 +162,8 @@ pending = liftIO Hspec.pending
 
 pendingWith :: MonadIO m => String -> m ()
 pendingWith msg = liftIO $ Hspec.pendingWith msg
+
+shouldBeJust :: (HasCallStack, MonadIO m) => Maybe a -> m a
+shouldBeJust = \case
+  Nothing -> expectationFailure "Expected Just, but got Nothing"
+  Just a -> pure a
