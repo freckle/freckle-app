@@ -2,7 +2,7 @@
 
 ## [v1.23.2.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.1.0...freckle-app-v1.23.2.0)
 
-- Add `shouldBeJust` to `Freckle.App.Test`
+- Add to `Freckle.App.Test`: `expectJust`, `expectRight`, and `expect`
 
 ## [v1.23.1.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.0.1...freckle-app-v1.23.1.0)
 

@@ -11,7 +11,9 @@ module Freckle.App.Test
   , expectationFailure
   , pending
   , pendingWith
-  , shouldBeJust
+  , expectJust
+  , expectRight
+  , expect
 
     -- * Re-exports
   , module X
@@ -163,7 +165,31 @@ pending = liftIO Hspec.pending
 pendingWith :: MonadIO m => String -> m ()
 pendingWith msg = liftIO $ Hspec.pendingWith msg
 
-shouldBeJust :: (HasCallStack, MonadIO m) => Maybe a -> m a
-shouldBeJust = \case
-  Nothing -> expectationFailure "Expected Just, but got Nothing"
+-- | Unwraps 'Just', or throws an assertion failure if the 'Maybe' is 'Nothing'
+--
+-- Like @(\``shouldSatisfy`\` 'isJust')@, but returns the 'Just' value.
+expectJust :: (HasCallStack, MonadIO m) => Maybe a -> m a
+expectJust = \case
+  Nothing -> expectationFailure "expected Just, but got Nothing"
   Just a -> pure a
+
+-- | Unwraps 'Right', or throws an assertion failure if the 'Either' is 'Left'
+--
+-- Like @(\``shouldSatisfy`\` 'isRight')@, but returns the 'Right' value.
+expectRight :: (HasCallStack, MonadIO m, Show a) => Either a b -> m b
+expectRight = \case
+  Left a -> expectationFailure $ "expected Right, but got " <> show a
+  Right b -> pure b
+
+-- | Applies an @a -> Maybe b@ function, then either unwraps a 'Just' result
+--   or throws an assertion failure if the result is 'Nothing'
+--
+-- @'expect' f@ is like @(\``shouldSatisfy`\` f)@, but where @f@ is returns 'Maybe'
+-- rather than 'Bool', and a successful result is returned for use in subsequent
+-- assertions.
+--
+-- This can be useful with @lens@, for example: @b <- expect (preview _Left) a@
+expect :: (HasCallStack, MonadIO m, Show a) => (a -> Maybe b) -> a -> m b
+expect f a = case f a of
+  Nothing -> expectationFailure $ "predicate failed on: " <> show a
+  Just b -> pure b
