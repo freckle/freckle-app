@@ -14,6 +14,7 @@ module Freckle.App.Test
   , expectJust
   , expectRight
   , expect
+  , withFailureDetail
 
     -- * Re-exports
   , module X
@@ -48,6 +49,7 @@ import Control.Monad.Primitive
 import Control.Monad.Random (MonadRandom (..))
 import Control.Monad.Reader
 import Control.Monad.Trans.Control
+import Data.List (intercalate)
 import Database.Persist.Sql (SqlPersistT, runSqlPool)
 import Freckle.App.Database
   ( HasSqlPool (..)
@@ -58,6 +60,7 @@ import Freckle.App.Database
 import Freckle.App.Dotenv qualified as Dotenv
 import Freckle.App.Exception.MonadThrow qualified as MonadThrow
 import Freckle.App.OpenTelemetry
+import Test.HUnit.Lang (FailureReason (..), HUnitFailure (..))
 import Test.Hspec qualified as Hspec hiding (expectationFailure)
 import Test.Hspec.Core.Spec (Arg, Example, SpecWith, evaluateExample)
 import Test.Hspec.Expectations.Lifted qualified as Hspec (expectationFailure)
@@ -193,3 +196,21 @@ expect :: (HasCallStack, MonadIO m, Show a) => (a -> Maybe b) -> a -> m b
 expect f a = case f a of
   Nothing -> expectationFailure $ "predicate failed on: " <> show a
   Just b -> pure b
+
+-- | Prepend a message to any 'HUnitFailure' thrown by an action
+--
+-- This can be useful when you have additional information that was generated during
+-- the execution of a test that would be helpful in understanding why the test failed.
+withFailureDetail
+  :: (HasCallStack, MonadUnliftIO m) => (HasCallStack => m a) -> String -> m a
+withFailureDetail action message =
+  catch action $ \(HUnitFailure l r) ->
+    throwM $ HUnitFailure l $ case r of
+      Reason reason -> Reason $ intercalate "\n\n" [message, reason]
+      ExpectedButGot maybeReason expected got ->
+        ExpectedButGot
+          (Just $ intercalate "\n\n" $ message : maybeToList maybeReason)
+          expected
+          got
+
+infix 0 `withFailureDetail`
