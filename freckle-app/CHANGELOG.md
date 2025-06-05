@@ -1,4 +1,9 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.2.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.3.0...main)
+
+## [v1.23.3.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.2.0...freckle-app-v1.23.3.0)
+
+- Add to `Freckle.App.Test`: `withFailureDetail`
+- Add to `Freckle.App.Test.Yesod`: `statusIs2xx`
 
 ## [v1.23.2.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.1.0...freckle-app-v1.23.2.0)
 

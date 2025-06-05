@@ -47,6 +47,7 @@ module Freckle.App.Test.Yesod
 
     -- ** Status
   , statusIs
+  , statusIs2XX
 
     -- ** Header fields
   , assertHeader
@@ -89,6 +90,7 @@ import Data.CaseInsensitive (CI)
 import Data.Csv qualified as CSV
 import Data.Text qualified as T
 import Data.Vector qualified as V
+import Freckle.App.Http (statusIsSuccessful)
 import Freckle.App.Test (expectationFailure)
 import Network.HTTP.Types.Header (hAccept, hAcceptLanguage, hContentType)
 import Network.Wai.Test (SResponse (..))
@@ -237,6 +239,13 @@ addJsonHeaders = do
 statusIs
   :: forall m site. (MonadYesodExample site m, HasCallStack) => Int -> m ()
 statusIs = liftYesodExample . Yesod.Test.statusIs
+
+statusIs2XX :: MonadYesodExample site m => m ()
+statusIs2XX = liftYesodExample $ withResponse $ \response -> do
+  let status = simpleStatus response
+  unless (statusIsSuccessful status) $ do
+    expectationFailure $
+      "Response status " <> show status <> " should have been 2xx"
 
 -- | Assert that the given header field's value satisfied some predicate
 assertHeaderSatisfies
