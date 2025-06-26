@@ -28,6 +28,9 @@ module Freckle.App.Test.Http
     -- * FileSystem stubs
   , loadHttpStubsDirectory
 
+    -- * Exception
+  , NoStubsMatched(..)
+
     -- * 'MonadHttp' instances
 
     -- ** For use with @DerivingVia@
@@ -42,11 +45,13 @@ module Freckle.App.Test.Http
 import Prelude
 
 import Control.Applicative (asum)
+import Control.Exception (Exception (..))
 import Control.Lens (Lens', lens, view,  (.~), (<>~))
 import Control.Monad.Reader (MonadReader, ReaderT, runReaderT)
 import Data.Aeson (ToJSON, encode)
 import Data.Bifunctor (bimap)
 import Control.Monad(filterM)
+import Control.Monad.IO.Class (MonadIO)
 import Data.ByteString.Lazy qualified as BSL
 import Data.Either (partitionEithers)
 import Data.Function ((&))
@@ -55,6 +60,7 @@ import Data.Maybe (mapMaybe)
 import Data.String (IsString)
 import Data.String qualified
 import Data.Traversable (for)
+import Control.Exception.Annotated.UnliftIO (throwWithCallStack)
 import Freckle.App.Http (MonadHttp (..))
 import Freckle.App.Test.Http.MatchRequest
 import GHC.Stack (HasCallStack)
@@ -69,8 +75,8 @@ import System.FilePath.Glob (globDir1)
 
 -- | Respond to a 'Request' with the first 'HttpStub' to match
 --
--- If no stubs match, 'error' is used. If you'd rather experience a 404, add
--- a final stub for any request that does that:
+-- If no stubs match, 'throwWithCallStack' is used. If you'd rather experience
+--  a 404, add a final stub for any request that does that:
 --
 -- @
 -- stubs :: ['HttpStub']
@@ -83,12 +89,15 @@ import System.FilePath.Glob (globDir1)
 --   ]
 -- @
 httpStubbed
-  :: HasCallStack
+  :: (MonadIO m, HasCallStack)
   => [HttpStub]
   -> Request
-  -> Response BSL.ByteString
+  -> m (Response BSL.ByteString)
 httpStubbed stubs req =
-  maybe (error errorMessage) (toResponse req) $ headMay matched
+  maybe
+    (throwWithCallStack NoStubsMatched{req, unmatched})
+    (pure . toResponse req)
+    $ headMay matched
  where
   (unmatched, matched) =
     partitionEithers
@@ -99,13 +108,27 @@ httpStubbed stubs req =
         )
         stubs
 
-  errorMessage =
+data NoStubsMatched = NoStubsMatched
+  { req :: Request
+  , unmatched :: [(HttpStub, String)]
+  }
+
+instance Show NoStubsMatched where
+  show = displayException
+
+
+instance Exception NoStubsMatched where
+  displayException NoStubsMatched {req, unmatched} =
     "No stubs were found that matched:\n"
     <> show req
     <> "\n"
-    <> concatMap (uncurry unmatchedMessage) unmatched
-
-  unmatchedMessage stub err = "\n== " <> stub.label <> " ==\n" <> err
+    <> (
+      if length unmatched < 4
+        then concatMap (uncurry unmatchedMessage) unmatched
+        else "\nNumber of stubs: " <> show (length unmatched)
+    )
+   where
+    unmatchedMessage stub err = "\n== " <> stub.label <> " ==\n" <> err
 
 -- | Fields that can be defined for a response
 data HttpStubResponse = HttpStubResponse
@@ -241,16 +264,16 @@ instance HasHttpStubs [HttpStub] where
   httpStubsL = id
 
 newtype ReaderHttpStubs m a = ReaderHttpStubs {unwrap :: m a}
-  deriving newtype (Functor, Applicative, Monad, MonadReader env)
+  deriving newtype (Functor, Applicative, Monad, MonadIO, MonadReader env)
 
-instance (MonadReader env m, HasHttpStubs env) => MonadHttp (ReaderHttpStubs m) where
+instance (MonadReader env m, HasHttpStubs env, MonadIO m) => MonadHttp (ReaderHttpStubs m) where
   httpLbs req = do
     stubs <- view httpStubsL
-    pure $ httpStubbed stubs req
+    httpStubbed stubs req
 
 newtype HttpStubsT m a = HttpStubsT {unwrap :: ReaderT [HttpStub] m a}
   deriving newtype (Functor, Applicative, Monad, MonadReader [HttpStub])
-  deriving (MonadHttp) via ReaderHttpStubs (HttpStubsT m)
+  deriving (MonadIO, MonadHttp) via ReaderHttpStubs (HttpStubsT m)
 
 runHttpStubsT :: HttpStubsT m a -> [HttpStub] -> m a
 runHttpStubsT f = runReaderT f.unwrap

@@ -1,4 +1,11 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-http-v0.1.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-http-v0.2.0.0...main)
+
+## [v0.2.0.0](https://github.com/freckle/freckle-app/compare/freckle-http-v0.1.0.0...freckle-http-v0.2.0.0)
+
+`MonadHttp.httpLbs` has a `HasCallStack` constraint, and instances throw `AnnotatedException`
+
+Breaking change: `httpStubbed` is now monadic rather than pure. Its errors are thrown into `IO` as
+`AnnotatedException`-wrapped `NoStubsMatched`.
 
 ## [v0.1.0.0](https://github.com/freckle/freckle-app/compare/freckle-http-v0.0.0.0...freckle-http-v0.1.0.0)
 

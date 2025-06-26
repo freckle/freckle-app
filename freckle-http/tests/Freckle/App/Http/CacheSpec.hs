@@ -362,7 +362,7 @@ requestBodyCached
   -> Request
   -> StateT Cache IO BSL.ByteString
 requestBodyCached ss stubs req =
-  getResponseBody <$> httpCached ss (pure . httpStubbed stubs) req
+  getResponseBody <$> httpCached ss (httpStubbed stubs) req
 
 settings :: CacheSettings
 settings = stateHttpCacheSettings

@@ -78,7 +78,11 @@ module Freckle.App.Http
 import Prelude
 
 import Conduit (foldC, mapMC, runConduit, (.|))
-import Control.Exception.Annotated.UnliftIO (Exception (..), throwWithCallStack)
+import Control.Exception.Annotated.UnliftIO
+  ( Exception (..)
+  , checkpointCallStack
+  , throwWithCallStack
+  )
 import Control.Monad.Except (ExceptT)
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Reader (ReaderT)
@@ -138,10 +142,10 @@ import Network.HTTP.Types.Status
 -- resp <- liftIO $ httpLbs ...
 -- @
 class Monad m => MonadHttp m where
-  httpLbs :: Request -> m (Response BSL.ByteString)
+  httpLbs :: HasCallStack => Request -> m (Response BSL.ByteString)
 
 instance MonadHttp IO where
-  httpLbs = rateLimited HTTP.httpLbs
+  httpLbs x = checkpointCallStack $ rateLimited HTTP.httpLbs x
 
 instance MonadHttp m => MonadHttp (MaybeT m) where
   httpLbs = lift . httpLbs
