@@ -74,7 +74,7 @@ memcachedHttpCache
 memcachedHttpCache =
   HttpCache
     { get = try . Memcached.get
-    , set = \k v -> try $ Memcached.set k v 0
+    , set = \k v t -> try $ Memcached.set k v t
     , evict = try . Memcached.delete
     }
 
