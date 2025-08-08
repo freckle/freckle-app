@@ -75,7 +75,7 @@ stateHttpCache
 stateHttpCache =
   HttpCache
     { get = \key -> fmap Right $ use $ cacheL . mapL . at key
-    , set = \key resp -> fmap Right $ cacheL . mapL . at key ?= resp
+    , set = \key resp _ -> fmap Right $ cacheL . mapL . at key ?= resp
     , evict = \key -> fmap Right $ cacheL . mapL . at key .= Nothing
     }
 

@@ -68,7 +68,7 @@ data HttpCacheCodec t = HttpCacheCodec
 
 data HttpCache m t = HttpCache
   { get :: CacheKey -> m (Either SomeException (Maybe t))
-  , set :: CacheKey -> t -> m (Either SomeException ())
+  , set :: CacheKey -> t -> CacheTTL -> m (Either SomeException ())
   , evict :: CacheKey -> m (Either SomeException ())
   }
 
@@ -176,7 +176,7 @@ httpCached settings doHttp req =
              , "ttl" .= fromCacheTTL ttl
              ]
       let cresp = CachedResponse {response = resp, inserted = now, ttl = ttl}
-      fromEx () $ settings.cache.set key $ settings.codec.serialise cresp
+      fromEx () $ settings.cache.set key (settings.codec.serialise cresp) ttl
 
     gunzipResponseBody req resp
 
