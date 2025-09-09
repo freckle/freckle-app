@@ -5,3 +5,4 @@
 dist-newstyle
 stack-*.yaml.lock
 .direnv
+.envrc
