@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.24.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.24.0.1...main)
+
+## [v1.24.0.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.24.0.1...freckle-app-v1.24.0.1)
+
+- Support `autodocodec-openapi3` version `0.3`
 
 ## [v1.24.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.3.0...freckle-app-v1.24.0.0)
 

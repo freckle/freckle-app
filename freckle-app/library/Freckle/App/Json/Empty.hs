@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 -- | Aeson represents
 module Freckle.App.Json.Empty
   ( Empty (..)
@@ -15,6 +17,9 @@ import Autodocodec.OpenAPI ()
 import Data.Aeson (FromJSON, ToJSON)
 import Data.OpenApi (ToSchema (..))
 import Test.QuickCheck (Arbitrary (..))
+#if MIN_VERSION_autodocodec_openapi3(0,3,0)
+import Autodocodec.OpenAPI.DerivingVia (AutodocodecOpenApi (..))
+#endif
 
 -- | A unit value encoded as an empty JSON object
 --
@@ -24,7 +29,12 @@ import Test.QuickCheck (Arbitrary (..))
 -- (One would expect to be able to use () for this, but Aeson encodes unit
 -- as an empty list, not as an object.)
 data Empty = Empty
-  deriving (ToJSON, FromJSON, ToSchema) via (Autodocodec Empty)
+  deriving (ToJSON, FromJSON) via (Autodocodec Empty)
+#if MIN_VERSION_autodocodec_openapi3(0,3,0)
+  deriving ToSchema via (AutodocodecOpenApi Empty)
+#else
+  deriving ToSchema via (Autodocodec Empty)
+#endif
 
 instance Arbitrary Empty where
   arbitrary = pure Empty
