@@ -13,7 +13,7 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: generate
         uses: freckle/stack-action/generate-matrix@v5
     outputs:
@@ -40,7 +40,7 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install system libraries
         run: sudo apt-get install --assume-yes --no-install-recommends libpcre3-dev librdkafka-dev
       - uses: freckle/stack-action@v5
@@ -51,7 +51,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: haskell-actions/hlint-setup@v2
       - uses: haskell-actions/hlint-run@v2
         with:
