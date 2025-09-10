@@ -24,6 +24,7 @@ module Freckle.App.Prelude
   , Text
   , UTCTime
   , Vector
+  , Void
 
     -- * Commonly used functions
 
@@ -138,6 +139,7 @@ import Data.Set (Set)
 import Data.Text (Text, pack, unpack)
 import Data.Time (NominalDiffTime, UTCTime, getCurrentTime)
 import Data.Vector (Vector)
+import Data.Void (Void)
 import Freckle.App.Exception
 import GHC.Generics (Generic)
 

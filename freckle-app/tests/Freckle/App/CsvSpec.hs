@@ -12,7 +12,6 @@ import Data.Csv hiding (header)
 import Data.List.NonEmpty qualified as NE
 import Data.Sequence.NonEmpty (NESeq)
 import Data.Vector qualified as V
-import Data.Void (Void)
 import Freckle.App.Csv
 import Test.Hspec
 
