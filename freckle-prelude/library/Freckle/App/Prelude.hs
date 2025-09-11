@@ -102,6 +102,10 @@ module Freckle.App.Prelude
   , ExceptionHandler (..)
   , Exception (displayException)
   , SomeException (..)
+
+  -- * Kinds
+  , Type
+  , Constraint
   ) where
 
 -- Use 'Prelude' as the starting point, removing common partial functions
@@ -133,6 +137,7 @@ import Data.HashMap.Strict (HashMap)
 import Data.HashSet (HashSet)
 import Data.Hashable (Hashable)
 import Data.Int (Int64)
+import Data.Kind (Constraint, Type)
 import Data.List.NonEmpty (NonEmpty)
 import Data.Map.Strict (Map)
 import Data.Set (Set)
