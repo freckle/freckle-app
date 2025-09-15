@@ -16,6 +16,7 @@ module Freckle.App.Prelude
   , MonadIO
   , MonadReader
   , MonadUnliftIO
+  , Natural
   , NominalDiffTime
   , NonEmpty
   , PrimMonad
@@ -147,6 +148,7 @@ import Data.Vector (Vector)
 import Data.Void (Void)
 import Freckle.App.Exception
 import GHC.Generics (Generic)
+import Numeric.Natural (Natural)
 
 -- Safe alternatives to prelude functions
 
