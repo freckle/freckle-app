@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-prelude-v0.0.3.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-prelude-v0.0.4.0...main)
+
+## [v0.0.4.0](https://github.com/freckle/freckle-app/compare/freckle-prelude-v0.0.3.0...freckle-prelude-v0.0.4.0)
+
+Add `Natural` from `Numeric.Natural` in `base`.
 
 ## [v0.0.3.0](https://github.com/freckle/freckle-app/compare/freckle-prelude-v0.0.2.0...freckle-prelude-v0.0.3.0)
 

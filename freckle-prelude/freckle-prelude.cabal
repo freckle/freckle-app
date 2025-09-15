@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           freckle-prelude
-version:        0.0.3.0
+version:        0.0.4.0
 synopsis:       Standard prelude for Freckle applications
 description:    Please see README.md
 category:       Prelude

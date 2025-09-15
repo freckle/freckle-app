@@ -14,7 +14,6 @@ import Control.Monad.ST (runST)
 import Control.Monad.State.Strict (execStateT, get, put)
 import Data.Functor ((<&>))
 import Data.STRef (newSTRef, readSTRef, writeSTRef)
-import Numeric.Natural (Natural)
 
 import Data.Set qualified as Set
 
