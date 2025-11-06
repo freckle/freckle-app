@@ -6,7 +6,7 @@
 
 ## [v1.24.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.3.0...freckle-app-v1.24.0.0)
 
-- Update `HttpCache.set` to accept TTL (and use it in memcached implementation)
+No change
 
 ## [v1.23.3.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.2.0...freckle-app-v1.23.3.0)
 
