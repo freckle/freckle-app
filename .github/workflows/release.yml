@@ -12,7 +12,6 @@ jobs:
       matrix:
         package:
           - freckle-app
-          - freckle-ecs
           - freckle-env
           - freckle-exception
           - freckle-kafka
@@ -41,7 +40,6 @@ jobs:
       matrix:
         package:
           - freckle-app
-          - freckle-ecs
           - freckle-env
           - freckle-exception
           - freckle-kafka

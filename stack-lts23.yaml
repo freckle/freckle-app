@@ -4,6 +4,7 @@ extra-deps:
   - buffer-builder-0.2.4.9
   - datadog-0.3.0.0
   - esqueleto-3.6.0.0
+  - freckle-ecs-0.0.0.1
   - hs-opentelemetry-api-0.2.0.0
   - hs-opentelemetry-exporter-otlp-0.1.0.0
   - hs-opentelemetry-instrumentation-persistent-0.1.0.1
@@ -20,7 +21,6 @@ extra-deps:
 
 packages:
   - freckle-app
-  - freckle-ecs
   - freckle-env
   - freckle-exception
   - freckle-http
