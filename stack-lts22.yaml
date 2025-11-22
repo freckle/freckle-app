@@ -4,6 +4,7 @@ extra-deps:
   - Blammo-wai-0.0.0.2
   - fast-logger-3.2.3
   - freckle-ecs-0.0.0.1
+  - freckle-prelude-0.0.4.0
   - hs-opentelemetry-api-0.1.0.0
   - hs-opentelemetry-exporter-otlp-0.0.1.5
   - hs-opentelemetry-instrumentation-persistent-0.1.0.0
@@ -26,5 +27,4 @@ packages:
   - freckle-kafka
   - freckle-memcached
   - freckle-otel
-  - freckle-prelude
   - freckle-stats
