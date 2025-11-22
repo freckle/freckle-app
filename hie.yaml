@@ -39,8 +39,5 @@ cradle:
     - path: "freckle-otel/tests"
       component: "freckle-otel:test:spec"
 
-    - path: "freckle-prelude/library"
-      component: "freckle-prelude:lib"
-
     - path: "freckle-stats/library"
       component: "freckle-stats:lib"
