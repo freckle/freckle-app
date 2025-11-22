@@ -18,7 +18,6 @@ jobs:
           - freckle-http
           - freckle-memcached
           - freckle-otel
-          - freckle-prelude
           - freckle-stats
 
     steps:
@@ -46,7 +45,6 @@ jobs:
           - freckle-http
           - freckle-memcached
           - freckle-otel
-          - freckle-prelude
           - freckle-stats
 
     env:
