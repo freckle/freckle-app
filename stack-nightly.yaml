@@ -11,6 +11,7 @@ extra-deps:
   - doctest-0.23.0
   - dotenv-0.12.0.0
   - freckle-ecs-0.0.0.1
+  - freckle-exception-0.0.0.0
   - freckle-prelude-0.0.4.0
   - hashable-1.4.7.0
   - hs-opentelemetry-api-0.2.0.0
@@ -47,7 +48,6 @@ allow-newer-deps:
 packages:
   - freckle-app
   - freckle-env
-  - freckle-exception
   - freckle-http
   - freckle-kafka
   - freckle-memcached
