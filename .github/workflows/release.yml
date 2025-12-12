@@ -15,7 +15,6 @@ jobs:
           - freckle-env
           - freckle-exception
           - freckle-kafka
-          - freckle-http
           - freckle-memcached
           - freckle-otel
           - freckle-stats
@@ -42,7 +41,6 @@ jobs:
           - freckle-env
           - freckle-exception
           - freckle-kafka
-          - freckle-http
           - freckle-memcached
           - freckle-otel
           - freckle-stats

@@ -5,6 +5,7 @@ extra-deps:
   - fast-logger-3.2.3
   - freckle-ecs-0.0.0.1
   - freckle-exception-0.0.0.0
+  - freckle-http-0.3.0.0
   - freckle-prelude-0.0.4.0
   - hs-opentelemetry-api-0.1.0.0
   - hs-opentelemetry-exporter-otlp-0.0.1.5
@@ -23,7 +24,6 @@ extra-deps:
 packages:
   - freckle-app
   - freckle-env
-  - freckle-http
   - freckle-kafka
   - freckle-memcached
   - freckle-otel
