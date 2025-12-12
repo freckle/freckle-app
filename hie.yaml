@@ -15,12 +15,6 @@ cradle:
     - path: "freckle-env/doctest"
       component: "freckle-env:test:doctest"
 
-    - path: "freckle-http/library"
-      component: "freckle-http:lib"
-
-    - path: "freckle-http/tests"
-      component: "freckle-http:test:spec"
-
     - path: "freckle-kafka/library"
       component: "freckle-kafka:lib"
 
