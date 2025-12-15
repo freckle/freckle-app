@@ -13,7 +13,6 @@ jobs:
         package:
           - freckle-app
           - freckle-env
-          - freckle-exception
           - freckle-kafka
           - freckle-memcached
           - freckle-otel
@@ -39,7 +38,6 @@ jobs:
         package:
           - freckle-app
           - freckle-env
-          - freckle-exception
           - freckle-kafka
           - freckle-memcached
           - freckle-otel
