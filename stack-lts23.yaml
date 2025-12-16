@@ -5,6 +5,7 @@ extra-deps:
   - datadog-0.3.0.0
   - esqueleto-3.6.0.0
   - freckle-ecs-0.0.0.1
+  - freckle-env-0.0.1.2
   - freckle-exception-0.0.0.0
   - freckle-http-0.3.0.0
   - freckle-prelude-0.0.4.0
@@ -24,7 +25,6 @@ extra-deps:
 
 packages:
   - freckle-app
-  - freckle-env
   - freckle-memcached
   - freckle-otel
   - freckle-stats

@@ -12,7 +12,6 @@ jobs:
       matrix:
         package:
           - freckle-app
-          - freckle-env
           - freckle-memcached
           - freckle-otel
           - freckle-stats
@@ -36,7 +35,6 @@ jobs:
       matrix:
         package:
           - freckle-app
-          - freckle-env
           - freckle-memcached
           - freckle-otel
           - freckle-stats

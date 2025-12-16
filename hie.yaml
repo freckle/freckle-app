@@ -9,12 +9,6 @@ cradle:
     - path: "freckle-app/tests"
       component: "freckle-app:test:spec"
 
-    - path: "freckle-env/library"
-      component: "freckle-env:lib"
-
-    - path: "freckle-env/doctest"
-      component: "freckle-env:test:doctest"
-
     - path: "freckle-memcached/library"
       component: "freckle-memcached:lib"
 
