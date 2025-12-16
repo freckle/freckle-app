@@ -24,7 +24,6 @@ extra-deps:
 packages:
   - freckle-app
   - freckle-env
-  - freckle-kafka
   - freckle-memcached
   - freckle-otel
   - freckle-stats
