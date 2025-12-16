@@ -15,9 +15,6 @@ cradle:
     - path: "freckle-env/doctest"
       component: "freckle-env:test:doctest"
 
-    - path: "freckle-kafka/library"
-      component: "freckle-kafka:lib"
-
     - path: "freckle-memcached/library"
       component: "freckle-memcached:lib"
 
