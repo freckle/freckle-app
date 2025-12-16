@@ -11,6 +11,7 @@ extra-deps:
   - doctest-0.23.0
   - dotenv-0.12.0.0
   - freckle-ecs-0.0.0.1
+  - freckle-env-0.0.1.2
   - freckle-exception-0.0.0.0
   - freckle-http-0.3.0.0
   - freckle-prelude-0.0.4.0
@@ -48,7 +49,6 @@ allow-newer-deps:
 
 packages:
   - freckle-app
-  - freckle-env
   - freckle-memcached
   - freckle-otel
   - freckle-stats
