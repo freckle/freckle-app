@@ -15,6 +15,7 @@ extra-deps:
   - freckle-exception-0.0.0.0
   - freckle-http-0.3.0.0
   - freckle-prelude-0.0.4.0
+  - freckle-stats-0.0.0.0
   - hashable-1.4.7.0
   - hs-opentelemetry-api-0.2.0.0
   - hs-opentelemetry-exporter-otlp-0.1.0.0
@@ -51,4 +52,3 @@ packages:
   - freckle-app
   - freckle-memcached
   - freckle-otel
-  - freckle-stats
