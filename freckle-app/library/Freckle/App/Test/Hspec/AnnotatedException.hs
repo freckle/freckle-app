@@ -70,7 +70,7 @@ combineParagraphs =
   renderString
     . layoutSmart defaultLayoutOptions
     . vsep
-    . punctuate "\n"
+    . punctuate hardline
     . toList
 
 -- | Render a list of annotations as a list of paragraphs
