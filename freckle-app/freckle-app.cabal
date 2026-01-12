@@ -219,6 +219,8 @@ test-suite spec
     , cassava
     , conduit
     , freckle-app
+    , freckle-exception
+    , freckle-prelude
     , freckle-stats
     , hs-opentelemetry-api
     , hspec
