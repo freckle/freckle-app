@@ -12,6 +12,9 @@ import Data.List.NonEmpty (NonEmpty ((:|)), nonEmpty)
 import Data.Text qualified as T
 import Freckle.App.Exception (AnnotatedException (..))
 import GHC.Stack (CallStack, prettyCallStack)
+import Prettyprinter
+import Prettyprinter.Render.String
+import Prettyprinter.Util (reflow)
 import Test.HUnit.Lang (FailureReason (..), HUnitFailure (..))
 import Test.Hspec
 
@@ -50,33 +53,25 @@ annotateFailureReason as =
 --   some additional paragraphs based on annotations, separated by blank lines
 makeMessage :: String -> [Annotation] -> String
 makeMessage m as =
-  combineParagraphs $ stringParagraph m :| annotationParagraphs as
+  combineParagraphs $ pretty m :| annotationParagraphs as
 
 -- | Like 'makeMessage' but without necessarily having an introductory paragraph present
 --
 -- If there is neither an introductory paragraph nor any annotations, the result is 'Nothing'.
 makeMessageMaybe :: Maybe String -> [Annotation] -> Maybe String
 makeMessageMaybe mm as =
-  fmap combineParagraphs $
-    nonEmpty $
-      fmap stringParagraph (toList mm) <> annotationParagraphs as
-
--- | Text that constitutes a paragraph in a potentially lengthy error message
---
--- Construct with 'stringParagraph' or 'textParagraph', which strip the text of
--- surrounding whitespace.
-newtype Paragraph = Paragraph {paragraphText :: Text}
-
-stringParagraph :: String -> Paragraph
-stringParagraph = textParagraph . T.pack
-
-textParagraph :: Text -> Paragraph
-textParagraph = Paragraph . T.strip
+  fmap combineParagraphs
+    $ nonEmpty
+    $ fmap pretty (toList mm) <> annotationParagraphs as
 
 -- | Combine a list of paragraphs into a single string for the final output
-combineParagraphs :: Foldable t => t Paragraph -> String
+combineParagraphs :: Foldable t => t (Doc ann) -> String
 combineParagraphs =
-  T.unpack . T.intercalate "\n\n" . fmap paragraphText . toList
+  renderString
+    . layoutSmart defaultLayoutOptions
+    . vsep
+    . punctuate "\n"
+    . toList
 
 -- | Render a list of annotations as a list of paragraphs
 --
@@ -84,7 +79,7 @@ combineParagraphs =
 --
 -- * a summary of any annotations that aren't call stacks, if any
 -- * the first call stack, if there are any call stacks
-annotationParagraphs :: [Annotation] -> [Paragraph]
+annotationParagraphs :: [Annotation] -> [Doc ann]
 annotationParagraphs annotations =
   catMaybes
     [ otherAnnotationsPart <$> nonEmpty otherAnnotations
@@ -94,14 +89,13 @@ annotationParagraphs annotations =
   (callStacks, otherAnnotations) = tryAnnotations @CallStack annotations
 
 -- | Construct a paragraph consisting of a bullet list of annotations
-otherAnnotationsPart :: Foldable t => t Annotation -> Paragraph
+otherAnnotationsPart :: Foldable t => t Annotation -> Doc ann
 otherAnnotationsPart =
-  textParagraph
-    . T.intercalate "\n"
+  vsep
     . ("Annotations:" :)
-    . fmap (("\t * " <>) . T.pack . show)
+    . fmap (("\t * " <>) . pretty . show)
     . toList
 
 -- | Construct a paragraph that displays a call stack
-callStackPart :: CallStack -> Paragraph
-callStackPart = textParagraph . T.pack . prettyCallStack
+callStackPart :: CallStack -> Doc ann
+callStackPart = pretty . prettyCallStack
