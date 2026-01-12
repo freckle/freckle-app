@@ -17,33 +17,33 @@ spec :: Spec
 spec = do
   describe "annotateHUnitFailure" $ do
     describe "does nothing if there are no annotations" $ do
-      it "when the failure is Reason" $
-        let e = HUnitFailure Nothing (Reason "x")
-        in  annotateHUnitFailure (AnnotatedException [] e) `shouldBe` e
+      it "when the failure is Reason"
+        $ let e = HUnitFailure Nothing (Reason "x")
+          in  annotateHUnitFailure (AnnotatedException [] e) `shouldBe` e
 
-      it "when the failure is ExpectedButGot with no message" $
-        let e = HUnitFailure Nothing (ExpectedButGot Nothing "a" "b")
-        in  annotateHUnitFailure (AnnotatedException [] e) `shouldBe` e
+      it "when the failure is ExpectedButGot with no message"
+        $ let e = HUnitFailure Nothing (ExpectedButGot Nothing "a" "b")
+          in  annotateHUnitFailure (AnnotatedException [] e) `shouldBe` e
 
-      it "when the failure is ExpectedButGot with a message" $
-        let e = HUnitFailure Nothing (ExpectedButGot (Just "x") "a" "b")
-        in  annotateHUnitFailure (AnnotatedException [] e) `shouldBe` e
+      it "when the failure is ExpectedButGot with a message"
+        $ let e = HUnitFailure Nothing (ExpectedButGot (Just "x") "a" "b")
+          in  annotateHUnitFailure (AnnotatedException [] e) `shouldBe` e
 
     describe "can show an annotation" $ do
-      it "when the failure is Reason" $
-        annotateHUnitFailure
+      it "when the failure is Reason"
+        $ annotateHUnitFailure
           AnnotatedException
             { annotations = [toAnnotation @Int 56]
             , exception = HUnitFailure Nothing (Reason "x")
             }
           `shouldBe` HUnitFailure
             Nothing
-            ( Reason . intercalate "\n" $
-                [ "x"
-                , ""
-                , "Annotations:"
-                , "\t * Annotation @Int 56"
-                ]
+            ( Reason . intercalate "\n"
+                $ [ "x"
+                  , ""
+                  , "Annotations:"
+                  , "  * Annotation @Int 56"
+                  ]
             )
 
       it "when the failure is ExpectedButGot with no message" $ do
@@ -55,17 +55,17 @@ spec = do
           `shouldBe` HUnitFailure
             Nothing
             ( ExpectedButGot
-                ( Just . intercalate "\n" $
-                    [ "Annotations:"
-                    , "\t * Annotation @Int 56"
-                    ]
+                ( Just . intercalate "\n"
+                    $ [ "Annotations:"
+                      , "  * Annotation @Int 56"
+                      ]
                 )
                 "a"
                 "b"
             )
 
-      it "when the failure is ExpectedButGot with a message" $
-        annotateHUnitFailure
+      it "when the failure is ExpectedButGot with a message"
+        $ annotateHUnitFailure
           AnnotatedException
             { annotations = [toAnnotation @Int 56]
             , exception = HUnitFailure Nothing (ExpectedButGot (Just "x") "a" "b")
@@ -73,23 +73,23 @@ spec = do
           `shouldBe` HUnitFailure
             Nothing
             ( ExpectedButGot
-                ( Just . intercalate "\n" $
-                    [ "x"
-                    , ""
-                    , "Annotations:"
-                    , "\t * Annotation @Int 56"
-                    ]
+                ( Just . intercalate "\n"
+                    $ [ "x"
+                      , ""
+                      , "Annotations:"
+                      , "  * Annotation @Int 56"
+                      ]
                 )
                 "a"
                 "b"
             )
 
-    it "can show a stack trace" $
-      annotateHUnitFailure
+    it "can show a stack trace"
+      $ annotateHUnitFailure
         AnnotatedException
           { annotations =
-              [ toAnnotation @CallStack $
-                  fromList
+              [ toAnnotation @CallStack
+                  $ fromList
                     [
                       ( "abc"
                       , SrcLoc
@@ -108,21 +108,21 @@ spec = do
           }
         `shouldBe` HUnitFailure
           Nothing
-          ( Reason . intercalate "\n" $
-              [ "x"
-              , ""
-              , "CallStack (from HasCallStack):"
-              , "  abc, called at src/Foo.hs:7:50 in thepackage:Foo"
-              ]
+          ( Reason . intercalate "\n"
+              $ [ "x"
+                , ""
+                , "CallStack (from HasCallStack):"
+                , "  abc, called at src/Foo.hs:7:50 in thepackage:Foo"
+                ]
           )
 
-    it "can show both an annotation and a stack trace" $
-      annotateHUnitFailure
+    it "can show both an annotation and a stack trace"
+      $ annotateHUnitFailure
         AnnotatedException
           { annotations =
               [ toAnnotation @Text "Visibility is poor"
-              , toAnnotation @CallStack $
-                  fromList
+              , toAnnotation @CallStack
+                  $ fromList
                     [
                       ( "abc"
                       , SrcLoc
@@ -141,13 +141,53 @@ spec = do
           }
         `shouldBe` HUnitFailure
           Nothing
-          ( Reason . intercalate "\n" $
-              [ "x"
-              , ""
-              , "Annotations:"
-              , "\t * Annotation @Text \"Visibility is poor\""
-              , ""
-              , "CallStack (from HasCallStack):"
-              , "  abc, called at src/Foo.hs:7:50 in thepackage:Foo"
+          ( Reason . intercalate "\n"
+              $ [ "x"
+                , ""
+                , "Annotations:"
+                , "  * Annotation @Text \"Visibility is poor\""
+                , ""
+                , "CallStack (from HasCallStack):"
+                , "  abc, called at src/Foo.hs:7:50 in thepackage:Foo"
+                ]
+          )
+
+    it "wraps long annotations into neat lists"
+      $ annotateHUnitFailure
+        AnnotatedException
+          { annotations =
+              [ toAnnotation @Text
+                  "Visibility is poor. Visability is poor. Visability is poor. Visability is poor. Visability is poor. Visability is poor. Visability is poor. Visability is poor. Visability is poor. Visability is poor. Visability is poor"
+              , toAnnotation @CallStack
+                  $ fromList
+                    [
+                      ( "abc"
+                      , SrcLoc
+                          { srcLocPackage = "thepackage"
+                          , srcLocModule = "Foo"
+                          , srcLocFile = "src/Foo.hs"
+                          , srcLocStartLine = 7
+                          , srcLocStartCol = 50
+                          , srcLocEndLine = 8
+                          , srcLocEndCol = 23
+                          }
+                      )
+                    ]
               ]
+          , exception = HUnitFailure Nothing (Reason "x")
+          }
+        `shouldBe` HUnitFailure
+          Nothing
+          ( Reason . intercalate "\n"
+              $ [ "x"
+                , ""
+                , "Annotations:"
+                , "  * Annotation @Text \"Visibility is poor. Visability is poor. Visability is"
+                , "    poor. Visability is poor. Visability is poor. Visability is poor. Visability"
+                , "    is poor. Visability is poor. Visability is poor. Visability is poor."
+                , "    Visability is poor\""
+                , ""
+                , "CallStack (from HasCallStack):"
+                , "  abc, called at src/Foo.hs:7:50 in thepackage:Foo"
+                ]
           )
