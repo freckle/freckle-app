@@ -125,6 +125,7 @@ library
     , persistent-postgresql
     , persistent-sql-lifted
     , postgresql-simple
+    , prettyprinter
     , primitive
     , resource-pool >=0.4.0.0
     , resourcet
