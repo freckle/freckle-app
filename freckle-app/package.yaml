@@ -1,5 +1,5 @@
 name: freckle-app
-version: 1.24.0.1
+version: 1.25.0.1
 
 maintainer: Freckle Education
 category: Utils
@@ -55,24 +55,6 @@ default-extensions:
 
 library:
   source-dirs: library
-  reexported-modules:
-    - Freckle.App.Dotenv
-    - Freckle.App.Env
-    - Freckle.App.Http
-    - Freckle.App.Http.Cache
-    - Freckle.App.Http.Cache.Gzip
-    - Freckle.App.Http.Cache.Memcached
-    - Freckle.App.Http.Cache.State
-    - Freckle.App.Http.Header
-    - Freckle.App.Http.Paginate
-    - Freckle.App.Http.Retry
-    - Freckle.App.Prelude
-    - Freckle.App.Exception
-    - Freckle.App.Exception.MonadThrow
-    - Freckle.App.Exception.MonadUnliftIO
-    - Freckle.App.Exception.Types
-    - Freckle.App.Test.Http
-    - Freckle.App.Test.Http.MatchRequest
   dependencies:
     - Blammo
     - Blammo-wai

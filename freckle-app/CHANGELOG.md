@@ -1,4 +1,38 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.24.0.1...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.25.0.0...main)
+
+## [v1.25.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.24.0.1...freckle-app-v1.25.0.0)
+
+Stop re-exporting modules from extracted `freckle-` packages. To continue using
+these modules, add the relevant package to your dependencies.
+
+`freckle-prelude`:
+
+- `Freckle.App.Prelude`
+
+`freckle-env`:
+
+- `Freckle.App.Dotenv`
+- `Freckle.App.Env`
+
+`freckle-exception`:
+
+- `Freckle.App.Exception`
+- `Freckle.App.Exception.MonadThrow`
+- `Freckle.App.Exception.MonadUnliftIO`
+- `Freckle.App.Exception.Types`
+
+`freckle-http`:
+
+- `Freckle.App.Http`
+- `Freckle.App.Http.Cache`
+- `Freckle.App.Http.Cache.Gzip`
+- `Freckle.App.Http.Cache.Memcached`
+- `Freckle.App.Http.Cache.State`
+- `Freckle.App.Http.Header`
+- `Freckle.App.Http.Paginate`
+- `Freckle.App.Http.Retry`
+- `Freckle.App.Test.Http`
+- `Freckle.App.Test.Http.MatchRequest`
 
 ## [v1.24.0.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.23.3.0...freckle-app-v1.24.0.1)
 

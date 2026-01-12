@@ -1,11 +1,11 @@
-cabal-version: 1.22
+cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.38.0.
+-- This file has been generated from package.yaml by hpack version 0.38.1.
 --
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.24.0.1
+version:        1.25.0.1
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -58,24 +58,6 @@ library
       Yesod.Core.Lens
   other-modules:
       Paths_freckle_app
-  reexported-modules:
-      Freckle.App.Dotenv
-    , Freckle.App.Env
-    , Freckle.App.Http
-    , Freckle.App.Http.Cache
-    , Freckle.App.Http.Cache.Gzip
-    , Freckle.App.Http.Cache.Memcached
-    , Freckle.App.Http.Cache.State
-    , Freckle.App.Http.Header
-    , Freckle.App.Http.Paginate
-    , Freckle.App.Http.Retry
-    , Freckle.App.Prelude
-    , Freckle.App.Exception
-    , Freckle.App.Exception.MonadThrow
-    , Freckle.App.Exception.MonadUnliftIO
-    , Freckle.App.Exception.Types
-    , Freckle.App.Test.Http
-    , Freckle.App.Test.Http.MatchRequest
   hs-source-dirs:
       library
   default-extensions:
