@@ -93,7 +93,7 @@ otherAnnotationsPart :: Foldable t => t Annotation -> Doc ann
 otherAnnotationsPart =
   vsep
     . ("Annotations:" :)
-    . fmap (("\t * " <>) . pretty . show)
+    . fmap (indent 2 . ("*" <+>) . align . reflow . T.pack . show)
     . toList
 
 -- | Construct a paragraph that displays a call stack
