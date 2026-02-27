@@ -13,7 +13,6 @@ jobs:
         package:
           - freckle-app
           - freckle-memcached
-          - freckle-otel
 
     steps:
       - uses: actions/checkout@v6
@@ -35,7 +34,6 @@ jobs:
         package:
           - freckle-app
           - freckle-memcached
-          - freckle-otel
 
     env:
       HACKAGE_KEY: ${{ secrets.HACKAGE_UPLOAD_API_KEY }}
