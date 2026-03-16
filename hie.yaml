@@ -14,9 +14,3 @@ cradle:
 
     - path: "freckle-memcached/tests"
       component: "freckle-memcached:test:spec"
-
-    - path: "freckle-otel/library"
-      component: "freckle-otel:lib"
-
-    - path: "freckle-otel/tests"
-      component: "freckle-otel:test:spec"
