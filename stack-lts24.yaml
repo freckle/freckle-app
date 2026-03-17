@@ -34,4 +34,3 @@ extra-deps:
 
 packages:
   - freckle-app
-  - freckle-memcached

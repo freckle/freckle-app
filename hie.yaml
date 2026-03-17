@@ -8,9 +8,3 @@ cradle:
 
     - path: "freckle-app/tests"
       component: "freckle-app:test:spec"
-
-    - path: "freckle-memcached/library"
-      component: "freckle-memcached:lib"
-
-    - path: "freckle-memcached/tests"
-      component: "freckle-memcached:test:spec"

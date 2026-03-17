@@ -51,4 +51,3 @@ allow-newer-deps:
 
 packages:
   - freckle-app
-  - freckle-memcached
