@@ -12,7 +12,6 @@ jobs:
       matrix:
         package:
           - freckle-app
-          - freckle-memcached
 
     steps:
       - uses: actions/checkout@v6
@@ -33,7 +32,6 @@ jobs:
       matrix:
         package:
           - freckle-app
-          - freckle-memcached
 
     env:
       HACKAGE_KEY: ${{ secrets.HACKAGE_UPLOAD_API_KEY }}

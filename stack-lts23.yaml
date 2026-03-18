@@ -8,6 +8,7 @@ extra-deps:
   - freckle-env-0.0.1.2
   - freckle-exception-0.0.0.0
   - freckle-http-0.3.0.0
+  - freckle-memcached-0.0.0.3
   - freckle-otel-0.0.0.3
   - freckle-prelude-0.0.4.0
   - freckle-stats-0.0.0.0
@@ -27,4 +28,3 @@ extra-deps:
 
 packages:
   - freckle-app
-  - freckle-memcached
