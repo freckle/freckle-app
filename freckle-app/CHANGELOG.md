@@ -1,5 +1,11 @@
 ## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.25.0.0...main)
 
+## [v1.26.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.24.0.1...freckle-app-v1.25.0.0)
+
+- Remove `Freckle.App.Test.Hspec.AnnotatedException`
+
+  This module can now be found in `freckle-exception-0.1.0.0`.
+
 ## [v1.25.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.24.0.1...freckle-app-v1.25.0.0)
 
 Stop re-exporting modules from extracted `freckle-` packages. To continue using
