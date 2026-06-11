@@ -1,11 +1,11 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.38.1.
+-- This file has been generated from package.yaml by hpack version 0.39.1.
 --
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.25.0.1
+version:        1.26.0.0
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -43,7 +43,6 @@ library
       Freckle.App.Scientist
       Freckle.App.Test
       Freckle.App.Test.DocTest
-      Freckle.App.Test.Hspec.AnnotatedException
       Freckle.App.Test.Hspec.Runner
       Freckle.App.Test.Properties.JSON
       Freckle.App.Test.Properties.PathPiece
@@ -81,7 +80,6 @@ library
     , MonadRandom
     , QuickCheck
     , aeson
-    , annotated-exception
     , autodocodec
     , autodocodec-openapi3
     , base <5
@@ -125,7 +123,6 @@ library
     , persistent-postgresql
     , persistent-sql-lifted
     , postgresql-simple
-    , prettyprinter
     , primitive
     , resource-pool >=0.4.0.0
     , resourcet
@@ -184,7 +181,6 @@ test-suite spec
       Freckle.App.Bugsnag.MetaDataSpec
       Freckle.App.BugsnagSpec
       Freckle.App.CsvSpec
-      Freckle.App.Test.Hspec.AnnotatedExceptionSpec
       Freckle.App.Test.Properties.JSONSpec
       Freckle.App.Test.Properties.PathPieceSpec
       Freckle.App.Test.Properties.PersistValueSpec
@@ -209,10 +205,8 @@ test-suite spec
   ghc-options: -fignore-optim-changes -fwrite-ide-info -Weverything -Wno-all-missed-specialisations -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missing-kind-signatures -Wno-missing-local-signatures -Wno-missing-safe-haskell-mode -Wno-monomorphism-restriction -Wno-prepositive-qualified-module -Wno-safe -Wno-unsafe -threaded -rtsopts "-with-rtsopts=-N"
   build-depends:
       Blammo
-    , HUnit
     , QuickCheck
     , aeson
-    , annotated-exception
     , async
     , base <5
     , bugsnag
@@ -220,7 +214,6 @@ test-suite spec
     , cassava
     , conduit
     , freckle-app
-    , freckle-exception
     , freckle-prelude
     , freckle-stats
     , hs-opentelemetry-api
