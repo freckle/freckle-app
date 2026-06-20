@@ -14,7 +14,7 @@ jobs:
           - freckle-app
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - id: tag
         uses: freckle/haskell-tag-action@v1
         with:
@@ -37,7 +37,7 @@ jobs:
       HACKAGE_KEY: ${{ secrets.HACKAGE_UPLOAD_API_KEY }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: sudo apt-get install --assume-yes --no-install-recommends libpcre3-dev librdkafka-dev
 
       - name: "Build with Haddocks"
