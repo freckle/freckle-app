@@ -116,18 +116,18 @@
 -- > instance HasStatsClient App where
 -- >   statsClientL = lens appStatsClient $ \x y -> x { appStatsClient = y }
 --
--- The @"Freckle.App.Database"@ module provides @'makePostgresPool'@ for
--- building a Pool given this (limited) config data:
+-- The @"Freckle.App.Database"@ module provides 'withPostgresPool' and 'withPostgresPoolWith' for
+-- building (and eventually destroying) a Pool given this (limited) config data:
 --
 -- > loadApp :: (App -> IO a) -> IO a
 -- > loadApp f = do
 -- >   appConfig{..} <- loadConfig
 -- >   withLogger configLoggerSettings $ \appLogger ->
--- >     appSqlPool <- runWithLogger appLogger $ makePostgresPool configDbPoolSize
--- >     withTracerProvider $ \tracerProvider -> do
--- >       withStatsClient configStatsSettings $ \appStatsClient -> do
--- >         let appTracer = makeTracer tracerProvider "my-app" tracerOptions
--- >         f App{..}
+-- >     runWithLogger appLogger $ withPostgresPoolWith configPostgresConfig $ \appSqlPool ->
+-- >       withTracerProvider $ \tracerProvider -> do
+-- >         withStatsClient configStatsSettings $ \appStatsClient -> do
+-- >           let appTracer = makeTracer tracerProvider "my-app" tracerOptions
+-- >           f App{..}
 --
 -- This unlocks @'runDB'@ for your application:
 --
