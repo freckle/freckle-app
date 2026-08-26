@@ -1,4 +1,11 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.26.1.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.26.2.0...main)
+
+## [v1.26.2.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.26.1.0...freckle-app-v1.26.2.0)
+
+- Add `withFaktoryProducerPool`, which creates a Faktory producer pool and
+  closes it with `destroyAllResources` once the given action completes.
+  Prefer this to `createFaktoryProducerPool`, which leaves the pool open
+  for the caller to close.
 
 ## [v1.26.1.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.26.0.0...freckle-app-v1.26.1.0)
 
