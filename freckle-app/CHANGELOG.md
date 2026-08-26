@@ -1,4 +1,11 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.25.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.26.1.0...main)
+
+## [v1.26.1.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.26.0.0...freckle-app-v1.26.1.0)
+
+- Add `withPostgresPool` and `withPostgresPoolWith`, which create a
+  PostgreSQL pool and close it with `destroyAllResources` once the given
+  action completes. Prefer these to `makePostgresPool` and
+  `makePostgresPoolWith`, which leave the pool open for the caller to close.
 
 ## [v1.26.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.24.0.1...freckle-app-v1.25.0.0)
 

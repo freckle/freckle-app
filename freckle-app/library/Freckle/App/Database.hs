@@ -23,6 +23,8 @@ module Freckle.App.Database
     -- * Connection pools
   , HasSqlPool (..)
   , SqlPool
+  , withPostgresPool
+  , withPostgresPoolWith
   , makePostgresPool
   , makePostgresPoolWith
 
@@ -74,6 +76,7 @@ import OpenTelemetry.Instrumentation.Persistent
 import OpenTelemetry.Trace qualified as Trace
 import System.Process.Typed (proc, readProcessStdout_)
 import UnliftIO.Concurrent (threadDelay)
+import UnliftIO.Exception (bracket)
 import UnliftIO.IORef
 import Yesod.Core.Types (HandlerData (..), RunHandlerEnv (..))
 
@@ -88,12 +91,21 @@ instance HasSqlPool SqlPool where
 instance HasSqlPool site => HasSqlPool (HandlerData child site) where
   getSqlPool = getSqlPool . rheSite . handlerEnv
 
+-- | Create a PostgreSQL pool from the environment
+--
+-- Prefer 'withPostgresPool', which closes the pool with
+-- 'destroyAllResources' once the given action completes.
 makePostgresPool :: (MonadUnliftIO m, MonadLoggerIO m) => m SqlPool
 makePostgresPool = do
   conf <- liftIO $ do
     postgresPasswordSource <- Env.parse id envPostgresPasswordSource
     Env.parse id $ envParseDatabaseConf postgresPasswordSource
   makePostgresPoolWith conf
+
+-- | Create a PostgreSQL pool, closing it once the given action completes
+withPostgresPool
+  :: (MonadUnliftIO m, MonadLoggerIO m) => (SqlPool -> m a) -> m a
+withPostgresPool = bracket makePostgresPool (liftIO . destroyAllResources)
 
 -- | Run a Database action with connection stats and tracing
 --
@@ -298,6 +310,10 @@ setStartupOptions PostgresConnectionConf {..} conn = do
         (Only timeoutMillis)
     for_ pccSchema $ \schema -> execute conn [sql| SET search_path TO ? |] (Only schema)
 
+-- | Create a PostgreSQL pool for the given connection configuration
+--
+-- Prefer 'withPostgresPoolWith', which closes the pool with
+-- 'destroyAllResources' once the given action completes.
 makePostgresPoolWith
   :: (MonadUnliftIO m, MonadLoggerIO m) => PostgresConnectionConf -> m SqlPool
 makePostgresPoolWith conf@PostgresConnectionConf {..} = case pccPassword of
@@ -307,6 +323,16 @@ makePostgresPoolWith conf@PostgresConnectionConf {..} = case pccPassword of
       (setStartupOptions conf)
       (postgresConnectionString conf password)
       pccPoolSize
+
+-- | Create a PostgreSQL pool for the given connection configuration, closing
+-- it once the given action completes
+withPostgresPoolWith
+  :: (MonadUnliftIO m, MonadLoggerIO m)
+  => PostgresConnectionConf
+  -> (SqlPool -> m a)
+  -> m a
+withPostgresPoolWith conf =
+  bracket (makePostgresPoolWith conf) (liftIO . destroyAllResources)
 
 -- | Creates a PostgreSQL pool using IAM auth for the password
 makePostgresPoolWithIamAuth
