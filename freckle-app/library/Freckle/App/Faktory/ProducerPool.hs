@@ -5,6 +5,7 @@ module Freckle.App.Faktory.ProducerPool
   , FaktoryProducerPoolConfig (..)
   , envFaktoryProducerPoolConfig
   , HasFaktoryProducerPool (..)
+  , withFaktoryProducerPool
   , createFaktoryProducerPool
   ) where
 
@@ -14,12 +15,14 @@ import Control.Lens (Lens')
 import Data.Pool
   ( Pool
   , defaultPoolConfig
+  , destroyAllResources
   , newPool
   , setNumStripes
   )
 import Faktory.Producer qualified as Faktory
 import Faktory.Settings qualified as Faktory
 import Freckle.App.Env qualified as Env
+import UnliftIO.Exception (bracket)
 import Yesod.Core.Lens (envL, siteL)
 import Yesod.Core.Types (HandlerData)
 
@@ -63,6 +66,22 @@ class HasFaktoryProducerPool env where
 instance HasFaktoryProducerPool site => HasFaktoryProducerPool (HandlerData child site) where
   faktoryProducerPoolL = envL . siteL . faktoryProducerPoolL
 
+-- | Create a Faktory producer pool, closing it once the given action completes
+withFaktoryProducerPool
+  :: MonadUnliftIO m
+  => Faktory.Settings
+  -> FaktoryProducerPoolConfig
+  -> (FaktoryProducerPool -> m a)
+  -> m a
+withFaktoryProducerPool faktorySettings poolConfig =
+  bracket
+    (liftIO $ createFaktoryProducerPool faktorySettings poolConfig)
+    (liftIO . destroyAllResources)
+
+-- | Create a Faktory producer pool from the given settings and config
+--
+-- Prefer 'withFaktoryProducerPool', which closes the pool with
+-- 'destroyAllResources' once the given action completes.
 createFaktoryProducerPool
   :: Faktory.Settings -> FaktoryProducerPoolConfig -> IO FaktoryProducerPool
 createFaktoryProducerPool faktorySettings poolConfig =
