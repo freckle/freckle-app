@@ -28,6 +28,10 @@ module Freckle.App.Csv
 
 import Freckle.App.Prelude
 
+#if MIN_VERSION_freckle_prelude(0,1,0)
+import Prelude (error)
+#endif
+
 import Conduit
 import Control.Monad (foldM)
 import Control.Monad.Validate

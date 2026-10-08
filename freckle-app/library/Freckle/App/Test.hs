@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -21,6 +22,10 @@ module Freckle.App.Test
   ) where
 
 import Freckle.App.Prelude as X
+
+#if MIN_VERSION_freckle_prelude(0,1,0)
+import Prelude (error)
+#endif
 
 import Data.Pool as X
 import Test.Hspec as X
