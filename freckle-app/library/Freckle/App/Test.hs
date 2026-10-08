@@ -17,23 +17,287 @@ module Freckle.App.Test
   , expect
   , withFailureDetail
 
-    -- * Re-exports
-  , module X
+    -- * Types and classes
+  , Alternative ((<|>))
+  , Applicative ((*>), (<*), (<*>), liftA2, pure)
+  , Bool (False, True)
+  , Bounded (maxBound, minBound)
+  , Char
+  , Constraint
+  , Double
+  , Either (Left, Right)
+  , Enum (enumFrom, enumFromThen, enumFromThenTo, enumFromTo, fromEnum, pred, succ, toEnum)
+  , Eq ((/=), (==))
+  , Exception (displayException)
+  , ExceptionHandler (ExceptionHandler)
+  , Expectation
+  , FilePath
+  , Float
+  , Floating ((**), acos, acosh, asin, asinh, atan, atanh, cos, cosh, exp, log, logBase, pi, sin, sinh, sqrt, tan, tanh)
+  , Foldable (elem, fold, foldMap, foldMap', foldl, foldl', foldr, foldr', length, maximum, minimum, null, product, sum, toList)
+  , Fractional ((/), fromRational, recip)
+  , Functor ((<$), fmap)
+  , Generic
+  , HasCallStack
+  , Hashable
+  , HashMap
+  , HashSet
+  , Int
+  , Int64
+  , Integer
+  , Integral (div, divMod, mod, quot, quotRem, rem, toInteger)
+  , IO
+  , IOError
+  , LocalPool
+  , Map
+  , Maybe (Just, Nothing)
+  , Monad ((>>), (>>=), return)
+  , MonadFail (fail)
+  , MonadIO (liftIO)
+  , MonadReader
+  , MonadUnliftIO
+  , Monoid (mappend, mconcat, mempty)
+  , Natural
+  , NominalDiffTime
+  , NonEmpty
+  , Num ((*), (+), (-), abs, fromInteger, negate, signum)
+  , Ord ((<), (<=), (>), (>=), compare, max, min)
+  , Ordering (EQ, GT, LT)
+  , Pool
+  , PoolConfig
+  , PrimMonad
+  , Rational
+  , Read (readList, readsPrec)
+  , ReaderT
+  , ReadS
+  , Real (toRational)
+  , RealFloat (atan2, decodeFloat, encodeFloat, exponent, floatDigits, floatRadix, floatRange, isDenormalized, isIEEE, isInfinite, isNaN, isNegativeZero, scaleFloat, significand)
+  , RealFrac (ceiling, floor, properFraction, round, truncate)
+  , Semigroup ((<>))
+  , Set
+  , Show (show, showList, showsPrec)
+  , ShowS
+  , SomeException (SomeException)
+  , Spec
+  , String
+  , Text
+  , Traversable (mapM, sequence, sequenceA, traverse)
+  , Type
+  , type (~)
+  , UTCTime
+  , Vector
+  , Void
+  , Word
+
+    -- * Functions and operators
+  , ($!)
+  , ($)
+  , (&&&)
+  , (&&)
+  , (***)
+  , (++)
+  , (.)
+  , (<$$>)
+  , (<$>)
+  , (<=<)
+  , (=<<)
+  , (>=>)
+  , (^)
+  , (^^)
+  , all
+  , and
+  , any
+  , appendFile
+  , asTypeOf
+  , asum
+  , atMay
+  , beforeAll
+  , beforeWith
+  , bimap
+  , break
+  , catch
+  , catches
+  , catchJust
+  , catMaybes
+  , concat
+  , concatMap
+  , const
+  , context
+  , createPool
+  , curry
+  , cycleMay
+  , decodeUtf8
+  , defaultPoolConfig
+  , describe
+  , destroyAllResources
+  , destroyResource
+  , drop
+  , dropWhile
+  , either
+  , encodeUtf8
+  , error
+  , errorWithoutStackTrace
+  , even
+  , example
+  , filter
+  , find
+  , first
+  , fit
+  , flip
+  , fmapDefault
+  , fold1
+  , foldlM
+  , foldMap1
+  , foldMapDefault
+  , foldrM
+  , for
+  , for_
+  , forAccumM
+  , forM
+  , forM_
+  , fromIntegral
+  , fromJustNoteM
+  , fromMaybe
+  , fst
+  , gcd
+  , getChar
+  , getContents
+  , getCurrentTime
+  , getLine
+  , guard
+  , headMay
+  , id
+  , impossible
+  , initMay
+  , interact
+  , ioError
+  , isJust
+  , isNothing
+  , it
+  , iterate
+  , join
+  , lastMay
+  , lcm
+  , lex
+  , lift
+  , lines
+  , listToMaybe
+  , lookup
+  , map
+  , mapAccumL
+  , mapAccumM
+  , mapAccumR
+  , mapM_
+  , mapMaybe
+  , maximumBy
+  , maximumMay
+  , maybe
+  , maybeToList
+  , minimumBy
+  , minimumMay
+  , msum
+  , newPool
+  , not
+  , notElem
+  , odd
+  , optional
+  , or
+  , otherwise
+  , pack
+  , partitionEithers
+  , print
+  , putChar
+  , putResource
+  , putStr
+  , putStrLn
+  , readFile
+  , readIO
+  , readLn
+  , readMay
+  , readParen
+  , reads
+  , realToFrac
+  , repeat
+  , replicate
+  , reverse
+  , scanl
+  , scanl1
+  , scanr
+  , scanr1
+  , second
+  , seq
+  , sequence_
+  , sequenceA_
+  , setNumStripes
+  , shouldBe
+  , shouldContain
+  , shouldEndWith
+  , shouldMatchList
+  , shouldNotBe
+  , shouldNotContain
+  , shouldNotReturn
+  , shouldNotSatisfy
+  , shouldReturn
+  , shouldSatisfy
+  , shouldStartWith
+  , showChar
+  , showParen
+  , shows
+  , showString
+  , snd
+  , span
+  , splitAt
+  , subtract
+  , tailMay
+  , take
+  , takeResource
+  , takeWhile
+  , throwM
+  , throwString
+  , traverse_
+  , try
+  , tryJust
+  , tryTakeResource
+  , tryWithResource
+  , tshow
+  , uncurry
+  , undefined
+  , unless
+  , unlines
+  , unpack
+  , until
+  , unwords
+  , unzip
+  , unzip3
+  , userError
+  , void
+  , when
+  , withResource
+  , words
+  , writeFile
+  , xit
+  , zip
+  , zip3
+  , zipWith
+  , zipWith3
+  , (||)
   ) where
 
--- freckle-prelude-0.1.0.0 removed these names and added 'throw'. We re-export
--- this module's imports (@module X@), so put the surface back as it was.
+-- freckle-prelude-0.1.0.0 no longer exports some names this module has always
+-- exported, and exports @throw@, which it has not. Import the former from where
+-- they now live, and hide the latter, so the export list below is the same
+-- whichever version is in use.
 #if MIN_VERSION_freckle_prelude(0,1,0)
-import Control.Monad.Fail as X (fail)
-import Freckle.App.Exception as X (fromJustNoteM, throwString)
-import Freckle.App.Prelude as X hiding (throw)
-import Prelude as X (error, errorWithoutStackTrace)
+import Control.Monad.Fail (fail)
+import Freckle.App.Exception (fromJustNoteM, throwString)
+import Freckle.App.Prelude hiding (throw)
+import Prelude (error, errorWithoutStackTrace)
 #else
-import Freckle.App.Prelude as X
+import Freckle.App.Prelude
 #endif
 
-import Data.Pool as X
-import Test.Hspec as X
+import Data.Pool
+import Test.Hspec
   ( Expectation
   , Spec
   , beforeAll
@@ -45,7 +309,7 @@ import Test.Hspec as X
   , it
   , xit
   )
-import Test.Hspec.Expectations.Lifted as X hiding (expectationFailure)
+import Test.Hspec.Expectations.Lifted hiding (expectationFailure)
 
 import Blammo.Logging (MonadLogger, MonadLoggerIO)
 import Blammo.Logging.Setup (WithLogger (..))
