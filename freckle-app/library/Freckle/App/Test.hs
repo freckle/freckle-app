@@ -26,15 +26,59 @@ module Freckle.App.Test
   , Constraint
   , Double
   , Either (Left, Right)
-  , Enum (enumFrom, enumFromThen, enumFromThenTo, enumFromTo, fromEnum, pred, succ, toEnum)
+  , Enum
+    ( enumFrom
+    , enumFromThen
+    , enumFromThenTo
+    , enumFromTo
+    , fromEnum
+    , pred
+    , succ
+    , toEnum
+    )
   , Eq ((/=), (==))
   , Exception (displayException)
   , ExceptionHandler (ExceptionHandler)
   , Expectation
   , FilePath
   , Float
-  , Floating ((**), acos, acosh, asin, asinh, atan, atanh, cos, cosh, exp, log, logBase, pi, sin, sinh, sqrt, tan, tanh)
-  , Foldable (elem, fold, foldMap, foldMap', foldl, foldl', foldr, foldr', length, maximum, minimum, null, product, sum, toList)
+  , Floating
+    ( (**)
+    , acos
+    , acosh
+    , asin
+    , asinh
+    , atan
+    , atanh
+    , cos
+    , cosh
+    , exp
+    , log
+    , logBase
+    , pi
+    , sin
+    , sinh
+    , sqrt
+    , tan
+    , tanh
+    )
+  , Foldable
+    ( elem
+    , fold
+    , foldMap
+    , foldMap'
+    , foldl
+    , foldl'
+    , foldr
+    , foldr'
+    , length
+    , maximum
+    , minimum
+    , null
+    , product
+    , sum
+    , toList
+    )
   , Fractional ((/), fromRational, recip)
   , Functor ((<$), fmap)
   , Generic
@@ -71,7 +115,22 @@ module Freckle.App.Test
   , ReaderT
   , ReadS
   , Real (toRational)
-  , RealFloat (atan2, decodeFloat, encodeFloat, exponent, floatDigits, floatRadix, floatRange, isDenormalized, isIEEE, isInfinite, isNaN, isNegativeZero, scaleFloat, significand)
+  , RealFloat
+    ( atan2
+    , decodeFloat
+    , encodeFloat
+    , exponent
+    , floatDigits
+    , floatRadix
+    , floatRange
+    , isDenormalized
+    , isIEEE
+    , isInfinite
+    , isNaN
+    , isNegativeZero
+    , scaleFloat
+    , significand
+    )
   , RealFrac (ceiling, floor, properFraction, round, truncate)
   , Semigroup ((<>))
   , Set
