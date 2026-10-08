@@ -21,10 +21,15 @@ module Freckle.App.Test
   , module X
   ) where
 
-import Freckle.App.Prelude as X
-
+-- freckle-prelude-0.1.0.0 removed these names and added 'throw'. We re-export
+-- this module's imports (@module X@), so put the surface back as it was.
 #if MIN_VERSION_freckle_prelude(0,1,0)
-import Prelude (error)
+import Control.Monad.Fail as X (fail)
+import Freckle.App.Exception as X (fromJustNoteM, throwString)
+import Freckle.App.Prelude as X hiding (throw)
+import Prelude as X (error, errorWithoutStackTrace)
+#else
+import Freckle.App.Prelude as X
 #endif
 
 import Data.Pool as X
