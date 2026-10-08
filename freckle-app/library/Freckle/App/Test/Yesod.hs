@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
@@ -73,6 +74,10 @@ module Freckle.App.Test.Yesod
 where
 
 import Freckle.App.Prelude
+
+#if MIN_VERSION_freckle_prelude(0,1,0)
+import Prelude (error)
+#endif
 
 import Blammo.Logging.Setup (LoggingT)
 import Control.Monad.Except (ExceptT)

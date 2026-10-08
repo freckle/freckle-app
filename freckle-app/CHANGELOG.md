@@ -1,4 +1,9 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.26.2.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.26.2.1...main)
+
+## [v1.26.2.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.26.2.0...freckle-app-v1.26.2.1)
+
+- Support `freckle-prelude-0.1.0.0`, as well as earlier versions. No change in
+  behavior.
 
 ## [v1.26.2.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.26.1.0...freckle-app-v1.26.2.0)
 
