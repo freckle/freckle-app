@@ -2,6 +2,7 @@ module Freckle.App.Bugsnag.MetaDataSpec
   ( spec
   ) where
 
+import Freckle.App.Prelude
 import Freckle.App.Test
 
 import Blammo.Logging.ThreadContext qualified as Blammo
