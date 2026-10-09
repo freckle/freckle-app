@@ -20,7 +20,7 @@ module Freckle.App.Test
   , module X
   ) where
 
-import Freckle.App.Prelude as X
+import Freckle.App.Prelude
 
 import Data.Pool as X
 import Test.Hspec as X
