@@ -1,4 +1,13 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.26.2.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.27.0.0...main)
+
+## [v1.27.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.26.2.0...freckle-app-v1.27.0.0)
+
+- Remove the re-export of `Freckle.App.Prelude` from `Freckle.App.Test`.
+
+  Code that relied on `import Freckle.App.Test` to bring the Prelude into scope
+  should `import Freckle.App.Prelude` directly. `Freckle.App.Test` still
+  re-exports `Data.Pool`, the `Test.Hspec` names it lists, and
+  `Test.Hspec.Expectations.Lifted`.
 
 ## [v1.26.2.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.26.1.0...freckle-app-v1.26.2.0)
 
