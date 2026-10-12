@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
@@ -74,9 +73,7 @@ module Freckle.App.Test.Yesod
 where
 
 import Freckle.App.Prelude
-#if MIN_VERSION_freckle_prelude(0,1,0)
-import Prelude (error)
-#endif
+import Prelude qualified
 
 import Blammo.Logging.Setup (LoggingT)
 import Control.Monad.Except (ExceptT)
@@ -194,7 +191,7 @@ getCsvBody =
  where
   failure reason = do
     _ <- liftIO $ HUnit.assertFailure $ T.unpack reason
-    error ""
+    Prelude.error ""
 
 -- | Get the body of the most recent response as a byte string
 getRawBody

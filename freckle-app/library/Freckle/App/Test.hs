@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -22,9 +21,7 @@ module Freckle.App.Test
   ) where
 
 import Freckle.App.Prelude
-#if MIN_VERSION_freckle_prelude(0,1,0)
-import Prelude (error)
-#endif
+import Prelude qualified
 
 import Blammo.Logging (MonadLogger, MonadLoggerIO)
 import Blammo.Logging.Setup (WithLogger (..))
@@ -164,7 +161,8 @@ beforeSql
 beforeSql f = beforeWith $ \app -> app <$ runSqlPool f (getSqlPool app)
 
 expectationFailure :: forall m a. (HasCallStack, MonadIO m) => String -> m a
-expectationFailure msg = Hspec.expectationFailure msg >> error "unreachable"
+expectationFailure msg =
+  Hspec.expectationFailure msg >> Prelude.error "unreachable"
 
 pending :: MonadIO m => m ()
 pending = liftIO Hspec.pending
