@@ -89,12 +89,12 @@ packages:
   original:
     hackage: freckle-otel-0.0.0.3
 - completed:
-    hackage: freckle-prelude-0.0.4.0@sha256:b97c710b19d8ebfac406b9388dac37c01bc0896650b40c5999f6fad2988891a3,1877
+    hackage: freckle-prelude-0.1.0.0@sha256:03c87a066a8a0109d372fe6a6f11272caa6685e77dde868756d7e8038e66abba,1889
     pantry-tree:
-      sha256: a970348014ab2c8eeea2ea4f57dc6630609a3ea3fa6bba32f89638e2b220f094
-      size: 337
+      sha256: 554cd1e305bcc035c673dcca62fb25e9a604803c0ca33e1e2fb510d9960479b5
+      size: 338
   original:
-    hackage: freckle-prelude-0.0.4.0
+    hackage: freckle-prelude-0.1.0.0
 - completed:
     hackage: freckle-stats-0.0.0.0@sha256:854a06460464c2beec77d2aaea05bbe6bb0bb26b6e400ec693f01d958f7109bb,1981
     pantry-tree:
