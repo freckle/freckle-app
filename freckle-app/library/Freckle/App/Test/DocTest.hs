@@ -37,8 +37,8 @@ data PackageYaml = PackageYaml
   }
 
 instance FromJSON PackageYaml where
-  parseJSON = withObject "PackageYaml" $
-    \o -> PackageYaml <$> o .: "default-extensions" <*> o .: "name"
+  parseJSON = withObject "PackageYaml"
+    $ \o -> PackageYaml <$> o .: "default-extensions" <*> o .: "name"
 
 -- Parse @default-extensions@ and @name& out of @package.yaml@
 --

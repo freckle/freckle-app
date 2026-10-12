@@ -51,7 +51,7 @@ async f = do
 
 -- | 'UnliftIO.Async.pooledMapConcurrentlyN' but passing the thread context along
 pooledMapConcurrentlyN
-  :: (MonadUnliftIO m, MonadMask m, Traversable t)
+  :: (MonadMask m, MonadUnliftIO m, Traversable t)
   => Int -> (a -> m b) -> t a -> m (t b)
 pooledMapConcurrentlyN n f xs = do
   context <- getThreadContext
@@ -59,14 +59,14 @@ pooledMapConcurrentlyN n f xs = do
 
 -- | 'UnliftIO.Async.pooledMapConcurrently' but passing the thread context along
 pooledMapConcurrently
-  :: (MonadUnliftIO m, MonadMask m, Traversable t) => (a -> m b) -> t a -> m (t b)
+  :: (MonadMask m, MonadUnliftIO m, Traversable t) => (a -> m b) -> t a -> m (t b)
 pooledMapConcurrently f xs = do
   context <- getThreadContext
   UnliftIO.pooledMapConcurrently (withThreadContext context . f) xs
 
 -- | 'UnliftIO.Async.pooledMapConcurrentlyN_' but passing the thread context along
 pooledMapConcurrentlyN_
-  :: (MonadUnliftIO m, MonadMask m, Traversable t)
+  :: (MonadMask m, MonadUnliftIO m, Traversable t)
   => Int -> (a -> m b) -> t a -> m ()
 pooledMapConcurrentlyN_ n f xs = do
   context <- getThreadContext
@@ -74,62 +74,62 @@ pooledMapConcurrentlyN_ n f xs = do
 
 -- | 'UnliftIO.Async.pooledMapConcurrently_' but passing the thread context along
 pooledMapConcurrently_
-  :: (MonadUnliftIO m, MonadMask m, Traversable t) => (a -> m b) -> t a -> m ()
+  :: (MonadMask m, MonadUnliftIO m, Traversable t) => (a -> m b) -> t a -> m ()
 pooledMapConcurrently_ f xs = do
   context <- getThreadContext
   UnliftIO.pooledMapConcurrently_ (withThreadContext context . f) xs
 
 -- | 'UnliftIO.Async.pooledForConcurrentlyN' but passing the thread context along
 pooledForConcurrentlyN
-  :: (MonadUnliftIO m, MonadMask m, Traversable t)
+  :: (MonadMask m, MonadUnliftIO m, Traversable t)
   => Int -> t a -> (a -> m b) -> m (t b)
 pooledForConcurrentlyN n = flip $ pooledMapConcurrentlyN n
 
 -- | 'UnliftIO.Async.pooledForConcurrently' but passing the thread context along
 pooledForConcurrently
-  :: (MonadUnliftIO m, MonadMask m, Traversable t) => t a -> (a -> m b) -> m (t b)
+  :: (MonadMask m, MonadUnliftIO m, Traversable t) => t a -> (a -> m b) -> m (t b)
 pooledForConcurrently = flip pooledMapConcurrently
 
 -- | 'UnliftIO.Async.pooledForConcurrentlyN_' but passing the thread context along
 pooledForConcurrentlyN_
-  :: (MonadUnliftIO m, MonadMask m, Traversable t)
+  :: (MonadMask m, MonadUnliftIO m, Traversable t)
   => Int -> t a -> (a -> m b) -> m ()
 pooledForConcurrentlyN_ n = flip $ pooledMapConcurrentlyN_ n
 
 -- | 'UnliftIO.Async.pooledForConcurrently_' but passing the thread context along
 pooledForConcurrently_
-  :: (MonadUnliftIO m, MonadMask m, Traversable t) => t a -> (a -> m b) -> m ()
+  :: (MonadMask m, MonadUnliftIO m, Traversable t) => t a -> (a -> m b) -> m ()
 pooledForConcurrently_ = flip pooledMapConcurrently_
 
 -- | 'UnliftIO.Async.mapConcurrently' but passing the thread context along
 mapConcurrently
-  :: (MonadUnliftIO m, MonadMask m, Traversable t) => (a -> m b) -> t a -> m (t b)
+  :: (MonadMask m, MonadUnliftIO m, Traversable t) => (a -> m b) -> t a -> m (t b)
 mapConcurrently f xs = do
   context <- getThreadContext
   UnliftIO.mapConcurrently (withThreadContext context . f) xs
 
 -- | 'UnliftIO.Async.forConcurrently' but passing the thread context along
 forConcurrently
-  :: (MonadUnliftIO m, MonadMask m, Traversable t) => t a -> (a -> m b) -> m (t b)
+  :: (MonadMask m, MonadUnliftIO m, Traversable t) => t a -> (a -> m b) -> m (t b)
 forConcurrently = flip mapConcurrently
 
 -- | 'UnliftIO.Async.mapConcurrently_' but passing the thread context along
 mapConcurrently_
-  :: (MonadUnliftIO m, MonadMask m, Traversable t) => (a -> m b) -> t a -> m ()
+  :: (MonadMask m, MonadUnliftIO m, Traversable t) => (a -> m b) -> t a -> m ()
 mapConcurrently_ f xs = do
   context <- getThreadContext
   UnliftIO.mapConcurrently_ (withThreadContext context . f) xs
 
 -- | 'UnliftIO.Async.forConcurrently_' but passing the thread context along
 forConcurrently_
-  :: (MonadUnliftIO m, MonadMask m, Traversable t) => t a -> (a -> m b) -> m ()
+  :: (MonadMask m, MonadUnliftIO m, Traversable t) => t a -> (a -> m b) -> m ()
 forConcurrently_ = flip mapConcurrently_
 
 -- | Run a list of actions concurrently, combining the results monoidally
 --
 -- The forked threads will have the current thread context copied to them.
 foldConcurrently
-  :: (MonadUnliftIO m, MonadMask m, Monoid a, Foldable t) => t (m a) -> m a
+  :: (Foldable t, MonadMask m, MonadUnliftIO m, Monoid a) => t (m a) -> m a
 foldConcurrently xs = do
   context <- getThreadContext
   runConc $ foldMap (conc . withThreadContext context) xs
@@ -162,7 +162,7 @@ immortalCreate onUnexpected act = do
 
 -- | 'immortalCreate' with logging of unexpected finishes
 immortalCreateLogged
-  :: (MonadMask m, MonadUnliftIO m, MonadLogger m) => m () -> m a
+  :: (MonadLogger m, MonadMask m, MonadUnliftIO m) => m () -> m a
 immortalCreateLogged = immortalCreate $ either logEx pure
  where
   logEx ex = logError $ "Unexpected Finish" :# ["exception" .= displayException ex]

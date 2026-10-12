@@ -38,14 +38,14 @@ asSqlError err@SqlError {..} = toSqlGrouping <> toSqlException
     ex
       { exception_errorClass = decodeUtf8 $ "SqlError-" <> sqlState
       , exception_message =
-          Just $
-            decodeUtf8 $
-              sqlErrorMsg
-                <> ": "
-                <> sqlErrorDetail
-                <> " ("
-                <> sqlErrorHint
-                <> ")"
+          Just
+            $ decodeUtf8
+            $ sqlErrorMsg
+              <> ": "
+              <> sqlErrorDetail
+              <> " ("
+              <> sqlErrorHint
+              <> ")"
       }
 
 sqlErrorGroupingHash :: SqlError -> Maybe Text

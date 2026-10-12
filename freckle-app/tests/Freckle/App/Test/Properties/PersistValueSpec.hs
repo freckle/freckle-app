@@ -13,6 +13,6 @@ spec = do
   describe "persistFieldInstancesRoundTrip" $ do
     it "round trips for Integer" $ property $ prop_roundTripPersistValue @Int
     it "round trips for Bool" $ property $ prop_roundTripPersistValue @Bool
-    it "round trips for Maybe String" $
-      property $
-        prop_roundTripPersistValue @(Maybe String)
+    it "round trips for Maybe String"
+      $ property
+      $ prop_roundTripPersistValue @(Maybe String)

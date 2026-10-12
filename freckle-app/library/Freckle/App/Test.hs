@@ -22,21 +22,6 @@ module Freckle.App.Test
 
 import Freckle.App.Prelude
 
-import Data.Pool as X
-import Test.Hspec as X
-  ( Expectation
-  , Spec
-  , beforeAll
-  , beforeWith
-  , context
-  , describe
-  , example
-  , fit
-  , it
-  , xit
-  )
-import Test.Hspec.Expectations.Lifted as X hiding (expectationFailure)
-
 import Blammo.Logging (MonadLogger, MonadLoggerIO)
 import Blammo.Logging.Setup (WithLogger (..))
 import Blammo.Logging.ThreadContext (MonadMask)
@@ -50,6 +35,7 @@ import Control.Monad.Random (MonadRandom (..))
 import Control.Monad.Reader
 import Control.Monad.Trans.Control
 import Data.List (intercalate)
+import Data.Pool as X
 import Database.Persist.Sql (SqlPersistT, runSqlPool)
 import Freckle.App.Database
   ( HasSqlPool (..)
@@ -61,8 +47,21 @@ import Freckle.App.Dotenv qualified as Dotenv
 import Freckle.App.Exception.MonadThrow qualified as MonadThrow
 import Freckle.App.OpenTelemetry
 import Test.HUnit.Lang (FailureReason (..), HUnitFailure (..))
+import Test.Hspec as X
+  ( Expectation
+  , Spec
+  , beforeAll
+  , beforeWith
+  , context
+  , describe
+  , example
+  , fit
+  , it
+  , xit
+  )
 import Test.Hspec qualified as Hspec hiding (expectationFailure)
 import Test.Hspec.Core.Spec (Arg, Example, SpecWith, evaluateExample)
+import Test.Hspec.Expectations.Lifted as X hiding (expectationFailure)
 import Test.Hspec.Expectations.Lifted qualified as Hspec (expectationFailure)
 import UnliftIO.Exception qualified as UnliftIO
 
@@ -77,16 +76,16 @@ newtype AppExample app a = AppExample
   }
   deriving newtype
     ( Applicative
+    , Fail.MonadFail
     , Functor
     , Monad
     , MonadBase IO
     , MonadBaseControl IO
     , MonadCatch
     , MonadIO
-    , MonadUnliftIO
     , MonadReader app
     , MonadThrow
-    , Fail.MonadFail
+    , MonadUnliftIO
     )
   deriving
     (MonadLogger, MonadLoggerIO)
@@ -159,7 +158,7 @@ withApp run = beforeAll Dotenv.loadTest . Hspec.aroundAll run
 beforeSql :: HasSqlPool app => SqlPersistT IO a -> SpecWith app -> SpecWith app
 beforeSql f = beforeWith $ \app -> app <$ runSqlPool f (getSqlPool app)
 
-expectationFailure :: (MonadIO m, HasCallStack) => String -> m a
+expectationFailure :: (HasCallStack, MonadIO m) => String -> m a
 expectationFailure msg = Hspec.expectationFailure msg >> error "unreachable"
 
 pending :: MonadIO m => m ()

@@ -27,11 +27,10 @@ handleOptions :: (ByteString -> Bool) -> [ByteString] -> Middleware
 handleOptions validateOrigin extraExposedHeaders app req sendResponse =
   case (requestMethod req, lookup "Origin" (requestHeaders req)) of
     ("OPTIONS", Just origin) ->
-      sendResponse $
-        responseLBS
+      sendResponse
+        $ responseLBS
           status200
-          ( toHeaders $ corsResponseHeaders validateOrigin extraExposedHeaders origin
-          )
+          (toHeaders $ corsResponseHeaders validateOrigin extraExposedHeaders origin)
           mempty
     _ -> app req sendResponse
  where

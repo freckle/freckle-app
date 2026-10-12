@@ -43,12 +43,12 @@ respondQueryCanceledHeaders headers handler =
     Stats.increment "query_canceled"
     sendWaiResponse $ W.responseLBS status503 headers "Query canceled"
 
-logExceptionsMiddleware :: (MonadUnliftIO m, MonadLogger m) => m a -> m a
+logExceptionsMiddleware :: (MonadLogger m, MonadUnliftIO m) => m a -> m a
 logExceptionsMiddleware f =
   f `withException` \ex ->
-    unless (isHandlerContents ex) $
-      logErrorNS "yesod" $
-        annotatedExceptionMessageFrom (const "Handler exception") ex
+    unless (isHandlerContents ex)
+      $ logErrorNS "yesod"
+      $ annotatedExceptionMessageFrom (const "Handler exception") ex
 
 isHandlerContents :: AnnotatedException SomeException -> Bool
 isHandlerContents = isJust . fromException @HandlerContents . exception

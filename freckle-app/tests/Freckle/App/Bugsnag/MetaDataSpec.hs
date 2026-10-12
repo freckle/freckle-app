@@ -3,7 +3,6 @@ module Freckle.App.Bugsnag.MetaDataSpec
   ) where
 
 import Freckle.App.Prelude
-import Freckle.App.Test
 
 import Blammo.Logging.ThreadContext qualified as Blammo
 import Data.Aeson
@@ -12,6 +11,7 @@ import Freckle.App.Bugsnag
 import Freckle.App.Bugsnag.MetaData
 import Freckle.App.Stats
 import Freckle.App.Stats qualified as Stats
+import Freckle.App.Test
 
 spec :: Spec
 spec = do
@@ -71,8 +71,8 @@ runMergeMetaData :: Maybe MetaData -> MetaData -> Maybe MetaData
 runMergeMetaData mExisting incoming = MetaData <$> event_metaData event
  where
   event =
-    runBeforeNotify (mergeMetaData incoming) someException $
-      defaultEvent {event_metaData = unMetaData <$> mExisting}
+    runBeforeNotify (mergeMetaData incoming) someException
+      $ defaultEvent {event_metaData = unMetaData <$> mExisting}
 
 someException :: SomeException
 someException = undefined

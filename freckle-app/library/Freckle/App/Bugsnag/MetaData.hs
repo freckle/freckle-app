@@ -36,12 +36,12 @@ metaDataL = lens get set
 -- Using this (and then 'mergeMetaData') will unify exception metadata with
 -- metrics tags and the logging context.
 collectMetaData
-  :: (MonadIO m, MonadReader env m, HasStatsClient env) => m MetaData
+  :: (HasStatsClient env, MonadIO m, MonadReader env m) => m MetaData
 collectMetaData =
   (<>) <$> collectMetaDataFromStatsClient <*> collectMetaDataFromThreadContext
 
 collectMetaDataFromStatsClient
-  :: (MonadReader env m, HasStatsClient env) => m MetaData
+  :: (HasStatsClient env, MonadReader env m) => m MetaData
 collectMetaDataFromStatsClient = view $ statsClientL . tagsL . to toMetaData
  where
   toMetaData = metaData "tags" . map (bimap (fromString . unpack) String)

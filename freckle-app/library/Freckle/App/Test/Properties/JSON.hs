@@ -7,5 +7,5 @@ import Freckle.App.Prelude
 import Data.Aeson
 
 -- | Check that @fromJSON (toJSON value)@ is @value@
-prop_roundTripJSON :: (FromJSON a, ToJSON a, Eq a) => a -> Bool
+prop_roundTripJSON :: (Eq a, FromJSON a, ToJSON a) => a -> Bool
 prop_roundTripJSON a = fromJSON (toJSON a) == Success a

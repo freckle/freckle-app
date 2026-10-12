@@ -19,7 +19,7 @@ data Foo = Foo
   { someInt :: Int
   , someText :: Text
   }
-  deriving stock (Eq, Show, Generic)
+  deriving stock (Eq, Generic, Show)
 
 data FooError = BadFoo
   deriving stock (Eq, Show)
@@ -51,20 +51,20 @@ spec = do
       header = ["someInt", "someText"]
       rows :: [Foo]
       rows = [Foo 123 "this is some text", Foo 456 "this is more text"]
-    it "should parse records as expected" $
-      decode HasHeader content
+    it "should parse records as expected"
+      $ decode HasHeader content
         `shouldBe` Right (V.fromList rows)
 
-    it "should parse named records as expected" $
-      decodeByName content
+    it "should parse named records as expected"
+      $ decodeByName content
         `shouldBe` Right (V.fromList header, V.fromList rows)
 
-    it "should serialize records as expected" $
-      encode rows
+    it "should serialize records as expected"
+      $ encode rows
         `shouldBe` contentRows
 
-    it "should serialize named records as expected" $
-      encodeDefaultOrderedByName rows
+    it "should serialize named records as expected"
+      $ encodeDefaultOrderedByName rows
         `shouldBe` content
 
   for_ [CustomParser, FromNamedRecordParser] $ \testType -> do

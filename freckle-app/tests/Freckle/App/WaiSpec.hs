@@ -46,22 +46,22 @@ spec = do
 
     it "adds CORS headers to responses for non-OPTIONS" $ runTestSession $ do
       response <-
-        request $
-          setMethod "GET" $
-            setOriginHeader
-              "unimportant"
-              defaultRequest
+        request
+          $ setMethod "GET"
+          $ setOriginHeader
+            "unimportant"
+            defaultRequest
 
       assertAccessControlHeaders "BADORIGIN" response
       assertBody "Test" response
 
     it "responds itself, with CORS headers, for OPTIONS" $ runTestSession $ do
       response <-
-        request $
-          setMethod "OPTIONS" $
-            setOriginHeader
-              "unimportant"
-              defaultRequest
+        request
+          $ setMethod "OPTIONS"
+          $ setOriginHeader
+            "unimportant"
+            defaultRequest
 
       assertAccessControlHeaders "BADORIGIN" response
       assertBody mempty response
@@ -84,14 +84,14 @@ spec = do
       assertBody "Test" responseA
       assertBody "Test" responseB
 
-    it "adds extra Exposed-Headers" $
-      runTestSessionWith (const False) ["X-Foo"] $
-        do
-          response <- request $ setOriginHeader "unimportant" defaultRequest
-          assertHeader
-            "Access-Control-Expose-Headers"
-            "Set-Cookie, Content-Disposition, Link, X-Foo"
-            response
+    it "adds extra Exposed-Headers"
+      $ runTestSessionWith (const False) ["X-Foo"]
+      $ do
+        response <- request $ setOriginHeader "unimportant" defaultRequest
+        assertHeader
+          "Access-Control-Expose-Headers"
+          "Set-Cookie, Content-Disposition, Link, X-Foo"
+          response
 
   describe "denyFrameEmbeddingMiddleware" $ do
     let
