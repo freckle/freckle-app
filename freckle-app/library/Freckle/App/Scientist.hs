@@ -14,7 +14,8 @@ import Scientist.Duration
 -- * Experiments are labeled "science.${name}"
 -- * Results are tagged with "variant:${name}"
 experimentPublishDatadog
-  :: (HasStatsClient env, MonadReader env m, MonadUnliftIO m)
+  :: forall env m c a b
+   . (HasStatsClient env, MonadReader env m, MonadUnliftIO m)
   => Result c a b
   -> m ()
 experimentPublishDatadog result = for_ (resultDetails result) $ \details -> do

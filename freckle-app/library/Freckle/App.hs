@@ -197,7 +197,8 @@ import Freckle.App.OpenTelemetry.Http
 import System.IO (BufferMode (..), hSetBuffering, stderr, stdout)
 
 runApp
-  :: (forall b. (app -> IO b) -> IO b)
+  :: forall app a
+   . (forall b. (app -> IO b) -> IO b)
   -> AppT app IO a
   -> IO a
 runApp loadApp action = do
@@ -253,6 +254,6 @@ instance
   where
   runSqlTx = runDB
 
-runAppT :: MonadUnliftIO m => AppT app m a -> app -> m a
+runAppT :: forall m app a. MonadUnliftIO m => AppT app m a -> app -> m a
 runAppT action app =
   runResourceT $ runReaderT (unAppT action) app

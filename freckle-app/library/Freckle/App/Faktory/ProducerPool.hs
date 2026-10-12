@@ -68,7 +68,8 @@ instance HasFaktoryProducerPool site => HasFaktoryProducerPool (HandlerData chil
 
 -- | Create a Faktory producer pool, closing it once the given action completes
 withFaktoryProducerPool
-  :: MonadUnliftIO m
+  :: forall m a
+   . MonadUnliftIO m
   => Faktory.Settings
   -> FaktoryProducerPoolConfig
   -> (FaktoryProducerPool -> m a)

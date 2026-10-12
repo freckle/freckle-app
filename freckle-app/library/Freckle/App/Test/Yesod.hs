@@ -241,7 +241,7 @@ statusIs
   :: forall m site. (HasCallStack, MonadYesodExample site m) => Int -> m ()
 statusIs = liftYesodExample . Yesod.Test.statusIs
 
-statusIs2XX :: MonadYesodExample site m => m ()
+statusIs2XX :: forall site m. MonadYesodExample site m => m ()
 statusIs2XX = liftYesodExample $ withResponse $ \response -> do
   let status = simpleStatus response
   unless (statusIsSuccessful status) $ do
@@ -286,7 +286,8 @@ assertHeaderSatisfies header predicateDesc predicate = liftYesodExample $ withRe
 -- | Assert that the given header field's value contains
 --   some particular byte string within it
 assertHeaderContains
-  :: MonadYesodExample site m
+  :: forall site m
+   . MonadYesodExample site m
   => CI ByteString
   -- ^ Field name
   -> ByteString

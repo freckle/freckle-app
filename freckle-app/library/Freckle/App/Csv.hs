@@ -74,7 +74,11 @@ headerLineNumber = 1
 
 class ValidateHeader a where
   validateHeader
-    :: (Bind m, Monad m) => proxy a -> Header -> ValidateT (NESeq String) m ()
+    :: forall m proxy
+     . (Bind m, Monad m)
+    => proxy a
+    -> Header
+    -> ValidateT (NESeq String) m ()
 
 hasHeader :: Monad m => Header -> Name -> ValidateT (NESeq String) m ()
 hasHeader h name
@@ -237,7 +241,8 @@ parseHeader headerValidator = \case
         lift $ refute $ Seq.fromList $ CsvMissingColumn . pack <$> toList errs
 
 parseRow
-  :: MonadValidate (Seq (CsvException err)) m
+  :: forall err m a
+   . MonadValidate (Seq (CsvException err)) m
   => Int
   -> CsvI.Parser a
   -> ConduitT ByteString a m ()
@@ -252,7 +257,8 @@ parseRow rowNumber parse = case parse of
   handleRows = foldM handleRow rowNumber
 
 handleRow
-  :: MonadValidate (Seq (CsvException err)) m
+  :: forall err m a i
+   . MonadValidate (Seq (CsvException err)) m
   => Int
   -> Either String a
   -> ConduitT i a m Int

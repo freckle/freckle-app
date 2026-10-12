@@ -104,7 +104,7 @@ makePostgresPool = do
 
 -- | Create a PostgreSQL pool, closing it once the given action completes
 withPostgresPool
-  :: (MonadLoggerIO m, MonadUnliftIO m) => (SqlPool -> m a) -> m a
+  :: forall m a. (MonadLoggerIO m, MonadUnliftIO m) => (SqlPool -> m a) -> m a
 withPostgresPool = bracket makePostgresPool (liftIO . destroyAllResources)
 
 -- | Run a Database action with connection stats and tracing
@@ -114,7 +114,8 @@ withPostgresPool = bracket makePostgresPool (liftIO . destroyAllResources)
 -- functions that call those, for as far as you require to get to a useful
 -- source location).
 runDB
-  :: ( HasCallStack
+  :: forall m app a
+   . ( HasCallStack
      , HasSqlPool app
      , HasStatsClient app
      , MonadReader app m
@@ -169,7 +170,8 @@ runDB action = do
   dbAttributes = HashMap.fromList [("service.name", "database")]
 
 runDBSimple
-  :: (HasSqlPool app, MonadReader app m, MonadUnliftIO m)
+  :: forall app m a
+   . (HasSqlPool app, MonadReader app m, MonadUnliftIO m)
   => SqlPersistT m a
   -> m a
 runDBSimple action = do
@@ -327,7 +329,8 @@ makePostgresPoolWith conf@PostgresConnectionConf {..} = case pccPassword of
 -- | Create a PostgreSQL pool for the given connection configuration, closing
 -- it once the given action completes
 withPostgresPoolWith
-  :: (MonadLoggerIO m, MonadUnliftIO m)
+  :: forall m a
+   . (MonadLoggerIO m, MonadUnliftIO m)
   => PostgresConnectionConf
   -> (SqlPool -> m a)
   -> m a

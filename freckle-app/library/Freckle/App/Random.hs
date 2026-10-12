@@ -53,7 +53,8 @@ inclusiveRange a b =
 -- e.g. @smallRandomSubsetOfLargeIntegerRange 10 (inclusiveRange 30 70)@
 -- may produce something like @fromList [32,34,45,54,56,58,62,63,64,65]@.
 smallRandomSubsetOfLargeIntegerRange
-  :: (Integral i, MonadRandom m, Random i)
+  :: forall m i
+   . (Integral i, MonadRandom m, Random i)
   => Natural
   -- ^ How many items are wanted
   -> Range i
@@ -80,7 +81,8 @@ data RangeWithGaps i = RangeWithGaps
 --
 -- If every item in the range has already been removed, this does nothing.
 randomlyRemove
-  :: (Integral i, MonadRandom m, Random i) => RangeWithGaps i -> m (RangeWithGaps i)
+  :: forall m i
+   . (Integral i, MonadRandom m, Random i) => RangeWithGaps i -> m (RangeWithGaps i)
 randomlyRemove rg =
   randomFromRangeWithGaps rg <&> \case
     Nothing -> rg
@@ -91,7 +93,8 @@ randomlyRemove rg =
 -- This selects uniformly at random an item from the range that is not
 -- present in the 'gaps' set.
 randomFromRangeWithGaps
-  :: (Integral i, MonadRandom m, Random i)
+  :: forall m i
+   . (Integral i, MonadRandom m, Random i)
   => RangeWithGaps i
   -> m (Maybe i)
 randomFromRangeWithGaps rg =

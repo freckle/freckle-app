@@ -139,7 +139,7 @@ instance
 --
 -- This can be used to avoid ambiguity errors when your expectation uses only
 -- polymorphic functions like 'runDB' or lifted 'shouldBe' et-al.
-appExample :: AppExample app a -> AppExample app a
+appExample :: forall app a. AppExample app a -> AppExample app a
 appExample = id
 
 -- | Spec before helper
@@ -155,10 +155,11 @@ withApp :: ((app -> IO ()) -> IO ()) -> SpecWith app -> Spec
 withApp run = beforeAll Dotenv.loadTest . Hspec.aroundAll run
 
 -- | Run the given SQL action before every spec item
-beforeSql :: HasSqlPool app => SqlPersistT IO a -> SpecWith app -> SpecWith app
+beforeSql
+  :: forall app a. HasSqlPool app => SqlPersistT IO a -> SpecWith app -> SpecWith app
 beforeSql f = beforeWith $ \app -> app <$ runSqlPool f (getSqlPool app)
 
-expectationFailure :: (HasCallStack, MonadIO m) => String -> m a
+expectationFailure :: forall m a. (HasCallStack, MonadIO m) => String -> m a
 expectationFailure msg = Hspec.expectationFailure msg >> error "unreachable"
 
 pending :: MonadIO m => m ()
@@ -170,7 +171,7 @@ pendingWith msg = liftIO $ Hspec.pendingWith msg
 -- | Unwraps 'Just', or throws an assertion failure if the 'Maybe' is 'Nothing'
 --
 -- Like @(\``shouldSatisfy`\` 'isJust')@, but returns the 'Just' value.
-expectJust :: (HasCallStack, MonadIO m) => Maybe a -> m a
+expectJust :: forall m a. (HasCallStack, MonadIO m) => Maybe a -> m a
 expectJust = \case
   Nothing -> expectationFailure "expected Just, but got Nothing"
   Just a -> pure a
@@ -178,7 +179,8 @@ expectJust = \case
 -- | Unwraps 'Right', or throws an assertion failure if the 'Either' is 'Left'
 --
 -- Like @(\``shouldSatisfy`\` 'isRight')@, but returns the 'Right' value.
-expectRight :: (HasCallStack, MonadIO m, Show a) => Either a b -> m b
+expectRight
+  :: forall m a b. (HasCallStack, MonadIO m, Show a) => Either a b -> m b
 expectRight = \case
   Left a -> expectationFailure $ "expected Right, but got " <> show a
   Right b -> pure b
@@ -191,7 +193,8 @@ expectRight = \case
 -- assertions.
 --
 -- This can be useful with @lens@, for example: @b <- expect (preview _Left) a@
-expect :: (HasCallStack, MonadIO m, Show a) => (a -> Maybe b) -> a -> m b
+expect
+  :: forall m a b. (HasCallStack, MonadIO m, Show a) => (a -> Maybe b) -> a -> m b
 expect f a = case f a of
   Nothing -> expectationFailure $ "predicate failed on: " <> show a
   Just b -> pure b
@@ -201,7 +204,8 @@ expect f a = case f a of
 -- This can be useful when you have additional information that was generated during
 -- the execution of a test that would be helpful in understanding why the test failed.
 withFailureDetail
-  :: (HasCallStack, MonadUnliftIO m) => (HasCallStack => m a) -> String -> m a
+  :: forall m a
+   . (HasCallStack, MonadUnliftIO m) => (HasCallStack => m a) -> String -> m a
 withFailureDetail action message =
   catch action $ \(HUnitFailure l r) ->
     throwM $ HUnitFailure l $ case r of
