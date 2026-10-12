@@ -1,4 +1,10 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.27.0.0...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.27.0.1...main)
+
+## [v1.27.0.1](https://github.com/freckle/freckle-app/compare/freckle-app-v1.27.0.0...freckle-app-v1.27.0.1)
+
+- Add explicit `forall`s to the signatures of library functions with more than
+  one type variable, preserving the existing type-variable order (and so
+  visible type application behavior).
 
 ## [v1.27.0.0](https://github.com/freckle/freckle-app/compare/freckle-app-v1.26.2.0...freckle-app-v1.27.0.0)
 
