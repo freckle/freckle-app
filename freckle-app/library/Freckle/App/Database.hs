@@ -95,7 +95,7 @@ instance HasSqlPool site => HasSqlPool (HandlerData child site) where
 --
 -- Prefer 'withPostgresPool', which closes the pool with
 -- 'destroyAllResources' once the given action completes.
-makePostgresPool :: (MonadUnliftIO m, MonadLoggerIO m) => m SqlPool
+makePostgresPool :: (MonadLoggerIO m, MonadUnliftIO m) => m SqlPool
 makePostgresPool = do
   conf <- liftIO $ do
     postgresPasswordSource <- Env.parse id envPostgresPasswordSource
@@ -104,7 +104,7 @@ makePostgresPool = do
 
 -- | Create a PostgreSQL pool, closing it once the given action completes
 withPostgresPool
-  :: (MonadUnliftIO m, MonadLoggerIO m) => (SqlPool -> m a) -> m a
+  :: forall m a. (MonadLoggerIO m, MonadUnliftIO m) => (SqlPool -> m a) -> m a
 withPostgresPool = bracket makePostgresPool (liftIO . destroyAllResources)
 
 -- | Run a Database action with connection stats and tracing
@@ -114,12 +114,13 @@ withPostgresPool = bracket makePostgresPool (liftIO . destroyAllResources)
 -- functions that call those, for as far as you require to get to a useful
 -- source location).
 runDB
-  :: ( MonadUnliftIO m
-     , MonadTracer m
-     , MonadReader app m
+  :: forall m app a
+   . ( HasCallStack
      , HasSqlPool app
      , HasStatsClient app
-     , HasCallStack
+     , MonadReader app m
+     , MonadTracer m
+     , MonadUnliftIO m
      )
   => SqlPersistT m a
   -> m a
@@ -158,18 +159,19 @@ runDB action = do
             Stats.decGauge gauge
             runOnException hooks conn mi e
         }
-  Stats.withGauge Stats.dbEnqueuedAndProcessing $
-    inSpan "runDB" (clientSpanArguments {Trace.attributes = dbAttributes}) $
-      runSqlPoolWithExtensibleHooks
-        (inSpan "runSqlPool" defaultSpanArguments action)
-        pool
-        Nothing
-        hooks'
+  Stats.withGauge Stats.dbEnqueuedAndProcessing
+    $ inSpan "runDB" (clientSpanArguments {Trace.attributes = dbAttributes})
+    $ runSqlPoolWithExtensibleHooks
+      (inSpan "runSqlPool" defaultSpanArguments action)
+      pool
+      Nothing
+      hooks'
  where
   dbAttributes = HashMap.fromList [("service.name", "database")]
 
 runDBSimple
-  :: (HasSqlPool app, MonadUnliftIO m, MonadReader app m)
+  :: forall app m a
+   . (HasSqlPool app, MonadReader app m, MonadUnliftIO m)
   => SqlPersistT m a
   -> m a
 runDBSimple action = do
@@ -186,17 +188,17 @@ data PostgresConnectionConf = PostgresConnectionConf
   , pccStatementTimeout :: PostgresStatementTimeout
   , pccSchema :: Maybe String
   }
-  deriving stock (Show, Eq)
+  deriving stock (Eq, Show)
 
 data PostgresPasswordSource
   = PostgresPasswordSourceIamAuth
   | PostgresPasswordSourceEnv
-  deriving stock (Show, Eq)
+  deriving stock (Eq, Show)
 
 data PostgresPassword
   = PostgresPasswordIamAuth
   | PostgresPasswordStatic String
-  deriving stock (Show, Eq)
+  deriving stock (Eq, Show)
 
 type PostgresStatementTimeout = Timeout
 
@@ -245,7 +247,7 @@ data AuroraIamToken = AuroraIamToken
   , aitCreatedAt :: UTCTime
   , aitPostgresConnectionConf :: PostgresConnectionConf
   }
-  deriving stock (Show, Eq)
+  deriving stock (Eq, Show)
 
 createAuroraIamToken :: MonadIO m => PostgresConnectionConf -> m AuroraIamToken
 createAuroraIamToken aitPostgresConnectionConf@PostgresConnectionConf {..} = do
@@ -272,7 +274,7 @@ createAuroraIamToken aitPostgresConnectionConf@PostgresConnectionConf {..} = do
 -- The IAM auth token lasts 15 minutes, but we refresh it every minute just to
 -- be super safe.
 spawnIamTokenRefreshThread
-  :: (MonadUnliftIO m, MonadLogger m)
+  :: (MonadLogger m, MonadUnliftIO m)
   => PostgresConnectionConf
   -> m (IORef AuroraIamToken)
 spawnIamTokenRefreshThread conf = do
@@ -288,8 +290,8 @@ spawnIamTokenRefreshThread conf = do
 
   onFinishCallback = \case
     Left ex ->
-      logError $
-        "Error refreshing IAM auth token"
+      logError
+        $ "Error refreshing IAM auth token"
           :# ["exception" .= displayException ex]
     Right () -> pure ()
 
@@ -303,8 +305,8 @@ setStartupOptions :: MonadIO m => PostgresConnectionConf -> Connection -> m ()
 setStartupOptions PostgresConnectionConf {..} conn = do
   let timeoutMillis = postgresStatementTimeoutMilliseconds pccStatementTimeout
   liftIO $ do
-    void $
-      execute
+    void
+      $ execute
         conn
         [sql| SET statement_timeout = ? |]
         (Only timeoutMillis)
@@ -315,7 +317,7 @@ setStartupOptions PostgresConnectionConf {..} conn = do
 -- Prefer 'withPostgresPoolWith', which closes the pool with
 -- 'destroyAllResources' once the given action completes.
 makePostgresPoolWith
-  :: (MonadUnliftIO m, MonadLoggerIO m) => PostgresConnectionConf -> m SqlPool
+  :: (MonadLoggerIO m, MonadUnliftIO m) => PostgresConnectionConf -> m SqlPool
 makePostgresPoolWith conf@PostgresConnectionConf {..} = case pccPassword of
   PostgresPasswordIamAuth -> makePostgresPoolWithIamAuth conf
   PostgresPasswordStatic password ->
@@ -327,7 +329,8 @@ makePostgresPoolWith conf@PostgresConnectionConf {..} = case pccPassword of
 -- | Create a PostgreSQL pool for the given connection configuration, closing
 -- it once the given action completes
 withPostgresPoolWith
-  :: (MonadUnliftIO m, MonadLoggerIO m)
+  :: forall m a
+   . (MonadLoggerIO m, MonadUnliftIO m)
   => PostgresConnectionConf
   -> (SqlPool -> m a)
   -> m a
@@ -336,7 +339,7 @@ withPostgresPoolWith conf =
 
 -- | Creates a PostgreSQL pool using IAM auth for the password
 makePostgresPoolWithIamAuth
-  :: (MonadUnliftIO m, MonadLoggerIO m) => PostgresConnectionConf -> m SqlPool
+  :: (MonadLoggerIO m, MonadUnliftIO m) => PostgresConnectionConf -> m SqlPool
 makePostgresPoolWithIamAuth conf@PostgresConnectionConf {..} = do
   tokenIORef <- spawnIamTokenRefreshThread conf
   createSqlPool (mkConn tokenIORef) pccPoolSize
@@ -350,8 +353,8 @@ makePostgresPoolWithIamAuth conf@PostgresConnectionConf {..} = do
 
 postgresConnectionString :: PostgresConnectionConf -> String -> ByteString
 postgresConnectionString PostgresConnectionConf {..} password =
-  BS8.pack $
-    unwords
+  BS8.pack
+    $ unwords
       [ "host=" <> pccHost
       , "port=" <> show pccPort
       , "user=" <> pccUser

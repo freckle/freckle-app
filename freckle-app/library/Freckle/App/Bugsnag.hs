@@ -63,11 +63,12 @@ instance HasBugsnagSettings site => HasBugsnagSettings (HandlerData child site) 
 -- The notification is made asynchronously via a simple @'async'@. This is
 -- best-effort and we don't care to keep track of the spawned threads.
 notifyBugsnag
-  :: ( MonadMask m
-     , MonadUnliftIO m
-     , MonadReader env m
+  :: forall m env e
+   . ( Base.Exception e
      , HasBugsnagSettings env
-     , Base.Exception e
+     , MonadMask m
+     , MonadReader env m
+     , MonadUnliftIO m
      )
   => e
   -> m ()
@@ -75,11 +76,12 @@ notifyBugsnag = notifyBugsnagWith mempty
 
 -- | 'notifyBugsnag' with a 'BeforeNotify'
 notifyBugsnagWith
-  :: ( MonadMask m
-     , MonadUnliftIO m
-     , MonadReader env m
+  :: forall m env e
+   . ( Base.Exception e
      , HasBugsnagSettings env
-     , Base.Exception e
+     , MonadMask m
+     , MonadReader env m
+     , MonadUnliftIO m
      )
   => BeforeNotify
   -> e

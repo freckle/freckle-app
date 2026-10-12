@@ -26,14 +26,16 @@ import Yesod.Core.Types (HandlerContents, HandlerData)
 --
 -- Also logs and increments a metric.
 respondQueryCanceled
-  :: HasStatsClient (HandlerData site site)
+  :: forall site res
+   . HasStatsClient (HandlerData site site)
   => HandlerFor site res
   -> HandlerFor site res
 respondQueryCanceled = respondQueryCanceledHeaders []
 
 -- | 'respondQueryCanceledHeaders' but adding headers to the 503 response
 respondQueryCanceledHeaders
-  :: HasStatsClient (HandlerData site site)
+  :: forall site res
+   . HasStatsClient (HandlerData site site)
   => ResponseHeaders
   -> HandlerFor site res
   -> HandlerFor site res
@@ -43,12 +45,13 @@ respondQueryCanceledHeaders headers handler =
     Stats.increment "query_canceled"
     sendWaiResponse $ W.responseLBS status503 headers "Query canceled"
 
-logExceptionsMiddleware :: (MonadUnliftIO m, MonadLogger m) => m a -> m a
+logExceptionsMiddleware
+  :: forall m a. (MonadLogger m, MonadUnliftIO m) => m a -> m a
 logExceptionsMiddleware f =
   f `withException` \ex ->
-    unless (isHandlerContents ex) $
-      logErrorNS "yesod" $
-        annotatedExceptionMessageFrom (const "Handler exception") ex
+    unless (isHandlerContents ex)
+      $ logErrorNS "yesod"
+      $ annotatedExceptionMessageFrom (const "Handler exception") ex
 
 isHandlerContents :: AnnotatedException SomeException -> Bool
 isHandlerContents = isJust . fromException @HandlerContents . exception

@@ -55,8 +55,8 @@ envFaktoryProducerPoolConfig
   :: Env.Parser Env.Error FaktoryProducerPoolConfig
 envFaktoryProducerPoolConfig = do
   poolSize <- Env.var Env.auto "FAKTORY_PRODUCER_POOL_SIZE" $ Env.def 10
-  pure $
-    defaultFaktoryProducerPoolConfig {faktoryProducerPoolConfigSize = poolSize}
+  pure
+    $ defaultFaktoryProducerPoolConfig {faktoryProducerPoolConfigSize = poolSize}
 
 type FaktoryProducerPool = Pool Faktory.Producer
 
@@ -68,7 +68,8 @@ instance HasFaktoryProducerPool site => HasFaktoryProducerPool (HandlerData chil
 
 -- | Create a Faktory producer pool, closing it once the given action completes
 withFaktoryProducerPool
-  :: MonadUnliftIO m
+  :: forall m a
+   . MonadUnliftIO m
   => Faktory.Settings
   -> FaktoryProducerPoolConfig
   -> (FaktoryProducerPool -> m a)

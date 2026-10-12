@@ -77,7 +77,7 @@ globallyCache (GlobalCache var) construct = do
 -- To avoid garbage collection issues, we can leverage a "System.Mem.Weak" to
 -- add a finalizer. When that 'MVar' gets garbage collected we can clear the
 -- global 'IORef'. This maintains the status quo, with minimal plumbing.
-withGlobalCacheCleanup :: GlobalCache a -> IO b -> IO ()
+withGlobalCacheCleanup :: forall a b. GlobalCache a -> IO b -> IO ()
 withGlobalCacheCleanup (GlobalCache var) action = do
   cleanup <- newMVar ()
   void $ mkWeakMVar cleanup $ writeIORef var Nothing

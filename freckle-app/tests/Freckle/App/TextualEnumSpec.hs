@@ -23,15 +23,15 @@ data PrimaryColor
   | Yellow
   deriving stock (Bounded, Enum, Eq, Show)
   deriving
-    ( CSV.ToField
+    ( Arbitrary
     , CSV.FromField
-    , JSON.ToJSON
+    , CSV.ToField
     , JSON.FromJSON
+    , JSON.ToJSON
+    , Path.PathPiece
     , Servant.FromHttpApiData
     , Servant.ToHttpApiData
-    , Path.PathPiece
     , Sql.PersistField
-    , Arbitrary
     )
     via TextualEnum PrimaryColor
 
@@ -56,40 +56,41 @@ instance EnumValue BadExample where
 spec :: Spec
 spec = do
   describe "TextualEnum" $ do
-    describe "JSON" $
-      it "round trips" $
-        property $
-          prop_roundTripJSON @PrimaryColor
+    describe "JSON"
+      $ it "round trips"
+      $ property
+      $ prop_roundTripJSON @PrimaryColor
 
-    describe "PathPiece" $
-      it "round trips" $
-        property $
-          prop_roundTripPathPiece @PrimaryColor
+    describe "PathPiece"
+      $ it "round trips"
+      $ property
+      $ prop_roundTripPathPiece @PrimaryColor
 
-    describe "HttpApiData" $
-      it "round trips" $
-        property $
-          \(e :: PrimaryColor) -> Servant.parseUrlPiece (Servant.toUrlPiece e) == Right e
+    describe "HttpApiData"
+      $ it "round trips"
+      $ property
+      $ \(e :: PrimaryColor) -> Servant.parseUrlPiece (Servant.toUrlPiece e) == Right e
 
-    describe "PersistValue" $
-      it "round trips" $
-        property $
-          prop_roundTripPersistValue @PrimaryColor
+    describe "PersistValue"
+      $ it "round trips"
+      $ property
+      $ prop_roundTripPersistValue @PrimaryColor
 
-    describe "CSV" $
-      it "round trips" $
-        property $ \(e :: PrimaryColor) ->
-          CSV.runParser (CSV.parseField $ CSV.toField e) == Right e
+    describe "CSV"
+      $ it "round trips"
+      $ property
+      $ \(e :: PrimaryColor) ->
+        CSV.runParser (CSV.parseField $ CSV.toField e) == Right e
 
     describe "prop_roundTripEnumText" $ do
-      it "holds for a well defined toText" $
-        property $
-          prop_roundTripEnumText @PrimaryColor
+      it "holds for a well defined toText"
+        $ property
+        $ prop_roundTripEnumText @PrimaryColor
 
-      it "does not hold when toText doesn't map to distinct values" $
-        any (not . prop_roundTripEnumText @BadExample) enums
+      it "does not hold when toText doesn't map to distinct values"
+        $ any (not . prop_roundTripEnumText @BadExample) enums
 
     describe "enums" $ do
-      it "returns all values" $
-        enums @PrimaryColor
+      it "returns all values"
+        $ enums @PrimaryColor
           `shouldBe` fmap TextualEnum (Red :| [Blue, Yellow])

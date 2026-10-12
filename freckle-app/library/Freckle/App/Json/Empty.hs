@@ -29,7 +29,7 @@ import Autodocodec.OpenAPI.DerivingVia (AutodocodecOpenApi (..))
 -- (One would expect to be able to use () for this, but Aeson encodes unit
 -- as an empty list, not as an object.)
 data Empty = Empty
-  deriving (ToJSON, FromJSON) via (Autodocodec Empty)
+  deriving (FromJSON, ToJSON) via (Autodocodec Empty)
 #if MIN_VERSION_autodocodec_openapi3(0,3,0)
   deriving ToSchema via (AutodocodecOpenApi Empty)
 #else

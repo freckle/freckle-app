@@ -197,7 +197,8 @@ import Freckle.App.OpenTelemetry.Http
 import System.IO (BufferMode (..), hSetBuffering, stderr, stdout)
 
 runApp
-  :: (forall b. (app -> IO b) -> IO b)
+  :: forall app a
+   . (forall b. (app -> IO b) -> IO b)
   -> AppT app IO a
   -> IO a
 runApp loadApp action = do
@@ -217,16 +218,16 @@ newtype AppT app m a = AppT
   { unAppT :: ReaderT app (ResourceT m) a
   }
   deriving newtype
-    ( Functor
-    , Applicative
+    ( Applicative
+    , Functor
     , Monad
-    , MonadIO
-    , MonadUnliftIO
-    , MonadThrow
     , MonadCatch
+    , MonadIO
     , MonadMask
-    , MonadResource
     , MonadReader app
+    , MonadResource
+    , MonadThrow
+    , MonadUnliftIO
     )
   deriving (MonadLogger, MonadLoggerIO) via WithLogger app (ResourceT m)
 
@@ -239,20 +240,20 @@ instance PrimMonad m => PrimMonad (AppT app m) where
   primitive = lift . primitive
   {-# INLINE primitive #-}
 
-instance (MonadUnliftIO m, HasTracer app) => MonadHttp (AppT app m) where
+instance (HasTracer app, MonadUnliftIO m) => MonadHttp (AppT app m) where
   httpLbs req = inSpan (httpSpanName req) (httpSpanArguments req) $ do
     resp <- liftIO . httpLbs =<< injectContext req
     resp <$ addCurrentSpanAttributes (httpResponseAttributes resp)
 
-instance (Monad m, HasTracer app) => MonadTracer (AppT app m) where
+instance (HasTracer app, Monad m) => MonadTracer (AppT app m) where
   getTracer = view tracerL
 
 instance
-  (MonadUnliftIO m, HasSqlPool app, HasStatsClient app, HasTracer app)
+  (HasSqlPool app, HasStatsClient app, HasTracer app, MonadUnliftIO m)
   => MonadSqlTx (ReaderT SqlBackend (AppT app m)) (AppT app m)
   where
   runSqlTx = runDB
 
-runAppT :: MonadUnliftIO m => AppT app m a -> app -> m a
+runAppT :: forall m app a. MonadUnliftIO m => AppT app m a -> app -> m a
 runAppT action app =
   runResourceT $ runReaderT (unAppT action) app

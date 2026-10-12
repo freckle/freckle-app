@@ -18,8 +18,8 @@ spec = do
   describe "async" $ do
     it @(IO ()) "preserves Blammo context" $ do
       let kvs = ["a" .= ("xyz" :: Text)]
-      Blammo.withThreadContext kvs $
-        (wait =<< async Blammo.myThreadContext)
+      Blammo.withThreadContext kvs
+        $ (wait =<< async Blammo.myThreadContext)
           `shouldReturn` KeyMap.fromList kvs
     it @(IO ()) "preserves OpenTelemetry context" $ do
       k <- OpenTelemetry.newKey "a"

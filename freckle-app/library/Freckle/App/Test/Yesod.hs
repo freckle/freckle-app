@@ -164,22 +164,23 @@ testSetCookie = liftYesodExample . Yesod.Test.testSetCookie
 
 -- | Get the body of the most recent response and decode it as JSON
 getJsonBody
-  :: forall a m site. (MonadYesodExample site m, FromJSON a, HasCallStack) => m a
+  :: forall a m site. (FromJSON a, HasCallStack, MonadYesodExample site m) => m a
 getJsonBody = liftYesodExample Yesod.Test.requireJSONResponse
 
 -- | Get the body of the most recent response and decode it as CSV
 getCsvBody
   :: forall a m site
-   . (MonadYesodExample site m, CSV.FromNamedRecord a, HasCallStack)
+   . (CSV.FromNamedRecord a, HasCallStack, MonadYesodExample site m)
   => m [a]
 getCsvBody =
-  liftYesodExample $
-    withResponse $ \(SResponse _status _headers body) ->
+  liftYesodExample
+    $ withResponse
+    $ \(SResponse _status _headers body) ->
       -- todo - check the response header first
       case fmap (V.toList . snd) (CSV.decodeByName body) of
         Left err ->
-          failure $
-            T.concat
+          failure
+            $ T.concat
               [ "Failed to parse CSV response; error: "
               , T.pack err
               , "CSV: "
@@ -193,7 +194,7 @@ getCsvBody =
 
 -- | Get the body of the most recent response as a byte string
 getRawBody
-  :: forall m site. (MonadYesodExample site m, HasCallStack) => m BSL.ByteString
+  :: forall m site. (HasCallStack, MonadYesodExample site m) => m BSL.ByteString
 getRawBody =
   fmap simpleBody . maybe (expectationFailure "Test response had no body") pure
     =<< getResponse
@@ -237,15 +238,15 @@ addJsonHeaders = do
 -- If the status code doesn't match, a portion of the body is also
 -- printed to aid in debugging.
 statusIs
-  :: forall m site. (MonadYesodExample site m, HasCallStack) => Int -> m ()
+  :: forall m site. (HasCallStack, MonadYesodExample site m) => Int -> m ()
 statusIs = liftYesodExample . Yesod.Test.statusIs
 
-statusIs2XX :: MonadYesodExample site m => m ()
+statusIs2XX :: forall site m. MonadYesodExample site m => m ()
 statusIs2XX = liftYesodExample $ withResponse $ \response -> do
   let status = simpleStatus response
   unless (statusIsSuccessful status) $ do
-    expectationFailure $
-      "Response status " <> show status <> " should have been 2xx"
+    expectationFailure
+      $ "Response status " <> show status <> " should have been 2xx"
 
 -- | Assert that the given header field's value satisfied some predicate
 assertHeaderSatisfies
@@ -264,8 +265,8 @@ assertHeaderSatisfies header predicateDesc predicate = liftYesodExample $ withRe
   case lookup header $ simpleHeaders res of
     Just value | predicate value -> pure ()
     Just value ->
-      expectationFailure $
-        concat
+      expectationFailure
+        $ concat
           [ "Expected header "
           , show header
           , " "
@@ -274,8 +275,8 @@ assertHeaderSatisfies header predicateDesc predicate = liftYesodExample $ withRe
           , show value
           ]
     Nothing ->
-      expectationFailure $
-        concat
+      expectationFailure
+        $ concat
           [ "Expected header "
           , show header
           , predicateDesc
@@ -285,7 +286,8 @@ assertHeaderSatisfies header predicateDesc predicate = liftYesodExample $ withRe
 -- | Assert that the given header field's value contains
 --   some particular byte string within it
 assertHeaderContains
-  :: MonadYesodExample site m
+  :: forall site m
+   . MonadYesodExample site m
   => CI ByteString
   -- ^ Field name
   -> ByteString

@@ -1,6 +1,6 @@
 restylers:
   - fourmolu:
-      image: restyled/restyler-fourmolu:v0.13.0.0
+      image: restyled/restyler-fourmolu:v0.17.0.0
       include:
         - "/**/*.hs"
 

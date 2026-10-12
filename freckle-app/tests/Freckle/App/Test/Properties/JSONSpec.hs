@@ -12,8 +12,8 @@ import Test.QuickCheck
 data MyCustomType
   = A
   | B (Maybe String)
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
 
 instance Arbitrary MyCustomType where
   arbitrary = oneof [pure A, B <$> arbitrary]
@@ -23,6 +23,6 @@ spec = do
   describe "prop_roundTripJSON" $ do
     it "round trips for Integer" $ property $ prop_roundTripJSON @Integer
     it "round trips for Bool" $ property $ prop_roundTripJSON @Bool
-    it "round trips for some custom type" $
-      property $
-        prop_roundTripJSON @MyCustomType
+    it "round trips for some custom type"
+      $ property
+      $ prop_roundTripJSON @MyCustomType

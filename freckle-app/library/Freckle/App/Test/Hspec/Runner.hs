@@ -6,6 +6,7 @@ module Freckle.App.Test.Hspec.Runner
   ) where
 
 import Freckle.App.Prelude
+import Prelude qualified as Unsafe (read)
 
 import Control.Concurrent (getNumCapabilities, setNumCapabilities)
 import Control.Monad.Trans.Maybe (MaybeT (MaybeT), runMaybeT)
@@ -29,7 +30,6 @@ import Test.Hspec.Runner
   , hspecWithResult
   , readConfig
   )
-import Prelude qualified as Unsafe (read)
 
 run :: String -> Spec -> IO ()
 run = runWith defaultConfig
@@ -46,8 +46,8 @@ runWith config name spec = do
   -- Run unreliable tests first, so local dev errors are reported for reliable
   -- specs at the end
   putStrLn "Running UNRELIABLE tests; failures here should not fail the build"
-  void $
-    runner ("unreliable-" <> name) id
+  void
+    $ runner ("unreliable-" <> name) id
       =<< load
         args
         (skip reliableTests config)
