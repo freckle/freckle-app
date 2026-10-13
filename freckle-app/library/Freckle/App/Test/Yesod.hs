@@ -73,6 +73,7 @@ module Freckle.App.Test.Yesod
 where
 
 import Freckle.App.Prelude
+import Prelude qualified
 
 import Blammo.Logging.Setup (LoggingT)
 import Control.Monad.Except (ExceptT)
@@ -190,7 +191,7 @@ getCsvBody =
  where
   failure reason = do
     _ <- liftIO $ HUnit.assertFailure $ T.unpack reason
-    error ""
+    Prelude.error ""
 
 -- | Get the body of the most recent response as a byte string
 getRawBody

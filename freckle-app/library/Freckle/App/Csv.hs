@@ -27,6 +27,7 @@ module Freckle.App.Csv
   ) where
 
 import Freckle.App.Prelude
+import Prelude qualified
 
 import Conduit
 import Control.Monad (foldM)
@@ -92,7 +93,8 @@ defaultValidateOrderedHeader
   -> Header
   -> ValidateT (NESeq String) m ()
 defaultValidateOrderedHeader _ h =
-  traverse_ (h `hasHeader`) $ headerOrder (error "old school haskell" :: a)
+  traverse_ (h `hasHeader`) $
+    headerOrder (Prelude.error "old school haskell" :: a)
 
 -- | Stream parse a CSV
 --

@@ -21,6 +21,7 @@ module Freckle.App.Test
   ) where
 
 import Freckle.App.Prelude
+import Prelude qualified
 
 import Blammo.Logging (MonadLogger, MonadLoggerIO)
 import Blammo.Logging.Setup (WithLogger (..))
@@ -160,7 +161,8 @@ beforeSql
 beforeSql f = beforeWith $ \app -> app <$ runSqlPool f (getSqlPool app)
 
 expectationFailure :: forall m a. (HasCallStack, MonadIO m) => String -> m a
-expectationFailure msg = Hspec.expectationFailure msg >> error "unreachable"
+expectationFailure msg =
+  Hspec.expectationFailure msg >> Prelude.error "unreachable"
 
 pending :: MonadIO m => m ()
 pending = liftIO Hspec.pending
