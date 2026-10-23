@@ -1,6 +1,8 @@
 resolver: nightly-2025-04-02
 extra-deps:
   - Blammo-wai-0.0.0.2
+  - bugsnag-1.2.0.5
+  - freckle-ua-parser-0.2.0.0
   - Cabal-3.14.1.1
   - Cabal-syntax-3.14.1.0
   - autodocodec-openapi3-0.2.1.4

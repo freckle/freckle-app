@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - run: sudo apt-get install --assume-yes --no-install-recommends libpcre3-dev librdkafka-dev
+      - run: sudo apt-get install --assume-yes --no-install-recommends librdkafka-dev
 
       - name: "Build with Haddocks"
         uses: freckle/stack-action@v5
@@ -48,7 +48,7 @@ jobs:
 
       # Upload using our oldest, tested resolver, to set the lowest lower bounds
       - name: "Release to Hackage"
-        run: stack --stack-yaml stack-lts20.yaml upload --pvp-bounds lower ${{ matrix.package }}
+        run: stack --stack-yaml stack-lts21.yaml upload --pvp-bounds lower ${{ matrix.package }}
 
       - name: "Upload documentation"
         run: stack upload --documentation ${{ matrix.package }}

@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Install system libraries
-        run: sudo apt-get install --assume-yes --no-install-recommends libpcre3-dev librdkafka-dev
+        run: sudo apt-get install --assume-yes --no-install-recommends librdkafka-dev
       - uses: freckle/stack-action@v5
         env:
           OTEL_TRACES_EXPORTER: none

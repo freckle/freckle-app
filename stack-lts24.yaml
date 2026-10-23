@@ -1,6 +1,8 @@
 resolver: lts-24.9
 extra-deps:
   - Blammo-wai-0.0.0.2
+  - bugsnag-1.2.0.5
+  - freckle-ua-parser-0.2.0.0
   - buffer-builder-0.2.4.9
   - data-default-class-0.1.2.2
   - datadog-0.3.0.0

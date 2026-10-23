@@ -1,5 +1,5 @@
 name: freckle-app
-version: 1.27.0.2
+version: 1.27.0.3
 
 maintainer: Freckle Education
 category: Utils
@@ -66,7 +66,7 @@ library:
     - autodocodec-openapi3
     - aeson
     - bcp47
-    - bugsnag >= 1.1.0.0 # Network.Bugsnag.MetaData
+    - bugsnag >= 1.2.0.5 # Network.Bugsnag.MetaData
     - bytestring
     - case-insensitive
     - cassava

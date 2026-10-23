@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           freckle-app
-version:        1.27.0.2
+version:        1.27.0.3
 synopsis:       Haskell application toolkit used at Freckle
 description:    Please see README.md
 category:       Utils
@@ -84,7 +84,7 @@ library
     , autodocodec-openapi3
     , base <5
     , bcp47
-    , bugsnag >=1.1.0.0
+    , bugsnag >=1.2.0.5
     , bytestring
     , case-insensitive
     , cassava

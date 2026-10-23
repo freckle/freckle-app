@@ -1,6 +1,8 @@
 resolver: lts-23.21
 extra-deps:
   - Blammo-wai-0.0.0.2
+  - bugsnag-1.2.0.5
+  - freckle-ua-parser-0.2.0.0
   - buffer-builder-0.2.4.9
   - datadog-0.3.0.0
   - esqueleto-3.6.0.0

@@ -1,4 +1,9 @@
-## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.27.0.2...main)
+## [_Unreleased_](https://github.com/freckle/freckle-app/compare/freckle-app-v1.27.0.3...main)
+
+## [v1.27.0.3](https://github.com/freckle/freckle-app/compare/freckle-app-v1.27.0.2...freckle-app-v1.27.0.3)
+
+- Require `bugsnag >= 1.2.0.5`.
+- Drop support for Stackage LTS 20.
 
 ## [v1.27.0.2](https://github.com/freckle/freckle-app/compare/freckle-app-v1.27.0.1...freckle-app-v1.27.0.2)
 
