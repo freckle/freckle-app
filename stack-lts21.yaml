@@ -3,7 +3,6 @@ extra-deps:
   - Blammo-2.1.0.0
   - Blammo-wai-0.0.0.2
   - bugsnag-1.2.0.5
-  - freckle-ua-parser-0.2.0.0
   - fast-logger-3.2.3
   - freckle-ecs-0.0.0.0
   - freckle-env-0.0.1.2
@@ -13,6 +12,7 @@ extra-deps:
   - freckle-otel-0.0.0.2
   - freckle-prelude-0.0.4.0
   - freckle-stats-0.0.0.0
+  - freckle-ua-parser-0.2.0.0
   - monad-validate-1.3.0.0
   - hs-opentelemetry-api-0.1.0.0
   - hs-opentelemetry-instrumentation-persistent-0.1.0.0

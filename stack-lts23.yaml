@@ -1,9 +1,8 @@
 resolver: lts-23.21
 extra-deps:
   - Blammo-wai-0.0.0.2
-  - bugsnag-1.2.0.5
-  - freckle-ua-parser-0.2.0.0
   - buffer-builder-0.2.4.9
+  - bugsnag-1.2.0.5
   - datadog-0.3.0.0
   - esqueleto-3.6.0.0
   - freckle-ecs-0.0.0.1
@@ -14,6 +13,7 @@ extra-deps:
   - freckle-otel-0.0.0.3
   - freckle-prelude-0.0.4.0
   - freckle-stats-0.0.0.0
+  - freckle-ua-parser-0.2.0.0
   - hs-opentelemetry-api-0.2.0.0
   - hs-opentelemetry-exporter-otlp-0.1.0.0
   - hs-opentelemetry-instrumentation-persistent-0.1.0.1
